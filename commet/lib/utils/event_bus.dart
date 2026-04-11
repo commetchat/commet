@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/space.dart';
+import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +22,12 @@ class EventBus {
 
   static StreamController<void> closeThread = StreamController.broadcast();
 
+  static StreamController<Client?> setFilterClient =
+      StreamController.broadcast();
+
+  static StreamController<bool> onTextFieldFocused =
+      StreamController.broadcast();
+
   /// Called when the user initially logs in to the app, or on app startup when atleast one user account is already logged in
   static StreamController<BuildContext> onLoggedIn =
       StreamController<BuildContext>.broadcast();
@@ -40,10 +46,23 @@ class EventBus {
   static StreamController<void> openPinnedMessages =
       StreamController.broadcast();
 
+  static StreamController<void> openCalendar = StreamController.broadcast();
+
+  static StreamController<void> toggleRoomSidePanel =
+      StreamController.broadcast();
+
   static StreamController<String> jumpToEvent = StreamController.broadcast();
 
   static StreamController<void> focusTimeline = StreamController.broadcast();
 
   static StreamController<MessageEffectParticles> doMessageEffect =
       StreamController.broadcast();
+
+  static StreamController<ScopePopped> onPopInvoked =
+      StreamController.broadcast(sync: true);
+}
+
+class ScopePopped {
+  RevealSide? currentMobileSide;
+  bool handled = false;
 }

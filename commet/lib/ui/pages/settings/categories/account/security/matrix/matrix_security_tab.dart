@@ -80,6 +80,9 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   void getDevices() async {
     var gotDevices = await widget.client.getMatrixClient().getDevices();
 
+    gotDevices
+        ?.sort((a, b) => (b.lastSeenTs ?? 0).compareTo(a.lastSeenTs ?? 0));
+
     if (mounted)
       setState(() {
         devices = gotDevices;
@@ -93,9 +96,12 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-          child: crossSigningPanel(),
+        const SizedBox(
+          height: 4,
+        ),
+        crossSigningPanel(),
+        const SizedBox(
+          height: 4,
         ),
         sessionsPanel()
       ],

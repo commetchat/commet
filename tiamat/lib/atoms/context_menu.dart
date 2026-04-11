@@ -121,27 +121,43 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
 
   @override
   Widget build(BuildContext context) {
+    var view = WidgetsBinding.instance.platformDispatcher.views.first;
+    var viewSize = view.physicalSize;
+
+    var scale = tiamat.getAppScale?.call() ?? 1.0;
+
     if (calculatedOffset == null) {
       return Container(
         child: Offstage(
           child: buildMenu(context, key: sizeGetKey),
         ),
       );
-    } else {
-      return Positioned(
-          left: calculatedOffset!.dx - (leftAlign ? size!.width : 0),
-          top: calculatedOffset!.dy - (topAlign ? size!.height : 0),
+    }
+
+    var offset = calculatedOffset! * scale;
+
+    var bottom =
+        !topAlign ? null : (viewSize.height - offset.dy) * (1.0 / scale);
+
+    var top = topAlign
+        ? null
+        : (offset.dy - (topAlign ? size!.height : 0)) * (1.0 / scale);
+
+    var left = offset.dx - (leftAlign ? size!.width * scale : 0);
+
+    return Positioned(
+        left: left * (1.0 / scale),
+        top: top,
+        bottom: bottom,
+        child: SizeTransition(
+          sizeFactor: _animation,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(7),
-            child: SizeTransition(
-              axisAlignment: -1,
-              sizeFactor: _animation,
-              child: Tile.low4(
-                child: buildMenu(context),
-              ),
+            child: Tile.low4(
+              child: buildMenu(context),
             ),
-          ));
-    }
+          ),
+        ));
   }
 
   Widget buildMenu(BuildContext context, {GlobalKey? key}) {
@@ -263,15 +279,28 @@ class _ContextMenuState extends State<ContextMenu> {
 
 class ContextMenuItem {
   const ContextMenuItem(
-      {required this.text, this.onPressed, this.icon, this.color});
+      {required this.text,
+      this.onPressed,
+      this.icon,
+      this.color,
+      this.customBuilder});
 
   final String text;
   final Function? onPressed;
   final IconData? icon;
   final Color? color;
+  final Widget Function(BuildContext context, Function() onClicked)?
+      customBuilder;
 
   Widget build(BuildContext context, Function() onClicked) {
-    var c = color ?? Theme.of(context).textTheme.bodyMedium!.color;
+    var c = color ?? Theme.of(context).colorScheme.onSurface;
+
+    if (customBuilder != null) {
+      return Material(
+          color: Colors.transparent,
+          child: customBuilder!.call(context, onClicked));
+    }
+
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -291,7 +320,11 @@ class ContextMenuItem {
                     if (icon != null)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                        child: Icon(icon, color: c),
+                        child: Icon(
+                          icon,
+                          color: c,
+                          size: 20,
+                        ),
                       )
                   ],
                 ))),

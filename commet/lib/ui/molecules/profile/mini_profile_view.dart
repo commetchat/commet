@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/profile.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 
@@ -33,9 +33,12 @@ class _MiniProfileViewState extends State<MiniProfileView> {
     random = Random().nextDouble();
 
     if (widget.initialProfile == null) {
-      widget.client.getProfile(widget.userId).then((value) => setState(() {
-            profile = value;
-          }));
+      widget.client
+          .getComponent<UserProfileComponent>()!
+          .getProfile(widget.userId)
+          .then((value) => setState(() {
+                profile = value;
+              }));
     } else {
       profile = widget.initialProfile;
     }

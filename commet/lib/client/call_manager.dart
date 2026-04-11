@@ -8,6 +8,8 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/config/platform_utils.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
@@ -41,6 +43,8 @@ class CallManager {
   }
 
   Player? player;
+  Player? muteSoundPlayer;
+  Player? unmuteSoundPlayer;
 
   void _onClientAdded(int index) {
     var client = clientManager.clients[index];
@@ -63,16 +67,21 @@ class CallManager {
     if (event.state == VoipState.incoming) {
       startRingtone();
 
+      var member = room?.getMemberOrFallback(event.remoteUserId!);
+
       NotificationManager.notify(CallNotificationContent(
           title: notificationTitleIncomingCall(event.roomName),
           content: notificationContentUserIsCalling(
               event.remoteUserName ?? event.remoteUserId!),
           roomId: event.roomId,
           roomName: event.roomName,
+          senderName: member?.displayName ?? event.remoteUserId!,
           roomImage: room?.avatar,
           callId: event.sessionId,
           senderId: event.remoteUserId!,
-          senderImage: room?.getMemberOrFallback(event.remoteUserId!).avatar,
+          senderImage: member?.avatar,
+          senderImageId: member?.avatarId,
+          roomImageId: room?.avatarId,
           clientId: event.client.identifier,
           isDirectMessage: event.client
                   .getComponent<DirectMessagesComponent>()
@@ -110,6 +119,11 @@ class CallManager {
   }
 
   void startRingtone() {
+    // Let push notifications do the ringtone
+    if (PlatformUtils.isAndroid) {
+      return;
+    }
+
     if (player?.state.playing == true) {
       return;
     }
@@ -132,6 +146,68 @@ class CallManager {
     player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/joined_call.ogg"));
     player?.setPlaylistMode(PlaylistMode.none);
+  }
+
+  void mute() {
+    for (var session in currentSessions) {
+      session.setMicrophoneMute(true);
+    }
+
+    playMuteSound();
+  }
+
+  bool fakeToggle = false;
+  void toggleMute() {
+    var session = currentSessions.firstOrNull;
+
+    if (session != null) {
+      if (session.isMicrophoneMuted) {
+        unmute();
+      } else {
+        mute();
+      }
+    } else {
+      fakeToggle = !fakeToggle;
+
+      // just to give user feedback when not in a call
+      if (fakeToggle) {
+        playMuteSound();
+      } else {
+        playUnmuteSound();
+      }
+    }
+  }
+
+  void playMuteSound() {
+    if (muteSoundPlayer == null) {
+      muteSoundPlayer ??= Player(configuration: PlayerConfiguration());
+      muteSoundPlayer?.open(Media("asset:///assets/sound/muted.ogg"));
+      muteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
+    }
+
+    muteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
+    muteSoundPlayer?.seek(Duration.zero);
+    muteSoundPlayer?.play();
+  }
+
+  void unmute() {
+    for (var session in currentSessions) {
+      session.setMicrophoneMute(false);
+    }
+
+    playUnmuteSound();
+  }
+
+  void playUnmuteSound() {
+    if (unmuteSoundPlayer == null) {
+      unmuteSoundPlayer ??= Player(configuration: PlayerConfiguration());
+      unmuteSoundPlayer?.open(Media("asset:///assets/sound/unmuted.ogg"));
+      unmuteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
+    }
+
+    unmuteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
+    unmuteSoundPlayer?.seek(Duration.zero);
+    unmuteSoundPlayer?.play();
   }
 
   void endCallSound() {
@@ -158,8 +234,9 @@ class CallManager {
   }
 
   Player getSoundPlayer() {
-    player ??= Player();
-    player!.setVolume(90);
+    player ??= Player(configuration: PlayerConfiguration());
+    player!.setVolume(preferences.notificationsVolume.value);
+
     return player!;
   }
 }

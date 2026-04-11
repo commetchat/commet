@@ -17,7 +17,7 @@ index 308e212..4945661 100644
 +++ b/commet/android/settings.gradle
 @@ -20,7 +20,7 @@ plugins {
      id "dev.flutter.flutter-plugin-loader" version "1.0.0" // apply true
-     id "com.android.application" version "8.7.3" apply false
+     id "com.android.application" version "8.11.1" apply false
      // START: FlutterFire Configuration
 -    // id "com.google.gms.google-services" version "4.3.10" apply false
 +    id "com.google.gms.google-services" version "4.3.10" apply false
@@ -28,8 +28,8 @@ diff --git a/commet/lib/client/components/push_notification/android/firebase_pus
 index 9704b92..d0e99c9 100644
 --- a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
 +++ b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
-@@ -14,12 +14,12 @@ import 'package:commet/service/background_service.dart';
- import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+@@ -14,12 +14,12 @@ import 'package:commet/main.dart';
+ import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
  
  // Manage these to enable / disable firebase
 -// import 'package:firebase_core/firebase_core.dart';

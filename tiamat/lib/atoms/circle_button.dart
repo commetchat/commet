@@ -37,10 +37,14 @@ class CircleButton extends StatelessWidget {
           color: color ?? Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(radius),
           child: InkWell(
-            splashColor: Theme.of(context).highlightColor, // Splash color
-            onTap: () {
-              onPressed?.call();
-            },
+            splashColor: Theme.of(context)
+                .colorScheme
+                .onSecondaryContainer, // Splash color
+            onTap: onPressed == null
+                ? null
+                : () {
+                    onPressed?.call();
+                  },
             child: SizedBox(
                 width: radius * 2,
                 height: radius * 2,

@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:commet/utils/picker_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
-import '../../utils/mime.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -14,11 +13,13 @@ class ImagePickerButton extends StatefulWidget {
       this.onImagePicked,
       this.onImageRead,
       this.size = 128,
+      this.cropAspectRatio,
       this.tooltip = "Pick Image",
       this.withData = false,
       this.icon});
   final ImageProvider? currentImage;
   final bool withData;
+  final double? cropAspectRatio;
   final String tooltip;
   final double size;
   final IconData? icon;
@@ -54,24 +55,15 @@ class _ImagePickerButtonState extends State<ImagePickerButton> {
   }
 
   void pickImage() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp'],
-        withData: widget.withData);
-    if (result == null || result.count != 1) return;
+    var result = await PickerUtils.pickImageAndCrop(context,
+        aspectRatio: widget.cropAspectRatio);
 
-    if (widget.withData) {
-      var type = Mime.fromExtenstion(result.files.first.extension!);
-      if (type == null || result.files.first.bytes == null) return;
+    if (result == null) return;
 
-      setState(() {
-        image = Image.memory(result.files.first.bytes!).image;
-      });
+    setState(() {
+      image = Image.memory(result).image;
+    });
 
-      widget.onImageRead
-          ?.call(result.files.first.bytes!, type, result.files.first.path!);
-    } else {
-      widget.onImagePicked?.call(result.files.first.path!);
-    }
+    widget.onImageRead?.call(result, null, "");
   }
 }

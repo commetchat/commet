@@ -14,15 +14,14 @@ class TinyPill extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color:
-                background ?? Theme.of(context).colorScheme.primaryContainer),
+          borderRadius: BorderRadius.circular(5),
+          color: background ?? Theme.of(context).colorScheme.primary,
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(2.0),
+          padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
           child: tiamat.Text.tiny(
             text,
-            color:
-                foreground ?? Theme.of(context).colorScheme.onPrimaryContainer,
+            color: foreground ?? Theme.of(context).colorScheme.onPrimary,
           ),
         ),
       ),

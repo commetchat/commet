@@ -301,4 +301,62 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement getMember
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement isSpecialRoomType
+  bool get isSpecialRoomType => false;
+
+  @override
+  Future<void> banUser(String id) {
+    // TODO: implement banUser
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> kickUser(String id) {
+    // TODO: implement kickUser
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement availableRoles
+  List<Role> get availableRoles => throw UnimplementedError();
+
+  @override
+  Future<void> setMemberRole(String id, Role role) {
+    // TODO: implement setMemberRole
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement topic
+  String? get topic => throw UnimplementedError();
+
+  @override
+  Future<void> setTopic(String topic) {
+    // TODO: implement setTopic
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setRoomAvatar(Uint8List bytes, String? mimeType) {
+    // TODO: implement setRoomAvatar
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markAsRead() {
+    // TODO: implement markAsRead
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement visibility
+  RoomVisibility get visibility => throw UnimplementedError();
+
+  @override
+  Future<void> setVisibility(RoomVisibility visibility) {
+    // TODO: implement setVisibility
+    throw UnimplementedError();
+  }
 }

@@ -30,9 +30,9 @@ class _AccountSelectorState extends State<AccountSelector> {
       itemHeight: 65,
       onItemSelected: (item) {
         setState(() {
-          selectedClient = item;
+          selectedClient = item!;
         });
-        widget.onClientSelected?.call(item);
+        widget.onClientSelected?.call(item!);
       },
       itemBuilder: (item) {
         return Padding(

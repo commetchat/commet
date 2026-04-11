@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/utils/scaled_app.dart';
 
@@ -52,10 +53,11 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             behavior:
                 ScrollConfiguration.of(context).copyWith(scrollbars: false),
             child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+              physics:
+                  BuildConfig.ANDROID ? const BouncingScrollPhysics() : null,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                    0, 0, 0, MediaQuery.of(context).scale().padding.bottom),
+                    0, MediaQuery.of(context).scale().padding.top, 0, 0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +90,6 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                         );
                       },
                     ),
-                    if (widget.footer != null) const Seperator(),
                     if (widget.footer != null)
                       Padding(
                         padding: SpaceSelector.padding,
@@ -127,6 +128,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
               onUpdate: onUpdate,
               avatar: avatar,
               userAvatar: userAvatar,
+              spaceId: space.identifier,
               userColor: userColor,
               userDisplayName: userDisplayName,
               highlightedNotificationCount: highlightedNotificationCount,

@@ -1,5 +1,6 @@
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
@@ -25,6 +26,13 @@ class TimelineEventMenuDialog extends StatelessWidget {
   }
 
   Widget buildMessageMenu(BuildContext context, TimelineEvent event) {
+    var reactions = menu.recentReactions;
+    var maxLength = 6;
+    if (reactions.length > maxLength) {
+      reactions = reactions.sublist(0, maxLength);
+    }
+    const emojiSize = 35.0;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: ScaledSafeArea(
@@ -66,6 +74,48 @@ class TimelineEventMenuDialog extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(
+              height: 10,
+            ),
+            if (menu.addReactionAction != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  for (var emote in reactions)
+                    Material(
+                      borderRadius: BorderRadius.circular(8),
+                      clipBehavior: Clip.hardEdge,
+                      color: Colors.transparent,
+                      child: SizedBox(
+                        child: InkWell(
+                          onTap: () {
+                            timeline.room.addReaction(event, emote);
+
+                            if (context.mounted) Navigator.of(context).pop();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: EmojiWidget(
+                              emote,
+                              height: emojiSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  SizedBox(
+                    width: emojiSize,
+                    height: emojiSize,
+                    child: tiamat.CircleButton(
+                      icon: menu.addReactionAction!.icon,
+                      radius: emojiSize * 0.6,
+                      onPressed: () {
+                        doAction(menu.addReactionAction!, context);
+                      },
+                    ),
+                  )
+                ],
+              ),
             for (var action in menu.primaryActions)
               SizedBox(
                 height: 50,

@@ -18,6 +18,8 @@ import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+import 'package:html/parser.dart' as html_parser;
+
 class MatrixTimelineEventMessage extends MatrixTimelineEvent
     with MatrixTimelineEventRelated, MatrixTimelineEventReactions
     implements TimelineEventMessage {
@@ -50,7 +52,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   String _getPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
 
-    if (["m.file", "m.image", "m.video"].contains(e.messageType)) {
+    if (["m.file", "m.image", "m.video", "m.audio"].contains(e.messageType)) {
       var file = e.content["file"] is Map<String, dynamic>
           ? e.content['file'] as Map<String, dynamic>
           : null;
@@ -76,7 +78,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   String _getFormattedBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
 
-    if (["m.file", "m.image", "m.video"].contains(e.messageType)) {
+    if (["m.file", "m.image", "m.video", "m.audio"].contains(e.messageType)) {
       return e.formattedText;
     }
 
@@ -88,6 +90,13 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   }
 
   @override
+  String getPlaintextBody(Timeline timeline) {
+    var displayEvent = getDisplayEvent(timeline);
+
+    return displayEvent.plaintextBody;
+  }
+
+  @override
   Widget? buildFormattedContent({Timeline? timeline}) {
     final room = client.getRoom(event.roomId!)!;
 
@@ -95,7 +104,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     bool isFormatted = displayEvent.content.tryGet<String>("format") != null;
     if (isFormatted) {
       return MatrixHtmlParser.parse(
-          _getFormattedBody(timeline: timeline), mx, room);
+          _getFormattedBody(timeline: timeline), client, room);
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {
@@ -231,7 +240,11 @@ class PlaintextMessageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var document = html_parser.parse(content);
+    bool big = shouldDoBigEmoji(document);
+
     return Text.rich(TextSpan(
+        style: TextStyle(fontSize: big ? 34 : null),
         children: TextUtils.linkifyString(content,
             context: context, clientId: clientIdentifier)));
   }

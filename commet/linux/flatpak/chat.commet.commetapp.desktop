@@ -1,12 +1,27 @@
 [Desktop Entry]
 Version={{VERSION_TAG}}
 Type=Application
-
 Name=Commet
 Comment=Your space to connect!
 Categories=Utility;Amusement;
-
 Icon=chat.commet.commetapp
 Exec=commet
 Terminal=false
 StartupWMClass=chat.commet.commetapp
+Actions=ToggleMute;Mute;Unmute
+X-KDE-StartupNotify=false
+StartupNotify=false
+
+[Desktop Action ToggleMute]
+Name=Toggle Mute
+Exec=commet --shortcut toggle_mute
+X-KDE-Shortcuts=Alt+M
+
+[Desktop Action Mute]
+Name=Mute
+Exec=commet --shortcut mute
+
+
+[Desktop Action Unmute]
+Name=Unmute
+Exec=commet --shortcut unmute

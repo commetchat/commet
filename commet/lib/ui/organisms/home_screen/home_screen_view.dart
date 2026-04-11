@@ -5,8 +5,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:commet/ui/molecules/invitation_display.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
+import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
@@ -82,6 +81,7 @@ class HomeScreenView extends StatelessWidget {
         mode: TileType.surfaceContainerLow,
         header: labelHomeAlerts,
         child: ImplicitlyAnimatedList(
+          padding: EdgeInsetsGeometry.zero,
           shrinkWrap: true,
           itemData: clientManager.alertManager.alerts,
           initialAnimation: false,
@@ -98,6 +98,7 @@ class HomeScreenView extends StatelessWidget {
         header: labelHomeRecentActivity,
         child: ImplicitlyAnimatedList(
           shrinkWrap: true,
+          padding: EdgeInsetsGeometry.zero,
           itemData: recentActivity!,
           initialAnimation: false,
           physics: const NeverScrollableScrollPhysics(),
@@ -136,6 +137,7 @@ class HomeScreenView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             ImplicitlyAnimatedList(
+              padding: EdgeInsetsGeometry.zero,
               physics: const NeverScrollableScrollPhysics(),
               initialAnimation: false,
               shrinkWrap: true,
@@ -180,6 +182,7 @@ class HomeScreenView extends StatelessWidget {
         mode: TileType.surfaceContainer,
         header: labelHomeInvitations,
         child: ImplicitlyAnimatedList(
+          padding: EdgeInsetsGeometry.zero,
           physics: const NeverScrollableScrollPhysics(),
           initialAnimation: false,
           shrinkWrap: true,
@@ -195,13 +198,7 @@ class HomeScreenView extends StatelessWidget {
   }
 
   void addRoomDialog(BuildContext context) {
-    AdaptiveDialog.show(context,
-        builder: (dialogContext) => AddSpaceOrRoom(
-              clients: clientManager.clients,
-              mode: AddSpaceOrRoomMode.createOrJoinRoom,
-              joinRoom: joinRoom,
-              createRoom: createRoom,
-            ),
-        title: "Add Room");
+    GetOrCreateRoom.show(null, context,
+        pickExisting: false, showAllRoomTypes: true);
   }
 }

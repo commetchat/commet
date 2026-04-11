@@ -1,7 +1,9 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
+import 'package:commet/ui/molecules/audio_player/audio_player.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/ui/molecules/video_player/video_player_controller.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/mime.dart';
@@ -23,6 +25,7 @@ class MessageAttachment extends StatefulWidget {
 class _MessageAttachmentState extends State<MessageAttachment> {
   late Key videoPlayerKey;
   bool isFullscreen = false;
+  var controller = VideoPlayerController();
   @override
   void initState() {
     videoPlayerKey = GlobalKey();
@@ -43,6 +46,11 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
     final attachment = widget.attachment;
     if (attachment is FileAttachment) {
+      if (attachment.mimeType != null &&
+          Mime.playableAudioTypes.contains(attachment.mimeType!)) {
+        return buildAudio(attachment);
+      }
+
       return buildFile(Mime.toIcon(attachment.mimeType), attachment.name,
           attachment.fileSize);
     }
@@ -65,21 +73,25 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                     maxHeight: 200, minHeight: 40, maxWidth: 500, minWidth: 40),
                 child: InkWell(
                   onTap: fullscreenAttachment,
-                  child: FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: SizedBox(
-                      width: attachment.width ?? 500,
-                      height: attachment.height ?? 500,
-                      child: Image(
-                        image: attachment.image,
-                        filterQuality: FilterQuality.medium,
-                        // if we know the height, its safe to fill as it wont appear stretched
-                        fit: attachment.width != null &&
-                                attachment.height != null
-                            ? BoxFit.fill
-                            : BoxFit.fitWidth,
+                  child: Stack(
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: SizedBox(
+                          width: attachment.width ?? 500,
+                          height: attachment.height ?? 500,
+                          child: Image(
+                            image: attachment.image,
+                            filterQuality: FilterQuality.medium,
+                            // if we know the height, its safe to fill as it wont appear stretched
+                            fit: attachment.width != null &&
+                                    attachment.height != null
+                                ? BoxFit.fill
+                                : BoxFit.fitWidth,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ))),
@@ -114,6 +126,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                             doThumbnail: true,
                             canGoFullscreen: true,
                             onFullscreen: fullscreenVideo,
+                            controller: controller,
                             key: videoPlayerKey,
                           )))),
       ),
@@ -140,6 +153,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
             video: attachment.file,
             aspectRatio: attachment.aspectRatio,
             thumbnail: attachment.thumbnail,
+            videoController: controller,
             key: videoPlayerKey)
         .then((value) {
       setState(() {
@@ -151,11 +165,11 @@ class _MessageAttachmentState extends State<MessageAttachment> {
   Widget buildFile(IconData icon, String fileName, int? fileSize) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          border: Border.all(color: Theme.of(context).colorScheme.outline)),
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(2.0),
+        padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,15 +212,19 @@ class _MessageAttachmentState extends State<MessageAttachment> {
               )
             else
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: tiamat.IconButton(
-                  size: 20,
-                  icon: Icons.download,
-                  onPressed: () async {
-                    if (widget.attachment is FileAttachment) {
-                      downloadAttachment(widget.attachment as FileAttachment);
-                    }
-                  },
+                padding: const EdgeInsets.fromLTRB(12, 0, 4, 0),
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: tiamat.IconButton(
+                    size: 20,
+                    icon: Icons.download,
+                    onPressed: () async {
+                      if (widget.attachment is FileAttachment) {
+                        downloadAttachment(widget.attachment as FileAttachment);
+                      }
+                    },
+                  ),
                 ),
               )
           ],
@@ -224,5 +242,13 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     await attachment.file.save(path);
 
     return BackgroundTaskStatus.completed;
+  }
+
+  Widget buildAudio(FileAttachment attachment) {
+    return AudioPlayer(
+      file: attachment.file,
+      fileName: attachment.name,
+      fileSize: attachment.fileSize,
+    );
   }
 }

@@ -2,17 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/notification_utils.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications_linux/src/model/hint.dart' as notif;
+import 'package:launcher_entry/launcher_entry.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 
@@ -41,6 +47,9 @@ class LinuxNotifier implements Notifier {
   static int notificationId = 0;
 
   late LinuxServerCapabilities capabilities;
+
+  final service = LauncherEntryService(
+      appUri: 'application://chat.commet.commetapp.desktop');
 
   static void notificationResponse(NotificationResponse details) {
     final payload = jsonDecode(details.payload!) as Map<String, dynamic>;
@@ -83,6 +92,10 @@ class LinuxNotifier implements Notifier {
               (e) => e.sessionId == callId && e.client.identifier == clientId)
           .firstOrNull;
 
+      if (action == callDecline) {
+        clientManager?.callManager.stopRingtone();
+      }
+
       if (session != null) {
         if (action == callAccept) {
           session.acceptCall(withMicrophone: true);
@@ -90,7 +103,10 @@ class LinuxNotifier implements Notifier {
 
         if (action == callDecline) {
           session.declineCall();
+          clientManager?.callManager.stopRingtone();
         }
+      } else {
+        Log.d("Could not find call session");
       }
     }
   }
@@ -107,6 +123,18 @@ class LinuxNotifier implements Notifier {
         onDidReceiveNotificationResponse: notificationResponse);
 
     capabilities = await flutterLocalNotificationsPlugin!.getCapabilities();
+
+    clientManager!.directMessages.onHighlightedRoomsListUpdated
+        .listen((_) => updateBadgeCount());
+    clientManager!.onSpaceUpdated.stream.listen((_) => updateBadgeCount());
+
+    updateBadgeCount();
+  }
+
+  void updateBadgeCount() {
+    var counts = NotificationUtils.getNotificationCounts();
+    var count = counts.$2;
+    service.update(countVisible: count > 0, count: count);
   }
 
   @override
@@ -186,6 +214,9 @@ class LinuxNotifier implements Notifier {
       "event_id": content.eventId,
     };
 
+    var player = NotificationManager.getSoundPlayer();
+    player.open(Media("asset:///assets/sound/message.ogg"));
+
     flutterLocalNotificationsPlugin?.show(
         notificationId++, title, notificationBody,
         notificationDetails: details, payload: jsonEncode(payload));
@@ -220,9 +251,11 @@ class LinuxNotifier implements Notifier {
         category: LinuxNotificationCategory.imReceived,
         timeout: const LinuxNotificationTimeout.expiresNever(),
         urgency: LinuxNotificationUrgency.critical,
-        actions: const [
-          LinuxNotificationAction(key: callAccept, label: "Accept"),
-          LinuxNotificationAction(key: callDecline, label: "Decline"),
+        actions: [
+          LinuxNotificationAction(
+              key: callAccept, label: CommonStrings.promptAccept),
+          LinuxNotificationAction(
+              key: callDecline, label: CommonStrings.promptDecline),
         ]);
 
     var payload = {

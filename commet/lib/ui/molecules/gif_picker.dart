@@ -1,8 +1,11 @@
 import 'dart:ui';
 
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../utils/debounce.dart';
@@ -13,14 +16,28 @@ class GifPicker extends StatefulWidget {
       {super.key,
       this.gifPicked,
       this.search,
+      this.focus,
+      this.favorites = const [],
+      this.favoritePicked,
+      this.onUnfavoriteGif,
       this.placeholderText = "Search Gif"});
+  final List<FavoriteGif> favorites;
   final Future<void> Function(GifSearchResult gif)? gifPicked;
+  final Future<void> Function(FavoriteGif gif)? favoritePicked;
+  final Future<void> Function(FavoriteGif gif)? onUnfavoriteGif;
   final Future<List<GifSearchResult>> Function(String query)? search;
+  final FocusNode? focus;
 
   final String placeholderText;
 
   @override
   State<GifPicker> createState() => _GifPickerState();
+
+  static String get promptUnfavoriteGif => Intl.message(
+        "Unfavorite GIF",
+        desc: "Prompt the user remove a gif from favorites",
+        name: "promptUnfavoriteGif",
+      );
 }
 
 class _GifPickerState extends State<GifPicker> {
@@ -114,8 +131,11 @@ class _GifPickerState extends State<GifPicker> {
             height: BuildConfig.DESKTOP ? 30 : null,
             child: TextField(
               controller: _textController,
+              focusNode: widget.focus,
               decoration: InputDecoration(
                   icon: const Icon(Icons.search),
+                  isDense: true,
+                  border: InputBorder.none,
                   hintText: widget.placeholderText),
             )),
       ),
@@ -124,7 +144,53 @@ class _GifPickerState extends State<GifPicker> {
 
   Widget buildSearch(BuildContext context) {
     if (!searching) {
-      return const Expanded(child: SizedBox());
+      return Expanded(
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: MasonryGridView.extent(
+          maxCrossAxisExtent: 300,
+          mainAxisSpacing: 8,
+          padding: EdgeInsetsGeometry.all(0),
+          crossAxisSpacing: 8,
+          itemCount: widget.favorites.length,
+          itemBuilder: (context, index) {
+            var result = widget.favorites.elementAt(index);
+            return AdaptiveContextMenu(
+              items: [
+                tiamat.ContextMenuItem(
+                  text: GifPicker.promptUnfavoriteGif,
+                  icon: Icons.heart_broken,
+                  onPressed: () {
+                    widget.onUnfavoriteGif?.call(result);
+                  },
+                ),
+              ],
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => sendFavoriteGif(result),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      color: ColorScheme.of(context).surfaceContainerLowest,
+                      child: AspectRatio(
+                        aspectRatio: result.width / result.height,
+                        child: SizedBox(
+                          child: Image(
+                            fit: BoxFit.fill,
+                            filterQuality: FilterQuality.medium,
+                            image: result.image,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ));
     }
 
     if (searchResult == null)
@@ -140,6 +206,7 @@ class _GifPickerState extends State<GifPicker> {
       child: MasonryGridView.extent(
         maxCrossAxisExtent: 300,
         mainAxisSpacing: 8,
+        padding: EdgeInsetsGeometry.all(0),
         crossAxisSpacing: 8,
         itemCount: searchResult!.length,
         itemBuilder: (context, index) {
@@ -150,13 +217,16 @@ class _GifPickerState extends State<GifPicker> {
               onTap: () => sendGif(result),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: AspectRatio(
-                  aspectRatio: result.x / result.y,
-                  child: SizedBox(
-                    child: Image(
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.medium,
-                      image: NetworkImage(result.previewUrl.toString()),
+                child: Container(
+                  color: ColorScheme.of(context).surfaceContainerLowest,
+                  child: AspectRatio(
+                    aspectRatio: result.x / result.y,
+                    child: SizedBox(
+                      child: Image(
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.medium,
+                        image: NetworkImage(result.previewUrl.toString()),
+                      ),
                     ),
                   ),
                 ),
@@ -176,5 +246,9 @@ class _GifPickerState extends State<GifPicker> {
     widget.gifPicked?.call(gif).then((value) => setState(() {
           sending = false;
         }));
+  }
+
+  void sendFavoriteGif(FavoriteGif gif) {
+    widget.favoritePicked?.call(gif);
   }
 }

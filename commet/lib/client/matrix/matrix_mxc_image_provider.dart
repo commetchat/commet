@@ -10,9 +10,10 @@ import '../../utils/image/lod_image.dart';
 
 class MatrixMxcImage extends LODImageProvider {
   Uri identifier;
+  Client client;
   MatrixMxcImage(
     this.identifier,
-    Client matrixClient, {
+    this.client, {
     super.blurhash,
     bool? doThumbnail,
     bool? doFullres,
@@ -25,9 +26,9 @@ class MatrixMxcImage extends LODImageProvider {
           id: "$identifier-$doThumbnail-$doFullres-$thumbnailHeight-$fullResHeight",
           loadThumbnail: (doThumbnail == null || doThumbnail == true)
               ? () => retryUntilOnline<Uint8List?>(
-                  matrixClient,
+                  client,
                   () => loadMatrixThumbnail(
-                        matrixClient,
+                        client,
                         identifier,
                         matrixEvent,
                         cache: cache,
@@ -35,9 +36,9 @@ class MatrixMxcImage extends LODImageProvider {
               : null,
           loadFullRes: (doFullres == null || doFullres == true)
               ? () => retryUntilOnline<Uint8List?>(
-                  matrixClient,
+                  client,
                   () => loadMatrixFullRes(
-                        matrixClient,
+                        client,
                         identifier,
                         matrixEvent,
                         cache: cache,

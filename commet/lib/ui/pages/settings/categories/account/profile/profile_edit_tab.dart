@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_view.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 
@@ -28,18 +28,15 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         var client = widget.clientManager.clients[index];
         return Column(
           children: [
-            ProfileEditView(
-              avatar: client.self?.avatar,
-              displayName: client.self!.displayName,
-              identifier: client.self!.identifier,
-              pickAvatar: (bytes, type) => pickAvatar(client, bytes, type),
-              setDisplayName: (name) => setDisplayName(client, name),
-              canEditName: true,
-              canEditAvatar: true,
+            UserProfile(
+              userId: client.self!.identifier,
+              client: client,
+              maxBioHeight: double.infinity,
             ),
             const Seperator()
           ],

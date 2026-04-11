@@ -16,12 +16,13 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
   static FragmentShader? shader;
   late Timer timer;
   double delta = 0;
+  bool animate = true;
 
   void loadShader() async {
     loadingShader = true;
 
     var program =
-        await FragmentProgram.fromAsset('assets/shader/star_trails.frag');
+        await FragmentProgram.fromAsset('assets/shader/constellation.frag');
     shader = program.fragmentShader();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -40,11 +41,19 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
       loadShader();
     }
 
-    timer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+    WidgetsBinding.instance.addPostFrameCallback(update);
+
+    timer = Timer.periodic(const Duration(milliseconds: 16), frameTimer);
+  }
+
+  void frameTimer(Timer timer) {
+    if (animate) {
       setState(() {
         delta += 1 / 60;
       });
-    });
+    } else {
+      timer.cancel();
+    }
   }
 
   @override
@@ -66,6 +75,31 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
       );
     }
   }
+
+  Duration? previous;
+  int slowFrames = 0;
+  void update(Duration timeStamp) {
+    if (previous != null) {
+      var diff = timeStamp - previous!;
+      var fps = 1000 / diff.inMilliseconds;
+
+      if (fps < 30) {
+        slowFrames += 1;
+      }
+
+      if (slowFrames > 10) {
+        print("Disabling splash animation due to poor performance");
+        animate = false;
+      }
+    }
+
+    if (animate) {
+      previous = timeStamp;
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback(update);
+      }
+    }
+  }
 }
 
 class StarTrailsPainter extends CustomPainter {
@@ -80,7 +114,7 @@ class StarTrailsPainter extends CustomPainter {
 
     shader.setFloat(0, size.width);
     shader.setFloat(1, size.height);
-    shader.setFloat(2, time * 0.5);
+    shader.setFloat(2, (time * 0.3) + 10);
 
     paint.shader = shader;
     canvas.drawRect(Offset.zero & size, paint);

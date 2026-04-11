@@ -44,11 +44,13 @@ class PopupDialog extends StatelessWidget {
       {super.key,
       required this.title,
       required this.content,
+      this.contentPadding = 8,
       this.width = null,
       this.height = null});
   final String? title;
   final double? width;
   final double? height;
+  final double contentPadding;
   final Widget content;
 
   static Color barrierColor = Colors.black.withAlpha(128);
@@ -58,6 +60,7 @@ class PopupDialog extends StatelessWidget {
       String? title,
       double? width,
       double? height,
+      double contentPadding = 8,
       bool barrierDismissible = true}) {
     return showGeneralDialog(
         context: context,
@@ -68,7 +71,12 @@ class PopupDialog extends StatelessWidget {
           return Theme(
             data: Theme.of(context),
             child: PopupDialog(
-                title: title, content: content, width: width, height: height),
+              title: title,
+              content: content,
+              width: width,
+              height: height,
+              contentPadding: contentPadding,
+            ),
           );
         },
         transitionDuration: const Duration(milliseconds: 300),
@@ -88,7 +96,7 @@ class PopupDialog extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      contentPadding: const EdgeInsets.all(8),
+      contentPadding: EdgeInsets.all(contentPadding),
       title: title == null
           ? null
           : Row(

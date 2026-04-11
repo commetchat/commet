@@ -13,6 +13,7 @@ import 'emoji_pack.dart';
 abstract class EmoticonComponent<T extends Client> implements Component<T> {
   List<EmoticonPack> globalPacks();
   List<EmoticonPack> get ownedPacks;
+  List<EmoticonPack> get availablePacks;
   bool get canCreatePack;
   Stream<void> get onStateChanged;
 

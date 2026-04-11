@@ -26,6 +26,36 @@ class CustomURI {
           clientId: uri.queryParameters["client_id"]!);
     }
 
+    if (uri.host == "accept_call") {
+      if ([
+        "room_id",
+        "client_id",
+        "call_id"
+      ].any((element) => uri!.queryParameters.containsKey(element) == false)) {
+        return null;
+      }
+
+      return AcceptCallUri(
+          roomId: uri.queryParameters["room_id"]!,
+          callId: uri.queryParameters["call_id"]!,
+          clientId: uri.queryParameters["client_id"]!);
+    }
+
+    if (uri.host == "decline_call") {
+      if ([
+        "room_id",
+        "client_id",
+        "call_id"
+      ].any((element) => uri!.queryParameters.containsKey(element) == false)) {
+        return null;
+      }
+
+      return DeclineCallUri(
+          roomId: uri.queryParameters["room_id"]!,
+          callId: uri.queryParameters["call_id"]!,
+          clientId: uri.queryParameters["client_id"]!);
+    }
+
     return null;
   }
 }
@@ -42,6 +72,48 @@ class OpenRoomURI implements CustomURI {
         scheme: BuildConfig.appSchema,
         host: "open_room",
         queryParameters: {"room_id": roomId, "client_id": clientId}).toString();
+  }
+}
+
+class AcceptCallUri implements CustomURI {
+  final String roomId;
+  final String clientId;
+  final String callId;
+
+  AcceptCallUri(
+      {required this.roomId, required this.clientId, required this.callId});
+
+  @override
+  String toString() {
+    return Uri(
+        scheme: BuildConfig.appSchema,
+        host: "accept_call",
+        queryParameters: {
+          "room_id": roomId,
+          "client_id": clientId,
+          "call_id": callId
+        }).toString();
+  }
+}
+
+class DeclineCallUri implements CustomURI {
+  final String roomId;
+  final String clientId;
+  final String callId;
+
+  DeclineCallUri(
+      {required this.roomId, required this.clientId, required this.callId});
+
+  @override
+  String toString() {
+    return Uri(
+        scheme: BuildConfig.appSchema,
+        host: "decline_call",
+        queryParameters: {
+          "room_id": roomId,
+          "client_id": clientId,
+          "call_id": callId
+        }).toString();
   }
 }
 

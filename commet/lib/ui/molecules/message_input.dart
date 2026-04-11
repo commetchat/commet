@@ -1,14 +1,22 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/dynamic_emoticon_pack.dart';
+import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
+import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/atoms/keyboard_adaptor.dart';
+import 'package:commet/ui/atoms/random_emoji_button.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
+import 'package:commet/ui/molecules/overlapping_panels.dart';
+import 'package:commet/ui/molecules/poll_creator.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -16,6 +24,8 @@ import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/autofill_utils.dart';
+import 'package:commet/utils/debounce.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 
@@ -42,8 +52,10 @@ class AttachmentPicker {
 }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput(this.room,
+  const MessageInput(
       {super.key,
+      required this.client,
+      this.room,
       this.maxHeight = 200,
       this.onSendMessage,
       this.isRoomE2EE = false,
@@ -56,6 +68,7 @@ class MessageInput extends StatefulWidget {
       this.focusKeyboard,
       this.setInputText,
       this.isProcessing = false,
+      this.initialText,
       this.enabled = true,
       this.editLastMessage,
       this.hintText,
@@ -66,13 +79,19 @@ class MessageInput extends StatefulWidget {
       this.typingIndicatorWidget,
       this.availibleEmoticons,
       this.availibleStickers,
+      this.compact = false,
       this.gifComponent,
+      this.enableKeyboardAdapter = true,
       this.onReadReceiptsClicked,
       this.findOverrideClient,
       this.onTapOverrideClient,
+      this.disableEnterToSend = false,
       this.sendGif,
+      this.sendFavoriteGif,
+      this.showGifSearch = true,
       this.size = 35,
       this.iconScale = 0.5,
+      this.showAttachmentButton = true,
       this.sendSticker,
       this.processAutofill,
       this.cancelReply});
@@ -80,20 +99,27 @@ class MessageInput extends StatefulWidget {
   final double size;
   final double iconScale;
   final bool isRoomE2EE;
+  final bool disableEnterToSend;
   final MessageInputSendResult Function(String message,
       {Client? overrideClient})? onSendMessage;
   final Widget? readIndicator;
   final String? relatedEventBody;
   final String? relatedEventSenderName;
   final String? hintText;
+  final String? initialText;
+  final bool showAttachmentButton;
+  final bool compact;
+  final bool enableKeyboardAdapter;
   final Color? relatedEventSenderColor;
   final List<PendingFileAttachment>? attachments;
   final EventInteractionType? interactionType;
   final Stream<void>? focusKeyboard;
+  final bool showGifSearch;
   final Stream<String>? setInputText;
   final bool isProcessing;
   final bool enabled;
-  final Room room;
+  final Room? room;
+  final Client client;
   final Widget? typingIndicatorWidget;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
@@ -101,6 +127,7 @@ class MessageInput extends StatefulWidget {
   final void Function()? onReadReceiptsClicked;
   final void Function(Emoticon sticker)? sendSticker;
   final Future<void> Function(GifSearchResult gif)? sendGif;
+  final Future<void> Function(FavoriteGif gif)? sendFavoriteGif;
   final void Function(bool focused)? onFocusChanged;
   final Function(String currentText)? onTextUpdated;
   final void Function()? cancelReply;
@@ -117,16 +144,26 @@ class MessageInput extends StatefulWidget {
 
 class MessageInputState extends State<MessageInput> {
   late FocusNode textFocus;
+  FocusNode emojiSearchFocus = FocusNode();
+  FocusNode stickerSearchFocus = FocusNode();
+  FocusNode gifSearchFocus = FocusNode();
+
   late TextEditingController controller;
   late JustTheController emojiOverlayController = JustTheController();
   StreamSubscription? keyboardFocusSubscription;
   StreamSubscription? setInputTextSubscription;
+  StreamSubscription? onScopePopInvoked;
   OverlayEntry? entry;
   final layerLink = LayerLink();
   bool showEmotePicker = false;
+  bool emotePickerActive = false;
   bool hasEmotePickerOpened = false;
   List<AutofillSearchResult>? autoFillResults;
   Client? senderOverride;
+  JustTheController emojiTooltipController = JustTheController();
+
+  KeyboardAdaptorController keyboardAdaptorController =
+      KeyboardAdaptorController();
 
   int? autoFillSelection;
   (int, int)? autoFillRange;
@@ -152,21 +189,31 @@ class MessageInputState extends State<MessageInput> {
   void dispose() {
     keyboardFocusSubscription?.cancel();
     setInputTextSubscription?.cancel();
+    preferencesSubscription?.cancel();
+    onScopePopInvoked?.cancel();
     super.dispose();
   }
 
+  StreamSubscription? preferencesSubscription;
+
   @override
   void initState() {
-    controller = RichTextEditingController(room: widget.room);
+    controller = RichTextEditingController(
+        client: widget.client, room: widget.room, text: widget.initialText);
     controller.addListener(controllerListener);
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
+    onScopePopInvoked = EventBus.onPopInvoked.stream.listen(onPopped);
 
     textFocus = FocusNode(onKeyEvent: onKey);
+    textFocus.addListener(onTextFocusChanged);
 
-    if (Layout.desktop) {
+    preferencesSubscription =
+        preferences.onSettingChanged.listen((_) => setState(() {}));
+
+    if (preferences.autoFocusMessageTextBox.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         textFocus.requestFocus();
       });
@@ -267,27 +314,115 @@ class MessageInputState extends State<MessageInput> {
     return (start, end);
   }
 
+  Debouncer sendDebouncer = Debouncer(delay: Duration(milliseconds: 20));
   void sendMessage() {
-    if (widget.attachments == null || widget.attachments!.isEmpty) {
-      if (controller.text.isEmpty) return;
-      if (controller.text.trim().isEmpty) return;
-    }
+    sendDebouncer.run(() {
+      if (widget.attachments == null || widget.attachments!.isEmpty) {
+        if (controller.text.isEmpty) return;
+        if (controller.text.trim().isEmpty) return;
+      }
 
-    setState(() {
-      showEmotePicker = false;
+      var result = widget.onSendMessage
+          ?.call(controller.text.trim(), overrideClient: senderOverride);
+
+      if (result == MessageInputSendResult.success) {
+        controller.text = "";
+      }
     });
-
-    widget.onSendMessage
-        ?.call(controller.text.trim(), overrideClient: senderOverride);
   }
 
-  void toggleEmojiOverlay() {
+  void showMoreAttachmentOptions() {}
+
+  // This duration is to try and hide the transition from keyboard popup animation
+  Debouncer removeHeightOverrideDebouncer =
+      Debouncer(delay: Duration(seconds: 1));
+
+  bool get isInEmojiPicker => showEmotePicker && !textFocus.hasFocus;
+
+  Future<void> toggleEmojiOverlay() async {
+    var keyboardOpen = await isKeyboardOpen();
+    print("Keyboard open: $keyboardOpen");
+
     setState(() {
-      showEmotePicker = !showEmotePicker;
+      if (Layout.mobile) {
+        if (showEmotePicker && !keyboardOpen) {
+          // STUPID: since we use android api to dismiss keyboard,
+          // requesting focus normally doesnt work, but if we do this
+          // we can get the onscreen keyboard back
+          unfocus();
+          Future.delayed(Duration(milliseconds: 100)).then((_) {
+            textFocus.requestFocus();
+          });
+          emotePickerActive = false;
+          clearKeyboardOverride();
+        } else {
+          showEmotePicker = true;
+          emotePickerActive = true;
+          keyboardAdaptorController.keepCurrentSize?.call();
+          removeHeightOverrideDebouncer.cancel();
+          if (textFocus.hasFocus) {
+            dismissKeyboard();
+          }
+        }
+      }
+
+      if (Layout.desktop) {
+        showEmotePicker = !showEmotePicker;
+        emotePickerActive = showEmotePicker;
+        emojiTooltipController.showTooltip(autoClose: false);
+      }
+
       if (showEmotePicker) {
         hasEmotePickerOpened = true;
       }
     });
+  }
+
+  void clearKeyboardOverride({bool debounce = true}) {
+    final func = () {
+      if (showEmotePicker) {
+        showEmotePicker = false;
+        emotePickerActive = false;
+      }
+
+      if (!showEmotePicker) {
+        keyboardAdaptorController.clearOverride?.call();
+      }
+    };
+
+    if (!debounce) {
+      removeHeightOverrideDebouncer.cancel();
+      func();
+    }
+
+    setState(() {
+      emotePickerActive = false;
+    });
+
+    removeHeightOverrideDebouncer.run(func);
+  }
+
+  void dismissKeyboard() {
+    if (BuildConfig.ANDROID) {
+      const platform = const MethodChannel('chat.commet.commetapp/utils');
+      platform.invokeMethod("dismissKeyboard");
+    }
+  }
+
+  Future<bool> isKeyboardOpen() async {
+    if (BuildConfig.ANDROID) {
+      const platform = const MethodChannel('chat.commet.commetapp/utils');
+      var result = await platform.invokeMethod<bool>("isKeyboardOpen");
+      return result!;
+    } else {
+      return textFocus.hasFocus;
+    }
+  }
+
+  void onTextFocusChanged() {
+    if (textFocus.hasFocus) {
+      clearKeyboardOverride();
+    }
   }
 
   void updateAutofillScroll() {
@@ -348,7 +483,7 @@ class MessageInputState extends State<MessageInput> {
       return;
     }
 
-    if (preferences.disableTextCursorManagement) {
+    if (preferences.disableTextCursorManagement.value) {
       return;
     }
 
@@ -407,7 +542,7 @@ class MessageInputState extends State<MessageInput> {
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
-    if (!preferences.disableTextCursorManagement) {
+    if (!preferences.disableTextCursorManagement.value) {
       if (HardwareKeyboard.instance
           .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
         var selection = controller.selection.baseOffset;
@@ -467,19 +602,21 @@ class MessageInputState extends State<MessageInput> {
       }
     }
 
-    if (HardwareKeyboard.instance
-        .isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
-      if (autoFillSelection != null && autoFillRange != null) {
-        applyAutoFill(autoFillResults![autoFillSelection!]);
+    if (widget.disableEnterToSend != true) {
+      if (HardwareKeyboard.instance
+          .isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
+        if (autoFillSelection != null && autoFillRange != null) {
+          applyAutoFill(autoFillResults![autoFillSelection!]);
+          return KeyEventResult.handled;
+        }
+
+        if (HardwareKeyboard.instance.isShiftPressed) {
+          return KeyEventResult.ignored;
+        }
+
+        sendMessage();
         return KeyEventResult.handled;
       }
-
-      if (HardwareKeyboard.instance.isShiftPressed) {
-        return KeyEventResult.ignored;
-      }
-
-      sendMessage();
-      return KeyEventResult.handled;
     }
 
     if (HardwareKeyboard.instance
@@ -530,76 +667,91 @@ class MessageInputState extends State<MessageInput> {
           ignoring: widget.isProcessing,
           child: Opacity(
             opacity: widget.isProcessing ? 0.5 : 1,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.typingIndicatorWidget != null)
-                  widget.typingIndicatorWidget!,
-                if (widget.interactionType != null) interactionText(),
-                if (widget.attachments != null &&
-                    widget.attachments!.isNotEmpty)
-                  displayAttachments(),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: Padding(
-                    padding: padding,
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.enabled) addAttachmentButton(),
-                          Flexible(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerLow),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    textInput(context),
-                                    if (widget.enabled) toggleEmojiButton(),
-                                  ],
+            child: KeyboardAdaptor(
+              enabled: widget.enableKeyboardAdapter,
+              paddingContent: (Layout.mobile && showEmotePicker)
+                  ? buildEmojiPicker()
+                  : Container(),
+              shouldPushContent: () {
+                if (emojiSearchFocus.hasFocus) {
+                  return true;
+                }
+
+                if (stickerSearchFocus.hasFocus) {
+                  return true;
+                }
+
+                if (gifSearchFocus.hasFocus) {
+                  return true;
+                }
+
+                return false;
+              },
+              controller: keyboardAdaptorController,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.typingIndicatorWidget != null)
+                    widget.typingIndicatorWidget!,
+                  if (widget.interactionType != null) interactionText(),
+                  if (widget.attachments != null &&
+                      widget.attachments!.isNotEmpty)
+                    displayAttachments(),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: Padding(
+                      padding: padding,
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.enabled && widget.showAttachmentButton)
+                              addAttachmentButton(),
+                            Flexible(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerLow),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      textInput(context),
+                                      if (widget.enabled) toggleEmojiButton(),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          if (widget.enabled) sendMessageButton()
-                        ]),
+                            if (widget.enabled) sendMessageButton()
+                          ]),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 30),
-                          if (senderOverride != null) senderOverrideView(),
-                          if (autoFillResults != null) autofillResultsList(),
-                          if (autoFillResults == null)
-                            const Expanded(child: SizedBox()),
-                          if (widget.readIndicator != null &&
-                              autoFillResults?.isEmpty != false)
-                            readReceipts()
-                        ]),
-                  ),
-                ),
-                if (widget.availibleEmoticons != null &&
-                    widget.availibleStickers != null)
-                  AnimatedContainer(
-                    curve: Curves.easeOutExpo,
-                    duration: const Duration(milliseconds: 500),
-                    height: showEmotePicker ? emotePickerHeight : 0,
-                    child: ClipRect(child: buildEmojiPicker()),
-                  )
-              ],
+                  if (!widget.compact)
+                    SizedBox(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 30),
+                              if (senderOverride != null) senderOverrideView(),
+                              if (autoFillResults != null)
+                                autofillResultsList(),
+                              if (autoFillResults == null)
+                                const Expanded(child: SizedBox()),
+                            ]),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -649,25 +801,6 @@ class MessageInputState extends State<MessageInput> {
                   ],
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  ClipRRect readReceipts() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: widget.onReadReceiptsClicked,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 2, 2, 2),
-            child: SizedBox(
-              width: 150,
-              child: widget.readIndicator!,
             ),
           ),
         ),
@@ -767,7 +900,10 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget sendMessageButton() {
-    bool canSend = controller.text.isNotEmpty;
+    bool canSend =
+        controller.text.isNotEmpty || widget.attachments?.isNotEmpty == true;
+
+    var pollComponent = widget.room?.client.getComponent<PollComponent>();
 
     double targetValue = canSend ? 1 : 0;
     return Padding(
@@ -776,62 +912,127 @@ class MessageInputState extends State<MessageInput> {
           tween: Tween<double>(begin: 0, end: targetValue),
           duration: Durations.medium1,
           builder: (context, value, child) {
-            return SizedBox(
-                width: widget.size,
-                height: widget.size,
-                child: tiamat.CircleButton(
-                  icon: Icons.send,
-                  radius: widget.size * widget.iconScale,
-                  onPressed: sendMessage,
-                  color: Color.lerp(
-                      Theme.of(context).colorScheme.primary.withAlpha(0),
-                      Theme.of(context).colorScheme.primary,
-                      value),
-                  iconColor: Color.lerp(Theme.of(context).colorScheme.secondary,
-                      Theme.of(context).colorScheme.onPrimary, value),
-                ));
+            return ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(widget.size),
+              child: Material(
+                child: AdaptiveContextMenu(
+                  modal: true,
+                  items: canSend
+                      ? List.empty()
+                      : [
+                          if (pollComponent != null)
+                            tiamat.ContextMenuItem(
+                              text: "Poll",
+                              icon: Icons.poll,
+                              onPressed: () async {
+                                var createArgs =
+                                    await AdaptiveDialog.show<PollCreateArgs>(
+                                        context,
+                                        title: "Create Poll",
+                                        builder: (context) => PollCreator());
+
+                                if (createArgs != null) {
+                                  print(createArgs);
+                                  pollComponent.createPoll(
+                                      widget.room!, createArgs);
+                                }
+                              },
+                            )
+                        ],
+                  child: SizedBox(
+                      width: widget.size,
+                      height: widget.size,
+                      child: tiamat.CircleButton(
+                        icon: canSend ? Icons.send : Icons.more_horiz,
+                        radius: widget.size * widget.iconScale,
+                        onPressed: canSend
+                            ? () {
+                                sendMessage();
+                              }
+                            : null,
+                        color: Color.lerp(
+                            Theme.of(context).colorScheme.primary.withAlpha(0),
+                            Theme.of(context).colorScheme.primary,
+                            value),
+                        iconColor: Color.lerp(
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.onPrimary,
+                            value),
+                      )),
+                ),
+              ),
+            );
           },
         ));
   }
 
   Widget toggleEmojiButton() {
+    var button = SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: RandomEmojiButton(
+            size: widget.size,
+            onTap: toggleEmojiOverlay,
+            toggled: Layout.mobile
+                ? (emojiTooltipController.value == TooltipStatus.isShowing ||
+                    (emotePickerActive == true))
+                : false));
+
+    if (Layout.mobile) return button;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
-      child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: tiamat.IconButton(
-            icon: Icons.face,
-            size: widget.size * widget.iconScale,
-            onPressed: toggleEmojiOverlay,
-          )),
-    );
+        padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
+        child: JustTheTooltip(
+          isModal: true,
+          preferredDirection: AxisDirection.up,
+          controller: emojiTooltipController,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+          content: ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(8),
+            child: Material(
+              child: Container(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                child: SizedBox(
+                  height: 500,
+                  width: 500,
+                  child: buildEmojiPicker(skipIfNeverOpened: false),
+                ),
+              ),
+            ),
+          ),
+          child: button,
+        ));
   }
 
   Expanded textInput(BuildContext context) {
     var height = Theme.of(context).textTheme.bodyMedium!.fontSize!;
     var padding = widget.size - height;
-
+    var hintStyle = TextTheme.of(context).bodyMedium;
+    hintStyle = hintStyle?.copyWith(color: hintStyle.color?.withAlpha(120));
     return Expanded(
       child: Stack(
         children: [
-          TextField(
-            focusNode: textFocus,
-            onChanged: onTextfieldUpdated,
-            controller: controller,
-            readOnly: !widget.enabled || widget.isProcessing,
-            textAlignVertical: TextAlignVertical.center,
-            style: Theme.of(context).textTheme.bodyMedium!,
-            maxLines: null,
-            contextMenuBuilder: contextMenuBuilder,
-            keyboardType: TextInputType.multiline,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
-                border: InputBorder.none,
-                isDense: true,
-                hintText: widget.hintText),
+          TapRegion(
+            onTapInside: (event) => onTextFocusChanged(),
+            child: TextField(
+              focusNode: textFocus,
+              onChanged: onTextfieldUpdated,
+              controller: controller,
+              readOnly: !widget.enabled || widget.isProcessing,
+              textAlignVertical: TextAlignVertical.center,
+              style: Theme.of(context).textTheme.bodyMedium!,
+              maxLines: null,
+              contextMenuBuilder: contextMenuBuilder,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
+                  border: InputBorder.none,
+                  isDense: true,
+                  hintStyle: hintStyle,
+                  hintText: widget.hintText),
+            ),
           ),
         ],
       ),
@@ -855,35 +1056,61 @@ class MessageInputState extends State<MessageInput> {
 
   double get emotePickerHeight =>
       (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 2.5 : 3)) /
-      preferences.appScale;
+      preferences.appScale.value;
 
-  Widget buildEmojiPicker() {
-    return OverflowBox(
-        minHeight: emotePickerHeight,
-        maxHeight: emotePickerHeight,
-        alignment: Alignment.topCenter,
-        child: !hasEmotePickerOpened
-            ? Container()
-            : EmoticonPicker(
-                emoji: widget.availibleEmoticons!,
-                stickers: widget.availibleStickers ?? [],
-                onEmojiPressed: insertEmoticon,
-                packListAxis:
-                    BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
-                allowGifSearch: preferences.tenorGifSearchEnabled,
-                gifComponent: widget.gifComponent,
-                onStickerPressed: (emoticon) {
-                  widget.sendSticker?.call(emoticon);
-                  setState(() {
-                    showEmotePicker = false;
-                  });
-                },
-                onGifPressed: (gif) async {
-                  await widget.sendGif?.call(gif);
-                  setState(() {
-                    showEmotePicker = false;
-                  });
-                }));
+  Widget buildEmojiPicker({bool skipIfNeverOpened = true}) {
+    var recent = widget.client
+        .getComponent<RecentEmoticonComponent>()
+        ?.getRecentTypedEmoticon(widget.room);
+
+    var availableEmoji = widget.availibleEmoticons!.toList();
+
+    if (recent != null && recent.isNotEmpty) {
+      availableEmoji.insert(
+          0,
+          DynamicEmoticonPack(
+              identifier: "dynamic_pack_frequently_used_typing",
+              displayName: "Frequently Used",
+              icon: Icons.schedule,
+              emoticons: recent,
+              usage: EmoticonUsage.all));
+    }
+
+    return (!hasEmotePickerOpened && skipIfNeverOpened)
+        ? Container()
+        : EmoticonPicker(
+            emoji: availableEmoji,
+            emojiSearchFocus: emojiSearchFocus,
+            stickerSearchFocus: stickerSearchFocus,
+            gifSearchFocus: gifSearchFocus,
+            searchDelegate: (search) => AutofillUtils.searchEmoticon(search,
+                    client: widget.client, room: widget.room, limit: 50)
+                .whereType<AutofillSearchResultEmoticon>()
+                .toList(),
+            stickers: widget.availibleStickers ?? [],
+            onEmojiPressed: insertEmoticon,
+            packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
+            allowGifSearch:
+                widget.showGifSearch && preferences.tenorGifSearchEnabled.value,
+            gifComponent: widget.gifComponent,
+            onStickerPressed: (emoticon) {
+              widget.sendSticker?.call(emoticon);
+              setState(() {
+                clearKeyboardOverride(debounce: false);
+              });
+            },
+            onFavoritePicked: (gif) async {
+              await widget.sendFavoriteGif?.call(gif);
+              setState(() {
+                clearKeyboardOverride(debounce: false);
+              });
+            },
+            onGifPressed: (gif) async {
+              await widget.sendGif?.call(gif);
+              setState(() {
+                clearKeyboardOverride(debounce: false);
+              });
+            });
   }
 
   Future<void> handlePickedAttachment(PendingFileAttachment attachment) async {
@@ -940,7 +1167,7 @@ class MessageInputState extends State<MessageInput> {
               await handlePickedAttachment(attachment);
             }
           }),
-      if (PlatformUtils.isAndroid && preferences.developerMode)
+      if (PlatformUtils.isAndroid && preferences.developerMode.value)
         AttachmentPicker(
             icon: Icons.perm_media,
             label: "Media",
@@ -1001,6 +1228,11 @@ class MessageInputState extends State<MessageInput> {
   }
 
   void insertEmoticon(Emoticon emote) {
+    if (widget.room != null) {
+      var recents = widget.client.getComponent<RecentEmoticonComponent>();
+      recents?.typedEmoticon(widget.room!, emote);
+    }
+
     var text = controller.text;
     var selection = controller.selection;
     int start = selection.start;
@@ -1017,12 +1249,12 @@ class MessageInputState extends State<MessageInput> {
     //Add whitespace where necessary
     if (emote.slug.startsWith(":") || emote.slug.endsWith(":")) {
       if (start > 0) {
-        var startChar = text.characters.elementAt(start - 1);
+        var startChar = text[start - 1];
         if (startChar != " ") slug = " $slug";
       }
 
       if (end < text.length) {
-        var endChar = text.characters.elementAt(end);
+        var endChar = text[end];
         if (endChar != " ") slug = "$slug ";
       } else {
         slug = "$slug ";
@@ -1154,6 +1386,21 @@ class MessageInputState extends State<MessageInput> {
       setState(() {
         widget.addAttachment?.call(processedAttachment);
       });
+    }
+  }
+
+  void onPopped(ScopePopped event) {
+    if (event.handled) {
+      return;
+    }
+
+    if (event.currentMobileSide == RevealSide.left) {
+      return;
+    }
+
+    if (showEmotePicker) {
+      clearKeyboardOverride(debounce: false);
+      event.handled = true;
     }
   }
 }

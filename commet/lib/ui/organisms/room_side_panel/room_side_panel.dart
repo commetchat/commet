@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/atoms/keyboard_adaptor.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
@@ -9,11 +11,19 @@ import 'package:commet/ui/organisms/room_pinned_messages/room_pinned_messages_wi
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_mobile.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet_calendar_widget/main.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-enum SidePanelState { defaultView, thread, search, pinnedMessages }
+enum SidePanelState {
+  defaultView,
+  thread,
+  search,
+  pinnedMessages,
+  calendar,
+  nothing
+}
 
 class RoomSidePanel extends StatefulWidget {
   const RoomSidePanel({required this.state, this.builder, super.key});
@@ -30,17 +40,23 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   String? _currentThreadId;
   String? get currentThreadId => _currentThreadId;
 
-  SidePanelState state = SidePanelState.defaultView;
+  late SidePanelState state;
 
   late List<StreamSubscription> subs;
 
   @override
   void initState() {
+    state = preferences.hideRoomSidePanel.value && Layout.desktop
+        ? SidePanelState.nothing
+        : SidePanelState.defaultView;
+
     subs = [
       EventBus.openThread.stream.listen(onOpenThreadSignal),
       EventBus.closeThread.stream.listen(onCloseThreadSignal),
       EventBus.startSearch.stream.listen(onStartSearch),
       EventBus.openPinnedMessages.stream.listen(onShowPinnedMessages),
+      EventBus.openCalendar.stream.listen(onShowCalendar),
+      EventBus.toggleRoomSidePanel.stream.listen(onToggleSidePanel),
     ];
     super.initState();
   }
@@ -56,12 +72,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   @override
   Widget build(BuildContext context) {
-    Widget result = Stack(
-      alignment: Alignment.topRight,
-      children: [
-        buildPanelContent(context),
-      ],
-    );
+    Widget result = buildPanelContent(context);
 
     result = Material(
       color: Colors.transparent,
@@ -89,6 +100,12 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         return buildSearch();
       case SidePanelState.pinnedMessages:
         return buildPinnedMessages();
+      case SidePanelState.calendar:
+        return buildCalendar();
+      case SidePanelState.nothing:
+        return SizedBox(
+          width: 0,
+        );
     }
   }
 
@@ -124,9 +141,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         Flexible(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-            child: SizedBox(
-                width: Layout.desktop ? 200 : null,
-                child: RoomMembersListWidget(widget.state.currentRoom!)),
+            child: RoomMembersListWidget(widget.state.currentRoom!),
           ),
         ),
       ],
@@ -139,35 +154,32 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       caulkClipTopLeft: true,
       caulkClipBottomLeft: true,
       caulkPadBottom: true,
-      child: KeyboardAdaptor(
-        safeAreaTop: false,
-        Column(
-          children: [
-            Flexible(
-              child: Stack(
-                children: [
-                  Chat(
-                    widget.state.currentRoom!,
-                    threadId: currentThreadId,
-                    key: ValueKey(
-                        "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: tiamat.CircleButton(
-                        icon: Icons.close,
-                        radius: 24,
-                        onPressed: () => EventBus.closeThread.add(null),
-                      ),
+      child: Column(
+        children: [
+          Flexible(
+            child: Stack(
+              children: [
+                Chat(
+                  widget.state.currentRoom!,
+                  threadId: currentThreadId,
+                  key: ValueKey(
+                      "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: tiamat.CircleButton(
+                      icon: Icons.close,
+                      radius: 24,
+                      onPressed: () => EventBus.closeThread.add(null),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -207,6 +219,16 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     });
   }
 
+  void onShowCalendar(void event) {
+    setState(() {
+      if (state == SidePanelState.calendar) {
+        state = SidePanelState.defaultView;
+      } else {
+        state = SidePanelState.calendar;
+      }
+    });
+  }
+
   Widget buildPinnedMessages() {
     return SizedBox(
         width: Layout.desktop ? 300 : null,
@@ -229,5 +251,68 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
             ),
           ],
         ));
+  }
+
+  Widget buildCalendar() {
+    var calendar = widget.state.currentRoom?.getComponent<CalendarRoom>();
+    if (calendar?.hasCalendar != true) {
+      return Placeholder();
+    }
+
+    var query = MediaQuery.of(context);
+
+    return tiamat.Tile.low(
+      child: Column(
+        children: [
+          if (Layout.mobile)
+            RoomQuickAccessMenuViewMobile(
+              room: widget.state.currentRoom!,
+              key: ValueKey(
+                  "quick_access_menu_${widget.state.currentRoom!.localId}"),
+            ),
+          if (Layout.mobile)
+            Divider(
+              height: 2,
+            ),
+          Expanded(child: LayoutBuilder(builder: (context, constraints) {
+            var newQuery = query.copyWith(
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+            );
+
+            return Container(
+              color: Theme.of(context).colorScheme.surface,
+              child: ScaledSafeArea(
+                top: false,
+                bottom: true,
+                child: SizedBox(
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    child: MediaQuery(
+                        data: newQuery,
+                        child: CalendarWidgetView(
+                            calendar: calendar!.calendar!,
+                            watermark: false,
+                            useMobileLayout: Layout.mobile,
+                            autoDisposeCalendar: false))),
+              ),
+            );
+          })),
+        ],
+      ),
+    );
+  }
+
+  void onToggleSidePanel(void event) {
+    preferences.hideRoomSidePanel.set(!preferences.hideRoomSidePanel.value);
+
+    if (preferences.hideRoomSidePanel.value) {
+      setState(() {
+        state = SidePanelState.nothing;
+      });
+    } else {
+      setState(() {
+        state = SidePanelState.defaultView;
+      });
+    }
   }
 }

@@ -10,6 +10,8 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
@@ -44,7 +46,8 @@ class AndroidNotifier implements Notifier {
     const initSettings = InitializationSettings(android: settings);
 
     await flutterLocalNotificationsPlugin?.initialize(initSettings,
-        onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
+        onDidReceiveBackgroundNotificationResponse:
+            onBackgroundNotificationResponse,
         onDidReceiveNotificationResponse: onResponse);
 
     if (!isHeadless) {
@@ -55,7 +58,7 @@ class AndroidNotifier implements Notifier {
   static Future<void> onForegroundMessage(Map<String, dynamic> message) async {
     var roomId = message["room_id"] as String?;
     var eventId = message["event_id"] as String?;
-    var counts = message["counts"] as String?;
+    var counts = message["counts"];
 
     if (roomId == null || eventId == null) {
       Log.w("TODO: Handle counts: $counts");
@@ -97,26 +100,28 @@ class AndroidNotifier implements Notifier {
     var room = client.getRoom(roomId);
     var event = await room!.getEvent(eventId);
 
-    var user = await room.fetchMember(event!.senderId);
+    if (event is TimelineEventMessage || event is TimelineEventSticker) {
+      var user = await room.fetchMember(event!.senderId);
 
-    bool isDirectMessage = client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(room) ??
-        false;
+      bool isDirectMessage = client
+              .getComponent<DirectMessagesComponent>()
+              ?.isRoomDirectMessage(room) ??
+          false;
 
-    NotificationManager.notify(MessageNotificationContent(
-        senderName: user.displayName,
-        senderId: user.identifier,
-        roomName: room.displayName,
-        content: event.plainTextBody,
-        eventId: eventId,
-        senderImageId: user.avatarId,
-        roomImageId: room.avatarId,
-        roomId: room.identifier,
-        clientId: client.identifier,
-        senderImage: user.avatar,
-        roomImage: await room.getShortcutImage(),
-        isDirectMessage: isDirectMessage));
+      NotificationManager.notify(MessageNotificationContent(
+          senderName: user.displayName,
+          senderId: user.identifier,
+          roomName: room.displayName,
+          content: event.plainTextBody,
+          eventId: eventId,
+          senderImageId: user.avatarId,
+          roomImageId: room.avatarId,
+          roomId: room.identifier,
+          clientId: client.identifier,
+          senderImage: user.avatar,
+          roomImage: await room.getShortcutImage(),
+          isDirectMessage: isDirectMessage));
+    }
   }
 
   Future<void> checkPermission() async {
@@ -134,6 +139,8 @@ class AndroidNotifier implements Notifier {
         return displayMessageNotification(notification);
       case ErrorNotificationContent _:
         return displayErrorNotification(notification);
+      case CallNotificationContent _:
+        return displayCallNotification(notification);
       case GenericRoomInviteNotificationContent _:
         return displayGenericInviteNotification(notification);
       default:
@@ -229,6 +236,7 @@ class AndroidNotifier implements Notifier {
         groupKey: content.roomId,
         groupAlertBehavior: GroupAlertBehavior.all,
         styleInformation: style,
+        sound: RawResourceAndroidNotificationSound('message'),
         shortcutId: content.roomId,
         silent: content.priority == NotificationPriority.low,
         ticker: content.content,
@@ -240,6 +248,86 @@ class AndroidNotifier implements Notifier {
               )
             : null,
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
+
+    await flutterLocalNotificationsPlugin?.show(
+        id, null, content.content, NotificationDetails(android: details),
+        payload: payload);
+  }
+
+  Future<void> displayCallNotification(CallNotificationContent content) async {
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
+
+    if (room == null) {
+      return;
+    }
+
+    if (room is MatrixBackgroundRoom) {
+      await room.init();
+    }
+
+    if (flutterLocalNotificationsPlugin == null) {
+      Log.i(
+          "Flutter local notifications plugin was null. Something went wrong");
+      return;
+    }
+
+    if (shortcutsManager.loading != null) {
+      await shortcutsManager.loading;
+    }
+
+    Uri? roomAvatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.defaultColor,
+        placeholderText: content.roomName,
+        imageId: content.roomImageId,
+        format: ShortcutIconFormat.png,
+        identifier: room.identifier,
+        imageProvider: await room.getShortcutImage());
+
+    var id = room.identifier.hashCode;
+
+    var payload =
+        OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
+            .toString();
+
+    var details =
+        AndroidNotificationDetails("incoming_calls_channel_1", "Incoming Call",
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: "notification_icon",
+            timeoutAfter: 60000,
+            largeIcon: FilePathAndroidBitmap(roomAvatar.toString()),
+            subText: content.roomName,
+            fullScreenIntent: true,
+            sound: RawResourceAndroidNotificationSound('ringtone_in'),
+            groupKey: content.roomId,
+            actions: [
+              AndroidNotificationAction(
+                  AcceptCallUri(
+                          roomId: content.roomId,
+                          callId: content.callId,
+                          clientId: content.clientId)
+                      .toString(),
+                  "Accept",
+                  showsUserInterface: true,
+                  semanticAction: SemanticAction.call,
+                  titleColor: Colors.green),
+              AndroidNotificationAction(
+                  DeclineCallUri(
+                          roomId: content.roomId,
+                          callId: content.callId,
+                          clientId: content.clientId)
+                      .toString(),
+                  "Decline",
+                  showsUserInterface: true,
+                  semanticAction: SemanticAction.delete,
+                  titleColor: Colors.red)
+            ],
+            groupAlertBehavior: GroupAlertBehavior.all,
+            shortcutId: content.roomId,
+            silent: false,
+            ticker: content.content,
+            color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(
         id, null, content.content, NotificationDetails(android: details),
@@ -260,12 +348,35 @@ class AndroidNotifier implements Notifier {
     return true;
   }
 
-  static void onBackgroundResponse(NotificationResponse details) {
-    Log.i("Got a background notification response: $details");
-  }
-
   static void onResponse(NotificationResponse details) {
-    Log.i("Got a notification response: $details");
+    Log.i(
+        "Got a notification response: $details (${details.actionId}) (${details.data}) (${details.payload})");
+
+    if (details.actionId != null) {
+      var uri = CustomURI.parse(details.actionId!);
+      Log.d("Parsed action uri: $uri");
+      if (uri case AcceptCallUri _) {
+        final session = clientManager?.callManager.currentSessions
+            .where((e) =>
+                e.sessionId == uri.callId &&
+                e.client.identifier == uri.clientId)
+            .firstOrNull;
+
+        session?.acceptCall(withMicrophone: true);
+
+        EventBus.openRoom.add((uri.roomId, uri.clientId));
+      }
+
+      if (uri case DeclineCallUri _) {
+        final session = clientManager?.callManager.currentSessions
+            .where((e) =>
+                e.sessionId == uri.callId &&
+                e.client.identifier == uri.clientId)
+            .firstOrNull;
+
+        session?.declineCall();
+      }
+    }
 
     if (details.payload == null) return;
 

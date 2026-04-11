@@ -4,7 +4,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
@@ -119,26 +118,19 @@ class _UserPanelState extends material.State<UserPanel> {
     return UserPanelView(
       displayName: displayName,
       avatar: avatar,
-      detail: presence.message != null ? presence.message!.message : detail,
+      detail: detail,
       detailStringStyle: style,
       color: color,
       avatarColor: color,
       nameColor: widget.isDirectMessage ? null : color,
       avatarSize: widget.isDirectMessage ? 20 : 15,
-      detailIcon: presence.message != null ? Icons.chat_bubble : null,
-      presenceStatus: presence.status,
+      presence: presence,
       onClicked: widget.onTap ?? onUserPanelClicked,
     );
   }
 
   void onUserPanelClicked() {
-    AdaptiveDialog.show(context,
-        builder: (_) => UserProfile(
-              userId: widget.userId,
-              client: widget.client,
-              dismiss: () => Navigator.pop(context),
-            ),
-        title: "User");
+    UserProfile.show(context, client: widget.client, userId: widget.userId);
   }
 
   void onChanged((String, UserPresence) event) {
@@ -163,8 +155,7 @@ class UserPanelView extends material.StatelessWidget {
       this.shimmer = false,
       this.random = 0,
       this.detailStringStyle,
-      this.detailIcon,
-      this.presenceStatus,
+      this.presence,
       this.avatarSize = 15,
       this.onClicked});
   final ImageProvider? avatar;
@@ -175,11 +166,10 @@ class UserPanelView extends material.StatelessWidget {
   final Color? nameColor;
   final String? detail;
   final EdgeInsets? padding;
-  final UserPresenceStatus? presenceStatus;
+  final UserPresence? presence;
   final bool shimmer;
   final TextStyle? detailStringStyle;
   final double random;
-  final IconData? detailIcon;
   final void Function()? onClicked;
 
   @override
@@ -207,8 +197,8 @@ class UserPanelView extends material.StatelessWidget {
                       placeholderText: shimmer ? " " : displayName,
                       placeholderColor: shimmer ? shimmerColor : avatarColor,
                     ),
-                    if (presenceStatus != null)
-                      createPresenceIcon(context, presenceStatus!),
+                    if (presence?.status != null)
+                      createPresenceIcon(context, presence!.status),
                   ],
                 ),
                 Flexible(
@@ -247,20 +237,39 @@ class UserPanelView extends material.StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          if (detail != null)
+                          if (presence?.message != null)
                             material.Row(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                if (detailIcon != null)
+                                if (presence!.message?.messageType ==
+                                    PresenceMessageType.userCustom)
                                   material.Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 0, 4, 0),
                                     child: Icon(
-                                      detailIcon,
+                                      Icons.chat_bubble,
                                       size: 10,
                                     ),
                                   ),
+                                Flexible(
+                                  child: material.Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                      child: material.Text(
+                                        presence!.message!.message,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: detailStringStyle,
+                                      )),
+                                ),
+                              ],
+                            ),
+                          if (presence?.message == null && detail != null)
+                            material.Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
                                 Flexible(
                                   child: material.Padding(
                                     padding:
@@ -327,7 +336,9 @@ class UserPanelView extends material.StatelessWidget {
       detail!,
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
-      style: detailStringStyle,
+      style: detailStringStyle?.copyWith(
+        fontFamily: "Code",
+      ),
     );
   }
 }

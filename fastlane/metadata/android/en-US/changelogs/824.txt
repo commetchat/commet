@@ -1,0 +1,13 @@
+New Features:
+- Encryption support for Calendar Rooms
+- Add /rainbow command
+- Search + Quick Switcher
+- Remove tracking parameters from links
+- Traditional account switching mode
+- Improved default screenshare quality
+- Added private read receipts / typing indicators
+
+Changes:
+- Improve Room / Home Header
+- Improved rendering of read receipts
+- Moved settings button + Current account display

@@ -98,7 +98,7 @@ class ChatState extends State<Chat> {
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
 
-    gifs = room.getComponent<GifComponent>();
+    gifs = room.client.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
     threadsComponent = room.client.getComponent<ThreadsComponent>();
     receipts = room.getComponent<ReadReceiptComponent>();
@@ -295,7 +295,10 @@ class ChatState extends State<Chat> {
           onFocusMessageInput.add(null);
           break;
         case EventInteractionType.edit:
-          setMessageInputText.add(event.plainTextBody);
+          if (event case TimelineEventMessage m) if (timeline != null) {
+            setMessageInputText.add(m.getPlaintextBody(timeline!));
+          }
+
           onFocusMessageInput.add(null);
           break;
         default:
@@ -323,6 +326,7 @@ class ChatState extends State<Chat> {
 
   Future<void> sendGif(GifSearchResult gif) async {
     await gifs?.sendGif(
+        room,
         gif,
         interactionType == EventInteractionType.reply
             ? interactingEvent
@@ -338,7 +342,7 @@ class ChatState extends State<Chat> {
 
       if (event.senderId != room.client.self!.identifier) continue;
 
-      if (event is TimelineEventMessage) continue;
+      if (!(event is TimelineEventMessage)) continue;
 
       setInteractingEvent(event, type: EventInteractionType.edit);
       break;
@@ -403,5 +407,14 @@ class ChatState extends State<Chat> {
         }
       }
     }
+  }
+
+  Future<void> sendFavoriteGif(FavoriteGif gif) async {
+    await room.client.getComponent<GifComponent>()?.sendFavoriteGif(
+        room,
+        gif,
+        interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null);
   }
 }

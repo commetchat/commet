@@ -3,8 +3,10 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/space_child.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:commet/debug/log.dart';
 
 abstract class Space {
   late Key key = UniqueKey();
@@ -21,7 +23,44 @@ abstract class Space {
 
   List<Room> get rooms;
 
+  List<Room> get roomsWithChildren {
+    var result = List<Room>.from(rooms);
+    List<Space> handledSpaces = List.empty(growable: true);
+
+    for (var space in subspaces) {
+      _addSubspaceRooms(result, space, handledSpaces);
+    }
+
+    return result;
+  }
+
+  void _addSubspaceRooms(
+      List<Room> rooms, Space space, List<Space> handledSpaces) {
+    rooms.addAll(space.rooms);
+    handledSpaces.add(space);
+    for (var subspace in space.subspaces) {
+      if (handledSpaces.contains(subspace)) {
+        var info = "";
+        for (var i in handledSpaces) {
+          info += " -> ${i.displayName}\n";
+        }
+        info += " -> ${subspace.displayName} <- this space is in a loop\n";
+
+        Log.e("Detected recursive space hierarchy, this is not good!\n${info}");
+      } else {
+        if (handledSpaces.contains(subspace) == false) {
+          _addSubspaceRooms(rooms, subspace, handledSpaces);
+        }
+      }
+    }
+  }
+
   List<Space> get subspaces;
+
+  List<SpaceChild> get children;
+
+  Future<void> setChildrenOrder(List<SpaceChild> children,
+      {Function(double?)? onProgressChanged});
 
   bool get isTopLevel;
 
@@ -61,14 +100,16 @@ abstract class Space {
 
   String get localId => "${client.identifier}:$identifier";
 
-  int get notificationCount =>
-      rooms.where((element) => element.pushRule == PushRule.notify).fold(
+  int get notificationCount => roomsWithChildren
+      .where((element) => element.pushRule == PushRule.notify)
+      .fold(
           0,
           (previousValue, element) =>
               previousValue + element.notificationCount);
 
-  int get highlightedNotificationCount =>
-      rooms.where((element) => element.pushRule != PushRule.dontNotify).fold(
+  int get highlightedNotificationCount => roomsWithChildren
+      .where((element) => element.pushRule != PushRule.dontNotify)
+      .fold(
           0,
           (previousValue, element) =>
               previousValue + element.highlightedNotificationCount);
@@ -87,6 +128,12 @@ abstract class Space {
 
   /// Adds an existing room as a child of a space
   Future<void> setSpaceChildRoom(Room room);
+
+  Future<void> setSpaceChildSpace(Space room);
+
+  Future<void> removeChild(SpaceChild child);
+
+  Future<void> setTopic(String topic);
 
   /// Load extra information about the space, that is not necessarily required for functionality
   Future<void> loadExtra();

@@ -1,3 +1,4 @@
+import 'package:commet/client/client.dart' as c;
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/room.dart';
@@ -21,20 +22,23 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
   String? get topic => chunk.topic;
 
   @override
-  late RoomPreviewType type;
+  late c.RoomType type;
 
-  MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient) {
+  MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient,
+      {this.via = const []}) {
     avatar = chunk.avatarUrl != null
         ? MatrixMxcImage(chunk.avatarUrl!, matrixClient,
             doFullres: false, doThumbnail: true)
         : null;
 
     if (chunk.roomType == "m.space") {
-      type = RoomPreviewType.space;
+      type = c.RoomType.space;
     } else {
-      type = RoomPreviewType.room;
+      type = c.RoomType.defaultRoom;
     }
   }
+
+  List<String> via;
 
   @override
   Color get color => MatrixPeer.hashColor(roomId);

@@ -6,7 +6,6 @@ import 'package:commet/utils/emoji/unicode_emoji_data.dart';
 import 'package:commet/utils/emoji/unicode_emoji_data_groups.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fuzzy/fuzzy.dart';
 import 'package:matrix/matrix.dart';
 
 class UnicodeEmojis {
@@ -17,38 +16,47 @@ class UnicodeEmojis {
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_0],
           getLocalisedName: () => "Smileys",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_0",
           icon: Icons.emoji_emotions),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_1],
           getLocalisedName: () => "People",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_1",
           icon: Icons.emoji_people),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_3],
           getLocalisedName: () => "Animals & Nature",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_3",
           icon: Icons.emoji_nature_rounded),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_4],
           getLocalisedName: () => "Food & Drink",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_4",
           icon: Icons.emoji_food_beverage),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_5],
           getLocalisedName: () => "Travel & Places",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_5",
           icon: Icons.emoji_transportation),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_6],
           getLocalisedName: () => "Activities",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_6",
           icon: Icons.emoji_events),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_7],
           getLocalisedName: () => "Objects",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_7",
           icon: Icons.emoji_objects),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_8],
           getLocalisedName: () => "Symbols",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_8",
           icon: Icons.emoji_symbols),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_9],
           getLocalisedName: () => "Flags",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_9",
           icon: Icons.emoji_flags),
     ]);
 
@@ -93,7 +101,7 @@ class UnicodeEmoticonPack implements EmoticonPack {
   String get displayName => getLocalisedName();
 
   @override
-  String get identifier => throw UnimplementedError();
+  String identifier;
 
   @override
   List<Emoticon> get emotes => _emoji!;
@@ -127,6 +135,7 @@ class UnicodeEmoticonPack implements EmoticonPack {
   UnicodeEmoticonPack(
       {required this.getLocalisedName,
       required this.dataPacks,
+      required this.identifier,
       this.icon,
       this.image});
 
@@ -163,21 +172,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
   @override
   List<String> getShortcodes() {
     return emoji.map((e) => e.shortcode!).toList();
-  }
-
-  @override
-  List<Emoticon> search(String searchText, [int limit = -1]) {
-    var fuzzy = Fuzzy<Emoticon>(emoji,
-        options: FuzzyOptions(threshold: 0.4, keys: [
-          WeightedKey(
-              name: "shortcode",
-              getter: (obj) {
-                return obj.shortcode ?? "";
-              },
-              weight: 1)
-        ]));
-
-    return fuzzy.search(searchText, limit).map((e) => e.item).toList();
   }
 
   @override

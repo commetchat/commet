@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:commet/client/components/gif/gif_component.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
-import 'package:commet/ui/molecules/sticker_picker.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
+import 'package:commet/utils/autofill_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -19,16 +22,28 @@ class EmoticonPicker extends StatefulWidget {
     this.onEmojiPressed,
     this.onStickerPressed,
     this.onGifPressed,
+    this.onFavoritePicked,
     this.gifComponent,
+    this.emojiSearchFocus,
+    this.stickerSearchFocus,
+    this.gifSearchFocus,
+    this.searchDelegate,
     this.packListAxis = Axis.vertical,
   });
   final List<EmoticonPack> emoji;
   final List<EmoticonPack> stickers;
   final GifComponent? gifComponent;
+  final FocusNode? emojiSearchFocus;
+  final FocusNode? stickerSearchFocus;
+  final FocusNode? gifSearchFocus;
   final bool allowGifSearch;
   final void Function(Emoticon emoticon)? onEmojiPressed;
   final void Function(Emoticon emoticon)? onStickerPressed;
+
+  final List<AutofillSearchResultEmoticon> Function(String text)?
+      searchDelegate;
   final Future<void> Function(GifSearchResult emoticon)? onGifPressed;
+  final Future<void> Function(FavoriteGif gif)? onFavoritePicked;
   final Axis packListAxis;
 
   @override
@@ -38,7 +53,7 @@ class EmoticonPicker extends StatefulWidget {
 class _EmoticonPickerState extends State<EmoticonPicker>
     with TickerProviderStateMixin {
   late TabController controller;
-
+  PageStorageBucket bucket = PageStorageBucket();
   String get labelEmojiPickerEmojiTab => Intl.message("Emoji",
       desc: "Label for the emoji tab in emoji picker",
       name: "labelEmojiPickerEmojiTab");
@@ -51,58 +66,115 @@ class _EmoticonPickerState extends State<EmoticonPicker>
       desc: "Label for the gif search tab in the emoji picker",
       name: "labelEmojiPickerGifTab");
 
+  List<FavoriteGif> favorites = [];
+  StreamSubscription? sub;
+
   @override
   void initState() {
-    controller = TabController(length: 3, vsync: this);
+    int tabs = 1;
+
+    if (widget.stickers.isNotEmpty) {
+      tabs += 1;
+    }
+
+    if (widget.allowGifSearch) {
+      tabs += 1;
+    }
+
+    controller = TabController(length: tabs, vsync: this);
+
+    favorites = widget.gifComponent?.favorites ?? [];
+
+    sub = widget.gifComponent?.onFavoritesChanged.listen((i) {
+      setState(() {
+        favorites = widget.gifComponent!.favorites;
+      });
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ClipRect(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: TabBarView(controller: controller, children: [
-              Tab(
-                child: EmojiPicker(
-                  widget.emoji,
-                  onlyEmoji: true,
-                  onEmoticonPressed: (emoticon) =>
-                      widget.onEmojiPressed?.call(emoticon),
-                ),
-              ),
-              Tab(
-                child: StickerPicker(
-                  packs: widget.stickers,
-                  stickerPicked: (sticker) =>
-                      widget.onStickerPressed?.call(sticker),
-                ),
-              ),
-              if (widget.allowGifSearch && widget.gifComponent != null)
+      child: PageStorage(
+        bucket: bucket,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: TabBarView(controller: controller, children: [
                 Tab(
-                  child: GifPicker(
-                    search: widget.gifComponent!.search,
-                    placeholderText: widget.gifComponent!.searchPlaceholder,
-                    gifPicked: widget.onGifPressed,
+                  child: EmojiPicker(
+                    widget.emoji,
+                    focus: widget.emojiSearchFocus,
+                    searchDelegate: (value) => widget.searchDelegate!
+                        .call(value)
+                        .where((i) => i.emoticon.isEmoji)
+                        .toList(),
+                    onlyEmoji: true,
+                    onEmoticonPressed: (emoticon) =>
+                        widget.onEmojiPressed?.call(emoticon),
                   ),
-                )
-            ]),
-          ),
-          tiamat.Tile.low(
-            child: SizedBox(
-              height: 40,
-              child: TabBar(controller: controller, tabs: [
-                Tab(
-                  text: labelEmojiPickerEmojiTab,
                 ),
-                Tab(text: labelEmojiPickerStickerTab),
-                if (widget.allowGifSearch) Tab(text: labelEmojiPickerGifTab)
+                if (widget.stickers.isNotEmpty)
+                  Tab(
+                    child: EmojiPicker(
+                      widget.stickers,
+                      focus: widget.stickerSearchFocus,
+                      searchDelegate: (value) => widget.searchDelegate!
+                          .call(value)
+                          .where((i) => i.emoticon.isSticker)
+                          .toList(),
+                      onlyStickers: true,
+                      size: BuildConfig.MOBILE ? 125 : 125,
+                      onEmoticonPressed: (emoticon) =>
+                          widget.onStickerPressed?.call(emoticon),
+                    ),
+                  ),
+                if (widget.allowGifSearch && widget.gifComponent != null)
+                  Tab(
+                    child: GifPicker(
+                      focus: widget.gifSearchFocus,
+                      favorites: widget.gifComponent?.favorites ?? [],
+                      search: widget.gifComponent!.search,
+                      placeholderText: widget.gifComponent!.searchPlaceholder,
+                      favoritePicked: widget.onFavoritePicked,
+                      gifPicked: widget.onGifPressed,
+                      onUnfavoriteGif: (gif) async {
+                        widget.gifComponent?.removeFavorite(gif);
+                      },
+                    ),
+                  )
               ]),
             ),
-          ),
-        ],
+            if (controller.length > 1)
+              tiamat.Tile.low(
+                child: SizedBox(
+                  height: 40,
+                  child: TabBar(
+                      controller: controller,
+                      dividerColor: Colors.transparent,
+                      dividerHeight: 0,
+                      tabs: [
+                        Tab(
+                          text: labelEmojiPickerEmojiTab,
+                        ),
+                        if (widget.stickers.isNotEmpty)
+                          Tab(text: labelEmojiPickerStickerTab),
+                        if (widget.allowGifSearch)
+                          Tab(text: labelEmojiPickerGifTab)
+                      ]),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

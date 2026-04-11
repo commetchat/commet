@@ -29,7 +29,14 @@ class UserPresence {
 abstract class UserPresenceComponent<T extends Client> implements Component<T> {
   Stream<(String, UserPresence)> get onPresenceChanged;
 
+  bool get usePublicReadReceipts;
+  Future<void> setUsePublicReadReceipts(bool value);
+
+  bool get typingIndicatorEnabled;
+  Future<void> setTypingIndicatorEnabled(bool value);
+
   Future<UserPresence> getUserPresence(String userId);
 
-  Future<void> setStatus(UserPresenceStatus status);
+  Future<void> setStatus(UserPresenceStatus status,
+      {String? message, bool clearMessage = false});
 }

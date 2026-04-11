@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/components/component.dart';
-import 'package:commet/client/profile.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -17,10 +17,7 @@ export 'package:commet/client/space.dart';
 export 'package:commet/client/peer.dart';
 export 'package:commet/client/timeline.dart';
 
-enum LoginType {
-  loginPassword,
-  token,
-}
+enum LoginType { loginPassword, token }
 
 class ClientConnectionStatusUpdate {
   ClientConnectionStatus status;
@@ -29,33 +26,71 @@ class ClientConnectionStatusUpdate {
   ClientConnectionStatusUpdate(this.status);
 }
 
-enum ClientConnectionStatus {
-  unknown,
-  connected,
-  connecting,
-  disconnected,
-}
+enum ClientConnectionStatus { unknown, connected, connecting, disconnected }
 
 enum RoomType {
   defaultRoom,
   photoAlbum,
+  space,
   voipRoom,
+  calendar;
+}
+
+extension ToIcon on RoomType {
+  IconData get icon {
+    return switch (this) {
+      RoomType.defaultRoom => Icons.tag,
+      RoomType.photoAlbum => Icons.photo,
+      RoomType.space => Icons.spoke,
+      RoomType.voipRoom => Icons.volume_up,
+      RoomType.calendar => Icons.calendar_month,
+    };
+  }
+}
+
+extension ToString on RoomType {
+  String get string {
+    return switch (this) {
+      RoomType.defaultRoom => "Chat Room",
+      RoomType.photoAlbum => "Photo Album",
+      RoomType.space => "Space",
+      RoomType.voipRoom => "Voice Chat",
+      RoomType.calendar => "Calendar",
+    };
+  }
 }
 
 class CreateRoomArgs {
-  String name;
-  RoomVisibility visibility;
-  bool enableE2EE;
+  String? name;
+  RoomVisibility? visibility;
+  bool? enableE2EE;
   RoomType roomType;
+  String? topic;
 
-  CreateRoomArgs(
-      {required this.name,
-      required this.visibility,
-      required this.enableE2EE,
-      this.roomType = RoomType.defaultRoom});
+  CreateRoomArgs({
+    this.name,
+    this.visibility,
+    this.enableE2EE,
+    this.topic,
+    this.roomType = RoomType.defaultRoom,
+  });
 }
 
-enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }
+abstract class LoginResult {}
+
+class LoginResultSuccess implements LoginResult {}
+
+class LoginResultCancelled implements LoginResult {}
+
+class LoginResultAlreadyLoggedIn implements LoginResult {}
+
+class LoginResultFailed implements LoginResult {}
+
+class LoginResultError implements LoginResult {
+  final String errorMessage;
+
+  LoginResultError(this.errorMessage);
+}
 
 abstract class Client {
   /// Local identifier for this client instance
@@ -107,11 +142,7 @@ abstract class Client {
 
   Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
 
-  Future<
-      (
-        bool,
-        List<LoginFlow>?,
-      )> setHomeserver(Uri uri);
+  Future<(bool, List<LoginFlow>?)> setHomeserver(Uri uri);
 
   Future<LoginResult> executeLoginFlow(LoginFlow flow);
 
@@ -138,10 +169,6 @@ abstract class Client {
   /// Gets a space by ID. only returns spaces which the client is a member of, otherwise null
   Space? getSpace(String identifier);
 
-  /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
-  /// This is so that you can display any given peer without having to load the data for it
-  Future<Profile?> getProfile(String identifier);
-
   /// Create a new room
   Future<Room> createRoom(CreateRoomArgs args);
 
@@ -153,6 +180,8 @@ abstract class Client {
 
   /// Join an existing room by address
   Future<Room> joinRoom(String address);
+
+  Future<Room> joinRoomFromPreview(RoomPreview preview);
 
   /// Leaves a room
   Future<void> leaveRoom(Room room);

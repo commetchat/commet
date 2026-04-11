@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
@@ -98,6 +99,7 @@ class MatrixTimeline extends Timeline {
 
       await f;
     }
+    _loadingStatusChangedController.add(null);
   }
 
   @override
@@ -124,8 +126,13 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.status == TimelineEventStatus.synced) {
-      _matrixTimeline?.setReadMarker();
+    var receipts = room.getComponent<MatrixReadReceiptComponent>();
+    if (event.status == TimelineEventStatus.synced ||
+        event.status == TimelineEventStatus.sent) {
+      await _matrixTimeline?.setReadMarker(
+          public: receipts?.usePublicReadReceiptsForRoom);
+
+      receipts?.handleEvent(event.eventId, room.client.self!.identifier);
     }
   }
 

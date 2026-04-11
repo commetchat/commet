@@ -19,8 +19,11 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.sticker,
       this.thread,
       this.urlPreviews,
+      this.readReceipts,
+      this.onAvatarTapped,
       this.edited = false,
       this.avatarSize = 32,
+      this.avatarBuilder,
       this.showSender = true});
   final String senderName;
   final Color senderColor;
@@ -32,9 +35,12 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? urlPreviews;
   final Widget? thread;
   final Widget? sticker;
+  final Widget? readReceipts;
   final bool showSender;
   final bool edited;
   final String? timestamp;
+  final Function()? onAvatarTapped;
+  final Widget Function(Widget child)? avatarBuilder;
 
   final double avatarSize;
 
@@ -58,7 +64,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (showSender)
                         Row(
@@ -69,17 +75,37 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                               tiamat.Text.labelLow(timestamp!),
                           ],
                         ),
-                      if (formattedContent != null)
-                        RepaintBoundary(child: formattedContent!),
-                      if (edited) tiamat.Text.labelLow(messageEditedMarker),
-                      if (attachments != null) attachments!,
-                      if (sticker != null) sticker!,
-                      if (urlPreviews != null) urlPreviews!,
-                      if (reactions != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                          child: reactions!,
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (formattedContent != null)
+                                  RepaintBoundary(child: formattedContent!),
+                                if (edited)
+                                  tiamat.Text.labelLow(messageEditedMarker),
+                                if (attachments != null) attachments!,
+                                if (sticker != null) sticker!,
+                                if (urlPreviews != null) urlPreviews!,
+                                if (reactions != null)
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                    child: reactions!,
+                                  ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 35,
+                            child: readReceipts,
+                          )
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -92,23 +118,43 @@ class TimelineEventLayoutMessage extends StatelessWidget {
     );
   }
 
-  tiamat.Text name() {
-    return tiamat.Text.name(
-      senderName,
-      color: senderColor,
+  Widget name() {
+    return SelectionContainer.disabled(
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onAvatarTapped,
+          child: tiamat.Text.name(
+            senderName,
+            color: senderColor,
+          ),
+        ),
+      ),
     );
   }
 
-  SizedBox avatar() {
-    return SizedBox(
+  Widget avatar() {
+    Widget result = SizedBox(
       width: avatarSize,
-      child: tiamat.Avatar(
-        radius: avatarSize / 2,
-        image: senderAvatar,
-        placeholderText: senderName,
-        placeholderColor: senderColor,
-        isPadding: showSender == false,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onAvatarTapped,
+          child: tiamat.Avatar(
+            radius: avatarSize / 2,
+            image: senderAvatar,
+            placeholderText: senderName,
+            placeholderColor: senderColor,
+            isPadding: showSender == false,
+          ),
+        ),
       ),
     );
+
+    if (avatarBuilder != null) {
+      result = avatarBuilder!.call(result);
+    }
+
+    return result;
   }
 }

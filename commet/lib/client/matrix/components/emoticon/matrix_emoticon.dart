@@ -54,7 +54,7 @@ class MatrixEmoticon implements Emoticon {
       return false;
     }
 
-    return other.key == other.key;
+    return other.key == this.key;
   }
 
   @override

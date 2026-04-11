@@ -32,7 +32,7 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     final room = timeline.room;
 
-    if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
+    if (room.isE2EE && preferences.urlPreviewInE2EEChat.value == false) {
       Log.i(
           "Not getting url preview because chat is encrypted and its not enabled");
       return null;
@@ -56,6 +56,8 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     if (data != null) {
       cache[uri.toString()] = data;
+    } else {
+      cache[uri.toString()] = UrlPreviewComponent.invalidPreviewData;
     }
 
     return data;
@@ -82,7 +84,7 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
   @override
   bool shouldGetPreviewsInRoom(Room room) {
-    if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
+    if (room.isE2EE && preferences.urlPreviewInE2EEChat.value == false) {
       return false;
     }
 

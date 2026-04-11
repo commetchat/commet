@@ -1,4 +1,6 @@
-class Permissions {
+abstract class Permissions {
+  bool get canChangeRoles => false;
+
   bool get canBan => false;
 
   bool get canKick => false;
@@ -9,12 +11,16 @@ class Permissions {
 
   bool get canEditAvatar => false;
 
+  bool get canEditTopic => false;
+
   bool get canEditAnything =>
       (canEditName || canEditAvatar || canChangeNotificationSettings);
 
   bool get canEditAppearance => (canEditAvatar || canEditName);
 
   bool get canEnableE2EE => false;
+
+  bool get canChangeVisibility => false;
 
   bool get canEditRoomSecurity => canEnableE2EE;
 

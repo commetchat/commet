@@ -43,6 +43,8 @@ class BuildConfig {
 
   static const bool LINUX = PLATFORM == _Constants._linux;
 
+  static const bool IS_FLATPAK = BUILD_DETAIL == "flatpak";
+
   static const bool MAC = PLATFORM == _Constants._macos;
 
   static const bool IOS = PLATFORM == _Constants._ios;
@@ -52,6 +54,14 @@ class BuildConfig {
   static const String app = "Commet";
 
   static const String appSchema = "chat.commet";
+
+  static Uri donationRewardsApiHost = Uri.https("stripe-rewards.commet.chat");
+
+  static const String _BUILD_DATE =
+      String.fromEnvironment('BUILD_DATE', defaultValue: "0");
+
+  static DateTime get BUILD_DATE =>
+      DateTime.fromMillisecondsSinceEpoch(int.parse(_BUILD_DATE));
 
   // IM SO SORRY
   static const String appName = MOBILE

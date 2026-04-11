@@ -5,7 +5,7 @@ class MatrixRole implements Role {
   int powerLevel;
   late int rank;
 
-  MatrixRole(this.powerLevel) {
+  MatrixRole(this.powerLevel, {String? nameOverride, IconData? iconOverride}) {
     if (powerLevel >= 100) {
       name = "Admin";
       rank = 100;
@@ -18,6 +18,14 @@ class MatrixRole implements Role {
       name = "Member";
       icon = Icons.groups;
       rank = 0;
+    }
+
+    if (nameOverride != null) {
+      name = nameOverride;
+    }
+
+    if (iconOverride != null) {
+      icon = iconOverride;
     }
   }
 

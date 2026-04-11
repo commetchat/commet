@@ -3,7 +3,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/url_preview_widget.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventViewUrlPreviews extends StatefulWidget {
@@ -33,6 +33,9 @@ class _TimelineEventViewUrlPreviewsState
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineUrlPreviewBuilt += 1;
+
+    if (data == UrlPreviewComponent.invalidPreviewData) return Container();
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
       child: (loading || data != null)
@@ -40,7 +43,7 @@ class _TimelineEventViewUrlPreviewsState
               key: key,
               data,
               onTap: () {
-                LinkUtils.open(data!.uri);
+                LinkUtils.open(data!.uri, context: context);
               },
             )
           : Container(),

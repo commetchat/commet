@@ -75,7 +75,9 @@ class MatrixBackgroundMember implements Member {
   String get displayName {
     if (event != null) {
       Log.i("Got user data: ${data!.content}");
-      return event!.content["displayname"] as String;
+      if (event!.content["displayname"] is String) {
+        return event!.content["displayname"] as String;
+      }
     }
 
     return identifier;
@@ -84,5 +86,7 @@ class MatrixBackgroundMember implements Member {
   @override
   String get userName => identifier;
 
-  String? get avatarId => event?.content["avatar_url"] as String;
+  String? get avatarId => event?.content.containsKey("avatar_url") == true
+      ? event?.content["avatar_url"] as String?
+      : null;
 }

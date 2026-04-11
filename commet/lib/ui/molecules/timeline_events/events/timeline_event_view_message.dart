@@ -1,5 +1,6 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -11,6 +12,7 @@ import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/client/timeline_events/timeline_event_unknown.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reply.dart';
@@ -19,6 +21,8 @@ import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_t
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
+import 'package:commet/ui/molecules/user_list.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
@@ -35,6 +39,8 @@ class TimelineEventViewMessage extends StatefulWidget {
       this.isThreadTimeline = false,
       this.overrideShowSender = false,
       this.jumpToEvent,
+      this.readReceipts = const [],
+      this.onReadReceiptsTapped,
       this.detailed = false,
       this.previewMedia = false,
       required this.initialIndex});
@@ -44,11 +50,13 @@ class TimelineEventViewMessage extends StatefulWidget {
   final Timeline? timeline;
   final TimelineEvent? initialEvent;
   final Room? room;
+  final List<String> readReceipts;
   final int initialIndex;
   final bool overrideShowSender;
   final bool detailed;
   final bool isThreadTimeline;
   final bool previewMedia;
+  final Function()? onReadReceiptsTapped;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -58,6 +66,7 @@ class TimelineEventViewMessage extends StatefulWidget {
 class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     implements TimelineEventViewWidget {
   late String senderName;
+  late String senderId;
   late Color senderColor;
 
   String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
@@ -84,6 +93,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   ThreadsComponent? threadComponent;
   bool isHeadOfThread = false;
+
+  bool isGif = false;
+  bool isFavoriteGif = false;
 
   int index = 0;
 
@@ -114,6 +126,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   @override
   Widget build(BuildContext context) {
+    var room = widget.room ?? widget.timeline?.room;
     return TimelineEventLayoutMessage(
       senderName: senderName,
       senderColor: senderColor,
@@ -122,10 +135,31 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       formattedContent: formattedContent,
       timestamp: timestampToString(sentTime),
       edited: edited,
+      avatarBuilder: (child) {
+        var room = widget.room ?? widget.timeline?.room;
+
+        if (room != null) {
+          return RoomMemberList.userContextMenu(context,
+              userId: senderId,
+              userDisplayName: senderName,
+              room: room,
+              child: child,
+              isSelf: senderId == room.client.self!.identifier);
+        }
+
+        return child;
+      },
       attachments: attachments != null
           ? TimelineEventViewAttachments(
               attachments: attachments!,
               previewMedia: widget.previewMedia,
+            )
+          : null,
+      readReceipts: room != null
+          ? ReadIndicator(
+              room: room,
+              users: widget.readReceipts,
+              onTap: widget.onReadReceiptsTapped,
             )
           : null,
       sticker: sticker != null
@@ -133,6 +167,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               sticker!,
               stickerName: body,
               previewMedia: widget.previewMedia,
+              isFavoriteGif: isFavoriteGif,
+              markAsFavorite: markGifAsFavorite,
             )
           : null,
       inResponseTo: isInResponse && widget.timeline != null
@@ -163,6 +199,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               timeline: widget.timeline!,
               component: threadComponent!)
           : null,
+      onAvatarTapped: () => UserProfile.show(context,
+          client: widget.timeline!.client, userId: senderId),
     );
   }
 
@@ -194,11 +232,20 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     var sender = room!.getMemberOrFallback(event.senderId);
     eventId = event.eventId;
 
+    senderId = sender.identifier;
     senderName = sender.displayName;
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
 
     sentTime = event.originServerTs;
+
+    var gifs = (widget.room ?? widget.timeline?.room)
+        ?.client
+        .getComponent<GifComponent>();
+
+    isGif = gifs?.isGif(event) == true;
+
+    isFavoriteGif = gifs?.isFavoriteGif(event) == true;
 
     if (widget.timeline != null) {
       if (event is TimelineEventFeatureReactions) {
@@ -292,7 +339,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       }
       var event = widget.timeline!.events[testIndex];
 
-      if (preferences.developerMode) {
+      if (preferences.developerMode.value) {
         prevEvent = event;
         break;
       }
@@ -344,5 +391,31 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
         1) return true;
 
     return thisEvent.senderId != prevEvent.senderId;
+  }
+
+  markGifAsFavorite(bool favorite) async {
+    print(
+      "Marking gif as favorite: $favorite",
+    );
+
+    var gif = (widget.room ?? widget.timeline?.room)
+        ?.client
+        .getComponent<GifComponent>();
+
+    var event = widget.timeline!.events[index];
+    var isGif = gif?.isGif(event) == true;
+    if (!isGif) {
+      return;
+    }
+
+    setState(() {
+      isFavoriteGif = favorite;
+    });
+
+    if (favorite) {
+      await gif!.setFavoriteFromEvent(event);
+    } else {
+      await gif!.removeFavoriteFromEvent(event);
+    }
   }
 }

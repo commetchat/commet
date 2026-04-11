@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
@@ -215,4 +217,14 @@ class TextUtils {
 
     return text;
   }
+
+  static String toHexString(Uint8List bytes) {
+    return bytes.fold<String>(
+        '', (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'));
+  }
+
+  static Uint8List parseHexString(String hexString) => Uint8List.fromList(
+          (RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
+        return int.parse(byte.group(0)!, radix: 16);
+      }).toList());
 }

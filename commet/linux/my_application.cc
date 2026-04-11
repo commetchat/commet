@@ -61,6 +61,7 @@ static gboolean my_application_local_command_line(GApplication* application, gch
   }
 
   g_application_activate(application);
+  
   *exit_status = 0;
 
   return TRUE;

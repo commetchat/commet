@@ -83,6 +83,7 @@ class TextButtonExpander extends StatelessWidget {
     this.avatarRadius = 12,
     this.initiallyExpanded = false,
     this.avatarPlaceholderColor,
+    this.onNameTapped,
     this.avatarPlaceholderText,
     this.enabled = true,
     this.childrenPadding = const EdgeInsets.fromLTRB(8, 0, 0, 0),
@@ -100,6 +101,7 @@ class TextButtonExpander extends StatelessWidget {
   final double avatarRadius;
   final Color? textColor;
   final Color? iconColor;
+  final Function? onNameTapped;
   final String text;
   final bool initiallyExpanded;
   final bool enabled;
@@ -121,51 +123,65 @@ class TextButtonExpander extends StatelessWidget {
           childrenPadding: childrenPadding,
           title:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (icon != null || useAvatar)
-                  Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: avatarRadius * 2,
-                        height: avatarRadius * 2,
-                        child: useAvatar
-                            ? tiamat.Avatar(
-                                radius: avatarRadius,
-                                image: avatar,
-                                placeholderColor: avatarPlaceholderColor,
-                                placeholderText: avatarPlaceholderText,
-                              )
-                            : Icon(
-                                size: iconSize,
-                                icon!,
-                                weight: 0.5,
-                                color: highlighted
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .onSecondaryContainer
-                                    : iconColor ??
-                                        Theme.of(context).colorScheme.onSurface,
-                              ),
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(8),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap:
+                      onNameTapped != null ? () => onNameTapped?.call() : null,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (icon != null || useAvatar)
+                        Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: avatarRadius * 2,
+                              height: avatarRadius * 2,
+                              child: useAvatar
+                                  ? tiamat.Avatar(
+                                      radius: avatarRadius,
+                                      image: avatar,
+                                      placeholderColor: avatarPlaceholderColor,
+                                      placeholderText: avatarPlaceholderText,
+                                    )
+                                  : Icon(
+                                      size: iconSize,
+                                      icon!,
+                                      weight: 0.5,
+                                      color: highlighted
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .onSecondaryContainer
+                                          : iconColor ??
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      Padding(
+                        padding: textPadding,
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: tiamat.Text.labelEmphasised(
+                              text,
+                              color: highlighted
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .onSecondaryContainer
+                                  : textColor,
+                            )),
                       ),
-                    ),
+                    ],
                   ),
-                Padding(
-                  padding: textPadding,
-                  child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: tiamat.Text.labelEmphasised(
-                        text,
-                        color: highlighted
-                            ? Theme.of(context).colorScheme.onSecondaryContainer
-                            : textColor,
-                      )),
                 ),
-              ],
+              ),
             ),
           ]),
         )

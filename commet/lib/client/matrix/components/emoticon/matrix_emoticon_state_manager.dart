@@ -50,9 +50,9 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
 
   @override
   Map<String, dynamic> getAllStates() {
-    var state = getState("personal");
+    var state = getState("im.ponies.user_emotes");
     if (state.isEmpty) return {};
-    return {"personal": state};
+    return {"im.ponies.user_emotes": state};
   }
 
   @override

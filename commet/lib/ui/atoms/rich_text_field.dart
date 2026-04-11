@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/mention.dart';
@@ -18,8 +19,9 @@ import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
 import 'package:matrix/matrix.dart' as matrix;
 
 class RichTextEditingController extends TextEditingController {
-  RichTextEditingController({required this.room, super.text});
-  final Room room;
+  RichTextEditingController({required this.client, this.room, super.text});
+  final Room? room;
+  final Client? client;
 
   @override
   TextSpan buildTextSpan(
@@ -30,17 +32,20 @@ class RichTextEditingController extends TextEditingController {
   }
 
   TextSpan build(String text, BuildContext context) {
-    var emoticons = room.getComponent<MatrixRoomEmoticonComponent>();
-
+    var roomEmoticons = room?.getComponent<MatrixRoomEmoticonComponent>();
+    var clientEmoticons = client?.getComponent<MatrixEmoticonComponent>();
     var doc = md.Document(
         encodeHtml: false,
         extensionSet: md.ExtensionSet.gitHubFlavored,
         inlineSyntaxes: [
           mx_markdown.PillSyntax(),
           mx_markdown.SpoilerSyntax(),
-          if (emoticons != null)
-            mx_markdown.EmoteSyntax(() =>
-                emoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon))
+          if (roomEmoticons != null)
+            mx_markdown.EmoteSyntax(() => roomEmoticons
+                .getEmotePacksFlat(matrix.ImagePackUsage.emoticon)),
+          if (roomEmoticons == null && clientEmoticons != null)
+            mx_markdown.EmoteSyntax(() => clientEmoticons
+                .getEmotePacksFlat(matrix.ImagePackUsage.emoticon))
         ]);
 
     List<md.Node>? parsed;
@@ -150,7 +155,7 @@ class RichTextEditingController extends TextEditingController {
               fontFeatures: const [FontFeature.disable("calt")]);
           break;
         case "img":
-          if (room.client case MatrixClient mx) {
+          if (client case MatrixClient mx) {
             var content = node.attributes["alt"];
             var src = node.attributes["src"] as String;
             var uri = Uri.parse(src);
@@ -179,7 +184,7 @@ class RichTextEditingController extends TextEditingController {
 
               for (var element in node.children!) {
                 if (result.$1 == MatrixLinkType.user) {
-                  var user = room.getMember(mxId);
+                  var user = room?.getMember(mxId);
                   if (user != null) {
                     currentIndex = handleNode(
                         context, currentIndex, text, children, style, element,
@@ -191,17 +196,22 @@ class RichTextEditingController extends TextEditingController {
                     return currentIndex;
                   }
                 } else if (result.$1 == MatrixLinkType.room) {
-                  var taggedRoom = room.client.getRoom(mxId);
+                  var taggedRoom = client?.getRoom(mxId);
+
+                  var vias =
+                      (client as MatrixClient).parseAddressToIdAndVia(href);
 
                   if (taggedRoom != null) {
                     currentIndex = handleNode(
                         context, currentIndex, text, children, style, element,
                         overrideWidget: MentionWidget(
-                            fallbackIcon: preferences.usePlaceholderRoomAvatars
-                                ? null
-                                : taggedRoom.icon,
+                            fallbackIcon:
+                                preferences.usePlaceholderRoomAvatars.value
+                                    ? null
+                                    : taggedRoom.icon,
                             displayName: taggedRoom.displayName,
                             avatar: taggedRoom.avatar,
+                            vias: vias?.$2,
                             style: style,
                             placeholderColor: taggedRoom.defaultColor));
                     return currentIndex;

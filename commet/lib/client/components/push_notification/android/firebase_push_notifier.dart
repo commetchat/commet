@@ -1,16 +1,17 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/service/background_service.dart';
-import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 
 // Manage these to enable / disable firebase
 // import 'package:firebase_core/firebase_core.dart';
@@ -29,8 +30,43 @@ Future<void> onForegroundMessage(dynamic message) async {
 Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   Log.prefix = "fcm-background";
   Log.i("Got background message: ${message.data}");
-  doBackgroundServiceTask(BackgroundServiceTaskNotification(
-      message.data["room_id"], message.data["event_id"]));
+  isHeadless = true;
+
+  final data = message.data;
+
+  Log.i("Client Manager: $clientManager");
+
+  await preferences.init();
+
+  try {
+    var notificationManager = BackgroundNotificationsManager2(null);
+
+    await notificationManager.init();
+
+    if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
+      if (preferences.developerMode.value) {
+        // ignore {"prio": "high"} notifications
+        if (data.length == 1 && data.containsKey("prio")) {
+          return;
+        }
+
+        NotificationManager.notify(ErrorNotificationContent(
+          title: "Unknown Notification Data",
+          content: jsonEncode(data),
+        ));
+      }
+
+      return;
+    }
+
+    notificationManager.handleMessage(data);
+  } catch (e, s) {
+    Log.e("An error occured while processing unified push background message");
+    Log.onError(e, s);
+    NotificationManager.notify(ErrorNotificationContent(
+        title: "An error occurred while processing notifications",
+        content: "${e} \n\n ${s}"));
+  }
 }
 
 class FirebasePushNotifier implements Notifier {
@@ -63,7 +99,7 @@ class FirebasePushNotifier implements Notifier {
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {
       token = event;
       Log.i("Got new token: $token");
-      preferences.setFcmKey(event);
+      preferences.fcmKey.set(event);
       preferences.setPushGateway("push.commet.chat");
     });
 
@@ -85,7 +121,7 @@ class FirebasePushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
-    return preferences.fcmKey;
+    return preferences.fcmKey.value;
   }
 
   @override

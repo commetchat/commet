@@ -4,12 +4,16 @@ import 'dart:typed_data';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_pack.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_import_emoticon_pack_task.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
+
+import 'package:matrix/matrix.dart' as matrix;
 
 /// Manages custom emoticon packs from the matrix user account state
 class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
@@ -313,5 +317,27 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
     await state.setState(packKey, content);
     return content;
+  }
+
+  @override
+  List<EmoticonPack> get availablePacks =>
+      globalPacks() + ownedPacks + UnicodeEmojis.packs!;
+
+  Map<String, Map<String, String>> getEmotePacksFlat(
+      matrix.ImagePackUsage emoticon) {
+    var packs = globalPacks() + ownedPacks;
+
+    var result = <String, Map<String, String>>{};
+
+    for (var pack in packs) {
+      var key = "${pack.displayName}-${pack.hashCode}";
+      result[key] = <String, String>{};
+      for (var emote in pack.emotes) {
+        result[key]![emote.shortcode!] =
+            (emote as MatrixEmoticon).emojiUrl.toString();
+      }
+    }
+
+    return result;
   }
 }

@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/space_child.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/atoms/room_preview_text_button.dart';
 import 'package:commet/ui/atoms/room_text_button.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -11,20 +16,29 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
   const SpaceList(this.space,
-      {this.onRoomSelected, this.isTopLevel = true, super.key});
-  final Function(Room room)? onRoomSelected;
+      {this.onRoomSelected,
+      this.isTopLevel = true,
+      this.currentDepth = 0,
+      this.maxDepth = 5,
+      super.key});
+  final Function(Room room, {bool bypassSpecialRoomType})? onRoomSelected;
 
   final bool isTopLevel;
 
   final Space space;
+
+  final int maxDepth;
+
+  final int currentDepth;
 
   @override
   State<SpaceList> createState() => _SpaceListState();
 }
 
 class _SpaceListState extends State<SpaceList> {
-  late List<Space> subSpaces;
-  late List<Room> rooms;
+  late List<RoomPreview> previews;
+
+  late List<SpaceChild> children;
 
   late List<StreamSubscription> subs;
 
@@ -34,10 +48,16 @@ class _SpaceListState extends State<SpaceList> {
 
   @override
   void initState() {
-    subSpaces = widget.space.subspaces;
-    rooms = widget.space.rooms;
+    children = widget.space.children;
+    previews = widget.space.childPreviews;
 
     subs = [
+      widget.space.onChildRoomPreviewAdded
+          .listen((_) => onPreviewListChanged()),
+      widget.space.onChildRoomPreviewsUpdated
+          .listen((_) => onPreviewListChanged()),
+      widget.space.onChildRoomPreviewRemoved
+          .listen((_) => onPreviewListChanged()),
       EventBus.onSelectedRoomChanged.stream.listen(onRoomSelected),
       widget.space.onUpdate.listen(onSpaceUpdated),
       widget.space.onChildSpaceAdded.listen(onSpaceUpdated),
@@ -51,15 +71,22 @@ class _SpaceListState extends State<SpaceList> {
     super.initState();
   }
 
+  void onPreviewListChanged() {
+    setState(() {
+      previews = widget.space.childPreviews;
+    });
+  }
+
   void onSpaceUpdated(void event) {
     setState(() {
-      subSpaces = widget.space.subspaces;
+      children = widget.space.children;
+      previews = widget.space.childPreviews;
     });
   }
 
   void onRoomUpdated(void event) {
     setState(() {
-      rooms = widget.space.rooms;
+      children = widget.space.children;
     });
   }
 
@@ -82,34 +109,9 @@ class _SpaceListState extends State<SpaceList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (subSpaces.isNotEmpty)
-          Padding(
-              padding: EdgeInsets.fromLTRB(0, widget.isTopLevel ? 12 : 0, 0, 0),
-              child: ImplicitlyAnimatedList(
-                itemData: subSpaces,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(0),
-                initialAnimation: false,
-                itemBuilder: (context, data) {
-                  return tiamat.TextButtonExpander(data.displayName,
-                      initiallyExpanded: true,
-                      childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-                      iconColor: Theme.of(context).colorScheme.secondary,
-                      textColor: Theme.of(context).colorScheme.secondary,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: SpaceList(
-                            data,
-                            isTopLevel: false,
-                            onRoomSelected: widget.onRoomSelected,
-                          ),
-                        )
-                      ]);
-                },
-              )),
-        if (widget.space.rooms.isNotEmpty) roomsList()
+        for (var child in children) buildChild(child),
+        if (preferences.showRoomPreviewsInSpaceSidebar.value)
+          for (var preview in previews) buildPreviewChild(preview),
       ],
     );
   }
@@ -142,5 +144,71 @@ class _SpaceListState extends State<SpaceList> {
         );
       },
     );
+  }
+
+  Widget buildPreviewChild(RoomPreview preview) {
+    return RoomPreviewTextButton(
+      preview,
+      onTap: joinRoomWithConfirmation,
+    );
+  }
+
+  Future<void> joinRoomWithConfirmation(RoomPreview preview) async {
+    if (await AdaptiveDialog.confirmation(context,
+            prompt:
+                "Are you sure you want to join the room '${preview.displayName}' ?") ==
+        true) {
+      Room room = await widget.space.client.joinRoomFromPreview(preview);
+      await widget.onRoomSelected?.call(room);
+      subs.add(room.onUpdate.listen(onRoomUpdated));
+    }
+  }
+
+  Widget buildChild(SpaceChild child) {
+    if (child case SpaceChildSpace _) {
+      if (widget.currentDepth < widget.maxDepth) {
+        return AdaptiveContextMenu(
+          items: [
+            if (widget.space.permissions.canEditChildren)
+              tiamat.ContextMenuItem(
+                icon: Icons.remove_circle,
+                text: "Remove from ${widget.space.displayName}",
+                onPressed: () async {
+                  if (await AdaptiveDialog.confirmation(context) == true) {
+                    widget.space.removeChild(child);
+                  }
+                },
+              )
+          ],
+          child: tiamat.TextButtonExpander(child.child.displayName,
+              initiallyExpanded: true,
+              childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+              iconColor: Theme.of(context).colorScheme.secondary,
+              textColor: Theme.of(context).colorScheme.secondary,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: SpaceList(
+                    child.child,
+                    isTopLevel: false,
+                    currentDepth: widget.currentDepth + 1,
+                    onRoomSelected: widget.onRoomSelected,
+                  ),
+                )
+              ]),
+        );
+      } else {
+        return tiamat.TextButton(widget.space.displayName);
+      }
+    }
+
+    if (child case SpaceChildRoom _)
+      return RoomTextButton(
+        child.child,
+        onTap: widget.onRoomSelected,
+        highlight: selectedRoom == child.child,
+      );
+
+    return Container();
   }
 }

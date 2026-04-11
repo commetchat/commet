@@ -1,10 +1,11 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/config/subplatforms/subplatforms.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart' as m;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:vodozemac/vodozemac.dart' as vod;
+import 'package:intl/intl.dart' as intl;
 
 class SettingsCategoryAbout implements SettingsCategory {
   String get labelSettingsAppLogs => Intl.message("Logs",
@@ -23,16 +25,20 @@ class SettingsCategoryAbout implements SettingsCategory {
       desc:
           "Label for the logs settings page, usually hidden unless developer mode is turned on");
 
+  String get labelSettingsAppInfo => Intl.message("About",
+      name: "labelSettingsAppInfo",
+      desc: "Label for the app info settings page");
+
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: "About",
+            label: labelSettingsAppInfo,
             icon: Icons.info_outline,
             makeScrollable: false,
             pageBuilder: (context) {
               return const _AppInfo();
             }),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           SettingsTab(
             label: labelSettingsAppLogs,
             icon: m.Icons.text_snippet,
@@ -58,7 +64,8 @@ class SettingsCategoryAbout implements SettingsCategory {
                 text: "Source Code",
                 recognizer: TapGestureRecognizer()
                   ..onTap = () => LinkUtils.open(
-                      Uri.parse("https://github.com/commetchat/commet"))),
+                      Uri.parse("https://github.com/commetchat/commet"),
+                      context: context)),
           ),
           const tiamat.Text.label(" · "),
           Text.rich(
@@ -66,8 +73,10 @@ class SettingsCategoryAbout implements SettingsCategory {
                 style: const TextStyle(decoration: TextDecoration.underline),
                 text: "License",
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () => LinkUtils.open(Uri.parse(
-                      "https://github.com/commetchat/commet/blob/main/LICENSE"))),
+                  ..onTap = () => LinkUtils.open(
+                      Uri.parse(
+                          "https://github.com/commetchat/commet/blob/main/LICENSE"),
+                      context: context)),
           ),
           const tiamat.Text.label(" · "),
           Text.rich(
@@ -142,28 +151,31 @@ class _AppInfoState extends State<_AppInfo> {
                           BuildConfig.VERSION_TAG),
                       tiamat.Text.labelLow(
                           "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}"),
+                      tiamat.Text.labelLow("Built: " +
+                          intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
+                              .format(BuildConfig.BUILD_DATE)),
                       if (deviceInfo != null)
                         Row(
+                          spacing: 10,
                           children: [
                             if (deviceInfo!.data["name"] is String)
                               tiamat.Text.labelLow(
                                   deviceInfo!.data["name"]!.toString()),
-                            const SizedBox(
-                              width: 10,
-                            ),
                             if (deviceInfo!.data["version"] is String)
                               tiamat.Text.labelLow(
                                   deviceInfo!.data["version"]!.toString()),
-                            const SizedBox(
-                              width: 10,
-                            ),
                             if (PlatformUtils.isLinux)
-                              tiamat.Text.labelLow(PlatformUtils.displayServer)
+                              tiamat.Text.labelLow(PlatformUtils.displayServer),
+                            if (PlatformUtils.desktopEnvironment != null)
+                              tiamat.Text.labelLow(
+                                  PlatformUtils.desktopEnvironment!)
                           ],
                         ),
-                      if (preferences.developerMode)
+                      if (Subplatforms.subplatform != null)
+                        tiamat.Text.labelLow(Subplatforms.subplatform!.name),
+                      if (preferences.developerMode.value)
                         tiamat.Text.labelLow(getEncryptionInfo()),
-                      if (preferences.developerMode)
+                      if (preferences.developerMode.value)
                         tiamat.Text.labelLow(commandLineArgs.join(" "))
                     ],
                   ),
@@ -214,13 +226,15 @@ Platform: `${BuildConfig.PLATFORM}`
 Version: `${BuildConfig.VERSION_TAG}`
 Git Hash: `${BuildConfig.GIT_HASH}`
 Detail: `${BuildConfig.BUILD_DETAIL}`
-
+Build Timestamp: `${BuildConfig.BUILD_DATE.millisecondsSinceEpoch} (${intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY).format(BuildConfig.BUILD_DATE)})`
 
 **System Info**
 ${deviceInfo?.data["name"] is String ? "Name: `${deviceInfo!.data["name"]}`" : ""}
 ${deviceInfo?.data["version"] is String ? "Version: `${deviceInfo!.data["version"]}`" : ""}
 ${deviceInfo?.data["product"] is String ? "Product: `${deviceInfo!.data["product"]}`" : ""}
 ${PlatformUtils.isLinux ? "Display Server: `${PlatformUtils.displayServer}`" : ""}
+${PlatformUtils.desktopEnvironment != null ? "Desktop Environment: `${PlatformUtils.desktopEnvironment}`" : ""}
+${Subplatforms.subplatform != null ? "Subplatform: `${Subplatforms.subplatform!.name}`" : ""}
 </details>
 """;
 
