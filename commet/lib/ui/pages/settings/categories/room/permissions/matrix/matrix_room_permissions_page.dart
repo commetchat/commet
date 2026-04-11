@@ -51,6 +51,12 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   late List<MatrixRoomPermissionEntry> permissions;
   bool loading = false;
 
+  String get labelMatrixPermissionsRoleOwner => Intl.message(
+        "Owner",
+        name: "labelMatrixPermissionsRoleOwner",
+        desc: "Label for the room owner role",
+      );
+
   String get labelMatrixPermissionsRoleAdmin => Intl.message(
         "Admin",
         name: "labelMatrixPermissionsRoleAdmin",
@@ -236,10 +242,14 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
 
   void initPermissions() {
     bool isCalendarRoom = widget.showCalendarPermissions;
+    var version = int.tryParse(widget.room.roomVersion ?? "1");
 
     roles = [
-      // MatrixRoomRoleEntry(
-      //     name: "Founder", powerlevel: 101, icon: Icons.star_rounded),
+      if (version != null && version >= 12)
+        MatrixRoomRoleEntry(
+            name: labelMatrixPermissionsRoleOwner,
+            powerlevel: 150,
+            icon: Icons.local_police),
       MatrixRoomRoleEntry(
         name: labelMatrixPermissionsRoleAdmin,
         powerlevel: 100,
@@ -250,14 +260,12 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         powerlevel: 50,
         icon: Icons.shield_rounded,
       ),
-
       if (isCalendarRoom)
         MatrixRoomRoleEntry(
           name: "Calendar Moderator",
           powerlevel: 25,
           icon: Icons.edit_calendar,
         ),
-
       MatrixRoomRoleEntry(
         name: labelMatrixPermissionsRoleMember,
         powerlevel: 0,

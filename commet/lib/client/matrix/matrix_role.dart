@@ -6,7 +6,11 @@ class MatrixRole implements Role {
   late int rank;
 
   MatrixRole(this.powerLevel, {String? nameOverride, IconData? iconOverride}) {
-    if (powerLevel >= 100) {
+    if (powerLevel >= 150) {
+      name = "Owner";
+      rank = 150;
+      icon = Icons.local_police;
+    } else if (powerLevel >= 100) {
       name = "Admin";
       rank = 100;
       icon = Icons.security;
