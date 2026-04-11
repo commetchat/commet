@@ -16,6 +16,8 @@ import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
+import 'package:commet/rust/api/simple.dart';
+import 'package:commet/rust/frb_generated.dart';
 import 'package:commet/single_instance.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
@@ -200,6 +202,10 @@ Future<void> initNecessary() async {
   sqfliteFfiInit();
   await preferences.init();
   await initDatabaseServer();
+
+  await RustLib.init();
+
+  Log.i(greet(name: "test"));
 
   fileCache = FileCache.getFileCacheInstance();
 
