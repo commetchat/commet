@@ -100,27 +100,39 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
             description:
                 "When another device or client is active, silence notifications on this device",
           ),
-        if (PlatformUtils.isLinux)
+        if (PlatformUtils.isLinux || PlatformUtils.isWindows)
           Column(
             children: [
-              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
-                BooleanPreferenceToggle(
-                  preference: preferences.enableNotifications,
-                  title: "Show notifications",
-                  description:
-                      "Enable or disable the display of notifications entirely",
-                ),
+              BooleanPreferenceToggle(
+                preference: preferences.enableNotifications,
+                title: "Show notifications",
+                description:
+                    "Enable or disable the display of notifications entirely",
+              ),
               BooleanPreferenceToggle(
                 preference: preferences.suppressNotificationWhenRoomFocused,
                 title: "Hide notifications for current room",
                 description:
                     "When receiving a message, if you have the chat selected and the app is in focus, dont show the notification",
               ),
-              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+              if (PlatformUtils.isLinux)
                 Column(
                   children: [
                     SizedBox(
                       height: 20,
+                    ),
+                    BooleanPreferenceToggle(
+                      preference: preferences.showNotificationBadgesInTaskbar,
+                      title: "Notification Badges",
+                      description:
+                          "Show a badge with the number of unread messages in the system taskbar",
+                      onChanged: (enabled) {
+                        if (enabled) {
+                          NotificationManager.notifier?.enableBadges();
+                        } else {
+                          NotificationManager.notifier?.disableBadges();
+                        }
+                      },
                     ),
                     BooleanPreferenceToggle(
                       preference: preferences.formatNotificationBody,
@@ -158,22 +170,21 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               SizedBox(
                 height: 20,
               ),
-              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
-                DoublePreferenceSlider(
-                  preference: preferences.notificationsVolume,
-                  min: 0,
-                  max: 150,
-                  numDecimals: 0,
-                  units: "%",
-                  title: "Notification volume",
-                  description:
-                      "Controls the volume of notifications and ringtones",
-                  onChanged: (p0) {
-                    Player p = NotificationManager.getSoundPlayer();
-                    p.setVolume(p0);
-                    p.open(Media("asset:///assets/sound/message.ogg"));
-                  },
-                ),
+              DoublePreferenceSlider(
+                preference: preferences.notificationsVolume,
+                min: 0,
+                max: 150,
+                numDecimals: 0,
+                units: "%",
+                title: "Notification volume",
+                description:
+                    "Controls the volume of notifications and ringtones",
+                onChanged: (p0) {
+                  Player p = NotificationManager.getSoundPlayer();
+                  p.setVolume(p0);
+                  p.open(Media("asset:///assets/sound/message.ogg"));
+                },
+              ),
             ],
           ),
       ],
