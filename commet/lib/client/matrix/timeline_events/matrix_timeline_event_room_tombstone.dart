@@ -34,7 +34,7 @@ class MatrixTimelineEventRoomTombstone extends MatrixTimelineEvent
         ? timeline.room.getMemberOrFallback(event.senderId).displayName
         : event.senderId.split(":").first.replaceFirst("@", "");
 
-    if (sender != null && sender.isNotEmpty) {
+    if (sender.isNotEmpty) {
       return messageRoomUpgraded(sender);
     }
 
