@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/event_search/event_search_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_view_single.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -60,7 +61,7 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
                     style: Theme.of(context).textTheme.bodyMedium!,
                     controller: controller,
                     decoration: InputDecoration(
-                        hintText: "Search",
+                        hintText: CommonStrings.promptSearch,
                         prefix: const SizedBox(
                           width: 10,
                         ),

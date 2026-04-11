@@ -33,7 +33,7 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
       "Let other members of a room know when you have read their messages.",
       desc:
           "description for the toggle for enabling and disabling sending read receipts",
-      name: "labelPublicReadReceiptsDescriptionn");
+      name: "labelPublicReadReceiptsDescription");
 
   String get labelTypingIndicatorsToggle => Intl.message("Typing indicator",
       desc:

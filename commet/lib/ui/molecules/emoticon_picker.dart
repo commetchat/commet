@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -20,6 +22,7 @@ class EmoticonPicker extends StatefulWidget {
     this.onEmojiPressed,
     this.onStickerPressed,
     this.onGifPressed,
+    this.onFavoritePicked,
     this.gifComponent,
     this.emojiSearchFocus,
     this.stickerSearchFocus,
@@ -40,6 +43,7 @@ class EmoticonPicker extends StatefulWidget {
   final List<AutofillSearchResultEmoticon> Function(String text)?
       searchDelegate;
   final Future<void> Function(GifSearchResult emoticon)? onGifPressed;
+  final Future<void> Function(FavoriteGif gif)? onFavoritePicked;
   final Axis packListAxis;
 
   @override
@@ -62,6 +66,9 @@ class _EmoticonPickerState extends State<EmoticonPicker>
       desc: "Label for the gif search tab in the emoji picker",
       name: "labelEmojiPickerGifTab");
 
+  List<FavoriteGif> favorites = [];
+  StreamSubscription? sub;
+
   @override
   void initState() {
     int tabs = 1;
@@ -76,7 +83,21 @@ class _EmoticonPickerState extends State<EmoticonPicker>
 
     controller = TabController(length: tabs, vsync: this);
 
+    favorites = widget.gifComponent?.favorites ?? [];
+
+    sub = widget.gifComponent?.onFavoritesChanged.listen((i) {
+      setState(() {
+        favorites = widget.gifComponent!.favorites;
+      });
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -121,9 +142,14 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                   Tab(
                     child: GifPicker(
                       focus: widget.gifSearchFocus,
+                      favorites: widget.gifComponent?.favorites ?? [],
                       search: widget.gifComponent!.search,
                       placeholderText: widget.gifComponent!.searchPlaceholder,
+                      favoritePicked: widget.onFavoritePicked,
                       gifPicked: widget.onGifPressed,
+                      onUnfavoriteGif: (gif) async {
+                        widget.gifComponent?.removeFavorite(gif);
+                      },
                     ),
                   )
               ]),

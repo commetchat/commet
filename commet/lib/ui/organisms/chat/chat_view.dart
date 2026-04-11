@@ -211,6 +211,7 @@ class ChatView extends StatelessWidget {
         availibleStickers: state.emoticons?.availableStickers,
         sendSticker: state.sendSticker,
         sendGif: state.sendGif,
+        sendFavoriteGif: state.sendFavoriteGif,
         findOverrideClient: (input) => state.room.client
             .getComponent<AccountSwitchPrefix>()
             ?.getPrefixedAccount(input, state.room)

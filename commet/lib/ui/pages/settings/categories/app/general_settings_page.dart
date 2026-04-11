@@ -25,11 +25,11 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       desc: "Label for the toggle for enabling and disabling gif search",
       name: "labelGifSearchToggle");
 
-  String labelGifSearchDescription(proxyUrl) => Intl.message(
-      "Enable use of Tenor gif search. Requests will be proxied via $proxyUrl",
+  String labelGifSearchDescriptionGeneric(proxyUrl, serviceName) => Intl.message(
+      "Enable use of $serviceName GIF search. Requests will be proxied via $proxyUrl",
       desc: "Explains that gifs will be fetched via proxy",
-      args: [proxyUrl],
-      name: "labelGifSearchDescription");
+      args: [proxyUrl, serviceName],
+      name: "labelGifSearchDescriptionGeneric");
 
   String get labelUrlPreviewInEncryptedChatTitle => Intl.message(
       "URL Preview in Encrypted Chats",
@@ -117,8 +117,8 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
             BooleanPreferenceToggle(
               preference: preferences.tenorGifSearchEnabled,
               title: labelGifSearchToggle,
-              description:
-                  labelGifSearchDescription(preferences.proxyUrl.value),
+              description: labelGifSearchDescriptionGeneric(
+                  preferences.proxyUrl.value, "KLIPY"),
             ),
             const SizedBox(
               height: 10,

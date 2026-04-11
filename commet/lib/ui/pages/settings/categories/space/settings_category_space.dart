@@ -45,6 +45,18 @@ class SettingsCategorySpace implements SettingsCategory {
       name: "labelSettingsCategorySpace",
       desc: "Label for the overall space settings category");
 
+  String get labelSpaceSettingsSecurity => Intl.message(
+        "Security",
+        name: "labelSpaceSettingsSecurity",
+        desc: "Label for space security settings",
+      );
+
+  String get labelSpaceSettingsMembers => Intl.message(
+        "Members",
+        name: "labelSpaceSettingsMembers",
+        desc: "Label for space member settings",
+      );
+
   @override
   String get title => labelSettingsCategorySpace;
 
@@ -73,7 +85,7 @@ class SettingsCategorySpace implements SettingsCategory {
           }),
       if (space case MatrixSpace s)
         SettingsTab(
-          label: "Security",
+          label: labelSpaceSettingsSecurity,
           icon: Icons.lock,
           makeScrollable: false,
           pageBuilder: (context) {
@@ -111,7 +123,7 @@ class SettingsCategorySpace implements SettingsCategory {
             }),
       if (space case MatrixSpace s)
         SettingsTab(
-          label: "Members",
+          label: labelSpaceSettingsMembers,
           icon: Icons.people,
           makeScrollable: false,
           pageBuilder: (context) {

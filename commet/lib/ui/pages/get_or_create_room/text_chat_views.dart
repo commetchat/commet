@@ -4,16 +4,20 @@ import 'package:commet/ui/atoms/emoji_reaction.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TextChatCreatorDescription extends StatelessWidget {
   const TextChatCreatorDescription({super.key});
 
+  String get labelTextChatDescription => Intl.message(
+      "Simple text chat, with all the features you could want! Send messages, media, stickers, GIFs and more!",
+      name: "labelTextChatDescription");
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      tiamat.Text.labelLow(
-          "Simple text chat, with all the features you could want! Send messages, media, stickers, GIFs and more!"),
+      tiamat.Text.labelLow(labelTextChatDescription),
       SizedBox(
         height: 16,
       ),

@@ -21,6 +21,11 @@ class CommonStrings {
       desc:
           "Generic prompt for settings, usually will open a settings menu or similar");
 
+  static String get promptNext => Intl.message("Next",
+      name: "promptNext",
+      desc:
+          "Generic prompt for going to the next step of an activity or flow, usually on a button");
+
   static String get promptHome => Intl.message("Home",
       name: "promptHome",
       desc:
@@ -30,6 +35,10 @@ class CommonStrings {
       name: "promptAccept",
       desc:
           "Generic prompt to accept something, probably a request of some kind");
+
+  static String get promptDismiss => Intl.message("Dismiss",
+      name: "promptDismiss",
+      desc: "Generic prompt to dismiss something, probably a popup");
 
   static String get promptDecline => Intl.message("Decline",
       name: "promptDecline",
@@ -73,6 +82,16 @@ class CommonStrings {
   static String get promptEnable => Intl.message("Enable",
       name: "promptEnable", desc: "Generic prompt to enable something");
 
+  static String get promptYes => Intl.message("Yes",
+      name: "promptYes",
+      desc:
+          "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ");
+
+  static String get promptNo => Intl.message("No",
+      name: "promptNo",
+      desc:
+          "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ");
+
   static String get promptRestore => Intl.message("Restore",
       name: "promptRestore", desc: "Generic prompt to restore something");
 
@@ -84,8 +103,21 @@ class CommonStrings {
       desc: "Prompt text to go backwards, probably for navigation",
       name: "promptBack");
 
+  static String get promptSearch => Intl.message("Search",
+      desc:
+          "Prompt the user to search for something, usually shown as the hint in a text box",
+      name: "promptSearch");
+
   static String get promptCopy =>
       Intl.message("Copy", desc: "Prompt to copy text", name: "promptCopy");
+
+  static String get promptCancel => Intl.message("Cancel",
+      desc: "Generic prompt to cancel an action, usually shown on a button",
+      name: "promptCancel");
+
+  static String get promptRemove => Intl.message("Remove",
+      desc: "Generic prompt to remove something, usually shown on a button",
+      name: "promptRemove");
 
   static String get labelPublic =>
       Intl.message("Public", desc: "Label for public", name: "labelPublic");
