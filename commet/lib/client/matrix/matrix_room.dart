@@ -884,6 +884,9 @@ class MatrixRoom extends Room {
   }
 
   @override
+  String get lastRead => _matrixRoom.fullyRead;
+
+  @override
   RoomVisibility get visibility {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
