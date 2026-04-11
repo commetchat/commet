@@ -233,6 +233,14 @@ class Preferences {
     return HotKey.fromJson(jsonDecode(item));
   }
 
+  Future<void> setVoipUserVolume(String userId, double volume) async {
+    _preferences!.setDouble("call_user_volume:${userId}", volume);
+  }
+
+  double getVoipUserVolume(String userId) {
+    return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
+  }
+
   BoolPreference shouldFollowSystemTheme =
       BoolPreference("should_follow_system_theme", defaultValue: false);
 
@@ -336,6 +344,9 @@ class Preferences {
 
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
+
+  DoublePreference streamAudioBitrate =
+      DoublePreference("stream_audio_kbps", defaultValue: 96);
 
   DoublePreference streamFramerate =
       DoublePreference("screenshare_fps", defaultValue: 60);
