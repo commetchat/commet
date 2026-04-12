@@ -204,7 +204,7 @@ class MatrixProfile
   @override
   String? get plaintextBio {
     var plainTextBodyCommet = fields[MatrixProfileComponent.bioKey]?["body"];
-    List<Map<String, dynamic>>? content =
+    List<dynamic>? content =
         fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
 
     if (content == null) return plainTextBodyCommet;
