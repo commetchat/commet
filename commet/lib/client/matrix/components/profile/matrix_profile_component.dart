@@ -143,8 +143,8 @@ class MatrixProfile
   Widget buildBio(BuildContext context, ThemeData theme,
       {String? overrideText}) {
     // to be compatible with both the MSC version and commet's own version
-    List<Map<String, dynamic>>? content =
-        fields[MatrixProfileComponent.msc4440BioKey]['m.text'];
+    List<dynamic>? content =
+        fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
     Map<String, dynamic>? commetBioContent =
         fields[MatrixProfileComponent.bioKey];
     if (overrideText != null) {
@@ -168,7 +168,7 @@ class MatrixProfile
         };
       }
     } else if (content is List) {
-      for (final item in content!) {
+      for (final item in content) {
         if (item['mimetype'] == "text/html") {
           htmlPart = item;
         } else if (item['body'] != null) {
@@ -205,9 +205,10 @@ class MatrixProfile
   String? get plaintextBio {
     var plainTextBodyCommet = fields[MatrixProfileComponent.bioKey]?["body"];
     List<Map<String, dynamic>>? content =
-        fields[MatrixProfileComponent.msc4440BioKey]['m.text'];
+        fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
 
-    for (final item in content!) {
+    if (content == null) return plainTextBodyCommet;
+    for (final item in content) {
       if (item['body'] != null && item['mimetype'] == null) {
         return item['body'];
       }
