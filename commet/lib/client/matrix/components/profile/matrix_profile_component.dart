@@ -182,7 +182,7 @@ class MatrixProfile
     if (htmlPart != null) {
       return Material(
         color: Colors.transparent,
-        child: MatrixHtmlParser.parse(htmlPart["body"], client, null),
+        child: MatrixHtmlParser.parse((htmlPart["body"] as String).replaceAll("<br/></blockquote>", "</blockquote>"), client, null),
       );
     }
 
