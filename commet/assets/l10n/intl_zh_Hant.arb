@@ -1,47 +1,47 @@
 {
-    "labelRoomsList": "Místnosti",
+    "labelRoomsList": "房間",
     "@labelRoomsList": {
         "description": "Header label for the list of rooms",
         "type": "text",
         "placeholders": {}
     },
-    "fileDragDropPrompt": "Přetáhněte sem soubor určený k nahrání...",
+    "fileDragDropPrompt": "拖曳檔案來上傳…",
     "@fileDragDropPrompt": {
         "description": "Text that is shown when a user is dragging a file",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeRecentActivity": "Poslední aktivita",
+    "labelHomeRecentActivity": "最近活動",
     "@labelHomeRecentActivity": {
         "description": "Short label for header of recent room activity",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeAlerts": "Upozornění",
+    "labelHomeAlerts": "警告",
     "@labelHomeAlerts": {
         "description": "Short label for header of alerts",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeRoomsList": "Místnosti",
+    "labelHomeRoomsList": "房間",
     "@labelHomeRoomsList": {
         "description": "Short label for header of rooms list",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeInvitations": "Pozvánky",
+    "labelHomeInvitations": "邀請",
     "@labelHomeInvitations": {
         "description": "Short label for header of invitations list",
         "type": "text",
         "placeholders": {}
     },
-    "noPinnedMessages": "Žádné připnuté zprávy!",
+    "noPinnedMessages": "沒有已釘選的訊息！",
     "@noPinnedMessages": {
         "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
         "type": "text",
         "placeholders": {}
     },
-    "labelInvitationsForUser": "Pozvánky pro uživatele {user}",
+    "labelInvitationsForUser": "給 {user} 的邀請",
     "@labelInvitationsForUser": {
         "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
         "type": "text",
@@ -49,171 +49,283 @@
             "user": {}
         }
     },
-    "labelInvitations": "Pozvánky",
+    "labelInvitations": "邀請",
     "@labelInvitations": {
         "description": "Label for the list of incoming invitations",
         "type": "text",
         "placeholders": {}
     },
-    "promptOpenDirectMessage": "Zpráva",
+    "promptOpenDirectMessage": "訊息",
     "@promptOpenDirectMessage": {
         "description": "Prompt on the button to open a direct message with another user",
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPageFileTooLarge": "Tento soubor je příliš velký!",
+    "labelChatPageFileTooLarge": "此檔案大太，無法上傳！",
     "@labelChatPageFileTooLarge": {
         "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPageFileTooLargeTitle": "Soubor je příliš velký",
+    "labelChatPageFileTooLargeTitle": "超出最大檔案大小",
     "@labelChatPageFileTooLargeTitle": {
         "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
         "type": "text",
         "placeholders": {}
     },
-    "sendEncryptedMessagePrompt": "Poslat šifrovanou zprávu",
+    "sendEncryptedMessagePrompt": "發送加密訊息",
     "@sendEncryptedMessagePrompt": {
         "description": "Placeholder text for message input in an encrypted room",
         "type": "text",
         "placeholders": {}
     },
-    "sendUnencryptedMessagePrompt": "Poslat zprávu",
+    "sendUnencryptedMessagePrompt": "發送訊息",
     "@sendUnencryptedMessagePrompt": {
         "description": "Placeholder text for message input in an unencrypted room",
         "type": "text",
         "placeholders": {}
     },
-    "cantSentMessagePrompt": "V této místnosti nemáte oprávnění posílat zprávy",
+    "cantSentMessagePrompt": "您沒有權限在此房間發送訊息",
     "@cantSentMessagePrompt": {
         "description": "Text that explains the user cannot send a message in this room",
         "type": "text",
         "placeholders": {}
     },
-    "tooltipSpaceSettings": "Nastavení prostoru",
+    "tooltipSpaceSettings": "空間設定",
     "@tooltipSpaceSettings": {
         "description": "Tooltip for the button that opens space settings",
         "type": "text",
         "placeholders": {}
     },
-    "tooltipAddRoom": "Přidat místnost",
+    "tooltipAddRoom": "增加房間",
     "@tooltipAddRoom": {
         "description": "Tooltip for the button that adds a new room to a space",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceRoomsList": "Místnosti",
+    "labelSpaceRoomsList": "房間",
     "@labelSpaceRoomsList": {
         "description": "Header label for the list of rooms in a space",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceSubspacesList": "Prostory",
+    "labelSpaceSubspacesList": "空間",
     "@labelSpaceSubspacesList": {
         "description": "Header label for the list of child spaces in a space",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceAvailableRoomsList": "Dostupné místnosti",
+    "labelSpaceAvailableRoomsList": "可用房間",
     "@labelSpaceAvailableRoomsList": {
         "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceVisibilityPublic": "Veřejné prostory",
+    "labelSpaceVisibilityPublic": "公開空間",
     "@labelSpaceVisibilityPublic": {
         "description": "Label to display that the space is publically available",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceVisibilityPrivate": "Soukromé prostory",
+    "labelSpaceVisibilityPrivate": "私人空間",
     "@labelSpaceVisibilityPrivate": {
         "description": "Label to display that the space is private",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceGettingText": "Vítejte v \n\n # {spaceName}",
-    "@labelSpaceGettingText": {
-        "description": "Greeting to the space, supports markdown formatting",
-        "type": "text",
-        "placeholders": {
-            "spaceName": {}
-        }
-    },
-    "promptAddSpace": "Přidat prostor",
+    "promptAddSpace": "增加空間",
     "@promptAddSpace": {
         "description": "Prompt to add a new space",
         "type": "text",
         "placeholders": {}
     },
-    "promptAttachmentProcessingSendOriginal": "Odeslat originál",
+    "promptAttachmentProcessingSendOriginal": "傳送原始檔",
     "@promptAttachmentProcessingSendOriginal": {
         "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
         "type": "text",
         "placeholders": {}
     },
-    "labelImageContainsLocationInfo": "Pozor: Obrázek obsahuje metadata o poloze",
+    "labelImageContainsLocationInfo": "警告：此圖片包含位置資訊",
     "@labelImageContainsLocationInfo": {
         "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
         "type": "text",
         "placeholders": {}
     },
-    "promptRoomName": "Název místnosti",
+    "promptRoomName": "房間名稱",
     "@promptRoomName": {
         "description": "Prompt to enter a room name, placeholder text for text input",
         "type": "text",
         "placeholders": {}
     },
-    "promptSpaceName": "Název prostoru",
+    "promptSpaceName": "空間名稱",
     "@promptSpaceName": {
         "description": "Prompt to enter a space name, placeholder text for text input",
         "type": "text",
         "placeholders": {}
     },
-    "promptTopic": "Téma (volitelné)",
+    "promptTopic": "主題（可選）",
     "@promptTopic": {
         "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
         "type": "text",
         "placeholders": {}
     },
-    "roomVisibilityPrivateExplanation": "Tato místnost bude přístupná pouze na pozvání",
+    "roomVisibilityPrivateExplanation": "此房間僅可通過邀請加入",
     "@roomVisibilityPrivateExplanation": {
         "description": "Explains what 'private' room visibility means",
         "type": "text",
         "placeholders": {}
     },
-    "roomVisibilityPublicExplanation": "Tato místnost bude veřejně přístupná komukoli na internetu",
+    "roomVisibilityPublicExplanation": "此房間將公開給網路上的任何人",
     "@roomVisibilityPublicExplanation": {
         "description": "Explains what 'public' visibility means",
         "type": "text",
         "placeholders": {}
     },
-    "spaceVisibilityPrivateExplanation": "Tento prostor bude přístupný pouze na pozvání",
+    "spaceVisibilityPrivateExplanation": "此空間僅可通過邀請加入",
     "@spaceVisibilityPrivateExplanation": {
         "description": "Explains what 'private' space visibility means",
         "type": "text",
         "placeholders": {}
     },
-    "spaceVisibilityPublicExplanation": "Tento prostor bude veřejně přístupný komukoli na internetu",
+    "spaceVisibilityPublicExplanation": "此空間將公開給網路上的任何人",
     "@spaceVisibilityPublicExplanation": {
         "description": "Explains what 'public' space visibility means",
         "type": "text",
         "placeholders": {}
     },
-    "promptConfirmSpaceJoin": "Připojit se k prostoru!",
+    "labelVisibilityPrivate": "私人",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "公開",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "開啟加密",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "如果開啟，未來將無法關閉加密功能",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "建立房間！",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceCreation": "建立空間！",
+    "@promptConfirmSpaceCreation": {
+        "description": "Label for a button which confirms the creation of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "加入房間！",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceJoin": "加入空間！",
     "@promptConfirmSpaceJoin": {
         "description": "Label for a button which confirms the joining of a space",
         "type": "text",
         "placeholders": {}
     },
-    "promptAddSelectedRooms": "Přidat vybrané místnosti",
+    "promptRoomAddress": "房間地址",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceAddress": "空間地址：",
+    "@promptSpaceAddress": {
+        "description": "Short label to prompt for the input of a space address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#awesome-room",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#awesome-space",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCouldNotLoadRoomPreview": "無法預覽房間內容",
+    "@labelCouldNotLoadRoomPreview": {
+        "description": "Error message for when a room preview was not able to be loaded",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSelectedRooms": "加入選擇的房間",
     "@promptAddSelectedRooms": {
         "description": "Prompt to add the selected rooms to a space",
         "type": "text",
         "placeholders": {}
     },
-    "messageMatrixSessionVerificationRequest": "**{username}** požádal(a) o ověření vaší relace",
+    "promptCreateNewSpace": "新增新空間",
+    "@promptCreateNewSpace": {
+        "description": "Prompt to create a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingSpace": "加入現有空間",
+    "@promptJoinExistingSpace": {
+        "description": "Prompt to join a space which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewRoom": "建立新房間",
+    "@promptCreateNewRoom": {
+        "description": "Prompt to create a new room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingRoom": "加入現有房間",
+    "@promptJoinExistingRoom": {
+        "description": "Prompt to join a room which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingRoom": "使用現有房間",
+    "@promptUseExistingRoom": {
+        "description": "Button text to choose to use an existing room when adding a room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "私訊",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "私訊",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "等待其它裝置接受請求",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** 請求驗證您的連線",
     "@messageMatrixSessionVerificationRequest": {
         "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
         "type": "text",
@@ -221,277 +333,103 @@
             "username": {}
         }
     },
-    "messageLoginError": "Při přihlašování došlo k chybě",
-    "@messageLoginError": {
-        "description": "A generic error message to convey that an error occured when attempting to login",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptConfirmEmojiMatches": "Emotikony se shodují!",
-    "@promptConfirmEmojiMatches": {
-        "description": "Button text to confirm that the emoji matches",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptEmojiDoNotMatch": "Emotikony se neshodují",
-    "@promptEmojiDoNotMatch": {
-        "description": "Button text to confirm that the emoji do NOT match",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixPermissionsRoleAdmin": "Administrátor",
-    "@labelMatrixPermissionsRoleAdmin": {
-        "description": "Label for the room administrator role",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelVisibilityPrivate": "Soukromá",
-    "@labelVisibilityPrivate": {
-        "description": "Short label for room visibility private",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelVisibilityPublic": "Veřejná",
-    "@labelVisibilityPublic": {
-        "description": "Short label for room visibility public",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsWindowBehaviour": "Chování okna",
-    "@labelSettingsWindowBehaviour": {
-        "description": "Label for the Window Behaviour settings page",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixPermissionsRoleMember": "Člen",
-    "@labelMatrixPermissionsRoleMember": {
-        "description": "Label for the room member role",
-        "type": "text",
-        "placeholders": {}
-    },
-    "encryptionCannotBeDisabledExplanation": "Šifrování nelze po zapnutí vypnout",
-    "@encryptionCannotBeDisabledExplanation": {
-        "description": "Explains that encryption cannot be disabled once enabled",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsCategoryApp": "Nastavení aplikace",
-    "@labelSettingsCategoryApp": {
-        "description": "Label for the settings category of the overall App settings/",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMediaPreviewPrivateRoomsToggle": "Soukromé místnosti",
-    "@labelMediaPreviewPrivateRoomsToggle": {
-        "description": "Short label for the private rooms toggle in media previews section",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptConfirmRoomCreation": "Vytvořit místnost!",
-    "@promptConfirmRoomCreation": {
-        "description": "Label for a button which confirms the creation of a room",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelUseRoomAvatarPlaceholdersDescription": "Pokud místnost nemá nastavený avatar nebo je jejich použití zakázáno, použije se jako náhrada náhodná barva + symbol prvního písmene jako obrázek",
-    "@labelUseRoomAvatarPlaceholdersDescription": {
-        "description": "Description for the enable generic icons setting",
-        "type": "text",
-        "placeholders": {}
-    },
-    "editEmoticonDialogTitle": "Upravit emotikon",
-    "@editEmoticonDialogTitle": {
-        "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptConfirmSpaceCreation": "Vytvořit prostor!",
-    "@promptConfirmSpaceCreation": {
-        "description": "Label for a button which confirms the creation of a space",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptConfirmRoomJoin": "Připojit se k místnosti!",
-    "@promptConfirmRoomJoin": {
-        "description": "Label for a button which confirms the joining of a room",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptRoomAddress": "Adresa místnosti",
-    "@promptRoomAddress": {
-        "description": "Short label to prompt for the input of a room address",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptSpaceAddress": "Adresa prostoru:",
-    "@promptSpaceAddress": {
-        "description": "Short label to prompt for the input of a space address",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptJoinExistingSpace": "Připojit se k existujícímu prostoru",
-    "@promptJoinExistingSpace": {
-        "description": "Prompt to join a space which already exists",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelEnableUnifiedPush": "Zapnout UnifiedPush",
-    "@labelEnableUnifiedPush": {
-        "description": "Label for the toggle to enable Unified Push",
-        "type": "text",
-        "placeholders": {}
-    },
-    "placeholderRoomAlias": "#moje-mistnost",
-    "@placeholderRoomAlias": {
-        "description": "Placeholder / Example for a room alias.",
-        "type": "text",
-        "placeholders": {}
-    },
-    "placeholderSpaceAlias": "#muj-prostor",
-    "@placeholderSpaceAlias": {
-        "description": "Placeholder / Example for a space alias.",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelCouldNotLoadRoomPreview": "Nepodařilo se načíst náhled místnosti",
-    "@labelCouldNotLoadRoomPreview": {
-        "description": "Error message for when a room preview was not able to be loaded",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelUnifiedPushNoEndpointFound": "Nenalezen žádný koncový bod, došlo k chybě :(",
-    "@labelUnifiedPushNoEndpointFound": {
-        "description": "Message for when a unified push endpoint could not be registered",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelAppScale": "Měřítko aplikace",
-    "@labelAppScale": {
-        "description": "Label for the setting which controls the UI scale of the overall app",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptCreateNewSpace": "Vytvořit nový prostor",
-    "@promptCreateNewSpace": {
-        "description": "Prompt to create a new space",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsDeveloperModeExplanation": "Zobrazuj extra informace navíc, užitečné pro vývojáře",
-    "@labelSettingsDeveloperModeExplanation": {
-        "description": "Explains what developer mode does",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMessageEffectsDescription": "Zprávy lze odesílat s doplňkovými efekty (např. konfety a další)",
-    "@labelMessageEffectsDescription": {
-        "description": "Label describing what message effects are",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptCreateNewRoom": "Vytvořit novou místnost",
-    "@promptCreateNewRoom": {
-        "description": "Prompt to create a new room",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Umožňuje uživateli změnit viditelnost starších zpráv v této místnosti",
-    "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
-        "description": "describes the permission to change room history settings",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptJoinExistingRoom": "Připojit se k existující místnosti",
-    "@promptJoinExistingRoom": {
-        "description": "Prompt to join a room which already exists",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelStickerCompatibility": "Kompatibilita samolepek",
-    "@labelStickerCompatibility": {
-        "description": "Header for the settings to enable sticker compatibility mode",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptUseExistingRoom": "Použít existující místnost",
-    "@promptUseExistingRoom": {
-        "description": "Button text to choose to use an existing room when adding a room to a space",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messageWaitingOtherDeviceToAccept": "Čekání na potvrzení druhým zařízením",
-    "@messageWaitingOtherDeviceToAccept": {
-        "description": "Message to show while waiting for another device to accept a matrix session verification request",
-        "type": "text",
-        "placeholders": {}
-    },
-    "unifiedPushExplainer": "# Unified Push\nTato verze aplikace Commet byla vytvořena bez služeb Google Play. Abyste mohli přijímat push oznámení, budete muset použít [Unified Push](https://unifiedpush.org/). \n\nPokud již máte nainstalovanou kompatibilní aplikaci s Unified Push, můžete ji nakonfigurovat níže\n",
-    "@unifiedPushExplainer": {
-        "description": "Explains the need for unified push. Supports markdown",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messageSasEmojiVerificationPrompt": "Zkontrolujte, zda jsou emotikony stejné a ve stejném pořadí, jako na druhém zařízení",
+    "messageSasEmojiVerificationPrompt": "檢查表情符號的種類與順序是否與其它裝置上顯示的一致",
     "@messageSasEmojiVerificationPrompt": {
         "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveSpace": "Opustit prostor",
-    "@promptLeaveSpace": {
-        "description": "Text on a button to leave a space",
+    "promptConfirmEmojiMatches": "它們相同！",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPublicRoomsToggle": "Veřejné místnosti",
-    "@labelMediaPreviewPublicRoomsToggle": {
-        "description": "Short label for the private rooms toggle in media previews section",
+    "promptEmojiDoNotMatch": "它們不相同",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsDeveloperMode": "Vývojářský režim",
-    "@labelSettingsDeveloperMode": {
-        "description": "Header for the settings to enable developer mode",
+    "messageVerificationComplete": "驗證完畢！",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsMinimizeOnCloseExplanation": "Místo ukončení se aplikace při zavření minimalizuje do oznamovací oblasti",
-    "@labelSettingsMinimizeOnCloseExplanation": {
-        "description": "Explains what the 'minimize on close' setting does",
+    "setupPageBeforeYouBegin": "在開始之前…",
+    "@setupPageBeforeYouBegin": {
+        "description": "Title for first time setup page",
         "type": "text",
         "placeholders": {}
     },
-    "labelThirdPartyServicesTitle": "Služby třetích stran",
-    "@labelThirdPartyServicesTitle": {
-        "description": "Header for the third party services section in settings",
+    "labelEnableUnifiedPush": "開啟 UnifiedPush",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
         "type": "text",
         "placeholders": {}
     },
-    "labelEnableUnifiedPushEndpoint": "Koncový bod",
+    "labelEnableUnifiedPushEndpoint": "終端",
     "@labelEnableUnifiedPushEndpoint": {
         "description": "Label for the Unified Push endpoint",
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveRoom": "Opustit místnost",
-    "@promptLeaveRoom": {
-        "description": "Text on a button to leave a room",
+    "labelUnifiedPushNoEndpointFound": "未找到終端，出現問題 :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
         "type": "text",
         "placeholders": {}
     },
-    "promptHomeserver": "Domovský server",
+    "promptHomeserver": "主伺服器",
     "@promptHomeserver": {
         "description": "Placeholder text for homeserver field on login form",
         "type": "text",
         "placeholders": {}
     },
-    "promptSubmitLogin": "Přihlásit se",
+    "promptUsername": "使用者名稱",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "密碼",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "登入",
     "@promptSubmitLogin": {
         "description": "Prompt to submit the username and password, and attempt to login",
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveSpaceConfirmation": "Opravdu chcete opustit {spaceName}?",
+    "messageLoginFailed": "登入失敗…",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginError": "發生錯誤",
+    "@messageLoginError": {
+        "description": "A generic error message to convey that an error occured when attempting to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageAlreadyLoggedIn": "您已經在這個裝置上登入了此帳號",
+    "@messageAlreadyLoggedIn": {
+        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpace": "離開空間",
+    "@promptLeaveSpace": {
+        "description": "Text on a button to leave a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpaceConfirmation": "您確定要離開 \"{spaceName}\" 嗎？",
     "@promptLeaveSpaceConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave a space",
         "type": "text",
@@ -499,25 +437,13 @@
             "spaceName": {}
         }
     },
-    "labelPushRuleNotifyAll": "Všechny zprávy",
-    "@labelPushRuleNotifyAll": {
-        "description": "Label for the push rule which notifies for all received messages",
+    "promptLeaveRoom": "離開房間",
+    "@promptLeaveRoom": {
+        "description": "Text on a button to leave a room",
         "type": "text",
         "placeholders": {}
     },
-    "messageAlreadyLoggedIn": "Už jste přihlášen k tomuto účtu",
-    "@messageAlreadyLoggedIn": {
-        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsAppDeveloperUtils": "Nástroje pro vývojáře",
-    "@labelSettingsAppDeveloperUtils": {
-        "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptLeaveRoomConfirmation": "Opravdu chcete opustit {roomName}?",
+    "promptLeaveRoomConfirmation": "您確定要離開 \"{roomName}\" 嗎？",
     "@promptLeaveRoomConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave",
         "type": "text",
@@ -525,887 +451,917 @@
             "roomName": {}
         }
     },
-    "labelRoomSettingsNotifications": "Oznámení",
-    "@labelRoomSettingsNotifications": {
-        "description": "Label for the notifications section in room settings",
-        "type": "text",
-        "placeholders": {}
-    },
-    "notificationSettingsNotSupported": "Push oznámení nejsou v tomto systému podporována",
+    "notificationSettingsNotSupported": "此系統不支援推播通知",
     "@notificationSettingsNotSupported": {
         "description": "Message to display when push notifications are not supported",
         "type": "text",
         "placeholders": {}
     },
-    "createEmoticonDialogTitle": "Vytvořit emotikon",
-    "@createEmoticonDialogTitle": {
-        "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "labelSettingsDeveloperMode": "開發者模式",
+    "@labelSettingsDeveloperMode": {
+        "description": "Header for the settings to enable developer mode",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsSpaceManageChildrenDescription": "Umožňuje uživateli spravovat, které místnosti jsou součástí tohoto prostoru",
-    "@labelMatrixPermissionsSpaceManageChildrenDescription": {
-        "description": "Describes the permission to manage child rooms",
+    "labelSettingsDeveloperModeExplanation": "顯示額外資訊，對開發者有幫助",
+    "@labelSettingsDeveloperModeExplanation": {
+        "description": "Explains what developer mode does",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomAvatarTitle": "Nastavit avatar místnosti",
-    "@labelMatrixPermissionsRoomAvatarTitle": {
-        "description": "Title for the permission to add change the rooms avatar image",
+    "labelStickerCompatibility": "貼圖相容性",
+    "@labelStickerCompatibility": {
+        "description": "Header for the settings to enable sticker compatibility mode",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsStickerCompatibilityExplanation": "V některých Matrix klientech způsobí odeslání samolepky jako 'm.sticker', že se samolepka nenačte správně. Po zapnutí tohoto nastavení se budou samolepky odesílat jako 'm.image', což umožní jejich správné vykreslení",
+    "labelSettingsStickerCompatibilityExplanation": "在某些 matrix 用戶端中，以 'm.sticker' 格式傳送貼圖會導致貼圖無法正確載入。開啟此設定後，貼圖將以 'm.image' 格式傳送，從而可以正確顯示",
     "@labelSettingsStickerCompatibilityExplanation": {
         "description": "Explains what sticker compatibility mode does",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppGeneral": "Obecné",
+    "labelSettingsAppGeneral": "一般",
     "@labelSettingsAppGeneral": {
         "description": "Label for the App General settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppAppearance": "Vzhled",
+    "labelSettingsAppAppearance": "外觀",
     "@labelSettingsAppAppearance": {
         "description": "Label for the App Appearance settings page",
         "type": "text",
         "placeholders": {}
     },
-    "promptImportPack": "Importovat balíček",
-    "@promptImportPack": {
-        "description": "Prompt to import a set of emoticons from an existing pack",
+    "labelSettingsWindowBehaviour": "視窗行為",
+    "@labelSettingsWindowBehaviour": {
+        "description": "Label for the Window Behaviour settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomAvatarDescription": "Změnit obrázek avataru místnosti",
-    "@labelMatrixPermissionsRoomAvatarDescription": {
-        "description": "Title for the permission to add change the rooms avatar image",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsAppAdvanced": "Pokročilé",
+    "labelSettingsAppAdvanced": "進階",
     "@labelSettingsAppAdvanced": {
         "description": "Label for the App Advanced settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomDeleteMessagesTitle": "Mazání zpráv",
-    "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
-        "description": "Title for permission to delete messages",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixPermissionsRoomAddReactionsTitle": "Přidávání reakcí",
-    "@labelMatrixPermissionsRoomAddReactionsTitle": {
-        "description": "Title for the permission to add an emoji reaction to a message",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsAppNotifications": "Oznámení",
+    "labelSettingsAppNotifications": "通知",
     "@labelSettingsAppNotifications": {
         "description": "Label for the App notifications settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelEnableRoomIconsDescription": "Zobrazovat avatary u místností v seznamu",
-    "@labelEnableRoomIconsDescription": {
-        "description": "Description for the enable room icons setting",
+    "labelSettingsAppDeveloperUtils": "開發者工具",
+    "@labelSettingsAppDeveloperUtils": {
+        "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsWindowBehaviourTitle": "Nastavení okna",
+    "labelSettingsCategoryApp": "應用設定",
+    "@labelSettingsCategoryApp": {
+        "description": "Label for the settings category of the overall App settings/",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviourTitle": "視窗行為",
     "@labelSettingsWindowBehaviourTitle": {
         "description": "Header for the window behaviour section of settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomNameTitle": "Změnit název místnosti",
-    "@labelMatrixPermissionsChangeRoomNameTitle": {
-        "description": "Title for the permission to add change the rooms name",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsMinimizeOnCloseToggle": "Minimalizovat při zavření",
+    "labelSettingsMinimizeOnCloseToggle": "最小化關閉",
     "@labelSettingsMinimizeOnCloseToggle": {
         "description": "Label for the toggle to turn on and off minimize on close",
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewSettingsTitle": "Náhledy médií",
-    "@labelMediaPreviewSettingsTitle": {
-        "description": "Header for the settings tile for for media preview toggles",
+    "labelSettingsMinimizeOnCloseExplanation": "關閉視窗後，應用將被最小化而不是退出",
+    "@labelSettingsMinimizeOnCloseExplanation": {
+        "description": "Explains what the 'minimize on close' setting does",
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatTitle": "Zobrazovat náhledy odkazů i v konverzacích se zapnutým šifrováním",
+    "labelThirdPartyServicesTitle": "第三方服務",
+    "@labelThirdPartyServicesTitle": {
+        "description": "Header for the third party services section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchToggle": "Gif 搜尋",
+    "@labelGifSearchToggle": {
+        "description": "Label for the toggle for enabling and disabling gif search",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchDescription": "開啟 Tenor gif 搜尋。請求將通過 {proxyUrl} 進行代理",
+    "@labelGifSearchDescription": {
+        "description": "Explains that gifs will be fetched via proxy",
+        "type": "text",
+        "placeholders": {
+            "proxyUrl": {}
+        }
+    },
+    "labelUrlPreviewInEncryptedChatTitle": "在加密聊天中預覽網址",
     "@labelUrlPreviewInEncryptedChatTitle": {
         "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatDescription": "Tím se odhalí všechny náhledy odkazů odeslané ve vašich šifrovaných chatech vašemu domácímu serveru, aby bylo možné je načíst",
+    "labelUrlPreviewInEncryptedChatDescription": "這將把加密聊天中傳送的任何網址暴露給您的主伺服器，以便獲得預覽",
     "@labelUrlPreviewInEncryptedChatDescription": {
         "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Viditelnost historie",
-    "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
-        "description": "Title for the permission to add change room history settings",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMessageEffectsTitle": "Efekty zpráv",
+    "labelMessageEffectsTitle": "訊息效果",
     "@labelMessageEffectsTitle": {
         "description": "Header for the settings tile for message effects, such as confetti",
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPrivateRoomsToggleDescription": "Zobrazovat náhledy obrázků, videí, samolepek a odkazů v soukromých konverzacích",
+    "labelMessageEffectsDescription": "訊息可以附加額外效果傳送，例如五彩紙屑",
+    "@labelMessageEffectsDescription": {
+        "description": "Label describing what message effects are",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewSettingsTitle": "媒體預覽",
+    "@labelMediaPreviewSettingsTitle": {
+        "description": "Header for the settings tile for for media preview toggles",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggle": "私人房間",
+    "@labelMediaPreviewPrivateRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggleDescription": "切換在私人房間中圖片、影片、貼圖和網址的預覽功能",
     "@labelMediaPreviewPrivateRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for private rooms",
         "type": "text",
         "placeholders": {}
     },
-    "promptWipeMatrixKeys": "Vymazat klíče",
-    "@promptWipeMatrixKeys": {
-        "description": "Text on the button to wipe matrix encryption keys",
+    "labelMediaPreviewPublicRoomsToggle": "公開房間",
+    "@labelMediaPreviewPublicRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPublicRoomsToggleDescription": "Zobrazovat náhledy obrázků, videí, samolepek a odkazů ve veřejných konverzacích",
+    "labelMediaPreviewPublicRoomsToggleDescription": "切換在公開房間中圖片、影片、貼圖及網址的預覽功能",
     "@labelMediaPreviewPublicRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for public rooms",
         "type": "text",
         "placeholders": {}
     },
-    "labelThemeLight": "Světlý motiv",
-    "@labelThemeLight": {
-        "description": "Label for the light theme",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelThemeDark": "Tmavý motiv",
+    "labelThemeDark": "深色外觀",
     "@labelThemeDark": {
         "description": "Label for the dark theme",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomAddReactionsDescription": "Oprávnění reagovat na zprávy pomocí emoji",
-    "@labelMatrixPermissionsRoomAddReactionsDescription": {
-        "description": "describes the permission to add an emoji reaction to a message",
+    "labelThemeLight": "淺色外觀",
+    "@labelThemeLight": {
+        "description": "Label for the light theme",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppTheme": "Motiv aplikace",
+    "labelThemeAmoled": "午夜外觀",
+    "@labelThemeAmoled": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppTheme": "外觀",
     "@labelSettingsAppTheme": {
         "description": "Label for theme section of app appearance",
         "type": "text",
         "placeholders": {}
     },
-    "labelUseRoomAvatars": "Použijte avatary místností",
+    "labelAppScale": "介面縮放",
+    "@labelAppScale": {
+        "description": "Label for the setting which controls the UI scale of the overall app",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatars": "使用房間縮圖",
     "@labelUseRoomAvatars": {
         "description": "Label for enabling using room avatars instead of icons",
         "type": "text",
         "placeholders": {}
     },
-    "labelUseRoomAvatarPlaceholders": "Použijte zástupné avatary",
+    "labelEnableRoomIconsDescription": "顯示房間縮圖而不是圖標",
+    "@labelEnableRoomIconsDescription": {
+        "description": "Description for the enable room icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholders": "使用預設圖標",
     "@labelUseRoomAvatarPlaceholders": {
         "description": "Label for enabling generic icons in the appearance settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppLogs": "Protokoly aplikace",
+    "labelUseRoomAvatarPlaceholdersDescription": "當一個房間沒有設定縮圖，或縮圖功能被關閉時，退回使用通用顏色加首位字母作為圖標",
+    "@labelUseRoomAvatarPlaceholdersDescription": {
+        "description": "Description for the enable generic icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppLogs": "紀錄",
     "@labelSettingsAppLogs": {
         "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
         "type": "text",
         "placeholders": {}
     },
-    "promptEnableEncryptionRoomSettings": "Zapnout šifrování",
-    "@promptEnableEncryptionRoomSettings": {
-        "description": "Short prompt to enable encryption for a room",
+    "labelPushRuleNotifyAll": "所有訊息",
+    "@labelPushRuleNotifyAll": {
+        "description": "Label for the push rule which notifies for all received messages",
         "type": "text",
         "placeholders": {}
     },
-    "labelPushRuleMentionsAndKeywords": "Zmínky a klíčová slova",
+    "labelPushRuleMentionsAndKeywords": "提及和關鍵字",
     "@labelPushRuleMentionsAndKeywords": {
         "description": "Label for the push rule which notifies only for keywords and mentions",
         "type": "text",
         "placeholders": {}
     },
-    "labelPushRuleNone": "Ztlumit",
+    "labelPushRuleNone": "靜音",
     "@labelPushRuleNone": {
         "description": "Label for the push rule which sends no notifications",
         "type": "text",
         "placeholders": {}
     },
-    "promptEmoticonPackName": "Název balíčku emotikonů",
+    "labelRoomSettingsNotifications": "通知",
+    "@labelRoomSettingsNotifications": {
+        "description": "Label for the notifications section in room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptImportPack": "導入表情包",
+    "@promptImportPack": {
+        "description": "Prompt to import a set of emoticons from an existing pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "createEmoticonDialogTitle": "建立表情符號",
+    "@createEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "editEmoticonDialogTitle": "編輯表情符號",
+    "@editEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoticonPackName": "表情包名稱",
     "@promptEmoticonPackName": {
         "description": "Prompt for the input of the name of an emoticon pack",
         "type": "text",
         "placeholders": {}
     },
-    "promptEmoteName": "Název emotikonu",
+    "promptEmoteName": "表情符號名稱",
     "@promptEmoteName": {
         "description": "Prompt for the input of the name of an emoji",
         "type": "text",
         "placeholders": {}
     },
-    "promptConfirmSaveEmoticon": "Uložit!",
+    "promptConfirmSaveEmoticon": "儲存！",
     "@promptConfirmSaveEmoticon": {
         "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
         "type": "text",
         "placeholders": {}
     },
-    "encryptionCannotBeDisabledExplanationRoomSettings": "Pokud je tato funkce povolena, nelze šifrování později deaktivovat",
+    "promptEnableEncryptionRoomSettings": "開啟加密",
+    "@promptEnableEncryptionRoomSettings": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanationRoomSettings": "如果開啟，未來將無法關閉加密功能",
     "@encryptionCannotBeDisabledExplanationRoomSettings": {
         "description": "Explains that encryption cannot be disabled once enabled",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoleModerator": "Moderátor",
+    "labelMatrixPermissionsRoleAdmin": "房間管理員",
+    "@labelMatrixPermissionsRoleAdmin": {
+        "description": "Label for the room administrator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleModerator": "房間版主",
     "@labelMatrixPermissionsRoleModerator": {
         "description": "Label for the room moderator role",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsSpaceManageChildrenTitle": "Správa podprostorů",
+    "labelMatrixPermissionsRoleMember": "房間成員",
+    "@labelMatrixPermissionsRoleMember": {
+        "description": "Label for the room member role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenTitle": "管理子房間",
     "@labelMatrixPermissionsSpaceManageChildrenTitle": {
         "description": "Title for permission to manage children",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Oprávnění mazat zprávy ostatních uživatelů",
+    "labelMatrixPermissionsSpaceManageChildrenDescription": "允許使用者管理空間中的子房間",
+    "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+        "description": "Describes the permission to manage child rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesTitle": "刪除訊息",
+    "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+        "description": "Title for permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesDescription": "允許使用者刪除其他人傳送的訊息",
     "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
         "description": "Describes the permission to delete messages",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomSendMessagesTitle": "Odesílání zpráv",
+    "labelMatrixPermissionsRoomSendMessagesTitle": "傳送訊息",
     "@labelMatrixPermissionsRoomSendMessagesTitle": {
         "description": "Title for the permission to send messages",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomSendMessagesDescription": "Oprávnění posílat zprávy do této místnosti",
+    "labelMatrixPermissionsRoomSendMessagesDescription": "允許使用者在此房間傳送訊息",
     "@labelMatrixPermissionsRoomSendMessagesDescription": {
         "description": "Describes the permission to send messages",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomNameDescription": "Oprávnění přejmenovat místnost",
+    "labelMatrixPermissionsRoomAddReactionsTitle": "新增表符反應",
+    "@labelMatrixPermissionsRoomAddReactionsTitle": {
+        "description": "Title for the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsDescription": "加入表符反應",
+    "@labelMatrixPermissionsRoomAddReactionsDescription": {
+        "description": "describes the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityTitle": "讀取訊息歷史",
+    "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+        "description": "Title for the permission to add change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityDescription": "允許使用者調整是否可以讀取訊息歷史",
+    "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+        "description": "describes the permission to change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarTitle": "設定房間縮圖",
+    "@labelMatrixPermissionsRoomAvatarTitle": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarDescription": "更改房間縮圖",
+    "@labelMatrixPermissionsRoomAvatarDescription": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameTitle": "更改房間名稱",
+    "@labelMatrixPermissionsChangeRoomNameTitle": {
+        "description": "Title for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameDescription": "允許使用者更改此房間的名稱",
     "@labelMatrixPermissionsChangeRoomNameDescription": {
         "description": "Description for the permission to add change the rooms name",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomTopicTitle": "Změnit téma místnosti",
+    "labelMatrixPermissionsChangeRoomTopicTitle": "更改房間主題",
     "@labelMatrixPermissionsChangeRoomTopicTitle": {
         "description": "Title for the permission to add change the rooms topic",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomTopicDescription": "Oprávnění změnit téma místnosti",
+    "labelMatrixPermissionsChangeRoomTopicDescription": "允許使用者更改此房間的主題",
     "@labelMatrixPermissionsChangeRoomTopicDescription": {
         "description": "Description for the permission to add change the rooms topic",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomPermissionsTitle": "Správa oprávnění",
+    "labelMatrixPermissionsChangeRoomPermissionsTitle": "更改權限",
     "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
         "description": "Title for the permission to change permissions of the room",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Oprávnění měnit nastavení přístupů a rolí",
+    "labelMatrixPermissionsChangeRoomPermissionsDescription": "允許使用者更改權限設定",
     "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
         "description": "Description for the permission to change permissions of the room",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsKickUserTitle": "Vykopnutí uživatele",
+    "labelMatrixPermissionsKickUserTitle": "踢出使用者",
     "@labelMatrixPermissionsKickUserTitle": {
         "description": "Title for the permission to kick other users out of the room",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsCategory": "Nastavení místnosti",
-    "@labelRoomSettingsCategory": {
-        "description": "Label for the overall settings category of a room",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixMessageBackupExplanation": "Udržuje zálohu historie vašich zpráv pro případ, že ztratíte přístup ke všem svým relacím. Zprávy budou před nahráním zašifrovány",
-    "@labelMatrixMessageBackupExplanation": {
-        "description": "Explains what matrix message backup does",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixPermissionsKickUserDescription": "Oprávnění vyhodit uživatele z místnosti",
+    "labelMatrixPermissionsKickUserDescription": "將其他使用者踢出房間",
     "@labelMatrixPermissionsKickUserDescription": {
         "description": "Description for the permission to kick other users out of the room",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsBanUserTitle": "Oprávnění zabanovat uživatele",
+    "labelMatrixPermissionsBanUserTitle": "停權使用者",
     "@labelMatrixPermissionsBanUserTitle": {
         "description": "Title for the permission to ban other users from the room",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsBanUserDescription": "Zakázat ostatním uživatelům přístup do místnosti",
+    "labelMatrixPermissionsBanUserDescription": "將其他使用者從此房間停權",
     "@labelMatrixPermissionsBanUserDescription": {
         "description": "Description for the permission to ban other users from the room",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsGeneral": "Obecné",
+    "labelRoomSettingsGeneral": "一般",
     "@labelRoomSettingsGeneral": {
         "description": "Label for general room settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsAppearance": "Vzhled",
+    "labelRoomSettingsAppearance": "外觀",
     "@labelRoomSettingsAppearance": {
         "description": "Label for room appearance settings",
         "type": "text",
         "placeholders": {}
     },
-    "promptSetupMatrixMessageBackup": "Nastavit zálohu zpráv",
-    "@promptSetupMatrixMessageBackup": {
-        "description": "Text on the button to begin the setup process for message backup",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelRoomSettingsSecurity": "Zabezpečení",
+    "labelRoomSettingsSecurity": "安全性",
     "@labelRoomSettingsSecurity": {
         "description": "Label for room security settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsEmoticons": "Emotikony",
+    "labelRoomSettingsEmoticons": "表情符號",
     "@labelRoomSettingsEmoticons": {
         "description": "Label for room Emoticon settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsDeveloper": "Pro vývojáře",
+    "labelRoomSettingsDeveloper": "開發者",
     "@labelRoomSettingsDeveloper": {
         "description": "Label for room developer settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsPermissions": "Oprávnění",
+    "labelRoomSettingsCategory": "房間設定",
+    "@labelRoomSettingsCategory": {
+        "description": "Label for the overall settings category of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsPermissions": "權限",
     "@labelRoomSettingsPermissions": {
         "description": "Label for room permission settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceSettingsGeneral": "Obecné",
+    "labelSpaceSettingsGeneral": "一般",
     "@labelSpaceSettingsGeneral": {
         "description": "Label for general space settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceAppearanceSettings": "Vzhled",
+    "labelSpaceAppearanceSettings": "外觀",
     "@labelSpaceAppearanceSettings": {
         "description": "Label for space appearance settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelRestoreMatrixBackupTitle": "Obnovit zálohu",
-    "@labelRestoreMatrixBackupTitle": {
-        "description": "Title of the popup dialog for restoring message backup",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSpaceEmoticonSettings": "Emotikony",
+    "labelSpaceEmoticonSettings": "表情符號",
     "@labelSpaceEmoticonSettings": {
         "description": "Label for space emoticon settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpacePermissionSettings": "Oprávnění",
+    "labelSpacePermissionSettings": "權限",
     "@labelSpacePermissionSettings": {
         "description": "Label for space permission settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceDeveloperSettings": "Pro vývojáře",
+    "labelSpaceDeveloperSettings": "開發者",
     "@labelSpaceDeveloperSettings": {
         "description": "Label for space developer settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsCategorySpace": "Nastavení prostoru",
+    "labelSettingsCategorySpace": "空間設定",
     "@labelSettingsCategorySpace": {
         "description": "Label for the overall space settings category",
         "type": "text",
         "placeholders": {}
     },
-    "promptEnableEncryption": "Zapnout šifrování",
-    "@promptEnableEncryption": {
-        "description": "Short prompt to enable encryption for a room",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptMatrixVerifySession": "Ověřit relaci",
+    "promptMatrixVerifySession": "驗證",
     "@promptMatrixVerifySession": {
         "description": "Text on the button to verify a session",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigning": "Vzájemné podepisování",
+    "labelMatrixCrossSigning": "交叉驗證",
     "@labelMatrixCrossSigning": {
         "description": "Title label for matrix cross signing",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigningAndBackup": "Vzájemné podepisování a záloha",
+    "labelMatrixCrossSigningAndBackup": "交叉驗證及備份",
     "@labelMatrixCrossSigningAndBackup": {
         "description": "Header label for matrix cross signing and message backup section",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixAccountSessions": "Relace účtu",
+    "labelMatrixAccountSessions": "連線",
     "@labelMatrixAccountSessions": {
         "description": "Title label for account sessions",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixResetCrossSigningTitle": "Resetovat vzájemné podepisování",
-    "@labelMatrixResetCrossSigningTitle": {
-        "description": "Title for the popup dialog when resetting cross signing",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptAbortWipingMatrixKeys": "Přerušit mazání klíčů!",
-    "@promptAbortWipingMatrixKeys": {
-        "description": "Text on the button which aborts wiping matrix encryption keys",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixCrossSigningExplanation": "Vzájemné podepisování umožní ověřit všechna vaše zařízení najednou",
+    "labelMatrixCrossSigningExplanation": "設定以驗證及檢查您的所有連線裝置",
     "@labelMatrixCrossSigningExplanation": {
         "description": "Explains what matrix cross signing does",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackup": "Záloha zpráv",
+    "labelMatrixResetCrossSigningTitle": "重設交叉驗證",
+    "@labelMatrixResetCrossSigningTitle": {
+        "description": "Title for the popup dialog when resetting cross signing",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixMessageBackup": "訊息備份",
     "@labelMatrixMessageBackup": {
         "description": "TItle label for matrix message backup settings",
         "type": "text",
         "placeholders": {}
     },
-    "promptGenerateMatrixRecoveryKey": "Generovat obnovovací klíč",
+    "labelMatrixMessageBackupExplanation": "保留您的訊息歷史以防您失去所有連線裝置。您的訊息在上傳前將被加密",
+    "@labelMatrixMessageBackupExplanation": {
+        "description": "Explains what matrix message backup does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSetupMatrixMessageBackup": "設定備份",
+    "@promptSetupMatrixMessageBackup": {
+        "description": "Text on the button to begin the setup process for message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRestoreMatrixBackupTitle": "還原備份",
+    "@labelRestoreMatrixBackupTitle": {
+        "description": "Title of the popup dialog for restoring message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptWipeMatrixKeys": "清除加密金鑰",
+    "@promptWipeMatrixKeys": {
+        "description": "Text on the button to wipe matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAbortWipingMatrixKeys": "等等，不！",
+    "@promptAbortWipingMatrixKeys": {
+        "description": "Text on the button which aborts wiping matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptGenerateMatrixRecoveryKey": "生成加密金鑰",
     "@promptGenerateMatrixRecoveryKey": {
         "description": "Button text to generate a recovery key",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixRecoveryKeyCreateExplanation": "Musíme nastavit bezpečnostní klíč, který lze použít pro přístup k historii zpráv. Můžeme vygenerovat klíč, nebo si můžete vybrat vlastní bezpečnostní frázi",
+    "labelSpaceGettingText": "歡迎來到 \n\n # {spaceName}",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "unifiedPushExplainer": "# UnifiedPush\n此版本的 Commet 是在沒有 Google Play 服務的情況下建立的。為了接收推播通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。\n\n如果您已經安裝了相容於 Unified Push 的應用程式，可以在下面進行設置\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixRecoveryKeyCreateExplanation": "我們需要設定一個安全金鑰，用於讀取訊息歷史。我們可以為您生成一個金鑰，或者您可以選擇自己的安全短語",
     "@labelMatrixRecoveryKeyCreateExplanation": {
         "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
         "type": "text",
         "placeholders": {}
     },
-    "promptEdit": "Upravit",
-    "@promptEdit": {
-        "description": "Generic prompt to edit something",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptCopy": "Kopírovat",
-    "@promptCopy": {
-        "description": "Prompt to copy text",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptSetMatrixPassphrase": "Nastavit bezpečnostní frázi",
+    "promptSetMatrixPassphrase": "設定短語",
     "@promptSetMatrixPassphrase": {
         "description": "Button text to set a passphrase",
         "type": "text",
         "placeholders": {}
     },
-    "promptUseExistingMatrixKeys": "Použít existující klíče",
+    "promptUseExistingMatrixKeys": "使用現成金鑰",
     "@promptUseExistingMatrixKeys": {
         "description": "Button text to opt to use existing keys",
         "type": "text",
         "placeholders": {}
     },
-    "errorMatrixPassphraseMustContainUpperAndLowercase": "Fráze musí obsahovat alespoň 1 velké a 1 malé písmeno",
-    "@errorMatrixPassphraseMustContainUpperAndLowercase": {
-        "description": "Explains constraints of recovery passphrase",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptReject": "Odmítnout",
-    "@promptReject": {
-        "description": "Generic prompt to reject something, probably a request of some kind",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptCreateNewMatrixKeys": "Vytvořit nové klíče",
+    "promptCreateNewMatrixKeys": "不，建立新金鑰",
     "@promptCreateNewMatrixKeys": {
         "description": "Button text to opt to create new keys",
         "type": "text",
         "placeholders": {}
     },
-    "promptReplayMessageEffect": "Zopakovat efekt zprávy",
-    "@promptReplayMessageEffect": {
-        "description": "If a message was sent with an effect, this prompts to replay the effect",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelInvitationBodyWithSender": "{user} vás pozval(a) do místnosti",
-    "@labelInvitationBodyWithSender": {
-        "description": "Message body for when an invitation was received, and we have a name for the sender",
-        "type": "text",
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "promptWipeMatrixBackup": "Vymazat zálohu",
+    "promptWipeMatrixBackup": "清除備份",
     "@promptWipeMatrixBackup": {
         "description": "Button text to wipe the matrix message backup",
         "type": "text",
         "placeholders": {}
     },
-    "promptSettings": "Nastavení",
-    "@promptSettings": {
-        "description": "Generic prompt for settings, usually will open a settings menu or similar",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptEnableMatrixBackup": "Zapnout zálohu",
+    "promptEnableMatrixBackup": "開啟備份",
     "@promptEnableMatrixBackup": {
         "description": "Button text to enable to encrypted message backup",
         "type": "text",
         "placeholders": {}
     },
-    "promptReplyInThread": "Odpovědět ve vlákně",
-    "@promptReplyInThread": {
-        "description": "Label for the menu option to reply to a message inside a thread",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDownload": "Stáhnout",
-    "@promptDownload": {
-        "description": "Generic prompt to download something",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelExistingMatrixKeysFound": "Nalezeny existující klíče!",
+    "labelExistingMatrixKeysFound": "已找到現成簽名金鑰！",
     "@labelExistingMatrixKeysFound": {
         "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
         "type": "text",
         "placeholders": {}
     },
-    "erroMatrixPassphraseMustBeLonger": "Fráze musí mít minimálně 10 znaků",
-    "@erroMatrixPassphraseMustBeLonger": {
-        "description": "Explains constraints of recovery passphrase",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelAskUseExistingMatrixKeys": "Chcete použít své stávající šifrovací klíče?",
+    "labelAskUseExistingMatrixKeys": "您想使用現成金鑰嗎？",
     "@labelAskUseExistingMatrixKeys": {
         "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsTabProfile": "Profil",
-    "@labelSettingsTabProfile": {
-        "description": "Label for the Profile settings page",
-        "type": "text",
-        "placeholders": {}
-    },
-    "directMessagesListHeaderMobile": "Přímé zprávy",
-    "@directMessagesListHeaderMobile": {
-        "description": "The header for the direct messages list on desktop",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixRecoveryKeyExplanation": "Toto je váš obnovovací klíč. Můžete jej použít k ověření relace, pokud ztratíte přístup ke všem ostatním relacím. Uložte si jej na bezpečném místě!",
+    "labelMatrixRecoveryKeyExplanation": "這是您的回復金鑰。如果您失去所有連線裝置，可以用它來驗證您的連線。請將其保存在安全的地方！",
     "@labelMatrixRecoveryKeyExplanation": {
         "description": "Gives a brief description about the function on the recovery key",
         "type": "text",
         "placeholders": {}
     },
-    "messagePlaceholderUserJoinedRoom": "{user} vstoupil(a) do místnosti!",
-    "@messagePlaceholderUserJoinedRoom": {
-        "description": "Message body for when a user joins the room",
-        "type": "text",
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "labelMatrixRecoveryKeyPromptExplanation": "Chcete-li odemknout své staré zprávy, zadejte svůj obnovovací klíč, jenž vám byl vygenerován dříve. Pamatujte - Obnovovací klíč NENÍ to samé, jako vaše HESLO!",
+    "labelMatrixRecoveryKeyPromptExplanation": "要解鎖您的舊訊息，請輸入在之前連線中生成的回復金鑰。您的回復金鑰不是您的密碼。",
     "@labelMatrixRecoveryKeyPromptExplanation": {
         "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
         "type": "text",
         "placeholders": {}
     },
-    "promptShowSource": "Zobrazit zdroj",
-    "@promptShowSource": {
-        "description": "Label for the menu option to view the JSON source of an event",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptMatrixRecoveryKeyInput": "Vložit obnovovací klíč",
+    "promptMatrixRecoveryKeyInput": "回復金鑰",
     "@promptMatrixRecoveryKeyInput": {
         "description": "Placeholder text for the recovery key input box",
         "type": "text",
         "placeholders": {}
     },
-    "promptConfirmWipingCrossSigningKeys": "Opravdu chcete vymazat klíče pro vzájemné podepisování?",
+    "promptConfirmWipingCrossSigningKeys": "您確定要清除您的交叉認證金鑰嗎？",
     "@promptConfirmWipingCrossSigningKeys": {
         "description": "Asks the user if they are sure they want to wipe the keys",
         "type": "text",
         "placeholders": {}
     },
-    "promptCopyComplete": "Zkopírováno!",
-    "@promptCopyComplete": {
-        "description": "Prompt text for after a copy has been completed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixSecurityPhraseShouldNotBePassword": "Bezpečnostní fráze by neměla být shodná s vaším heslem",
+    "labelMatrixSecurityPhraseShouldNotBePassword": "您的安全短語應與您的密碼不同",
     "@labelMatrixSecurityPhraseShouldNotBePassword": {
         "description": "Tells the user to not use their password as their security phrase",
         "type": "text",
         "placeholders": {}
     },
-    "messageUserUnpinnedEvent": "{user} odepnul(a) zprávu",
-    "@messageUserUnpinnedEvent": {
-        "description": "Message body for when a user removes an event from the room's pinned messages",
-        "type": "text",
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "promptAddAccount": "Přidat účet",
-    "@promptAddAccount": {
-        "description": "Label for button in settings to add another account",
+    "errorMatrixPassphraseMustContainUpperAndLowercase": "密碼必須包含至少一個大寫字母和一個小寫字母",
+    "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+        "description": "Explains constraints of recovery passphrase",
         "type": "text",
         "placeholders": {}
     },
-    "labelCurrentAccountsHeader": "Aktuální účty",
-    "@labelCurrentAccountsHeader": {
-        "description": "Label for header of accounts list",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelEmojiPickerStickerTab": "Samolepky",
-    "@labelEmojiPickerStickerTab": {
-        "description": "Label for the sticker tab in the emoji picker",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptRestore": "Obnovit",
-    "@promptRestore": {
-        "description": "Generic prompt to restore something",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixAskWipeBackupToContinue": "Pokud změníte své vzájemné podpisové klíče, budete muset vymazat stávající zálohu... Chcete pokračovat?",
-    "@labelMatrixAskWipeBackupToContinue": {
-        "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsTabSecurity": "Zabezpečení",
-    "@labelSettingsTabSecurity": {
-        "description": "Label for the Security settings page",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixAskEnableMessageBackup": "Chcete povolit zálohování klíčů online na serveru?",
-    "@labelMatrixAskEnableMessageBackup": {
-        "description": "Asks the user if they want to enable online backup",
-        "type": "text",
-        "placeholders": {}
-    },
-    "errorMatrixPassphraseMustContainNumber": "Fráze musí obsahovat alespoň 1 číslici",
+    "errorMatrixPassphraseMustContainNumber": "密碼必須包含至少一個數字",
     "@errorMatrixPassphraseMustContainNumber": {
         "description": "Explains constraints of recovery passphrase",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsTabEmoticons": "Emotikony",
-    "@labelSettingsTabEmoticons": {
-        "description": "Label for the Emoticons settings page",
-        "type": "text",
-        "placeholders": {}
-    },
-    "errorMatrixPassphraseMustContainSymbol": "Fráze musí obsahovat alespoň 1 symbol",
+    "errorMatrixPassphraseMustContainSymbol": "密碼必須包含至少一個符號",
     "@errorMatrixPassphraseMustContainSymbol": {
         "description": "Explains constraints of recovery passphrase",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixConfirmSecurityPhrase": "Potvrďte bezpečnostní frázi:",
+    "erroMatrixPassphraseMustBeLonger": "密碼長度必須至少為十個字元",
+    "@erroMatrixPassphraseMustBeLonger": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixConfirmSecurityPhrase": "確認安全短語：",
     "@labelMatrixConfirmSecurityPhrase": {
         "description": "Prompts the user to input their passphrase again",
         "type": "text",
         "placeholders": {}
     },
-    "placeholderMatrixConfirmSecurityPhrase": "Potvrdit bezpečnostní frázi",
+    "placeholderMatrixConfirmSecurityPhrase": "確認安全短語",
     "@placeholderMatrixConfirmSecurityPhrase": {
         "description": "Placeholder text for the confirm passphrase text input",
         "type": "text",
         "placeholders": {}
     },
-    "matrixClientEncryptionWarningTitle": "Upozornění na šifrování",
-    "@matrixClientEncryptionWarningTitle": {
-        "description": "Title of a warning about encryption",
-        "type": "text",
-        "placeholders": {}
-    },
-    "errorMatrixPassphrasesDontMatch": "Zadané fráze se neshodují",
+    "errorMatrixPassphrasesDontMatch": "密碼不相同",
     "@errorMatrixPassphrasesDontMatch": {
         "description": "Error when the user enters passphrase twice and the two dont match",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPromptPassphrase": "Zadejte bezpečnostní frázi:",
+    "labelMatrixPromptPassphrase": "安全短語：",
     "@labelMatrixPromptPassphrase": {
         "description": "Prompt the user to enter passphrase",
         "type": "text",
         "placeholders": {}
     },
-    "promptOptions": "Možnosti",
-    "@promptOptions": {
-        "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
-        "type": "text",
-        "placeholders": {}
-    },
-    "placeholderMatrixEnterSecutiyPhrase": "Zadejte bezpečnostní frázi",
+    "placeholderMatrixEnterSecutiyPhrase": "安全短語",
     "@placeholderMatrixEnterSecutiyPhrase": {
         "description": "Placeholder text for the passphrase text box",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixExistingMessageBackupFound": "Byla nalezena existující záloha!",
+    "labelMatrixExistingMessageBackupFound": "已找到現有備份！",
     "@labelMatrixExistingMessageBackupFound": {
         "description": "Message to explain that existing backup has been found",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixExplainOnlineKeyBackup": "Online záloha klíče vám umožní obnovit historii zpráv v případě, že ztratíte přístup ke všem svým relacím",
+    "labelMatrixAskWipeBackupToContinue": "如果您要更改交叉驗證金鑰，會需要清除現有備份…繼續嗎？",
+    "@labelMatrixAskWipeBackupToContinue": {
+        "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixWarnResetKeysIsPermanent": "重設金鑰是永久性的，將清除您的聊天紀錄備份。您幾乎肯定不想這麼做！",
+    "@labelMatrixWarnResetKeysIsPermanent": {
+        "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAskEnableMessageBackup": "您想開啟線上金鑰備份嗎？",
+    "@labelMatrixAskEnableMessageBackup": {
+        "description": "Asks the user if they want to enable online backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixExplainOnlineKeyBackup": "線上金鑰備份將允許您在失去所有連線裝置時讀取訊息歷史",
     "@labelMatrixExplainOnlineKeyBackup": {
         "description": "Explains what the message backup does",
         "type": "text",
         "placeholders": {}
     },
-    "messagePlaceholderUserUpdatedName": "{user} si změnil(a) jméno",
-    "@messagePlaceholderUserUpdatedName": {
-        "description": "Message body for when a user updates their display name",
-        "type": "text",
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "labelSettingsTabManageAccounts": "Správa účtů",
+    "labelSettingsTabManageAccounts": "管理帳號",
     "@labelSettingsTabManageAccounts": {
         "description": "Label for the Manage Accounts settings",
         "type": "text",
         "placeholders": {}
     },
-    "promptContinue": "Pokračovat",
-    "@promptContinue": {
-        "description": "Generic prompt to continue with some action",
+    "labelSettingsTabProfile": "個人資料",
+    "@labelSettingsTabProfile": {
+        "description": "Label for the Profile settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsTabDeveloper": "Pro vývojáře",
+    "labelSettingsTabSecurity": "安全",
+    "@labelSettingsTabSecurity": {
+        "description": "Label for the Security settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabEmoticons": "表情符號",
+    "@labelSettingsTabEmoticons": {
+        "description": "Label for the Emoticons settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabDeveloper": "開發者",
     "@labelSettingsTabDeveloper": {
         "description": "Label for the Developer settings page",
         "type": "text",
         "placeholders": {}
     },
-    "promptPinMessage": "Připnout zprávu",
-    "@promptPinMessage": {
-        "description": "Label for the menu option to pin a message",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelSettingsCategoryAccount": "Účet",
+    "labelSettingsCategoryAccount": "帳號",
     "@labelSettingsCategoryAccount": {
         "description": "Label for the settings category Account",
         "type": "text",
         "placeholders": {}
     },
-    "labelEmojiPickerEmojiTab": "Emoji",
-    "@labelEmojiPickerEmojiTab": {
-        "description": "Label for the emoji tab in emoji picker",
+    "promptAddAccount": "增加帳號",
+    "@promptAddAccount": {
+        "description": "Label for button in settings to add another account",
         "type": "text",
         "placeholders": {}
     },
-    "promptShowSticker": "Zobrazit samolepku",
-    "@promptShowSticker": {
-        "description": "Prompt to display a sticker, shown when media previews are disabled",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptSubmit": "Odeslat",
-    "@promptSubmit": {
-        "description": "Generic prompt to submit something",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messagePlaceholderUserRejectedInvite": "{user} odmítl(a) pozvání",
-    "@messagePlaceholderUserRejectedInvite": {
-        "description": "Message body for when a user rejected an invitation to a room",
-        "type": "text",
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "promptLogoutSingleAccount": "Odhlásit účet",
+    "promptLogoutSingleAccount": "登出",
     "@promptLogoutSingleAccount": {
         "description": "Label for button in settings to log out of an account",
         "type": "text",
         "placeholders": {}
     },
-    "messageEditedMarker": "(upraveno)",
+    "labelCurrentAccountsHeader": "目前帳號",
+    "@labelCurrentAccountsHeader": {
+        "description": "Label for header of accounts list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageEditedMarker": "（已編輯）",
     "@messageEditedMarker": {
         "description": "Short text to mark that a message has been edited",
         "type": "text",
         "placeholders": {}
     },
-    "promptBack": "Zpět",
-    "@promptBack": {
-        "description": "Prompt text to go backwards, probably for navigation",
+    "labelEmojiPickerEmojiTab": "表情符號",
+    "@labelEmojiPickerEmojiTab": {
+        "description": "Label for the emoji tab in emoji picker",
         "type": "text",
         "placeholders": {}
     },
-    "promptUnpinMessage": "Odepnout zprávu",
+    "labelEmojiPickerStickerTab": "貼圖",
+    "@labelEmojiPickerStickerTab": {
+        "description": "Label for the sticker tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerGifTab": "Gif",
+    "@labelEmojiPickerGifTab": {
+        "description": "Label for the gif search tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPinMessage": "釘選訊息",
+    "@promptPinMessage": {
+        "description": "Label for the menu option to pin a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUnpinMessage": "取消釘選訊息",
     "@promptUnpinMessage": {
         "description": "Label for the menu option to unpin a message",
         "type": "text",
         "placeholders": {}
     },
-    "promptCancelEventSend": "Zrušit odesílání",
+    "promptReplyInThread": "在討論串中回覆",
+    "@promptReplyInThread": {
+        "description": "Label for the menu option to reply to a message inside a thread",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShowSource": "顯示原始碼",
+    "@promptShowSource": {
+        "description": "Label for the menu option to view the JSON source of an event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReplayMessageEffect": "重播效果",
+    "@promptReplayMessageEffect": {
+        "description": "If a message was sent with an effect, this prompts to replay the effect",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCancelEventSend": "取消",
     "@promptCancelEventSend": {
         "description": "When a message failed to send, this prompts to cancel sending the event",
         "type": "text",
         "placeholders": {}
     },
-    "promptRetryEventSend": "Zkusit znovu",
+    "promptRetryEventSend": "重試",
     "@promptRetryEventSend": {
         "description": "When a message failed to send, this prompts to retry sending the event",
         "type": "text",
         "placeholders": {}
     },
-    "messageFailedToDecrypt": "Nepodařilo se dešifrovat zprávu",
+    "promptShowSticker": "顯示貼圖",
+    "@promptShowSticker": {
+        "description": "Prompt to display a sticker, shown when media previews are disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageFailedToDecrypt": "解密失敗",
     "@messageFailedToDecrypt": {
         "description": "Placeholde text for when a message fails to decrypt",
         "type": "text",
         "placeholders": {}
     },
-    "messagePlaceholderSticker": "{user} poslal(a) samolepku",
+    "messagePlaceholderSticker": "{user} 傳送了一個貼圖",
     "@messagePlaceholderSticker": {
         "description": "Message body for when a user sends a sticker",
         "type": "text",
@@ -1413,105 +1369,184 @@
             "user": {}
         }
     },
-    "promptAccept": "Přijmout",
-    "@promptAccept": {
-        "description": "Generic prompt to accept something, probably a request of some kind",
-        "type": "text",
-        "placeholders": {}
-    },
-    "errorMessageFailedToSend": "Odesílání selhalo",
-    "@errorMessageFailedToSend": {
-        "description": "Text that is placed below a message when the message fails to send",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelJumpToLatest": "Skočit na nejnovější",
-    "@labelJumpToLatest": {
-        "description": "Label for the button which jumps the room timeline view to the latest message",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messageUserPinnedEvent": "{user} připnul(a) zprávu!",
-    "@messageUserPinnedEvent": {
-        "description": "Message body for when a user adds an event to the room's pinned messages",
+    "messagePlaceholderUserCreatedRoom": "{user} 建立了房間！",
+    "@messagePlaceholderUserCreatedRoom": {
+        "description": "Message body for when a user created the room",
         "type": "text",
         "placeholders": {
             "user": {}
         }
     },
-    "directMessagesListHeaderDesktop": "Přímé zprávy",
-    "@directMessagesListHeaderDesktop": {
-        "description": "The header for the direct messages list on desktop",
+    "errorMessageFailedToSend": "傳送失敗",
+    "@errorMessageFailedToSend": {
+        "description": "Text that is placed below a message when the message fails to send",
         "type": "text",
         "placeholders": {}
     },
-    "promptReply": "Odpovědět",
+    "labelJumpToLatest": "跳到至當前",
+    "@labelJumpToLatest": {
+        "description": "Label for the button which jumps the room timeline view to the latest message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationBodyWithSender": "{user} 邀請您加入房間",
+    "@labelInvitationBodyWithSender": {
+        "description": "Message body for when an invitation was received, and we have a name for the sender",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "typingUsers": "{howMany,plural, =1{{user1} 正在輸入…}=2{{user1} 和 {user2} 正在輸入…}few{{user1}, {user2} 和 {user3} 正在輸入}other{好幾個人正在輸入…}}",
+    "@typingUsers": {
+        "description": "Text to display which users are currently typing",
+        "type": "text",
+        "placeholders": {
+            "howMany": {},
+            "user1": {},
+            "user2": {},
+            "user3": {}
+        }
+    },
+    "promptReply": "回覆",
     "@promptReply": {
         "description": "Generic prompt to reply to a message",
         "type": "text",
         "placeholders": {}
     },
-    "promptAddReaction": "Přidat reakci",
+    "promptAddReaction": "加入反應",
     "@promptAddReaction": {
         "description": "Generic prompt to add reaction to a message",
         "type": "text",
         "placeholders": {}
     },
-    "promptHome": "Domů",
+    "promptEdit": "編輯",
+    "@promptEdit": {
+        "description": "Generic prompt to edit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOptions": "選項",
+    "@promptOptions": {
+        "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSettings": "設定",
+    "@promptSettings": {
+        "description": "Generic prompt for settings, usually will open a settings menu or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHome": "首頁",
     "@promptHome": {
         "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
         "type": "text",
         "placeholders": {}
     },
-    "promptApply": "Použít",
+    "promptAccept": "接受",
+    "@promptAccept": {
+        "description": "Generic prompt to accept something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReject": "拒絕",
+    "@promptReject": {
+        "description": "Generic prompt to reject something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptApply": "套用",
     "@promptApply": {
         "description": "Generic prompt to apply something, probably a setting",
         "type": "text",
         "placeholders": {}
     },
-    "promptDelete": "Smazat",
+    "promptDelete": "刪除",
     "@promptDelete": {
         "description": "Generic prompt to delete something",
         "type": "text",
         "placeholders": {}
     },
-    "promptJoin": "Připojit se",
+    "promptDownload": "下載",
+    "@promptDownload": {
+        "description": "Generic prompt to download something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoin": "加入",
     "@promptJoin": {
         "description": "Generic prompt to join a room",
         "type": "text",
         "placeholders": {}
     },
-    "promptConfirm": "Potvrdit",
+    "promptSubmit": "送出",
+    "@promptSubmit": {
+        "description": "Generic prompt to submit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptContinue": "繼續",
+    "@promptContinue": {
+        "description": "Generic prompt to continue with some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirm": "確定",
     "@promptConfirm": {
         "description": "Generic prompt to confirm some action",
         "type": "text",
         "placeholders": {}
     },
-    "promptDone": "Hotovo",
+    "promptDone": "完成",
     "@promptDone": {
         "description": "Generic prompt to confirm that you are done",
         "type": "text",
         "placeholders": {}
     },
-    "promptReset": "Resetovat",
+    "promptReset": "重設",
     "@promptReset": {
         "description": "Generic prompt to reset something",
         "type": "text",
         "placeholders": {}
     },
-    "promptEnable": "Zapnout",
+    "promptEnable": "開啟",
     "@promptEnable": {
         "description": "Generic prompt to enable something",
         "type": "text",
         "placeholders": {}
     },
-    "promptPoliteNo": "Ne, děkuji",
+    "promptRestore": "回復",
+    "@promptRestore": {
+        "description": "Generic prompt to restore something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPoliteNo": "不，謝謝",
     "@promptPoliteNo": {
         "description": "Generic message to decline something, using nice manners :)",
         "type": "text",
         "placeholders": {}
     },
-    "labelOr": "nebo",
+    "promptBack": "返回",
+    "@promptBack": {
+        "description": "Prompt text to go backwards, probably for navigation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopy": "複製",
+    "@promptCopy": {
+        "description": "Prompt to copy text",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopyComplete": "已複製！",
+    "@promptCopyComplete": {
+        "description": "Prompt text for after a copy has been completed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelOr": "或",
     "@labelOr": {
         "description": "Text that is placed between two or more options: [button1] or [button2]",
         "type": "text",
@@ -1526,7 +1561,15 @@
             "emote": {}
         }
     },
-    "messagePlaceholderUserLeftRoom": "{user} opustil(a) místnost",
+    "messagePlaceholderUserJoinedRoom": "{user} 加入了房間！",
+    "@messagePlaceholderUserJoinedRoom": {
+        "description": "Message body for when a user joins the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserLeftRoom": "{user} 離開了房間",
     "@messagePlaceholderUserLeftRoom": {
         "description": "Message body for when a user leaves the room",
         "type": "text",
@@ -1534,7 +1577,7 @@
             "user": {}
         }
     },
-    "messagePlaceholderUserUpdatedAvatar": "{user} si změnil(a) avatar",
+    "messagePlaceholderUserUpdatedAvatar": "{user} 更新了頭貼",
     "@messagePlaceholderUserUpdatedAvatar": {
         "description": "Message body for when a user updates their avatar",
         "type": "text",
@@ -1542,90 +1585,15 @@
             "user": {}
         }
     },
-    "messageUserAcceptedInvite": "{user} přijal(a) pozvání",
-    "@messageUserAcceptedInvite": {
-        "description": "Message body for when a user accepted an invitation to a room",
+    "messagePlaceholderUserUpdatedName": "{user} 更新了顯示名稱",
+    "@messagePlaceholderUserUpdatedName": {
+        "description": "Message body for when a user updates their display name",
         "type": "text",
         "placeholders": {
             "user": {}
         }
     },
-    "matrixClientOlmMissingMessage": "libolm není nainstalován nebo nebyl nalezen. End-to-end šifrování nebude k dispozici, dokud tento problém nebude vyřešen",
-    "@matrixClientOlmMissingMessage": {
-        "description": "Text that explains to the user that libolm dependency is not found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "notificationModifiersPrivacyEnhanced": "Nová zpráva",
-    "@notificationModifiersPrivacyEnhanced": {
-        "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messageVerificationComplete": "Ověření dokončeno!",
-    "@messageVerificationComplete": {
-        "description": "Message to show when verification was completed successfully, and the session has been verified",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messageLoginFailed": "Přihlášení se nezdařilo...",
-    "@messageLoginFailed": {
-        "description": "Generic text to show that an attempted login has failed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelGifSearchToggle": "Vyhledávání GIFů",
-    "@labelGifSearchToggle": {
-        "description": "Label for the toggle for enabling and disabling gif search",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelGifSearchDescription": "Povolit vyhledávání a odesílání GIFů. Požadavky budou zprostředkovány prostřednictvím {proxyUrl}",
-    "@labelGifSearchDescription": {
-        "description": "Explains that gifs will be fetched via proxy",
-        "type": "text",
-        "placeholders": {
-            "proxyUrl": {}
-        }
-    },
-    "labelThemeAmoled": "AMOLED (černý)",
-    "@labelThemeAmoled": {
-        "description": "Label for the light theme",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelMatrixWarnResetKeysIsPermanent": "Resetování klíčů je trvalé a nelze jej vrátit zpět! Dobře si tento krok rozmyslete.",
-    "@labelMatrixWarnResetKeysIsPermanent": {
-        "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelEmojiPickerGifTab": "GIFy",
-    "@labelEmojiPickerGifTab": {
-        "description": "Label for the gif search tab in the emoji picker",
-        "type": "text",
-        "placeholders": {}
-    },
-    "messagePlaceholderUserCreatedRoom": "{user} vytvořil(a) místnost!",
-    "@messagePlaceholderUserCreatedRoom": {
-        "description": "Message body for when a user created the room",
-        "type": "text",
-        "placeholders": {
-            "user": {}
-        }
-    },
-    "typingUsers": "{howMany,plural,=1{{user1} píše...}=2{{user1} a {user2} píší...}few{{user1}, {user2} a {user3} píší...}other{Píše více lidí...}}",
-    "@typingUsers": {
-        "description": "Text to display which users are currently typing",
-        "type": "text",
-        "placeholders": {
-            "howMany": {},
-            "user1": {},
-            "user2": {},
-            "user3": {}
-        }
-    },
-    "messagePlaceholderUserUpdatedNameDetailed": "{user} si změnil(a) jméno na \"{newName}\"",
+    "messagePlaceholderUserUpdatedNameDetailed": "{user} 將顯示名稱更改為 \"{newName}\"",
     "@messagePlaceholderUserUpdatedNameDetailed": {
         "description": "Message body for when a user updates their display name",
         "type": "text",
@@ -1634,7 +1602,7 @@
             "newName": {}
         }
     },
-    "messagePlaceholderUserInvited": "{sender} pozval(a) uživatele {invitedUser}",
+    "messagePlaceholderUserInvited": "{sender} 邀請了 {invitedUser}",
     "@messagePlaceholderUserInvited": {
         "description": "Message body for when a user invites another user to the room",
         "type": "text",
@@ -1643,7 +1611,15 @@
             "invitedUser": {}
         }
     },
-    "messageUserRetractedInvite": "{sender} odvolal(a) pozvání pro {user}",
+    "messagePlaceholderUserRejectedInvite": "{user} 拒絕了邀請",
+    "@messagePlaceholderUserRejectedInvite": {
+        "description": "Message body for when a user rejected an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserRetractedInvite": "{sender} 撤回了對 {user} 的邀請",
     "@messageUserRetractedInvite": {
         "description": "Message body for when a user's invitation to a room was withdrawn",
         "type": "text",
@@ -1652,7 +1628,15 @@
             "user": {}
         }
     },
-    "messageUserBanned": "{sender} zabanoval(a) uživatele {user}",
+    "messageUserAcceptedInvite": "{user} 接受了邀請",
+    "@messageUserAcceptedInvite": {
+        "description": "Message body for when a user accepted an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserBanned": "{sender} 封鎖了 {user}",
     "@messageUserBanned": {
         "description": "Message body for when a user bans another user from the room",
         "type": "text",
@@ -1661,7 +1645,7 @@
             "user": {}
         }
     },
-    "messageUserUnbanned": "{sender} odbanoval(a) uživatele {user}",
+    "messageUserUnbanned": "{sender} 解除封鎖了 {user}",
     "@messageUserUnbanned": {
         "description": "Message body for when a user reverts a ban of another user",
         "type": "text",
@@ -1670,92 +1654,108 @@
             "user": {}
         }
     },
-    "setupPageBeforeYouBegin": "Než začnete...",
-    "@setupPageBeforeYouBegin": {
-        "description": "Title for first time setup page",
+    "messageUserPinnedEvent": "{user} 釘選了一則訊息！",
+    "@messageUserPinnedEvent": {
+        "description": "Message body for when a user adds an event to the room's pinned messages",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserUnpinnedEvent": "{user} 取消釘選了一則訊息",
+    "@messageUserUnpinnedEvent": {
+        "description": "Message body for when a user removes an event from the room's pinned messages",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "matrixClientOlmMissingMessage": "libolm 未安裝或未找到。端到端加密將不可用",
+    "@matrixClientOlmMissingMessage": {
+        "description": "Text that explains to the user that libolm dependency is not found",
         "type": "text",
         "placeholders": {}
     },
-    "promptUsername": "Uživatelské jméno",
-    "@promptUsername": {
-        "description": "Placeholder text for username field on login form",
+    "matrixClientEncryptionWarningTitle": "加密警告",
+    "@matrixClientEncryptionWarningTitle": {
+        "description": "Title of a warning about encryption",
         "type": "text",
         "placeholders": {}
     },
-    "promptPassword": "Heslo",
-    "@promptPassword": {
-        "description": "Placeholder text for password field on login form",
+    "notificationModifiersPrivacyEnhanced": "傳送了一則訊息",
+    "@notificationModifiersPrivacyEnhanced": {
+        "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileChangeBanner": "Změnit obrázek na pozadí",
+    "promptProfileChangeBanner": "更改橫幅",
     "@promptProfileChangeBanner": {
         "description": "Prompt to change the banner on the user's profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetStatus": "Nastavit stav",
+    "promptProfileSetStatus": "設定狀態",
     "@promptProfileSetStatus": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearStatus": "Vymazat stav",
+    "promptProfileClearStatus": "清除狀態",
     "@promptProfileClearStatus": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetBadges": "Nastavit odznaky",
+    "promptProfileSetBadges": "設定徽章",
     "@promptProfileSetBadges": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetBio": "Nastavit profilový popisek",
+    "promptProfileSetBio": "設定個人簡介",
     "@promptProfileSetBio": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearBio": "Vymazat profilový popisek",
+    "promptProfileClearBio": "清除個人簡介",
     "@promptProfileClearBio": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileShareTimezone": "Sdílet časové pásmo",
+    "promptProfileShareTimezone": "分享時區",
     "@promptProfileShareTimezone": {
         "description": "Prompt the user to add their current timezone to their user profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearTimezone": "Odstranit časové pásmo",
+    "promptProfileClearTimezone": "移除時區",
     "@promptProfileClearTimezone": {
         "description": "Prompt to remove the shared timezone from a users profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileEditColorScheme": "Upravit barevné schéma",
+    "promptProfileEditColorScheme": "編輯主題配色",
     "@promptProfileEditColorScheme": {
         "description": "Prompt to edit the color scheme of the user's own profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetColorOverride": "Nastavit zobrazovanou barvu",
+    "promptProfileSetColorOverride": "設定名稱顏色",
     "@promptProfileSetColorOverride": {
         "description": "Prompt to override the display color of a user",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearColorOverride": "Obnovit výchozí barvu",
+    "promptProfileClearColorOverride": "還原名稱顏色",
     "@promptProfileClearColorOverride": {
         "description": "Prompt to remove an override of the display color of a user",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileShowRawProfile": "Zobrazit profil v nezformátované podobě",
+    "promptProfileShowRawProfile": "顯示個人資料原始碼",
     "@promptProfileShowRawProfile": {
         "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmShareTimezone": "Opravdu chcete sdílet své časové pásmo '{timezone}' veřejně?",
+    "labelConfirmShareTimezone": "您確定要公開分享您的時區 '{timezone}' 嗎？",
     "@labelConfirmShareTimezone": {
         "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
         "type": "text",
@@ -1763,31 +1763,31 @@
             "timezone": {}
         }
     },
-    "promptProfileWriteBioHint": "Napiš něco o sobě",
+    "promptProfileWriteBioHint": "介紹您自己",
     "@promptProfileWriteBioHint": {
         "description": "Hint text for the profile bio editor",
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileYourBadges": "Vaše odznaky",
+    "labelProfileYourBadges": "您的徽章",
     "@labelProfileYourBadges": {
         "description": "label for the ui to select which badges to display on the users profile",
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Nemáte žádné odznaky. Odznak můžete získat například tak, že přispějete a podpoříte tím vývoj aplikace Commet",
+    "labelProfileNoBadges": "您沒有任何徽章。贊助並支持 Commet 的開發即可獲得徽章",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceVisibilityRestricted": "Prostor s omezeným přístupem",
+    "labelSpaceVisibilityRestricted": "受限空間",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
         "type": "text",
         "placeholders": {}
     },
-    "incomingCallMessage": "Příchozí hovor od {callingUserName}!",
+    "incomingCallMessage": "{callingUserName} 來電！",
     "@incomingCallMessage": {
         "description": "Label to display that a user is calling",
         "type": "text",
@@ -1795,321 +1795,321 @@
             "callingUserName": {}
         }
     },
-    "labelTextChatDescription": "Jednoduchý textový chat se všemi funkcemi, které si jen můžete přát! Posílejte zprávy, multimédia, samolepky, GIFy a další!",
-    "@labelTextChatDescription": {
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelVoiceChatDescription": "Místnost určená pro hlasové hovory dvou a více lidí",
+    "labelVoiceChatDescription": "供兩人或以上使用的語音聊天房間",
     "@labelVoiceChatDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelCalendarDescription": "Vytvořte si sdílený kalendář, ve kterém budete mít přehled o svých plánech, či importujte rozvrh z jiných kalendářů, aby přátelé věděli, kdy máte čas a kdy ne.",
-    "@labelCalendarDescription": {
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelCreateRoom": "Vytvořit místnost",
+    "labelCreateRoom": "建立房間",
     "@labelCreateRoom": {
         "type": "text",
         "placeholders": {}
     },
-    "labelPickExistingRoom": "Existující místnost",
+    "labelPickExistingRoom": "現有房間",
     "@labelPickExistingRoom": {
         "type": "text",
         "placeholders": {}
     },
-    "labelJoinRoom": "Vstoupit do místnosti",
+    "labelJoinRoom": "加入房間",
     "@labelJoinRoom": {
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypeTextChat": "Textový chat",
+    "labelRoomTypeTextChat": "文字聊天",
     "@labelRoomTypeTextChat": {
         "description": "Label for creating a regular text based chat room",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypeVoiceChat": "Hlasový chat",
+    "labelRoomTypeVoiceChat": "語音聊天",
     "@labelRoomTypeVoiceChat": {
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypePhotoAlbum": "Fotoalbum",
+    "labelRoomTypePhotoAlbum": "相簿",
     "@labelRoomTypePhotoAlbum": {
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypeCalendar": "Kalendář",
+    "labelRoomTypeCalendar": "日曆",
     "@labelRoomTypeCalendar": {
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypeSpace": "Prostor",
+    "labelRoomTypeSpace": "空間",
     "@labelRoomTypeSpace": {
         "type": "text",
         "placeholders": {}
     },
-    "roomVisibilityRestrictedExplanation": "Tato místnost bude dostupná každému, kdo je členem jejího nadřazeného prostoru",
-    "@roomVisibilityRestrictedExplanation": {
-        "description": "Explains what 'restricted' visibility means",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelVisibilityRestricted": "Omezený přístup",
+    "labelVisibilityRestricted": "受限",
     "@labelVisibilityRestricted": {
         "description": "Short label for room visibility restricted",
         "type": "text",
         "placeholders": {}
     },
-    "labelPhotoAlbumDescription": "Sdílejte fotky a videa se svými přáteli nebo komunitou!",
+    "labelPhotoAlbumDescription": "跟親朋好友們分享您的照片或影片！",
     "@labelPhotoAlbumDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "messageInvalidUsernameOrPassword": "Neplatné uživatelské jméno nebo heslo",
+    "messageInvalidUsernameOrPassword": "使用者名稱或密碼輸入錯誤",
     "@messageInvalidUsernameOrPassword": {
         "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "Potvrzení daru",
+    "titleConfirmingDonation": "贊助確認中",
     "@titleConfirmingDonation": {
         "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationInstructions": "Postupujte podle pokynů ve svém prohlížeči. Zobrazení odměn může někdy po přijetí vašeho příspěvku trvat jednu až dvě minuty.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "Děkujeme za tento štědrý příspěvek!",
+    "labelDonationConfirmationSucceeded": "非常感謝您的慷慨贊助！",
     "@labelDonationConfirmationSucceeded": {
         "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Nepodařilo se najít žádné příspěvky :( Zvažte prosím podporu vývoje Commet příspěvkem!",
+    "labelTextChatDescription": "易於使用的文字聊天，卻有著您需要的所有功能！傳送訊息、媒體、貼圖、GIF、或更多！",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "建立一個幫助您規劃時程的分享日曆，並從其他日曆工具匯入您的時程，讓您的朋友知道您的行程。",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "這個房間將會公開給加入其父級空間的成員",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationInstructions": "請跟隨您的瀏覽器中的指示操作。您的獎勵將於收到贊助款項後的一至二分鐘內送達，請稍待片刻。",
+    "@labelDonationInstructions": {
+        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationFailed": "無法找到任何贊助紀錄 :( 請考慮贊助支持 Commet 的開發！",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmCancelDonationConfirmation": "Opravdu chcete zavřít okno, aniž byste přijal(a) jakoukoli odměnu?",
+    "labelConfirmCancelDonationConfirmation": "您確定要退出並放棄接受任何獎勵嗎？",
     "@labelConfirmCancelDonationConfirmation": {
         "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
         "type": "text",
         "placeholders": {}
     },
-    "labelNoAccount": "Žádný účet",
+    "labelNoAccount": "無帳號",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
         "type": "text",
         "placeholders": {}
     },
-    "promptPickDonationAccount": "Vyberte si jeden z účtů, prostřednictvím kterého chcete přispět",
+    "promptPickDonationAccount": "選擇一個帳號用於贊助",
     "@promptPickDonationAccount": {
         "description": "Prompt the user to select an account to link to their donation",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonateAnonymously": "Darovat bez propojení s účtem",
+    "labelDonateAnonymously": "贊助但不登入帳號",
     "@labelDonateAnonymously": {
         "description": "Prompt the user to donate to the project, without linking to their user account",
         "type": "text",
         "placeholders": {}
     },
-    "promptDonate": "Přispějte",
+    "promptDonate": "贊助",
     "@promptDonate": {
         "description": "Prompt the user to donate to the project",
         "type": "text",
         "placeholders": {}
     },
-    "promptDonationsRefreshAwards": "Aktualizovat odměny",
+    "promptDonationsRefreshAwards": "重新整理獎勵狀態",
     "@promptDonationsRefreshAwards": {
         "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppExperiments": "Experimentální funkce",
+    "labelSettingsAppExperiments": "實驗性",
     "@labelSettingsAppExperiments": {
         "description": "Label for the App Experiments settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsShortcuts": "Klávesové zkratky",
+    "labelSettingsShortcuts": "快捷鍵",
     "@labelSettingsShortcuts": {
         "description": "Label for the Keyboard shortcuts settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsCategoryVoiceAndVideo": "Hlas a video",
+    "labelSettingsCategoryVoiceAndVideo": "語音和視訊",
     "@labelSettingsCategoryVoiceAndVideo": {
         "description": "Label for the settings category related to voice and video calls",
         "type": "text",
         "placeholders": {}
     },
-    "labelSystemKeyboardShortcutsOutsourceDescription": "Ve vašem aktuálním prostředí se klávesové zkratky nastavují v nastavení systému.",
+    "labelSystemKeyboardShortcutsOutsourceDescription": "在您的裝置上若要設定快捷鍵，請至系統設定中設置。",
     "@labelSystemKeyboardShortcutsOutsourceDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "promptSystemKeyboardShortcutsMoreInfo": "Více informací",
+    "promptSystemKeyboardShortcutsMoreInfo": "更多資訊",
     "@promptSystemKeyboardShortcutsMoreInfo": {
         "description": "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
         "type": "text",
         "placeholders": {}
     },
-    "labelConfigureKeyboardShortcuts": "Nastavit klávesové zkratky",
+    "labelConfigureKeyboardShortcuts": "設定快捷鍵",
     "@labelConfigureKeyboardShortcuts": {
         "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
         "type": "text",
         "placeholders": {}
     },
-    "promptShortcutsPressAKeyCombination": "Stiskněte klávesovou zkratku",
+    "promptShortcutsPressAKeyCombination": "按下組合鍵",
     "@promptShortcutsPressAKeyCombination": {
         "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
         "type": "text",
         "placeholders": {}
     },
-    "promptShortcutsClearKeyboardShortcut": "Vymazat klávesovou zkratku",
+    "promptShortcutsClearKeyboardShortcut": "清除快捷鍵",
     "@promptShortcutsClearKeyboardShortcut": {
         "description": "Prompt the user to clear a key combination shortcut",
         "type": "text",
         "placeholders": {}
     },
-    "labelAppBehaviourTitle": "Chování aplikace",
+    "labelAppBehaviourTitle": "應用程式行為",
     "@labelAppBehaviourTitle": {
         "description": "Header for the app behaviour section in settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelAskBeforeDeletingMessageToggle": "Potvrdit před smazáním zpráv",
+    "labelAskBeforeDeletingMessageToggle": "刪除訊息前確認",
     "@labelAskBeforeDeletingMessageToggle": {
         "description": "Label for the toggle for enabling and disabling message deletion confirmation",
         "type": "text",
         "placeholders": {}
     },
-    "labelAskBeforeDeletingMessageDescription": "Při mazání zprávy zobrazí potvrzovací okno.",
+    "labelAskBeforeDeletingMessageDescription": "在刪除訊息前彈出確認視窗。",
     "@labelAskBeforeDeletingMessageDescription": {
         "description": "Label describing what 'asking before deleting messages' even means",
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaSettings": "Média",
+    "labelMediaSettings": "媒體",
     "@labelMediaSettings": {
         "description": "Header for the settings tile for for media",
         "type": "text",
         "placeholders": {}
     },
-    "headerVoipSettingsCallConnection": "Navázání hovoru",
+    "headerVoipSettingsCallConnection": "通話連線",
     "@headerVoipSettingsCallConnection": {
         "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipSettingsStunFallback": "Použít záložní STUN",
+    "labelVoipSettingsStunFallback": "使用 STUN 應變方案",
     "@labelVoipSettingsStunFallback": {
         "description": "label for the setting to enable STUN callback for connecting calls",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipSettingsStunFallbackDescription": "Bez serveru STUN nelze hovory navázat. Pokud váš domovský server neposkytuje server STUN, použije se jako záloha '{stunServer}'. Při navazování hovorů bude tomuto serveru odhalena vaše IP adresa",
+    "labelVoipSettingsStunFallbackDescription": "通話連線需要連接 STUN 伺服器。如果您的主伺服器沒有支援 STUN，將會退回使用 '{stunServer}' 作為應變方案。進行通話時您的 IP 位置將會暴露給該伺服器",
     "@labelVoipSettingsStunFallbackDescription": {
         "type": "text",
         "placeholders": {
             "stunServer": {}
         }
     },
-    "headerVoipSettingsDevices": "Zařízení",
+    "headerVoipSettingsDevices": "裝置",
     "@headerVoipSettingsDevices": {
         "description": "Header for settings tile containing device configuration, for default audio / video inputs",
         "type": "text",
         "placeholders": {}
     },
-    "headerVoipSettingsStreamSettings": "Nastavení vysílání",
+    "headerVoipSettingsStreamSettings": "直播設定",
     "@headerVoipSettingsStreamSettings": {
         "description": "Header for settings tile containing stream quality configuration",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcast": "Použít simulcast",
+    "labelVoipUseSimulcast": "使用同步播放（Simulcast）",
     "@labelVoipUseSimulcast": {
         "description": "label for setting toggle to enable use of Simulcast",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcastDescription": "Vaše vysílání se bude nahrávat v několika různých úrovních kvality, aby si ostatní uživatelé mohli vybrat, kterou z nich chtějí využít. To bude vyžadovat větší šířku pásma a více systémových prostředků.",
+    "labelVoipUseSimulcastDescription": "上傳不同畫質等級的直播畫面讓其他使用者選擇。這個選項會使用更多頻寬及系統資源。",
     "@labelVoipUseSimulcastDescription": {
         "description": "description for setting toggle to enable use of Simulcast",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamMaximumBitrate": "Maximální přenosová rychlost vysílání",
+    "labelVoipStreamMaximumBitrate": "最高直播位元率",
     "@labelVoipStreamMaximumBitrate": {
         "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamMaximumBitrateDescription": "Určuje celkovou kvalitu vašeho streamu. Čím vyšší hodnota, tím lepší kvalita, ale také se spotřebovává více zdrojů",
+    "labelVoipStreamMaximumBitrateDescription": "決定您的直播畫質。越高的設定畫質越好，但也會使用更多系統資源",
     "@labelVoipStreamMaximumBitrateDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamFramerate": "Snímková frekvence vysílání",
+    "labelVoipStreamFramerate": "直播幀數",
     "@labelVoipStreamFramerate": {
         "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamFramerateDescription": "Četnost snímků za sekundu při sdílení obrazovky. Vyšší hodnota zajišťuje plynulejší pohyb, ale může snížit ostrost obrazu.",
+    "labelVoipStreamFramerateDescription": "螢幕分享時的每秒目標幀數。越高的設定有越平滑的移動，但有可能降低清晰度。",
     "@labelVoipStreamFramerateDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodec": "Preferovaný kodek pro vysílání",
+    "labelVoipStreamPreferredCodec": "直播編解碼器偏好",
     "@labelVoipStreamPreferredCodec": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodecDescription": "Vyberte formát, ve kterém chcete vysílání kódovat. Různé kodeky mohou na některých zařízeních běžet rychleji, zatímco na jiných nemusí být podporovány. Většina zařízení by měla podporovat formáty VP8 a H.264.",
+    "labelVoipStreamPreferredCodecDescription": "決定用什麼格式為您的直播編碼。部分編解碼器在特定裝置上運行得更快，但可能不被其他類型裝置支援。大部分的裝置都支援 vp8 和 h264。",
     "@labelVoipStreamPreferredCodecDescription": {
         "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamResolution": "Rozlišení vysílání",
+    "labelVoipStreamResolution": "直播解析度",
     "@labelVoipStreamResolution": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamResolutionDescription": "Čím vyšší rozlišení vysílání, tím lépe",
+    "labelVoipStreamResolutionDescription": "決定您直播時的畫面解析度，越高的設定越好",
     "@labelVoipStreamResolutionDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelShowRoomPreviewsInSpaceSidebar": "Zobrazovat i nepřidané místnosti v bočním panelu",
+    "labelShowRoomPreviewsInSpaceSidebar": "在側邊欄顯示尚未加入的房間",
     "@labelShowRoomPreviewsInSpaceSidebar": {
         "description": "Label for enabling using the preview list in the space sidebar",
         "type": "text",
         "placeholders": {}
     },
-    "labelShowRoomPreviewsInSpaceSidebarDescription": "Pokud jsou v prostoru místnosti, do kterých jste se nepřipojili, zobrazí se v bočním panelu spolu s ostatními místnostmi v tomto prostoru",
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "如果空間內有您尚未加入的房間，將它們和其它的房間一起顯示在側邊欄",
     "@labelShowRoomPreviewsInSpaceSidebarDescription": {
         "description": "Description for enabling using the preview list in the space sidebar",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppInfo": "O aplikaci",
+    "labelSettingsAppInfo": "關於",
     "@labelSettingsAppInfo": {
         "description": "Label for the app info settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelDefaultReadReceiptsOption": "Použít globální nastavení ({pref})",
+    "labelDefaultReadReceiptsOption": "使用全域偏好（{pref}）",
     "@labelDefaultReadReceiptsOption": {
         "description": "Label to use the global preference, showing the current global preference value",
         "type": "text",
@@ -2117,7 +2117,7 @@
             "pref": {}
         }
     },
-    "labelDefaultTypingIndicatorsOption": "Použít globální nastavení ({pref})",
+    "labelDefaultTypingIndicatorsOption": "使用全域偏好（{pref}）",
     "@labelDefaultTypingIndicatorsOption": {
         "description": "Label to use the global preference, showing the current global preference value",
         "type": "text",
@@ -2125,193 +2125,193 @@
             "pref": {}
         }
     },
-    "labelReadReceiptsTitle": "Potvrzení o přečtení",
+    "labelReadReceiptsTitle": "已讀標示",
     "@labelReadReceiptsTitle": {
         "description": "Label for the toggle for enabling and disabling public read receipts",
         "type": "text",
         "placeholders": {}
     },
-    "labelTypingIndicatorTitle": "Indikátory psaní",
+    "labelTypingIndicatorTitle": "正在輸入狀態",
     "@labelTypingIndicatorTitle": {
         "description": "Label for the toggle for enabling and disabling typing indicators",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsJoinCallTitle": "Připojit se k hovoru",
+    "labelMatrixPermissionsJoinCallTitle": "加入通話",
     "@labelMatrixPermissionsJoinCallTitle": {
         "description": "Title for the permission to allow users to join a call in a room",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsJoinCallDescription": "Povolit uživatelům připojit se k probíhajícímu hovoru v této místnosti",
+    "labelMatrixPermissionsJoinCallDescription": "允許使用者加入正在進行的通話",
     "@labelMatrixPermissionsJoinCallDescription": {
         "description": "Description for the permission to allow users to join a call in a room",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsAddCalendarEventTitle": "Upravovat události v kalendáři",
+    "labelMatrixPermissionsAddCalendarEventTitle": "編輯日曆活動",
     "@labelMatrixPermissionsAddCalendarEventTitle": {
         "description": "Title for the permission to allow users to edit the calendar",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsAddCalendarEventDescription": "Povolit uživatelům upravovat události v kalendáři",
+    "labelMatrixPermissionsAddCalendarEventDescription": "允許使用者編輯日曆中的活動",
     "@labelMatrixPermissionsAddCalendarEventDescription": {
         "description": "Description for the permission to allow users to create an event on the calendar",
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsCalendar": "Kalendář",
+    "labelRoomSettingsCalendar": "日曆",
     "@labelRoomSettingsCalendar": {
         "description": "Label for room calendar settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceSettingsSecurity": "Zabezpečení",
+    "labelSpaceSettingsSecurity": "安全性",
     "@labelSpaceSettingsSecurity": {
         "description": "Label for space security settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceSettingsMembers": "Členové",
+    "labelSpaceSettingsMembers": "成員",
     "@labelSpaceSettingsMembers": {
         "description": "Label for space member settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsTabPrivacy": "Ochrana osobních údajů",
+    "labelSettingsTabPrivacy": "隱私",
     "@labelSettingsTabPrivacy": {
         "description": "Label for the Privacy settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPrivacyTitle": "Ochrana osobních údajů v chatu",
+    "labelChatPrivacyTitle": "聊天內容隱私",
     "@labelChatPrivacyTitle": {
         "description": "Header for the chat privacy section in settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicReadReceiptsToggle": "Potvrzení o přečtení",
+    "labelPublicReadReceiptsToggle": "已讀標示",
     "@labelPublicReadReceiptsToggle": {
         "description": "Label for the toggle for enabling and disabling sending read receipts",
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicReadReceiptsDescription": "Umožní ostatním členům místnosti vidět, kdy jste si přečetli jejich zprávy.",
+    "labelPublicReadReceiptsDescription": "讓房間中的其他成員知道您已經閱讀他們的訊息。",
     "@labelPublicReadReceiptsDescription": {
         "description": "description for the toggle for enabling and disabling sending read receipts",
         "type": "text",
         "placeholders": {}
     },
-    "labelTypingIndicatorsToggle": "Indikátor psaní",
+    "labelTypingIndicatorsToggle": "正在輸入狀態",
     "@labelTypingIndicatorsToggle": {
         "description": "Label for the toggle for enabling and disabling sending typing indicator",
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicTypingIndicatorDescription": "Umožní ostatním členům místnosti vidět, když píšete zprávu.",
+    "labelPublicTypingIndicatorDescription": "讓房間中的其他成員知道您正在輸入訊息。",
     "@labelPublicTypingIndicatorDescription": {
         "description": "description for the toggle for enabling and disabling sending typing indicator",
         "type": "text",
         "placeholders": {}
     },
-    "labelDialogConfirmation": "Potvrzení",
+    "labelDialogConfirmation": "確認",
     "@labelDialogConfirmation": {
         "description": "label for the dialog which asks the user to confirm some action",
         "type": "text",
         "placeholders": {}
     },
-    "promptEndPoll": "Ukončit hlasování",
+    "promptEndPoll": "結束投票",
     "@promptEndPoll": {
         "description": "Prompt the user to end a poll",
         "type": "text",
         "placeholders": {}
     },
-    "promptNext": "Další",
+    "promptNext": "下一步",
     "@promptNext": {
         "description": "Generic prompt for going to the next step of an activity or flow, usually on a button",
         "type": "text",
         "placeholders": {}
     },
-    "promptDismiss": "Zavřít",
+    "promptDismiss": "關閉",
     "@promptDismiss": {
         "description": "Generic prompt to dismiss something, probably a popup",
         "type": "text",
         "placeholders": {}
     },
-    "promptDecline": "Zamítnout",
+    "promptDecline": "拒絕",
     "@promptDecline": {
         "description": "Generic prompt to decline something, probably a request of some kind",
         "type": "text",
         "placeholders": {}
     },
-    "promptYes": "Ano",
+    "promptYes": "是",
     "@promptYes": {
         "description": "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ",
         "type": "text",
         "placeholders": {}
     },
-    "promptNo": "Ne",
+    "promptNo": "否",
     "@promptNo": {
         "description": "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ",
         "type": "text",
         "placeholders": {}
     },
-    "promptSearch": "Hledat",
+    "promptSearch": "搜尋",
     "@promptSearch": {
         "description": "Prompt the user to search for something, usually shown as the hint in a text box",
         "type": "text",
         "placeholders": {}
     },
-    "labelPublic": "Veřejné",
+    "labelPublic": "公開",
     "@labelPublic": {
         "description": "Label for public",
         "type": "text",
         "placeholders": {}
     },
-    "labelPrivate": "Soukromé",
+    "labelPrivate": "私人",
     "@labelPrivate": {
         "description": "Label for private",
         "type": "text",
         "placeholders": {}
     },
-    "labelEnabled": "Povoleno",
+    "labelEnabled": "開啟",
     "@labelEnabled": {
         "description": "Label for enabled",
         "type": "text",
         "placeholders": {}
     },
-    "labelDisabled": "Vypnuto",
+    "labelDisabled": "關閉",
     "@labelDisabled": {
         "description": "Label for disabled",
         "type": "text",
         "placeholders": {}
     },
-    "shortcutNameMute": "Ztlumit",
+    "shortcutNameMute": "靜音",
     "@shortcutNameMute": {
         "description": "name for the system wide shortcut to activate microphone mute",
         "type": "text",
         "placeholders": {}
     },
-    "shortcutNameUnmute": "Zrušit ztlumení",
+    "shortcutNameUnmute": "解除靜音",
     "@shortcutNameUnmute": {
         "description": "name for the system wide shortcut to disable microphone mute",
         "type": "text",
         "placeholders": {}
     },
-    "shortcutNameToggleMute": "Zapnout nebo vypnout ztlumení",
+    "shortcutNameToggleMute": "靜音開關",
     "@shortcutNameToggleMute": {
         "description": "name for the system wide shortcut to toggle the microphone mute status",
         "type": "text",
         "placeholders": {}
     },
-    "labelUpdateAvailable": "K dispozici je aktualizace",
+    "labelUpdateAvailable": "有新的更新",
     "@labelUpdateAvailable": {
         "description": "Label for the the info popup when an update is available",
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "K dispozici je novější verze aplikace Commet: {version}",
+    "descriptionUpdateAvailable": "有新的 Commet 更新可供使用：{version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",
@@ -2319,7 +2319,7 @@
             "version": {}
         }
     },
-    "messagePlaceholderUserEditedCalendar": "{user} upravil(a) kalendář",
+    "messagePlaceholderUserEditedCalendar": "{user} 編輯了日曆",
     "@messagePlaceholderUserEditedCalendar": {
         "description": "Message body for when a user edits the room calendar",
         "type": "text",
@@ -2327,7 +2327,7 @@
             "user": {}
         }
     },
-    "messageUserAnsweredCall": "{user} přijal(a) hovor",
+    "messageUserAnsweredCall": "{user} 加入了通話",
     "@messageUserAnsweredCall": {
         "description": "Message body for when a user answers a call",
         "type": "text",
@@ -2335,7 +2335,7 @@
             "user": {}
         }
     },
-    "messageUserHangupCall": "{user} ukončil(a) hovor",
+    "messageUserHangupCall": "{user} 結束了通話",
     "@messageUserHangupCall": {
         "description": "Message body for when a user hangs up a call",
         "type": "text",
@@ -2343,7 +2343,7 @@
             "user": {}
         }
     },
-    "messageUserRejectCall": "{user} odmítl(a) hovor",
+    "messageUserRejectCall": "{user} 拒絕了通話",
     "@messageUserRejectCall": {
         "description": "Message body for when a user rejects a call",
         "type": "text",
@@ -2351,7 +2351,7 @@
             "user": {}
         }
     },
-    "messageUserInviteCall": "{user} zahájil(a) hovor",
+    "messageUserInviteCall": "{user} 開始了新的通話",
     "@messageUserInviteCall": {
         "description": "Message body for when a user starts a call",
         "type": "text",
@@ -2359,19 +2359,19 @@
             "user": {}
         }
     },
-    "matrixClientVodozemacMissingMessage": "vodozemac není nainstalován nebo nebyl nalezen. End-to-end šifrování nebude k dispozici, dokud tento problém nebude vyřešen",
+    "matrixClientVodozemacMissingMessage": "無法找到或未安裝 vodozemac，在解決前將無法開啟端到端加密",
     "@matrixClientVodozemacMissingMessage": {
         "description": "Text that explains to the user that vodozemac dependency is not found",
         "type": "text",
         "placeholders": {}
     },
-    "messageUserDeactivated": "Váš účet byl deaktivován",
+    "messageUserDeactivated": "您的帳號已被停用",
     "@messageUserDeactivated": {
         "description": "An error message displayed when the user attempts to log into an account that has been disabled",
         "type": "text",
         "placeholders": {}
     },
-    "notificationContentUserIsCalling": "Volá {user}!",
+    "notificationContentUserIsCalling": "{user} 來電！",
     "@notificationContentUserIsCalling": {
         "description": "Notification body content for when receiving an incoming call from another user",
         "type": "text",
@@ -2379,7 +2379,7 @@
             "user": {}
         }
     },
-    "notificationTitleIncomingCall": "Příchozí hovor! ({roomName})",
+    "notificationTitleIncomingCall": "通話來電！（{roomName}）",
     "@notificationTitleIncomingCall": {
         "description": "Notification title for when a call is being received",
         "type": "text",
