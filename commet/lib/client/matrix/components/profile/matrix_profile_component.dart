@@ -142,25 +142,54 @@ class MatrixProfile
   @override
   Widget buildBio(BuildContext context, ThemeData theme,
       {String? overrideText}) {
-    Map<String, dynamic>? content = fields[MatrixProfileComponent.bioKey];
-
+    // to be compatible with both the MSC version and commet's own version
+    List<dynamic>? content =
+        fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
+    Map<String, dynamic>? commetBioContent =
+        fields[MatrixProfileComponent.bioKey];
     if (overrideText != null) {
-      content = MatrixProfileComponent.textToContent(overrideText, client);
+      commetBioContent =
+          MatrixProfileComponent.textToContent(overrideText, client);
     }
 
-    if (content == null) return Container();
+    Map<String, dynamic>? htmlPart;
+    Map<String, dynamic>? textPart;
+    if (content == null && commetBioContent != null) {
+      if (commetBioContent["formatted_body"] != null &&
+          commetBioContent["format"] == "org.matrix.custom.html") {
+        htmlPart = {
+          "body": commetBioContent["formatted_body"],
+          "mimetype": "text/html",
+        };
+      }
+      if (commetBioContent["body"] != null) {
+        textPart = {
+          "body": commetBioContent["body"],
+        };
+      }
+    } else if (content is List) {
+      for (final item in content) {
+        if (item['mimetype'] == "text/html") {
+          htmlPart = item;
+        } else if (item['body'] != null) {
+          textPart = item;
+        }
+      }
+    }
 
-    if (content["format"] == "org.matrix.custom.html") {
+    if (htmlPart == null && textPart == null) return Container();
+
+    if (htmlPart != null) {
       return Material(
         color: Colors.transparent,
-        child: MatrixHtmlParser.parse(content["formatted_body"], client, null),
+        child: MatrixHtmlParser.parse((htmlPart["body"] as String).replaceAll("<br/></blockquote>", "</blockquote>"), client, null),
       );
     }
 
     return Material(
       color: Colors.transparent,
       child: Text(
-        content["body"],
+        textPart?["body"],
         style: theme.textTheme.bodyMedium
             ?.copyWith(color: theme.colorScheme.onSurface),
       ),
@@ -168,10 +197,24 @@ class MatrixProfile
   }
 
   @override
-  bool get hasBio => fields.containsKey(MatrixProfileComponent.bioKey);
+  bool get hasBio =>
+      fields.containsKey(MatrixProfileComponent.bioKey) ||
+      fields.containsKey(MatrixProfileComponent.msc4440BioKey);
 
   @override
-  String? get plaintextBio => fields[MatrixProfileComponent.bioKey]?["body"];
+  String? get plaintextBio {
+    var plainTextBodyCommet = fields[MatrixProfileComponent.bioKey]?["body"];
+    List<dynamic>? content =
+        fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
+
+    if (content == null) return plainTextBodyCommet;
+    for (final item in content) {
+      if (item['body'] != null && item['mimetype'] == null) {
+        return item['body'];
+      }
+    }
+    return plainTextBodyCommet;
+  }
 
   @override
   Future<List<ProfileBadge>> getBadges() async {
@@ -331,6 +374,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String bannerKey = "chat.commet.profile_banner";
   static const String colorSchemeKey = "chat.commet.profile_color_scheme";
   static const String bioKey = "chat.commet.profile_bio";
+  static const String msc4440BioKey = "gay.fomx.biography";
   static const String badgeKey = "chat.commet.profile_badges";
   static const String statusKey = "chat.commet.profile_status";
   static const String pronounsKey = "io.fsky.nyx.pronouns";
@@ -431,6 +475,27 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> setBio(String bio) async {
     Map<String, String> content = textToContent(bio, client);
+    
+    if (content['formatted_body'] != null && content['body'] != null) {
+      await setField(msc4440BioKey, {
+        'm.text': [
+          {'body': content['formatted_body'], 'mimetype': 'text/html'},
+          {'body': content['body']}
+        ]
+      });
+    } else if (content['formatted_body'] == null && content['body'] != null) {
+      await setField(msc4440BioKey, {
+        'm.text': [
+          {'body': content['body']}
+        ]
+      });
+    } else if (content['formatted_body'] != null && content['body'] == null) {
+      await setField(msc4440BioKey, {
+        'm.text': [
+          {'body': content['formatted_body'], 'mimetype': 'text/html'},
+        ]
+      });
+    }
 
     await setField(bioKey, content);
   }
@@ -458,6 +523,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
 
   @override
   Future<void> removeBio() {
+    removeField(msc4440BioKey);
     return removeField(bioKey);
   }
 
