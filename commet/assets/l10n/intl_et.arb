@@ -1975,5 +1975,29 @@
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
         "placeholders": {}
+    },
+    "labelSettingsAppExperiments": "Katsed",
+    "@labelSettingsAppExperiments": {
+        "description": "Label for the App Experiments settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsShortcuts": "Kiirklahvid",
+    "@labelSettingsShortcuts": {
+        "description": "Label for the Keyboard shortcuts settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppBehaviourTitle": "Rakenduse käitumine",
+    "@labelAppBehaviourTitle": {
+        "description": "Header for the app behaviour section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageToggle": "Sõnumite kustutamisel küsi kinnitust",
+    "@labelAskBeforeDeletingMessageToggle": {
+        "description": "Label for the toggle for enabling and disabling message deletion confirmation",
+        "type": "text",
+        "placeholders": {}
     }
 }
