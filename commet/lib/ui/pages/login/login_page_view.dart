@@ -305,17 +305,12 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   SizedBox loginButton() {
-    var flow = widget.flows?.whereType<PasswordLoginFlow>().firstOrNull;
-
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: tiamat.Button(
         text: promptSubmitLogin,
-        onTap: flow != null
-            ? () => widget.doPasswordLogin
-                ?.call(flow, _usernameTextField.text, _passwordTextField.text)
-            : null,
+        onTap: _submitLogin,
       ),
     );
   }
@@ -326,6 +321,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       controller: _passwordTextField,
       obscureText: !_passwordVisible,
       readOnly: widget.isLoggingIn,
+      onSubmitted: (_) => _submitLogin(),
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: promptPassword,
@@ -398,6 +394,13 @@ class _LoginPageViewState extends State<LoginPageView> {
         theme: SvgTheme(currentColor: Theme.of(context).colorScheme.onSurface),
       ),
     );
+  }
+
+  void _submitLogin() {
+    var flow = widget.flows?.whereType<PasswordLoginFlow>().firstOrNull;
+    if (flow != null) {
+      widget.doPasswordLogin?.call(flow, _usernameTextField.text, _passwordTextField.text);
+    }
   }
 
   void _onHomeserverTextUpdated() {
