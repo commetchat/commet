@@ -421,14 +421,18 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           initialIndex: widget.initialIndex);
 
     if (_widgetType == TimelineEventWidgetDisplayType.generic)
-      return TimelineEventViewGeneric(
-        timeline: widget.timeline,
-        initialIndex: widget.initialIndex,
-        room: widget.timeline.room,
-        readReceipts: readReceipts,
-        onReadReceiptsTapped: onReadReceiptsTapped,
-        key: eventKey,
-      );
+      return preferences.developerMode.value
+          ? TimelineEventViewGeneric(
+              timeline: widget.timeline,
+              initialIndex: widget.initialIndex,
+              room: widget.timeline.room,
+              readReceipts: readReceipts,
+              onReadReceiptsTapped: onReadReceiptsTapped,
+              key: eventKey,
+            )
+          : Container(
+              key: eventKey,
+            );
 
     if (_widgetType == TimelineEventWidgetDisplayType.poll) {
       return TimelineEventViewPoll(

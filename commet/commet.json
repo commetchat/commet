@@ -1,0 +1,98 @@
+commet
+https://matrix.twiceahri.ca/_matrix/client/v3/keys/device_signing/upload
+POST
+401 Unauthorized
+1.
+{
+    "master_key": {
+        "user_id": "@test:twiceahri.ca",
+        "usage": [
+            "master"
+        ],
+        "keys": {
+            "ed25519:k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o": "k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o"
+        },
+        "signatures": {} // missing
+    },
+    "self_signing_key": {
+        "user_id": "@test:twiceahri.ca",
+        "usage": [
+            "self_signing"
+        ],
+        "keys": {
+            "ed25519:w9cJ7jipO7OxrP8d/iQF2d3vBousExGJfE+ZrnRCuh8": "w9cJ7jipO7OxrP8d/iQF2d3vBousExGJfE+ZrnRCuh8"
+        },
+        "signatures": {
+            "@test:twiceahri.ca": {
+                "ed25519:k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o": "zXordEiLCKtj4H5KXp6inPyWBs/gCPbhZjNe0Eb8FA64gMRtivRvg6RRxunp1lQbGV5RfgbRtdR56tRa33dDAA"
+            }
+        }
+    },
+    "user_signing_key": {
+        "user_id": "@test:twiceahri.ca",
+        "usage": [
+            "user_signing"
+        ],
+        "keys": {
+            "ed25519:R8+kAXix4iwHi4J/AH9zclcbAJiXXZp1hq26v7a5PwE": "R8+kAXix4iwHi4J/AH9zclcbAJiXXZp1hq26v7a5PwE"
+        },
+        "signatures": {
+            "@test:twiceahri.ca": {
+                "ed25519:k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o": "G4r0M+fRJXLa7DKQNhsvAbMKswAjz9zeQwkYzH8/NbwuJ66FF0hySHYAmaHC7IgYZMOxrzBBUE4gCXntbrdEDQ"
+            }
+        }
+    }
+}
+
+
+https://matrix.twiceahri.ca/_matrix/client/v3/keys/device_signing/upload
+403 Forbidden
+2.
+{
+    "auth": {
+        "type": "m.login.password",
+        "password": "thisisapassword",
+        "identifier": {
+            "type": "m.id.user",
+            "user": "alice"
+        }
+    },
+    "master_key": {
+        "user_id": "@test:twiceahri.ca",
+        "usage": [
+            "master"
+        ],
+        "keys": {
+            "ed25519:k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o": "k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o"
+        },
+        "signatures": {}
+    },
+    "self_signing_key": {
+        "user_id": "@test:twiceahri.ca",
+        "usage": [
+            "self_signing"
+        ],
+        "keys": {
+            "ed25519:w9cJ7jipO7OxrP8d/iQF2d3vBousExGJfE+ZrnRCuh8": "w9cJ7jipO7OxrP8d/iQF2d3vBousExGJfE+ZrnRCuh8"
+        },
+        "signatures": {
+            "@test:twiceahri.ca": {
+                "ed25519:k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o": "zXordEiLCKtj4H5KXp6inPyWBs/gCPbhZjNe0Eb8FA64gMRtivRvg6RRxunp1lQbGV5RfgbRtdR56tRa33dDAA"
+            }
+        }
+    },
+    "user_signing_key": {
+        "user_id": "@test:twiceahri.ca",
+        "usage": [
+            "user_signing"
+        ],
+        "keys": {
+            "ed25519:R8+kAXix4iwHi4J/AH9zclcbAJiXXZp1hq26v7a5PwE": "R8+kAXix4iwHi4J/AH9zclcbAJiXXZp1hq26v7a5PwE"
+        },
+        "signatures": {
+            "@test:twiceahri.ca": {
+                "ed25519:k3NYdxCv9ub0EnVSDO00bngiMzScpcaibd81vSG306o": "G4r0M+fRJXLa7DKQNhsvAbMKswAjz9zeQwkYzH8/NbwuJ66FF0hySHYAmaHC7IgYZMOxrzBBUE4gCXntbrdEDQ"
+            }
+        }
+    }
+}
