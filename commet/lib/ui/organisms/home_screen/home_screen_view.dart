@@ -107,14 +107,14 @@ class HomeScreenView extends StatelessWidget {
               displayName: room.displayName,
               avatar: room.avatar,
               color: room.defaultColor,
-              body: room.lastEvent?.plainTextBody,
-              recentEventSender: room.lastEvent != null
+              body: room.lastMessage?.plainTextBody,
+              recentEventSender: room.lastMessage != null
                   ? room
-                      .getMemberOrFallback(room.lastEvent!.senderId)
+                      .getMemberOrFallback(room.lastMessage!.senderId)
                       .displayName
                   : null,
-              recentEventSenderColor: room.lastEvent != null
-                  ? room.getColorOfUser(room.lastEvent!.senderId)
+              recentEventSenderColor: room.lastMessage != null
+                  ? room.getColorOfUser(room.lastMessage!.senderId)
                   : null,
               onTap: () => onRoomClicked?.call(room),
               showUserAvatar: clientManager.rooms
@@ -147,14 +147,14 @@ class HomeScreenView extends StatelessWidget {
                   displayName: room.displayName,
                   avatar: room.avatar,
                   color: room.defaultColor,
-                  body: room.lastEvent?.plainTextBody,
-                  recentEventSender: room.lastEvent != null
+                  body: room.lastMessage?.plainTextBody,
+                  recentEventSender: room.lastMessage != null
                       ? room
-                          .getMemberOrFallback(room.lastEvent!.senderId)
+                          .getMemberOrFallback(room.lastMessage!.senderId)
                           .displayName
                       : null,
-                  recentEventSenderColor: room.lastEvent != null
-                      ? room.getColorOfUser(room.lastEvent!.senderId)
+                  recentEventSenderColor: room.lastMessage != null
+                      ? room.getColorOfUser(room.lastMessage!.senderId)
                       : null,
                   onTap: () => onRoomClicked?.call(room),
                   showUserAvatar: clientManager.rooms

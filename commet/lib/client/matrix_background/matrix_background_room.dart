@@ -225,6 +225,9 @@ class MatrixBackgroundRoom implements Room {
   TimelineEvent<Client>? get lastEvent => throw UnimplementedError();
 
   @override
+  TimelineEvent? get lastMessage => throw UnimplementedError();
+
+  @override
   DateTime get lastEventTimestamp => throw UnimplementedError();
 
   @override

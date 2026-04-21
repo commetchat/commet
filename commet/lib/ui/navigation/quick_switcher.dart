@@ -57,8 +57,8 @@ class QuickSwitcherSearchItemRoom implements QuickSwitcherSearchItem {
 
   @override
   Widget build(BuildContext context) {
-    var sender = room.lastEvent != null
-        ? room.getMemberOrFallback(room.lastEvent!.senderId)
+    var sender = room.lastMessage != null
+        ? room.getMemberOrFallback(room.lastMessage!.senderId)
         : null;
 
     return RoomPanel(
@@ -68,7 +68,7 @@ class QuickSwitcherSearchItemRoom implements QuickSwitcherSearchItem {
       avatar: room.avatar,
       recentEventSender: sender?.displayName,
       recentEventSenderColor: sender?.defaultColor,
-      body: room.lastEvent?.plainTextBody,
+      body: room.lastMessage?.plainTextBody,
     );
   }
 
@@ -195,17 +195,17 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     displayName: room.displayName,
                     color: room.defaultColor,
                     avatar: room.avatar,
-                    recentEventSender: room.lastEvent != null
+                    recentEventSender: room.lastMessage != null
                         ? room
-                            .getMemberOrFallback(room.lastEvent!.senderId)
+                            .getMemberOrFallback(room.lastMessage!.senderId)
                             .displayName
                         : null,
-                    recentEventSenderColor: room.lastEvent != null
+                    recentEventSenderColor: room.lastMessage != null
                         ? room
-                            .getMemberOrFallback(room.lastEvent!.senderId)
+                            .getMemberOrFallback(room.lastMessage!.senderId)
                             .defaultColor
                         : null,
-                    body: room.lastEvent?.plainTextBody,
+                    body: room.lastMessage?.plainTextBody,
                   )
               ],
             ))
