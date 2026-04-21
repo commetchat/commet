@@ -55,6 +55,7 @@ class _LoginPageViewState extends State<LoginPageView> {
   );
   final TextEditingController _usernameTextField = TextEditingController();
   final TextEditingController _passwordTextField = TextEditingController();
+  bool _passwordVisible = false;
 
   String get promptHomeserver => Intl.message("Homeserver",
       name: "promptHomeserver",
@@ -323,11 +324,21 @@ class _LoginPageViewState extends State<LoginPageView> {
     return TextField(
       autocorrect: false,
       controller: _passwordTextField,
-      obscureText: true,
+      obscureText: !_passwordVisible,
       readOnly: widget.isLoggingIn,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: promptPassword,
+        suffixIcon: IconButton(
+          icon: Icon(
+            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              _passwordVisible = !_passwordVisible;
+            });
+          },
+        ),
       ),
     );
   }
