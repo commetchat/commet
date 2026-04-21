@@ -3,7 +3,6 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
@@ -225,12 +224,27 @@ class _CallViewState extends State<CallView> {
                   widget.currentSession,
                   borderColor: Colors.white,
                   onFullscreen: () {
-                    Lightbox.show(context,
-                        aspectRatio: mainStream!.aspectRatio,
-                        customWidget: VoipFullscreenStreamView(
-                          session: widget.currentSession,
-                          stream: mainStream!,
-                        ));
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            Scaffold(
+                          backgroundColor: Colors.black,
+                          body: VoipFullscreenStreamView(
+                            session: widget.currentSession,
+                            stream: mainStream!,
+                          ),
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        fullscreenDialog: true,
+                      ),
+                    );
                   },
                   fit: BoxFit.contain,
                   key: ValueKey(
@@ -260,12 +274,27 @@ class _CallViewState extends State<CallView> {
                         : BoxFit.cover,
                     widget.currentSession,
                     onFullscreen: () {
-                      Lightbox.show(context,
-                          aspectRatio: e.aspectRatio,
-                          customWidget: VoipFullscreenStreamView(
-                            session: widget.currentSession,
-                            stream: e,
-                          ));
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) =>
+                              Scaffold(
+                            backgroundColor: Colors.black,
+                            body: VoipFullscreenStreamView(
+                              session: widget.currentSession,
+                              stream: e,
+                            ),
+                          ),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          fullscreenDialog: true,
+                        ),
+                      );
                     },
                   )))
               .toList()),
