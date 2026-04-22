@@ -2,6 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_create_room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
@@ -70,6 +71,7 @@ enum TimelineEventWidgetDisplayType {
   message,
   generic,
   emote,
+  roomCreate,
   poll,
   hidden,
 }
@@ -197,6 +199,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return TimelineEventWidgetDisplayType.message;
     }
 
+    if (event is MatrixTimelineEventCreateRoom) {
+      return TimelineEventWidgetDisplayType.roomCreate;
+    }
+
     if (event is TimelineEventEmote) {
       return TimelineEventWidgetDisplayType.emote;
     }
@@ -277,6 +283,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (widget.canCollapse && collapse == TimelineEventWidgetCollapseType.child)
       return Container();
+
+    if (collapse != null &&
+        preferences.showStateEvents.value == false &&
+        preferences.developerMode.value == false) return Container();
 
     var result = buildEvent();
 
@@ -540,7 +550,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);
 
-    if (_widgetType == TimelineEventWidgetDisplayType.generic)
+    if (_widgetType == TimelineEventWidgetDisplayType.generic &&
+        (preferences.showStateEvents.value || preferences.developerMode.value))
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
         initialIndex: widget.initialIndex,
@@ -550,7 +561,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         key: eventKey,
       );
 
-    if (_widgetType == TimelineEventWidgetDisplayType.emote)
+    if (_widgetType == TimelineEventWidgetDisplayType.emote ||
+        _widgetType == TimelineEventWidgetDisplayType.roomCreate)
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
         initialIndex: widget.initialIndex,
