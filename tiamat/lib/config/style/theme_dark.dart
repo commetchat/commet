@@ -1,11 +1,7 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/config/custom_theme/custom_foundation.dart';
 import 'package:tiamat/config/style/theme_base.dart';
-import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
-import 'dart:io' show Platform;
 
 class ThemeDarkColors {
   static const Color surfaceContainerHigh = Color.fromARGB(255, 47, 51, 55);
@@ -38,7 +34,7 @@ class ThemeDark {
 
     return ThemeBase.theme(scheme).copyWith(extensions: [
       const ThemeSettings(caulkBorders: true, caulkBorderRadius: 1),
-      FoundationSettings(color: scheme.surfaceDim),
+      FoundationSettings(settings: CustomFoundation(color: scheme.surfaceDim)),
       const ExtraColors(
           codeHighlight: Color(0xffc678dd),
           linkColor: Color.fromARGB(255, 120, 120, 255))

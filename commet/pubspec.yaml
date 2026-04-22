@@ -191,6 +191,7 @@ flutter:
     - assets/images/app_icon/
     - assets/images/effects/particles/
     - assets/images/placeholders/
+    - assets/images/nine-patch/
     - assets/images/placeholders/photos/
     - assets/emoji_data/
     - assets/emoji_data/shortcodes/
