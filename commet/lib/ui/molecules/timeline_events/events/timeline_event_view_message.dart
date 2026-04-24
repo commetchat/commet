@@ -78,6 +78,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   Widget? formattedContent;
   String? body;
+  String? displayId;
   ImageProvider? senderAvatar;
   List<Attachment>? attachments;
   ImageProvider? sticker;
@@ -210,7 +211,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       loadEventState(newIndex);
     });
 
-    for (var key in [reactionsKey, urlPreviewsKey]) {
+    for (var key in [reactionsKey]) {
       if (key.currentState is TimelineEventViewWidget) {
         (key.currentState as TimelineEventViewWidget).update(newIndex);
       }
@@ -228,6 +229,16 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   void loadStateFromEvent(TimelineEvent event) {
     showSender = shouldShowSender(index);
     var room = widget.room ?? widget.timeline?.room;
+
+    bool didContentChange = true;
+
+    if (widget.timeline != null) {
+      var did = widget.timeline!.getDisplayId(event);
+      if (did == displayId) {
+        didContentChange = false;
+      }
+      displayId = did;
+    }
 
     var sender = room!.getMemberOrFallback(event.senderId);
     eventId = event.eventId;
@@ -282,11 +293,14 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       return;
     }
 
-    var content = event.buildFormattedContent(timeline: widget.timeline);
-    if (content == null) {
-      formattedContent = null;
-    } else {
-      formattedContent = Container(key: GlobalKey(), child: content);
+    if (didContentChange) {
+      var content = event.buildFormattedContent(timeline: widget.timeline);
+
+      if (content == null) {
+        formattedContent = null;
+      } else {
+        formattedContent = Container(key: GlobalKey(), child: content);
+      }
     }
 
     attachments = event.attachments;

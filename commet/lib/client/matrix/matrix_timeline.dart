@@ -205,4 +205,12 @@ class MatrixTimeline extends Timeline {
     var e = event as MatrixTimelineEvent;
     return e.event.getDisplayEvent(_matrixTimeline!).redacted;
   }
+
+  @override
+  String getDisplayId(TimelineEvent<Client> event) {
+    var e = event as MatrixTimelineEvent;
+    var ev = e.event.getDisplayEvent(matrixTimeline!);
+
+    return "${event.eventId}-${ev.eventId}";
+  }
 }
