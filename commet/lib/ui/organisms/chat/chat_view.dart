@@ -1,5 +1,6 @@
 import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
@@ -13,6 +14,8 @@ import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:commet/utils/error_utils.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});
@@ -32,6 +35,40 @@ class ChatView extends StatelessWidget {
       name: "cantSentMessagePrompt",
       desc: "Text that explains the user cannot send a message in this room");
 
+  String get tombstoneRoomReplacedMessage =>
+      Intl.message("This room has been replaced",
+          name: "tombstoneRoomReplacedMessage",
+          desc: "Text that explains a room was replaced by another room");
+
+  String get tombstoneEnterNewRoom => Intl.message("Enter new room",
+      name: "tombstoneEnterNewRoom",
+      desc: "Button label for navigating to the replacement room");
+
+  Future<void> openReplacementRoomAndLeave(
+      BuildContext context, String replacementRoomId) async {
+    final client = state.room.client;
+    final joinAddress = replacementRoomId;
+    var lookupAddress = replacementRoomId;
+
+    if (client is MatrixClient) {
+      final info = client.parseAddressToIdAndVia(replacementRoomId);
+      if (info != null) {
+        lookupAddress = info.$1;
+      }
+    }
+
+    Room? targetRoom = client.getRoom(lookupAddress);
+
+    targetRoom ??= client.getRoomByAlias(lookupAddress);
+    ErrorUtils.tryRun(context, () async {
+      if (targetRoom == null) {
+        targetRoom = await client.joinRoom(joinAddress);
+      }
+      EventBus.openRoom.add((targetRoom!.identifier, client.identifier));
+      await client.leaveRoom(state.room);
+    });
+  }
+
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
       : state.room
@@ -44,13 +81,16 @@ class ChatView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inputWidget =
+        state.room.isTombstoned ? buildTombstoneInput(context) : input(context);
+
     return Column(children: [
       Expanded(
           child: Stack(
         fit: StackFit.expand,
         children: [timeline(), const ParticlePlayer()],
       )),
-      input(),
+      inputWidget,
     ]);
   }
 
@@ -89,7 +129,43 @@ class ChatView extends StatelessWidget {
     NotificationManager.clearNotifications(room);
   }
 
-  Widget input() {
+  Widget buildTombstoneInput(BuildContext context) {
+    final replacementRoomId = state.room.tombstoneReplacementRoomId;
+    final body = state.room.tombstoneBody?.trim();
+    final displayMessage =
+        body != null && body.isNotEmpty ? body : tombstoneRoomReplacedMessage;
+
+    return ClipRRect(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+        color: Theme.of(context).colorScheme.surface,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            tiamat.Text.labelLow(
+              displayMessage,
+            ),
+            if (replacementRoomId != null && replacementRoomId.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TextButton.icon(
+                  onPressed: () async {
+                    await openReplacementRoomAndLeave(
+                        context, replacementRoomId);
+                  },
+                  icon: const Icon(Icons.arrow_forward),
+                  label: Text(tombstoneEnterNewRoom),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget input(BuildContext context) {
     String? interactingEventBody = state.interactingEvent?.plainTextBody;
 
     if (state.interactingEvent case TimelineEventMessage m) {
