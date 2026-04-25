@@ -144,7 +144,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     super.dispose();
   }
 
-  void onEventAdded(int index) {
+  void onEventAdded(int index, {bool cascade = true}) {
     eventKeys.insert(index, (
       GlobalKey(debugLabel: timeline.events[index].eventId),
       timeline.events[index].eventId
@@ -166,10 +166,20 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       }
     }
 
+    if (cascade) {
+      if (index > 0) {
+        onEventChanged(index - 1, cascade: false);
+      }
+
+      if (index < timeline.events.length - 1) {
+        onEventChanged(index + 1, cascade: false);
+      }
+    }
+
     setState(() {});
   }
 
-  void onEventChanged(int index) {
+  void onEventChanged(int index, {bool cascade = true}) {
     var event = timeline.events[index];
     var existing = eventKeys[index];
     eventKeys[index] = (existing.$1, event.eventId);
@@ -193,6 +203,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         scrollToBottom();
 
         widget.markAsRead?.call(timeline.events[0]);
+      }
+    }
+
+    if (cascade) {
+      if (index > 0) {
+        onEventChanged(index - 1, cascade: false);
+      }
+
+      if (index < timeline.events.length - 1) {
+        onEventChanged(index + 1, cascade: false);
       }
     }
   }
@@ -405,6 +425,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 key: key.$1,
                                 timeline: timeline,
                                 onEventHovered: eventHovered,
+                                canCollapse: true,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
@@ -454,6 +475,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 key: key.$1,
                                 onEventHovered: eventHovered,
                                 timeline: timeline,
+                                canCollapse: true,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
@@ -507,6 +529,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                         child: TimelineViewEntry(
                           key: highlightedEventOffstageKey,
                           timeline: timeline,
+                          canCollapse: true,
                           isThreadTimeline: widget.isThreadTimeline,
                           initialIndex: highlightedEventOffstageIndex!,
                         ),
