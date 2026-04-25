@@ -256,7 +256,6 @@ class _ContextMenuState extends State<ContextMenu> {
   Widget build(BuildContext context) {
     return Listener(
       onPointerDown: (event) {
-        print("got pointer down");
         mousePosition = event.position;
       },
       child: widget.modal

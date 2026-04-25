@@ -135,11 +135,7 @@ void main(List<String> args) async {
     return;
   }
 
-  if (BuildConfig.RELEASE) {
-    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
-  } else {
-    appMain();
-  }
+  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
 }
 
 void appMain() async {

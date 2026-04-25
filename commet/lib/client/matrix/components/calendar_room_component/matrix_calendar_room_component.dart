@@ -271,8 +271,6 @@ class MatrixCalendarRoomComponent
         }
 
         if (areEventListsIdentical(existingEvents, events)) {
-          Log.i(
-              "Calendar events are identical, not sending any data for this calendar");
           continue;
         } else {
           Log.i("Calendar events are different, syncing");
@@ -435,7 +433,6 @@ class MatrixCalendarRoomComponent
 
     var results = iCal.data.map((e) => fromIcal(id, e)).nonNulls.toList();
 
-    Log.i("Found ${results.length} events to sync to calendar");
     return results;
   }
 
