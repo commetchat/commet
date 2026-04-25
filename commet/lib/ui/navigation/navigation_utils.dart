@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NavigationUtils {
-  static void navigateTo(BuildContext context, Widget page) {
-    Navigator.push(
+  static Future<void> navigateTo(BuildContext context, Widget page) {
+    return Navigator.push(
         context,
         PageRouteBuilder(
             pageBuilder: (_, __, ___) => page,

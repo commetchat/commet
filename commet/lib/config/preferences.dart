@@ -378,6 +378,9 @@ class Preferences {
 
   StringPreference theme = StringPreference("app_theme", defaultValue: "dark");
 
+  NullableStringPreference lastOpenedVersion =
+      NullableStringPreference("last_run_version", defaultValue: null);
+
   NullableBoolPreference unifiedPushEnabled =
       NullableBoolPreference("unified_push_enabled", defaultValue: null);
 
