@@ -333,6 +333,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 String? empty;
                 empty!.split(" ");
               }),
+          tiamat.Button(
+              text: "Print Something",
+              onTap: () {
+                print("Hello, world!");
+              }),
         ])
       ],
     );
