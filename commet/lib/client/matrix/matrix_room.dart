@@ -41,6 +41,7 @@ import 'package:commet/client/member.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/build_config.dart';
@@ -110,6 +111,9 @@ class MatrixRoom extends Room {
 
   @override
   TimelineEvent? lastEvent;
+
+  @override
+  TimelineEvent? lastMessage;
 
   @override
   Iterable<String> get memberIds =>
@@ -223,6 +227,10 @@ class MatrixRoom extends Room {
 
     if (latest != null) {
       lastEvent = convertEvent(latest);
+
+      if (latest.type == matrix.EventTypes.Message) {
+        lastMessage = lastEvent;
+      }
     }
 
     updateAvatar();
@@ -283,6 +291,18 @@ class MatrixRoom extends Room {
       } else if (event.originServerTs.isAfter(lastEvent!.originServerTs)) {
         lastEvent = event;
         _onUpdate.add(null);
+      }
+
+      if (event is TimelineEventMessage ||
+          event is TimelineEventSticker ||
+          event is TimelineEventEmote) {
+        if (lastMessage == null) {
+          lastMessage = event;
+          _onUpdate.add(null);
+        } else if (event.originServerTs.isAfter(lastMessage!.originServerTs)) {
+          lastMessage = event;
+          _onUpdate.add(null);
+        }
       }
     }
   }
