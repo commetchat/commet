@@ -44,6 +44,8 @@ class Mime {
     "video/quicktime"
   };
 
+  static const videoStreamTypes = {"application/vnd.apple.mpegurl"};
+
   static const archiveTypes = {
     "application/x-7z-compressed",
     "application/x-bzip",

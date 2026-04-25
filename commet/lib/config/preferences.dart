@@ -7,6 +7,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences/bool_preference.dart';
 import 'package:commet/config/preferences/double_preference.dart';
 import 'package:commet/config/preferences/preference.dart';
+import 'package:commet/config/preferences/string_list_preference.dart';
 import 'package:commet/config/preferences/string_preference.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
@@ -410,4 +411,7 @@ class Preferences {
 
   NullableStringPreference lastDownloadLocation =
       NullableStringPreference("last_download_location", defaultValue: null);
+
+  StringListPreference allowedRemoteVideoHosts =
+      StringListPreference("allowed_remote_video_hosts", defaultValue: []);
 }

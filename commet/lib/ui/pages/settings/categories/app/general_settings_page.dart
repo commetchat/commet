@@ -1,6 +1,7 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/string_list_preference_editor.dart';
 import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:flutter/widgets.dart';
@@ -204,7 +205,14 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 description:
                     "When showing videos in fullscreen, automatically rotate the video to best fill the screen",
               ),
-            ]
+            ],
+            Seperator(),
+            StringListPreferenceEditor(
+              preference: preferences.allowedRemoteVideoHosts,
+              title: "Allowed Video Hosts",
+              description:
+                  "Allowed web hosts for displaying external videos, such as in URL Previews. Your IP address will be revealed to these servers when accessing the video",
+            )
           ]),
         ),
       ],

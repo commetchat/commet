@@ -159,6 +159,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         scrollToBottom();
 
         widget.markAsRead?.call(timeline.events[0]);
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scrollToBottom();
+
+          widget.markAsRead?.call(timeline.events[0]);
+        });
       }
 
       if (preferences.messageEffectsEnabled.value) {
