@@ -124,68 +124,68 @@ class TimelineOverlayState extends State<TimelineOverlay> {
     const double size = 30;
 
     return MouseRegion(
-      child: DecoratedBox(
-          key: menuKey,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: m.Theme.of(context).colorScheme.surfaceDim,
-              border: Border.all(
-                  color:
-                      m.Theme.of(context).colorScheme.surfaceContainerHighest,
-                  width: 1)),
-          child: currentMenu != null
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                  child: Row(children: [
-                    for (var e in reactions!)
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: tiamat.Tile.dim(
+            key: menuKey,
+            caulkBorderLeft: true,
+            caulkBorderRight: true,
+            caulkBorderTop: true,
+            caulkBorderBottom: true,
+            child: currentMenu != null
+                ? Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                    child: Row(children: [
+                      for (var e in reactions!)
+                        buildAction(
+                            name: e.shortcode,
+                            child: EmojiWidget(
+                              e,
+                              height: size / 1.5,
+                              padding: const EdgeInsetsGeometry.all(2),
+                            ),
+                            onTap: () {
+                              currentMenu?.timeline.room
+                                  .addReaction(currentMenu!.event, e);
+                            }),
+                      if (currentMenu!.addReactionAction != null)
+                        buildAction(
+                            name: currentMenu!.addReactionAction!.name,
+                            child: m.Icon(
+                              currentMenu!.addReactionAction!.icon,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: size / 1.5,
+                            ),
+                            onTap: () => togglePopupMenu(
+                                currentMenu!.addReactionAction!)),
+                      if (currentMenu!.addReactionAction != null)
+                        SizedBox(height: 10, child: VerticalDivider()),
+                      for (var e in currentMenu!.primaryActions)
+                        buildAction(
+                            name: e.name,
+                            child: m.Icon(
+                              e.icon,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: size / 1.5,
+                            ),
+                            size: size,
+                            onTap: e.secondaryMenuBuilder != null
+                                ? () => togglePopupMenu(e)
+                                : () => e.action?.call(context)),
                       buildAction(
-                          name: e.shortcode,
-                          child: EmojiWidget(
-                            e,
-                            height: size / 1.5,
-                            padding: const EdgeInsetsGeometry.all(2),
-                          ),
-                          onTap: () {
-                            currentMenu?.timeline.room
-                                .addReaction(currentMenu!.event, e);
-                          }),
-                    if (currentMenu!.addReactionAction != null)
-                      buildAction(
-                          name: currentMenu!.addReactionAction!.name,
-                          child: m.Icon(
-                            currentMenu!.addReactionAction!.icon,
-                            color: Theme.of(context).colorScheme.secondary,
-                            size: size / 1.5,
-                          ),
-                          onTap: () =>
-                              togglePopupMenu(currentMenu!.addReactionAction!)),
-                    if (currentMenu!.addReactionAction != null)
-                      SizedBox(height: 10, child: VerticalDivider()),
-                    for (var e in currentMenu!.primaryActions)
-                      buildAction(
-                          name: e.name,
-                          child: m.Icon(
-                            e.icon,
-                            color: Theme.of(context).colorScheme.secondary,
-                            size: size / 1.5,
-                          ),
+                          name: "Options",
+                          child: Icon(m.Icons.more_vert),
                           size: size,
-                          onTap: e.secondaryMenuBuilder != null
-                              ? () => togglePopupMenu(e)
-                              : () => e.action?.call(context)),
-                    buildAction(
-                        name: "Options",
-                        child: Icon(m.Icons.more_vert),
-                        size: size,
-                        contextMenuItems: currentMenu!.secondaryActions
-                            .map((e) => ContextMenuItem(
-                                text: e.name,
-                                icon: e.icon,
-                                onPressed: () => e.action?.call(context)))
-                            .toList())
-                  ]),
-                )
-              : Container()),
+                          contextMenuItems: currentMenu!.secondaryActions
+                              .map((e) => ContextMenuItem(
+                                  text: e.name,
+                                  icon: e.icon,
+                                  onPressed: () => e.action?.call(context)))
+                              .toList())
+                    ]),
+                  )
+                : Container()),
+      ),
     );
   }
 

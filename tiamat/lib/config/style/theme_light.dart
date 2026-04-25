@@ -1,5 +1,5 @@
+import 'package:tiamat/config/custom_theme/custom_foundation.dart';
 import 'package:tiamat/config/style/theme_base.dart';
-import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,7 @@ class ThemeLight {
 
     return ThemeBase.theme(scheme).copyWith(extensions: [
       const ThemeSettings(),
-      FoundationSettings(color: scheme.surfaceDim),
+      FoundationSettings(settings: CustomFoundation(color: scheme.surfaceDim)),
       const ExtraColors(
           codeHighlight: Color(0xffc678dd),
           linkColor: Color.fromARGB(255, 80, 80, 255))

@@ -65,8 +65,6 @@ class ThemeChangerState extends State<ThemeChanger>
   @override
   void initState() {
     super.initState();
-    final brightness =
-        SchedulerBinding.instance.platformDispatcher.platformBrightness;
 
     theme = widget.initialTheme;
 
