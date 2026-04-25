@@ -90,8 +90,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
                           BoxDecoration(borderRadius: BorderRadius.circular(8)),
                       child: buildDefault()),
                 ),
-                if (widget.canFullscreen &&
-                        widget.stream.type == VoipStreamType.video ||
+                if (widget.stream.type == VoipStreamType.video ||
                     widget.stream.type == VoipStreamType.screenshare)
                   SizedBox(
                     width: 40,
