@@ -993,7 +993,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackup": "Záloha zpráv",
+    "labelMatrixMessageBackup": "Obnova zpráv",
     "@labelMatrixMessageBackup": {
         "description": "TItle label for matrix message backup settings",
         "type": "text",
