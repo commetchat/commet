@@ -1,0 +1,1101 @@
+{
+    "labelRoomsList": "Rum",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "slip en fil for at uploade...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Nylig aktivitet",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Advarsler",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Rum",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Invitationer",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Ingen beskeder er blevet fasthængt!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Du har ikke adgang til at sende beskeder i det her rum",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipSpaceSettings": "samlings instillinger",
+    "@tooltipSpaceSettings": {
+        "description": "Tooltip for the button that opens space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "tilføj rum",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "rum",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "samlinger",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "tilgængelige rum",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "offentlig samling",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "privat samling",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceGettingText": "velkommen til{spaceName}",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptAddSpace": "Tilføj samling",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAttachmentProcessingSendOriginal": "send Original",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Advarsel: dette billede indeholder locations metadata",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomName": "Rum navn",
+    "@promptRoomName": {
+        "description": "Prompt to enter a room name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceName": "samlings navn",
+    "@promptSpaceName": {
+        "description": "Prompt to enter a space name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptTopic": "emne(optionelt)",
+    "@promptTopic": {
+        "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPrivateExplanation": "dette rum er kun tilgængeligt igennem invitation",
+    "@roomVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' room visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPublicExplanation": "dette rum er offentligt tilgængligt af alle på internettet",
+    "@roomVisibilityPublicExplanation": {
+        "description": "Explains what 'public' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "spaceVisibilityPrivateExplanation": "dette rum vil kun være tilgængligt ved invitation",
+    "@spaceVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "spaceVisibilityPublicExplanation": "dette rum vil være offentligt tilgængeligt af alle på internettet",
+    "@spaceVisibilityPublicExplanation": {
+        "description": "Explains what 'public' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "privat",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "offentlig",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "slå kryptering til",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "hvis kryptering er til kan det ikke slås fra senere",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Opret Rum!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceCreation": "Opret Samling!",
+    "@promptConfirmSpaceCreation": {
+        "description": "Label for a button which confirms the creation of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "deltag Rum!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceJoin": "deltag samlingen!",
+    "@promptConfirmSpaceJoin": {
+        "description": "Label for a button which confirms the joining of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "log ind",
+    "@promptSubmitLogin": {
+        "description": "Prompt to submit the username and password, and attempt to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginFailed": "log ind fejlede...",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginError": "der skete en fejl",
+    "@messageLoginError": {
+        "description": "A generic error message to convey that an error occured when attempting to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageAlreadyLoggedIn": "du er allerede logget ind på denne konto",
+    "@messageAlreadyLoggedIn": {
+        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpace": "forlad samling",
+    "@promptLeaveSpace": {
+        "description": "Text on a button to leave a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpaceConfirmation": "er du sikker du vil forlade {spaceName}?",
+    "@promptLeaveSpaceConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave a space",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptLeaveRoom": "forlad Rum",
+    "@promptLeaveRoom": {
+        "description": "Text on a button to leave a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveRoomConfirmation": "er du sikker på du vil forlade {roomName}?",
+    "@promptLeaveRoomConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "notificationSettingsNotSupported": "notificationer er ikke understøttet af dette system",
+    "@notificationSettingsNotSupported": {
+        "description": "Message to display when push notifications are not supported",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperMode": "udviklertilstand",
+    "@labelSettingsDeveloperMode": {
+        "description": "Header for the settings to enable developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperModeExplanation": "Viser extra information, brugbart til udviklere",
+    "@labelSettingsDeveloperModeExplanation": {
+        "description": "Explains what developer mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelStickerCompatibility": "klistermærke kompatibilitet",
+    "@labelStickerCompatibility": {
+        "description": "Header for the settings to enable sticker compatibility mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceAddress": "samlings adresse:",
+    "@promptSpaceAddress": {
+        "description": "Short label to prompt for the input of a space address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#fantastisk-samling",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewSpace": "Opret ny samling",
+    "@promptCreateNewSpace": {
+        "description": "Prompt to create a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingSpace": "deltag eksisterende samling",
+    "@promptJoinExistingSpace": {
+        "description": "Prompt to join a space which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenTitle": "Administrer underrum",
+    "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+        "description": "Title for permission to manage children",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenDescription": "tillad brugeren at administrere hvilke rum der er en del af denne samling",
+    "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+        "description": "Describes the permission to manage child rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsGeneral": "General",
+    "@labelSpaceSettingsGeneral": {
+        "description": "Label for general space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAppearanceSettings": "Udseende",
+    "@labelSpaceAppearanceSettings": {
+        "description": "Label for space appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceEmoticonSettings": "Humørikoner",
+    "@labelSpaceEmoticonSettings": {
+        "description": "Label for space emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpacePermissionSettings": "tilladelser",
+    "@labelSpacePermissionSettings": {
+        "description": "Label for space permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceDeveloperSettings": "Udvikler",
+    "@labelSpaceDeveloperSettings": {
+        "description": "Label for space developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategorySpace": "samlings Indstillinger",
+    "@labelSettingsCategorySpace": {
+        "description": "Label for the overall space settings category",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "invitationer for {user}",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelInvitations": "invitationer",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOpenDirectMessage": "Skriv besked",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Denne fil er for stor til opload!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Maks fil størrelse overgået",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "send en krypteret besked",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "send en besked",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "rum adresse",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#fantastisk-rum",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCouldNotLoadRoomPreview": "Kunne ikke indlæse forhåndsvisning af rummet",
+    "@labelCouldNotLoadRoomPreview": {
+        "description": "Error message for when a room preview was not able to be loaded",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSelectedRooms": "tilføj valgte rum",
+    "@promptAddSelectedRooms": {
+        "description": "Prompt to add the selected rooms to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewRoom": "Opret nyt rum",
+    "@promptCreateNewRoom": {
+        "description": "Prompt to create a new room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingRoom": "tilslut eksisterende rum",
+    "@promptJoinExistingRoom": {
+        "description": "Prompt to join a room which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingRoom": "brug eksisterende rum",
+    "@promptUseExistingRoom": {
+        "description": "Button text to choose to use an existing room when adding a room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Direkte beskeder",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Direkte beskeder",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "Venter på den anden enhed accepterer anmodninge",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** har anmodet om at verificere din session",
+    "@messageMatrixSessionVerificationRequest": {
+        "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        "type": "text",
+        "placeholders": {
+            "username": {}
+        }
+    },
+    "messageSasEmojiVerificationPrompt": "Check om emojis er de samme og at de er samme rækkefølge på den anden enhed",
+    "@messageSasEmojiVerificationPrompt": {
+        "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmEmojiMatches": "De matcher!",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "de matcher ikke",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageVerificationComplete": "verificering færdiggjort!",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
+        "type": "text",
+        "placeholders": {}
+    },
+    "setupPageBeforeYouBegin": "før du begynder...",
+    "@setupPageBeforeYouBegin": {
+        "description": "Title for first time setup page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "#Unified Push\nDenne version af Commet var bygget uden Google Play Services. Hvis du vil modtage notifikationer skal du bruge Unified Push](https://unifiedpush.org/).\n\nhvis du allerede har Unified Push kompatibel distributør app installeret kan du konfigurere den herunder\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Aktiver Unified Push",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Slutpunkt",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "intet Slutpunkt fundet, noget gik galt ;(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHomeserver": "Hjemmeserver",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUsername": "Brugernavn",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Kodeord",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsStickerCompatibilityExplanation": "i nogle matrix klienter vil at sende et klistermærke som 'm.sticker' gøre den ikke indlæser ordenligt. aktiveringen af denne indstiling vil sende klistermærker som m.image hvilket vil tillade dem at indlæse ordenligt",
+    "@labelSettingsStickerCompatibilityExplanation": {
+        "description": "Explains what sticker compatibility mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppGeneral": "General",
+    "@labelSettingsAppGeneral": {
+        "description": "Label for the App General settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAppearance": "Udseende",
+    "@labelSettingsAppAppearance": {
+        "description": "Label for the App Appearance settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviour": "Vindue opførseler",
+    "@labelSettingsWindowBehaviour": {
+        "description": "Label for the Window Behaviour settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAdvanced": "Advanceret",
+    "@labelSettingsAppAdvanced": {
+        "description": "Label for the App Advanced settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppNotifications": "Notificationer",
+    "@labelSettingsAppNotifications": {
+        "description": "Label for the App notifications settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppDeveloperUtils": "Udviklings værktøjer",
+    "@labelSettingsAppDeveloperUtils": {
+        "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryApp": "applikations Indstillinger",
+    "@labelSettingsCategoryApp": {
+        "description": "Label for the settings category of the overall App settings/",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviourTitle": "Vindue opførsel",
+    "@labelSettingsWindowBehaviourTitle": {
+        "description": "Header for the window behaviour section of settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseToggle": "minimer ved lukning",
+    "@labelSettingsMinimizeOnCloseToggle": {
+        "description": "Label for the toggle to turn on and off minimize on close",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseExplanation": "Ved lukning af vinduet vil applikationen blive minimeret istedet for lukket",
+    "@labelSettingsMinimizeOnCloseExplanation": {
+        "description": "Explains what the 'minimize on close' setting does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThirdPartyServicesTitle": "Tredjepartstjenester",
+    "@labelThirdPartyServicesTitle": {
+        "description": "Header for the third party services section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchToggle": "Gif Søgning",
+    "@labelGifSearchToggle": {
+        "description": "Label for the toggle for enabling and disabling gif search",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchDescription": "aktiver brugen af Tenor gif seach. anmodninger vil blive proxied via {proxyUrl}",
+    "@labelGifSearchDescription": {
+        "description": "Explains that gifs will be fetched via proxy",
+        "type": "text",
+        "placeholders": {
+            "proxyUrl": {}
+        }
+    },
+    "labelUrlPreviewInEncryptedChatTitle": "URL Forhåndsvisning i krypterede Samtaler",
+    "@labelUrlPreviewInEncryptedChatTitle": {
+        "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeAmoled": "Amoled",
+    "@labelThemeAmoled": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppTheme": "Tema",
+    "@labelSettingsAppTheme": {
+        "description": "Label for theme section of app appearance",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppLogs": "Logbog",
+    "@labelSettingsAppLogs": {
+        "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNone": "lydløs",
+    "@labelPushRuleNone": {
+        "description": "Label for the push rule which sends no notifications",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsNotifications": "Notifikationer",
+    "@labelRoomSettingsNotifications": {
+        "description": "Label for the notifications section in room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSaveEmoticon": "Gem!",
+    "@promptConfirmSaveEmoticon": {
+        "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleAdmin": "administrator",
+    "@labelMatrixPermissionsRoleAdmin": {
+        "description": "Label for the room administrator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleModerator": "Moderator",
+    "@labelMatrixPermissionsRoleModerator": {
+        "description": "Label for the room moderator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsGeneral": "General",
+    "@labelRoomSettingsGeneral": {
+        "description": "Label for general room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsAppearance": "udseende",
+    "@labelRoomSettingsAppearance": {
+        "description": "Label for room appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsSecurity": "sikkerhed",
+    "@labelRoomSettingsSecurity": {
+        "description": "Label for room security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsEmoticons": "humørikoner",
+    "@labelRoomSettingsEmoticons": {
+        "description": "Label for room Emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsDeveloper": "udvikler",
+    "@labelRoomSettingsDeveloper": {
+        "description": "Label for room developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsPermissions": "tilladelser",
+    "@labelRoomSettingsPermissions": {
+        "description": "Label for room permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptMatrixVerifySession": "godkend",
+    "@promptMatrixVerifySession": {
+        "description": "Text on the button to verify a session",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAccountSessions": "Sessioner",
+    "@labelMatrixAccountSessions": {
+        "description": "Title label for account sessions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabProfile": "profil",
+    "@labelSettingsTabProfile": {
+        "description": "Label for the Profile settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabSecurity": "sikkerhed",
+    "@labelSettingsTabSecurity": {
+        "description": "Label for the Security settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabEmoticons": "humørikoner",
+    "@labelSettingsTabEmoticons": {
+        "description": "Label for the Emoticons settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabDeveloper": "udviklings værktøjer",
+    "@labelSettingsTabDeveloper": {
+        "description": "Label for the Developer settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryAccount": "Konto",
+    "@labelSettingsCategoryAccount": {
+        "description": "Label for the settings category Account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLogoutSingleAccount": "Log ud",
+    "@promptLogoutSingleAccount": {
+        "description": "Label for button in settings to log out of an account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageEditedMarker": "(Redigeret)",
+    "@messageEditedMarker": {
+        "description": "Short text to mark that a message has been edited",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerEmojiTab": "Humørikon",
+    "@labelEmojiPickerEmojiTab": {
+        "description": "Label for the emoji tab in emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerStickerTab": "Klistermærke",
+    "@labelEmojiPickerStickerTab": {
+        "description": "Label for the sticker tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerGifTab": "Gif",
+    "@labelEmojiPickerGifTab": {
+        "description": "Label for the gif search tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCancelEventSend": "Afbryd",
+    "@promptCancelEventSend": {
+        "description": "When a message failed to send, this prompts to cancel sending the event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRetryEventSend": "Prøv igen",
+    "@promptRetryEventSend": {
+        "description": "When a message failed to send, this prompts to retry sending the event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReply": "Svar",
+    "@promptReply": {
+        "description": "Generic prompt to reply to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEdit": "Rediger",
+    "@promptEdit": {
+        "description": "Generic prompt to edit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOptions": "Valgmuligheder",
+    "@promptOptions": {
+        "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSettings": "indstillinger",
+    "@promptSettings": {
+        "description": "Generic prompt for settings, usually will open a settings menu or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHome": "Hjem",
+    "@promptHome": {
+        "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAccept": "Godkend",
+    "@promptAccept": {
+        "description": "Generic prompt to accept something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReject": "Afvis",
+    "@promptReject": {
+        "description": "Generic prompt to reject something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptApply": "Anvende",
+    "@promptApply": {
+        "description": "Generic prompt to apply something, probably a setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDelete": "Slet",
+    "@promptDelete": {
+        "description": "Generic prompt to delete something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDownload": "Installer",
+    "@promptDownload": {
+        "description": "Generic prompt to download something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoin": "Deltag",
+    "@promptJoin": {
+        "description": "Generic prompt to join a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmit": "Indsend",
+    "@promptSubmit": {
+        "description": "Generic prompt to submit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptContinue": "Fortsæt",
+    "@promptContinue": {
+        "description": "Generic prompt to continue with some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirm": "Bekræft",
+    "@promptConfirm": {
+        "description": "Generic prompt to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDone": "Færdig",
+    "@promptDone": {
+        "description": "Generic prompt to confirm that you are done",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReset": "Nulstil",
+    "@promptReset": {
+        "description": "Generic prompt to reset something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnable": "Aktiver",
+    "@promptEnable": {
+        "description": "Generic prompt to enable something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRestore": "Gendan",
+    "@promptRestore": {
+        "description": "Generic prompt to restore something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptBack": "Tilbage",
+    "@promptBack": {
+        "description": "Prompt text to go backwards, probably for navigation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopy": "kopier",
+    "@promptCopy": {
+        "description": "Prompt to copy text",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopyComplete": "Kopieret!",
+    "@promptCopyComplete": {
+        "description": "Prompt text for after a copy has been completed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelOr": "eller",
+    "@labelOr": {
+        "description": "Text that is placed between two or more options: [button1] or [button2]",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsTitle": "besked effekter",
+    "@labelMessageEffectsTitle": {
+        "description": "Header for the settings tile for message effects, such as confetti",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Skift Banner",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Set Status",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "Ryd Status",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "Sæt Emblem",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "Sæt Biografi",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "Ryd Biografi",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Del Tidszone",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Fjern Tidszone",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Rediger Farve Tema",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "Indstil farveoverstyring",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "Fjern farveoverstyring",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "Vis rå profil",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "Er du sikker på du vil dele din tidszone '{timezone}'offentligt?",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "Skriv noget om dig selv",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "Dine emblemer",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "Du har ikke nogen emblemer. Du kan få emblemer ved at donere eller hjælpe med udviklingen af Commet",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Begrænset samling",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Opkald fra {callingUserName}!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelTextChatDescription": "Simpel tekst chat, med alle de funktioner du vil have! Send beskeder,medier,klistermærker,Gifs og mere!",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoiceChatDescription": "Et dedikeret rum til opkald med 2 eller flere personer",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "Lav en delt kalender til at holde styr på jeres planer, og importer og planlæg fra andre kalendere for at lade dine venner vide hvornår du har travlt.",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Opret rum",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Eksisterende rum",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Tilslut rum",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Tekst kanal",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Stemme kanal",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Billed album",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Kalender",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Samling",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    }
+}

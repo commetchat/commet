@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_se
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:livekit_client/livekit_client.dart' as lk;
 import 'package:matrix/matrix.dart';
@@ -141,9 +142,11 @@ class MatrixLivekitBackend {
     final jwt = data["jwt"];
 
     final roomOptions = lk.RoomOptions(
-      adaptiveStream: true,
-      dynacast: true,
-    );
+        adaptiveStream: true,
+        dynacast: true,
+        defaultAudioPublishOptions: lk.AudioPublishOptions(
+          audioBitrate: (preferences.streamAudioBitrate.value * 1000).toInt(),
+        ));
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
     await lkRoom.prepareConnection(sfuUrl, jwt);

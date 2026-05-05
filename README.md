@@ -10,8 +10,7 @@
 </p>
 
 ### Your space to connect
-
-Commet is a client for [Matrix](https://matrix.org) focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client.
+We are building a client for [Matrix](https://matrix.org) focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client.
 
 
 <p align="center" style="padding-top:20px">
@@ -60,14 +59,14 @@ SHrEquc3Cw==
 </details>
 
 # Translation
-Help translate Commet to your language on [Weblate](https://hosted.weblate.org/projects/commetchat/commet/)
+Help translate to your language on [Weblate](https://hosted.weblate.org/projects/commetchat/commet/)
 
 <a href="https://hosted.weblate.org/engage/commetchat/">
 <img src="https://hosted.weblate.org/widget/commetchat/commet/multi-auto.svg" alt="Translation status" />
 </a>
 
 # Development
-Commet is built using [Flutter](https://flutter.dev), currently v3.41.1 
+To build, you require [Flutter](https://flutter.dev), currently v3.41.1 
 
 This repo currently has a monorepo structure, containing two flutter projects: Commet and Tiamat. Commet is the main client, and Tiamat is a sort of wrapper around Material with some extra goodies, which is used to maintain a consistent style across the app. Tiamat may eventually be moved to its own repo, but for now it is maintained here for ease of development.
 ## Building
@@ -81,20 +80,20 @@ sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv ffmpeg libmimall
 ```
 
 ### 3. Fetch Dependencies
-You will need to change directory in to commet, then fetch dependencies
+You will need to change directory in to the project, then fetch dependencies
 ```bash
 cd commet
 flutter pub get
 ```
 
 ### 4. Code Generation
-We make use of procedural code generation in some parts of commet. As a rule, generated code will not be checked in to git, and will need to be generated before building.
+We make use of procedural code generation in some parts of the project. As a rule, generated code will not be checked in to git, and will need to be generated before building.
 
 To run code generation, run the script within the `commet` directory:
 `dart run scripts/codegen.dart`
 
 ### 5. Building
-When building Commet, there are some additional command line arguments that must be used to configure the build.
+When building, there are some additional command line arguments that must be used to configure the build.
 
 **Required**
 | **Argument** | **Valid Values**                                                          | **Description**                                                                                              |

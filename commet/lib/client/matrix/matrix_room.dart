@@ -701,10 +701,31 @@ class MatrixRoom extends Room {
 
     var ids = roles.keys;
 
-    var result =
-        ids.map((e) => (getMemberOrFallback(e), MatrixRole(roles[e]))).toList();
+    List<(Member, MatrixRole)> result = List.empty(growable: true);
 
-    result.removeWhere((element) => element.$2.rank == 0);
+    var creationEvent = _matrixRoom.states[matrix.EventTypes.RoomCreate]?[""];
+    var creator = creationEvent?.senderId;
+    var roomVersion = int.tryParse(_matrixRoom.roomVersion ?? "1");
+
+    if (roomVersion != null && roomVersion >= 12) {
+      if (_matrixRoom.roomVersion != null && creator != null) {
+        var additionalCreators =
+            creationEvent?.content.tryGetList<String>("additional_creators");
+
+        for (var id in [
+          creator,
+          if (additionalCreators != null) ...additionalCreators
+        ]) {
+          result.add((getMemberOrFallback(id), MatrixRole(150)));
+        }
+      }
+    }
+
+    result.addAll(ids
+        .map((e) => (getMemberOrFallback(e), MatrixRole(roles[e])))
+        .where((element) => element.$2.rank != 0));
+
+    result;
 
     result.sort((a, b) => b.$2.rank.compareTo(a.$2.rank));
 

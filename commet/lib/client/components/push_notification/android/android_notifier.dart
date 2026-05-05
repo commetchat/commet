@@ -450,4 +450,16 @@ class AndroidNotifier implements Notifier {
       NotificationDetails(android: details),
     );
   }
+
+  @override
+  Future<void> disableBadges() {
+    // TODO: implement disableBadges
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> enableBadges() {
+    // TODO: implement enableBadges
+    throw UnimplementedError();
+  }
 }

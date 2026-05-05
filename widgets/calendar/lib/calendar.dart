@@ -166,8 +166,6 @@ class MatrixCalendar {
 
       var type = event['type'];
 
-      print("CalendarWidget: received ${type} state event");
-
       var stateKey = event['state_key'] ?? "";
 
       if (type == "chat.commet.calendar_event" &&
@@ -429,29 +427,19 @@ class MatrixCalendar {
 
     var existingEventId = existing?.event?.eventId;
 
-    print("Existing event for this event:  ${existing}");
-
     controller.removeWhere((e) => e.event?.data.uid == event.uid);
 
     print("Removed existing events");
     var calendarEvents = fromRfcEvent(event, eventType: eventType);
     for (var calendarEvent in calendarEvents) {
-      print("A");
       var color = config.getColorFromUser(widgetApi.userId);
 
-      print("B");
       calendarEvent = calendarEvent.copyWith(color: color);
       calendarEvent.event!.senderId = widgetApi.userId;
-
-      print("C");
-
-      print("D");
     }
 
-    print("Added event");
-
     var calendarId = await getCalendarId(createIfNotFound: true);
-    print("Calendar id: $calendarId");
+
     if (calendarId == null) return false;
 
     var result = await widgetApi.sendAction(FromWidgetAction.sendEvent, {
@@ -468,9 +456,6 @@ class MatrixCalendar {
       }
     });
 
-    print("Sent event!");
-    print(result);
-
     if (existingEventId != null) {
       await widgetApi.sendAction(FromWidgetAction.sendEvent, {
         "type": "m.room.redaction",
@@ -483,11 +468,8 @@ class MatrixCalendar {
 
   Future<String?> getCalendarId({bool createIfNotFound = false}) async {
     var calendar = roomState["chat.commet.calendars"];
-    print("Getting calendar id, create: $createIfNotFound");
 
     String? calendarId;
-
-    print("State: $calendar");
 
     try {
       var calendars = calendar![""]["content"]["calendars"] as List<dynamic>;
@@ -499,9 +481,6 @@ class MatrixCalendar {
     if (calendarId == null && createIfNotFound) {
       var result = await widgetApi.sendAction(FromWidgetAction.sendEvent,
           {"type": "chat.commet.calendar_create", "content": {}});
-
-      print("Sent action");
-      print("Result: $result");
 
       if (result.containsKey("event_id")) {
         calendarId = result["event_id"] as String;
@@ -515,8 +494,6 @@ class MatrixCalendar {
             ]
           }
         });
-
-        print("Added calendar to room state");
       }
     }
 

@@ -66,6 +66,7 @@ class ComponentRegistry {
       MatrixKeyVerificationComponent(client),
       MatrixPollComponent(client),
       MatrixWidgetComponent(client),
+      MatrixGifComponent(client),
     ];
   }
 
@@ -75,7 +76,6 @@ class ComponentRegistry {
   ) {
     return [
       MatrixRoomEmoticonComponent(client, room),
-      MatrixGifComponent(client, room),
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
