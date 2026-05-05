@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/runners/matrix_widget_desktop_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/matrix_widget_inappwebview_runner.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -77,17 +78,15 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     Log.i("Registering Matrix Widget Runner: $runner");
     runners.add(runner);
 
-    Future.delayed(Duration(seconds: 1)).then((_) {
+    Future.delayed(Duration(seconds: 2)).then((_) {
       runner.messageTransport.send(runner.eventHandler
           .generateToWidgetEvent(action: "capabilities", data: {}));
 
-      Future.delayed(Duration(seconds: 1)).then((_) {
-        runner.messageTransport.send(runner.eventHandler
-            .generateToWidgetEvent(action: "notify_capabilities", data: {
-          "requested": ["io.element.requires_client"],
-          "approved": ["io.element.requires_client"]
-        }));
-      });
+      // I can't explain why this is platform specific
+      if (PlatformUtils.isAndroid) {
+        (runner.capabilities as MatrixWidgetCapabilitiesManager)
+            .notifyCapabilities(["io.element.requires_client"]);
+      }
     });
   }
 

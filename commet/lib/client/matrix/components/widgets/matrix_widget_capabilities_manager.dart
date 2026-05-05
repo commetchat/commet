@@ -41,14 +41,21 @@ class MatrixWidgetCapabilitiesManager
 
     var granted = grantCapabilities(picked);
 
-    runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
-        action: "notify_capabilities",
-        data: {
-          "requested": capabilities,
-          "approved": grantedCapabilities.keys.toList()
-        }));
+    notifyCapabilities(capabilities);
 
     return granted;
+  }
+
+  void notifyCapabilities(List<String> requested) {
+    List<String> approved =
+        List.from(grantedCapabilities.keys.toList(), growable: true);
+    if (approved.contains("io.element.requires_client") == false) {
+      approved.add("io.element.requires_client");
+    }
+
+    runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+        action: "notify_capabilities",
+        data: {"requested": requested, "approved": approved}));
   }
 
   (String, String?, String?) parseCapability(String name) {
