@@ -5,6 +5,7 @@ import 'package:commet/client/components/event_search/event_search_component.dar
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
+import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -31,6 +32,12 @@ class RoomQuickAccessMenu {
     final calendar = room.getComponent<CalendarRoom>();
     final bool canCall =
         calls != null && direct?.isRoomDirectMessage(room) == true;
+
+    final bool hasWidgets = room.client
+            .getComponent<WidgetComponent>()
+            ?.getWidgets(room)
+            .isNotEmpty ==
+        true;
 
     actions = [
       if (invitation != null)
@@ -68,6 +75,11 @@ class RoomQuickAccessMenu {
               name: CommonStrings.promptSearch,
               action: (context) => EventBus.startSearch.add(null),
               icon: Icons.search),
+        if (hasWidgets)
+          RoomQuickAccessMenuEntry(
+              name: "Widgets",
+              action: (context) => EventBus.openWidgets.add(null),
+              icon: Icons.widgets),
       ],
       if (Layout.desktop)
         RoomQuickAccessMenuEntry(

@@ -1,0 +1,64 @@
+import 'package:commet/client/components/widgets/widget_component.dart';
+import 'package:commet/client/room.dart';
+import 'package:flutter/material.dart';
+
+import 'package:tiamat/tiamat.dart' as tiamat;
+
+class RoomWidgetsView extends StatefulWidget {
+  const RoomWidgetsView(this.room, {super.key});
+  final Room room;
+
+  @override
+  State<RoomWidgetsView> createState() => _RoomWidgetsViewState();
+}
+
+class _RoomWidgetsViewState extends State<RoomWidgetsView> {
+  late List<UserWidgetInfo> widgets;
+
+  @override
+  void initState() {
+    var client = widget.room.client;
+    var widgetComponent = client.getComponent<WidgetComponent>();
+    widgets = widgetComponent!.getWidgets(widget.room);
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return tiamat.Tile.low(
+      child: Column(
+        children: [
+          Flexible(
+            child: ListView.builder(
+              padding: EdgeInsets.all(0),
+              itemCount: widgets.length,
+              itemBuilder: (context, index) {
+                var data = widgets[index];
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: SizedBox(
+                      height: 40,
+                      child: tiamat.TextButton(
+                        data.name,
+                        icon: Icons.widgets,
+                        onTap: () {
+                          var client = widget.room.client;
+                          var widgetComponent =
+                              client.getComponent<WidgetComponent>();
+                          widgetComponent!.openWidget(data, widget.room);
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,6 +1,7 @@
 (() => {
     function sendIpc(msg) {
-        window.ipc.postMessage(JSON.stringify(msg));
+        window.ipc.postMessage(JSON.stringify({ "type": "WebRTC", "data": JSON.stringify(msg) }));
+
     }
 
     function uuid() {

@@ -453,9 +453,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 }
 
 class ProcessOutputViewer extends StatefulWidget {
-  const ProcessOutputViewer(this.process, {super.key, this.showStdErr = false});
+  const ProcessOutputViewer(this.process,
+      {super.key, this.showStdErr = false, this.showStdOut = true});
   final Process process;
   final bool showStdErr;
+  final bool showStdOut;
 
   @override
   State<ProcessOutputViewer> createState() => _ProcessOutputViewerState();
@@ -472,8 +474,10 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
     super.initState();
 
     subs = [
-      widget.process.stdout.transform(utf8.decoder).listen(onStdout),
-      widget.process.stderr.transform(utf8.decoder).listen(onStderr),
+      if (widget.showStdOut)
+        widget.process.stdout.transform(utf8.decoder).listen(onStdout),
+      if (widget.showStdErr)
+        widget.process.stderr.transform(utf8.decoder).listen(onStderr),
     ];
   }
 
@@ -498,25 +502,26 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
         spacing: 4,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: tiamat.Panel(
-              header: "stdout",
-              child: SingleChildScrollView(
-                child: Scrollbar(
-                  controller: stdoutScrollController,
-                  child: SingleChildScrollView(
+          if (widget.showStdOut)
+            Expanded(
+              child: tiamat.Panel(
+                header: "stdout",
+                child: SingleChildScrollView(
+                  child: Scrollbar(
                     controller: stdoutScrollController,
-                    scrollDirection: Axis.horizontal,
-                    child: Codeblock(
-                      text: stdOut,
-                      clipboardText: stdOut,
-                      language: "stdout",
+                    child: SingleChildScrollView(
+                      controller: stdoutScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Codeblock(
+                        text: stdOut,
+                        clipboardText: stdOut,
+                        language: "stdout",
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
           if (widget.showStdErr)
             Expanded(
               child: tiamat.Panel(

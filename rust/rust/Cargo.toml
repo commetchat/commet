@@ -19,7 +19,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 stderrlog = "0.6.0"
 tao = "0.34.6"
-tokio = "1.50.0"
+tokio = { version = "1.50.0", features = ["io-util"] }
 uuid = "1.23.0"
 wry = "0.54.4"
 

@@ -48,6 +48,8 @@ class EventBus {
 
   static StreamController<void> openCalendar = StreamController.broadcast();
 
+  static StreamController<void> openWidgets = StreamController.broadcast();
+
   static StreamController<void> toggleRoomSidePanel =
       StreamController.broadcast();
 

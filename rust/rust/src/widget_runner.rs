@@ -2,6 +2,7 @@ use std::{sync::Arc, thread};
 
 use image::GenericImageView;
 use log::{error, info};
+use serde::{Deserialize, Serialize};
 use tao::{
     dpi::{PhysicalSize, Size},
     event::{Event, WindowEvent},
@@ -19,6 +20,7 @@ use tokio::sync::mpsc;
 use wry::WebViewBuilder;
 
 use crate::widget_runner;
+mod transceiver;
 mod webrtc;
 
 #[derive(Debug)]
@@ -30,6 +32,14 @@ enum RuntimeMessage {
 enum UserEvent {
     ResolvePromise(String, String),
     RaiseEvent(String, String),
+    PostMessage(String),
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum IpcMessage {
+    Widget { data: String },
+    WebRTC { data: String },
 }
 
 pub fn run() {
@@ -47,10 +57,15 @@ pub fn run() {
     }
 
     let mut title: Option<String> = None;
+    let mut url: Option<String> = None;
 
     for arg in std::env::args() {
         if arg.starts_with("--title=") {
             title = Some(arg["--title=".len()..].to_string());
+        }
+
+        if arg.starts_with("--url=") {
+            url = Some(arg["--url=".len()..].to_string());
         }
     }
 
@@ -67,24 +82,49 @@ pub fn run() {
         info!("Spawning tokio runtime");
 
         rt.block_on(async {
+            widget_runner::transceiver::read_stdin(event_proxy.clone()).await;
+
             loop {
                 let val = rx.recv().await;
 
-                // info!("Handling IPC Request: {:?}", val);
+                info!("Handling IPC Request: {:?}", val);
 
                 match val {
                     Some(val) => match val {
                         RuntimeMessage::HandleWebIpcCommand(val) => {
-                            let result =
-                                widget_runner::webrtc::handle(val, event_proxy.clone()).await;
+                            let msg = serde_json::from_str::<IpcMessage>(&val).unwrap();
 
-                            if let Some(result) = result {
-                                event_proxy
-                                    .send_event(UserEvent::ResolvePromise(
-                                        result.promise_id,
-                                        serde_json::to_string(&result.value).unwrap(),
-                                    ))
-                                    .unwrap();
+                            match msg {
+                                IpcMessage::Widget { data } => {
+                                    let result = widget_runner::transceiver::handle(
+                                        data,
+                                        event_proxy.clone(),
+                                    )
+                                    .await;
+
+                                    if let Some(result) = result {
+                                        event_proxy
+                                            .send_event(UserEvent::ResolvePromise(
+                                                result.promise_id,
+                                                serde_json::to_string(&result.value).unwrap(),
+                                            ))
+                                            .unwrap();
+                                    }
+                                }
+                                IpcMessage::WebRTC { data } => {
+                                    let result =
+                                        widget_runner::webrtc::handle(data, event_proxy.clone())
+                                            .await;
+
+                                    if let Some(result) = result {
+                                        event_proxy
+                                            .send_event(UserEvent::ResolvePromise(
+                                                result.promise_id,
+                                                serde_json::to_string(&result.value).unwrap(),
+                                            ))
+                                            .unwrap();
+                                    }
+                                }
                             }
                         }
                     },
@@ -122,8 +162,7 @@ pub fn run() {
 
     let tx = Arc::new(tx);
 
-    let builder = WebViewBuilder::new()
-        .with_url("https://commet.chat/")
+    let mut builder = WebViewBuilder::new()
         .with_incognito(true)
         .with_ipc_handler(move |data| {
             let result = tx
@@ -141,6 +180,14 @@ pub fn run() {
             println!("new window req: {url} {features:?}");
             wry::NewWindowResponse::Allow
         });
+
+    match url {
+        Some(url) => builder = builder.with_url(url),
+        None => (),
+    }
+
+    builder =
+        builder.with_initialization_script(include_str!("../javascript/widget_runner_script.js"));
 
     #[cfg(any(
         target_os = "windows",
@@ -162,8 +209,8 @@ pub fn run() {
         builder.build_gtk(vbox).unwrap()
     };
 
-    #[cfg(any(debug_assertions))]
-    _webview.open_devtools();
+    //  #[cfg(any(debug_assertions))]
+    //  _webview.open_devtools();
 
     let view = Arc::new(_webview);
 
@@ -196,6 +243,18 @@ pub fn run() {
                             .as_str(),
                         )
                         .unwrap();
+                }
+                UserEvent::PostMessage(content) => {
+                    info!("Handling post message user event");
+
+                    let result =
+                        serde_json::to_string(&serde_json::Value::String(content)).unwrap();
+
+                    let js = format!("window.onMessagePolyfill({})", result);
+
+                    info!("Executing: {}", js);
+
+                    view.clone().evaluate_script(js.as_str()).unwrap();
                 }
             },
             _ => (),

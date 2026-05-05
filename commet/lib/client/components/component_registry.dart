@@ -31,6 +31,7 @@ import 'package:commet/client/matrix/components/threads/matrix_threads_component
 import 'package:commet/client/matrix/components/typing_indicators/matrix_typing_indicators_component.dart';
 import 'package:commet/client/matrix/components/url_preview/matrix_url_preview_component.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
@@ -64,6 +65,7 @@ class ComponentRegistry {
       MatrixDonationAwardsComponent(client),
       MatrixKeyVerificationComponent(client),
       MatrixPollComponent(client),
+      MatrixWidgetComponent(client),
     ];
   }
 
