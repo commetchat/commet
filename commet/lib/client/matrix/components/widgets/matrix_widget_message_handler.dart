@@ -96,20 +96,19 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
       "supported_versions": [
         "0.0.1",
         "0.0.2",
-        // Read / Send Events
-        "org.matrix.msc2762",
+        "org.matrix.msc2762", // Read / Send Events
         "org.matrix.msc2762_update_state",
+        "org.matrix.msc2871", // Capabilities Notifications
+        "org.matrix.msc2974", // Widgets: Capabilities re-exchange
+        "org.matrix.msc4039", // Access the Content repository with the Widget API
         if (BuildConfig.DEBUG) ...[
-          "org.matrix.msc2871",
-          "org.matrix.msc2873",
-          "org.matrix.msc2931",
-          "org.matrix.msc2974",
-          "org.matrix.msc2876",
-          "org.matrix.msc3819",
-          "town.robin.msc3846",
-          "org.matrix.msc3869",
-          "org.matrix.msc3973",
-          "org.matrix.msc4039"
+          "org.matrix.msc2873", //  Identifying clients and user settings in widgets
+          "org.matrix.msc2931", // Allow widgets to navigate with matrix.to URIs
+          "org.matrix.msc2876", // Allowing widgets to read events in a room (Closed)
+          "org.matrix.msc3819", // Allowing widgets to send/receive to-device messages
+          "town.robin.msc3846", // Allowing widgets to access TURN servers
+          "org.matrix.msc3869", // Read event relations with the Widget API
+          "org.matrix.msc3973", // Search users in the user directory with the Widget API
         ]
       ]
     });
