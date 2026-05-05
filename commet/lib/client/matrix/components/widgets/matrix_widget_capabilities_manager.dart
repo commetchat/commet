@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -17,8 +18,10 @@ class MatrixWidgetCapabilitiesManager
   Map<String, MatrixWidgetCapability> grantedCapabilities = {};
   Set<String> rejectedCapabilities = {};
   MatrixWidgetRunner runner;
+  final BuildContext context;
 
-  MatrixWidgetCapabilitiesManager({required this.runner});
+  MatrixWidgetCapabilitiesManager(
+      {required this.runner, required this.context});
 
   @override
   Future<List<String>> requestCapabilities(List<String> capabilities) async {

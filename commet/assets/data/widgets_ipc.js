@@ -1,8 +1,6 @@
 (() => {
 
-    function sendIpc(msg) {
-        window.ipc.postMessage(JSON.stringify({ "type": "Widget", "data": JSON.stringify(msg) }));
-    }
+    //${SEND_IPC_CODE}
 
     function arrayBufferToBase64(buffer) {
         let binary = '';
@@ -95,10 +93,7 @@
         var msg = encodeArrayBuffers(message);
         var data = JSON.stringify(msg)
 
-        sendIpc({
-            type: "PostMessage",
-            message: data,
-        })
+        sendIpc(data)
 
     }
 

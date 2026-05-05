@@ -127,6 +127,7 @@ dependencies:
     path: ../rust/rust_builder
   flutter_rust_bridge: 2.11.1
   launcher_entry: ^0.1.1
+  flutter_inappwebview: ^6.1.5
   
 dependency_overrides:
   analyzer: ^7.3.0

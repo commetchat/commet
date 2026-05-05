@@ -186,8 +186,15 @@ pub fn run() {
         None => (),
     }
 
-    builder =
-        builder.with_initialization_script(include_str!("../javascript/widget_runner_script.js"));
+    let widget_runner_script = include_str!("../../../commet/assets/data/widgets_ipc.js");
+    let ipc_function_script = include_str!("../javascript/call_ipc.js");
+
+    let mut final_script = widget_runner_script.to_string();
+    final_script = final_script.replace("//${SEND_IPC_CODE}", ipc_function_script);
+
+    info!("Initializing with script: {}", final_script);
+
+    builder = builder.with_initialization_script(final_script);
 
     #[cfg(any(
         target_os = "windows",
