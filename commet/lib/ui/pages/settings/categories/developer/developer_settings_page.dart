@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
@@ -141,7 +142,21 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 text: "Timeline Viewer",
                 onTap: () => NavigationUtils.navigateTo(
                     context, const BenchmarkTimelineViewer()),
-              )
+              ),
+              tiamat.Button(
+                  text: "Notification Badges Stress Test",
+                  onTap: () async {
+                    for (int i = 0; i < 10000; i++) {
+                      int v = i % 9;
+                      (NotificationManager.notifier as LinuxNotifier?)
+                          ?.service
+                          .update(count: v, countVisible: v != 0);
+
+                      await Future.delayed(Duration(milliseconds: 100));
+
+                      print("Notification Badge Stress Test: $i");
+                    }
+                  })
             ],
           ),
         ]);

@@ -1102,10 +1102,11 @@ packages:
   launcher_entry:
     dependency: transitive
     description:
-      name: launcher_entry
-      sha256: "87c403fce3f9beea51514a7c5859aac57c9af6b795433a29ee9caa7b5bba9ac1"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "0a8a1d13677b531fe271d0457bb79f9e4f55ba9b"
+      url: "https://github.com/commetchat/launcher_entry.git"
+    source: git
     version: "0.1.1"
   leak_tracker:
     dependency: transitive
