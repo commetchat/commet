@@ -359,7 +359,8 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 
                 var process = await Process.start(exe, [
                   '--widget_runner',
-                  '--title="commet | Widget Runner Test"'
+                  '--title="commet | Widget Runner"',
+                  '--url=${"https://commet.chat"}'
                 ]);
 
                 process.exitCode.then((i) {
