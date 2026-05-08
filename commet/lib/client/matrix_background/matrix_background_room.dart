@@ -163,6 +163,25 @@ class MatrixBackgroundRoom implements Room {
     throw UnimplementedError();
   }
 
+  vod.InboundGroupSession? _createSession(String sessionKey) {
+    try {
+      return vod.InboundGroupSession(sessionKey);
+    } catch (e, s) {
+      Log.onError(e, s);
+    }
+
+    Log.i("Attempting import instead");
+    try {
+      return vod.InboundGroupSession.import(sessionKey);
+    } catch (e, s) {
+      Log.onError(e, s);
+    }
+
+    Log.i("Could not import key");
+
+    return null;
+  }
+
   @override
   Future<TimelineEvent<Client>?> getEvent(String eventId) async {
     var result =
@@ -189,18 +208,23 @@ class MatrixBackgroundRoom implements Room {
             await vod.init();
           }
 
-          var sess = vod.InboundGroupSession.import(sessionKey);
-          var decrypted = sess.decrypt(ciphertext as String);
+          var sess = _createSession(sessionKey);
 
-          Log.i("Got decrypted: ${decrypted}");
+          if (sess != null) {
+            var decrypted = sess.decrypt(ciphertext as String);
 
-          result = matrix.MatrixEvent.fromJson({
-            ...jsonDecode(decrypted.plaintext),
-            "event_id": result.eventId,
-            "room_id": result.roomId,
-            "origin_server_ts": result.originServerTs.millisecondsSinceEpoch,
-            "sender": result.senderId,
-          });
+            Log.i("Got decrypted: ${decrypted}");
+
+            result = matrix.MatrixEvent.fromJson({
+              ...jsonDecode(decrypted.plaintext),
+              "event_id": result.eventId,
+              "room_id": result.roomId,
+              "origin_server_ts": result.originServerTs.millisecondsSinceEpoch,
+              "sender": result.senderId,
+            });
+          } else {
+            Log.w("Failed to create session to decrypt event!");
+          }
         }
       }
     }
