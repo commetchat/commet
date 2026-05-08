@@ -130,8 +130,9 @@ class BackgroundNotificationsManager2 {
         for (var c in clientManager!.clients) {
           Log.i("Client Id: ${c.identifier}");
           Log.i("    Start Room List:");
-          for (var room in c.rooms) {
-            Log.i("        ${room.identifier}");
+          var client = c as MatrixBackgroundClient;
+          for (var room in client.allRooms) {
+            Log.i("        ${room.roomId}");
           }
 
           Log.i("    End Room List");
