@@ -194,9 +194,13 @@ class MatrixBackgroundRoom implements Room {
 
           Log.i("Got decrypted: ${decrypted}");
 
-          result = matrix.MatrixEvent.fromJson(
-            jsonDecode(decrypted.plaintext),
-          );
+          result = matrix.MatrixEvent.fromJson({
+            ...jsonDecode(decrypted.plaintext),
+            "event_id": result.eventId,
+            "room_id": result.roomId,
+            "origin_server_ts": result.originServerTs.millisecondsSinceEpoch,
+            "sender": result.senderId,
+          });
         }
       }
     }
