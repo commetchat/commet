@@ -189,7 +189,7 @@ class MatrixBackgroundRoom implements Room {
             await vod.init();
           }
 
-          var sess = vod.InboundGroupSession(sessionKey);
+          var sess = vod.InboundGroupSession.import(sessionKey);
           var decrypted = sess.decrypt(ciphertext as String);
 
           Log.i("Got decrypted: ${decrypted}");
