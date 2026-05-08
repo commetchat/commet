@@ -122,6 +122,21 @@ class BackgroundNotificationsManager2 {
           title: "Room Invite",
         );
 
+        Log.i("Failed to find a client for room: $roomId");
+
+        Log.i("Clients: ${clientManager!.clients.length}");
+        clientManager!.clients.forEach((i) => Log.i(i.identifier));
+
+        for (var c in clientManager!.clients) {
+          Log.i("Client Id: ${c.identifier}");
+          Log.i("    Start Room List:");
+          for (var room in c.rooms) {
+            Log.i("        ${room.identifier}");
+          }
+
+          Log.i("    End Room List");
+        }
+
         await NotificationManager.notify(content);
         return;
       }

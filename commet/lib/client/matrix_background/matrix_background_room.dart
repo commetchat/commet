@@ -23,6 +23,8 @@ import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:matrix_dart_sdk_drift_db/database.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+import 'package:vodozemac/vodozemac.dart' as vod;
+
 class MatrixBackgroundRoom implements Room {
   MatrixBackgroundClient backgroundClient;
   RoomDataData data;
@@ -166,6 +168,38 @@ class MatrixBackgroundRoom implements Room {
     var result =
         await backgroundClient.api.getOneRoomEvent(identifier, eventId);
     Log.i("Received event: ${result}");
+
+    if (result.type == matrix.EventTypes.Encrypted) {
+      Log.i("Attempting to decrypt incoming notification content");
+      var ciphertext = result.content["ciphertext"];
+
+      var sessionId = result.content["session_id"];
+
+      var session = await backgroundClient.database
+          .getInboundGroupSession(result.roomId!, sessionId as String);
+
+      var senderKey = result.content["sender_key"];
+
+      if (session != null) {
+        if (session.senderKey == senderKey) {
+          var key = jsonDecode(session.content);
+          var sessionKey = key["session_key"];
+
+          if (vod.isInitialized() == false) {
+            await vod.init();
+          }
+
+          var sess = vod.InboundGroupSession(sessionKey);
+          var decrypted = sess.decrypt(ciphertext as String);
+
+          Log.i("Got decrypted: ${decrypted}");
+
+          result = matrix.MatrixEvent.fromJson(
+            jsonDecode(decrypted.plaintext),
+          );
+        }
+      }
+    }
 
     if ([
       matrix.EventTypes.Encrypted,
