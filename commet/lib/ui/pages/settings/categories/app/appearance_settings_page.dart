@@ -58,6 +58,16 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Description for enabling using the preview list in the space sidebar");
 
+  String get labelShowUserIdInMessage => Intl.message(
+      "Show User ID in Timeline",
+      name: "labelShowUserIdInMessage",
+      desc: "Label for showing full user ID in message rendering");
+
+  String get labelShowUserIdInMessageDescription => Intl.message(
+    "Show the full address of a user next to their name in the timeline",
+    name: "labelShowUserIdInMessageDescription",
+    desc: "Description for showing full user ID in message rendering");
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +138,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.usePlaceholderRoomAvatars,
                   title: labelUseRoomAvatarPlaceholders,
                   description: labelUseRoomAvatarPlaceholdersDescription,
+                ),
+                const Seperator(),
+                BooleanPreferenceToggle(
+                  preference: preferences.showUserIdInTimeline,
+                  title: labelShowUserIdInMessage,
+                  description: labelShowUserIdInMessageDescription,
                 )
               ],
             ),
