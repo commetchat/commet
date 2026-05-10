@@ -55,5 +55,16 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
 
     runner.messageTransport.send(message.createResponse(
         response: {"room_id": runner.room!.identifier, "event_id": result}));
+
+    runner.messageTransport.send(
+        runner.eventHandler.generateToWidgetEvent(action: "send_event", data: {
+      "content": content,
+      "sender": runner.client.self!.identifier,
+      "state_key": key,
+      "type": eventType,
+      "event_id": result,
+      "origin_server_ts": DateTime.now().millisecondsSinceEpoch,
+      "room_id": runner.room!.identifier
+    }));
   }
 }

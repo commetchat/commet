@@ -18,7 +18,9 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
   String? eventKey;
 
   MatrixCapabilityReceiveStateEvent(
-      {required this.runner, required this.eventType, this.eventKey});
+      {required this.runner, required this.eventType, this.eventKey}) {
+    sub = runner.client.matrixClient.onRoomState.stream.listen(onEvent);
+  }
 
   static String name = "org.matrix.msc2762.receive.state_event";
 
@@ -62,14 +64,14 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
             .toList()
         : [runner.room!.matrixRoom.states[eventType]?[eventKey]];
 
-    if (events == null) return;
+    if (events == null || events.nonNulls.isEmpty == true) {
+      runner.messageTransport.send(message.createResponse(response: {
+        "events": [],
+      }));
+      return;
+    }
 
     var finalEvents = events.nonNulls;
-
-    // Listen to new incoming events
-    if (sub == null) {
-      sub = runner.client.matrixClient.onRoomState.stream.listen(onEvent);
-    }
 
     runner.messageTransport.send(message.createResponse(response: {
       "events": finalEvents.map((i) {

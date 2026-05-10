@@ -21,7 +21,9 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
   StreamSubscription? sub;
 
   MatrixCapabilityReceiveEvent(
-      {required this.runner, required this.eventType, this.eventKey}) {}
+      {required this.runner, required this.eventType, this.eventKey}) {
+    sub = runner.client.matrixClient.onTimelineEvent.stream.listen(onEvent);
+  }
 
   @override
   String toString() {
@@ -41,11 +43,6 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
         as MatrixTimeline;
 
     var events = timeline.matrixTimeline!.events;
-
-    // Listen to new incoming events
-    if (sub == null) {
-      sub = runner.client.matrixClient.onTimelineEvent.stream.listen(onEvent);
-    }
 
     var filtered = events.where((i) => canGetEvent(i));
 

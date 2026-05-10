@@ -57,12 +57,7 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
 
     var id = await runner.room!.matrixRoom.sendEvent(content, type: eventType);
 
-    runner.messageTransport.send(message.createResponse(data: {
-      "content": content,
-      "event_id": id,
-      "sender": runner.client.self!.identifier,
-      "type": eventType,
-    }, response: {
+    runner.messageTransport.send(message.createResponse(response: {
       "room_id": runner.room!.identifier,
       "event_id": id!,
     }));

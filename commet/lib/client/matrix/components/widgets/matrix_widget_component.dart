@@ -122,7 +122,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     url = uri.toString();
 
-    if (PlatformUtils.isLinux) {
+    if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       var exe = Platform.resolvedExecutable;
       var process = await Process.start(
         exe,
@@ -137,6 +137,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
           client: room.client as MatrixClient);
 
       registerRunner(runner);
+      return;
     }
 
     if (PlatformUtils.isAndroid || PlatformUtils.isWindows) {
