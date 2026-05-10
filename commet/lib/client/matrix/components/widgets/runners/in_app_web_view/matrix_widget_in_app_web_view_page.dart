@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -90,56 +91,58 @@ class _MatrixWidgetInappwebviewPageState
 
     return Material(
       child: tiamat.Tile.lowest(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            SizedBox(
-                height: buttonSize,
-                child: HeaderView(
-                  text: widget.info.name,
-                  showBurger: false,
-                  menu: Row(
-                    spacing: 8,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                          width: buttonSize,
-                          child: tiamat.IconButton(
-                            icon: Icons.minimize,
-                            onPressed: onBack,
-                          )),
-                      SizedBox(
-                          width: buttonSize,
-                          child: tiamat.IconButton(
-                            icon: Icons.close,
-                            onPressed: () {
-                              runner?.dispose();
-                              Navigator.of(context).pop();
-                            },
-                          )),
-                    ],
-                  ),
-                )),
-            if (showing)
-              Expanded(
-                  child: MatrixWidgetInappwebviewRunnerWidget(
-                keepAlive: widget.keepAlive,
-                url: widget.creationParms?.url,
-                info: widget.info,
-                widgetId: widget.creationParms?.widgetId,
-                userScript: widget.creationParms?.userScript,
-                room: widget.creationParms?.room,
-                component: widget.creationParms?.component,
-                initialize: widget.creationParms != null,
-                onRunnerCreated: (p0) {
-                  Log.i("Created widget runner!");
+        child: ScaledSafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                  height: buttonSize,
+                  child: HeaderView(
+                    text: widget.info.name,
+                    showBurger: false,
+                    menu: Row(
+                      spacing: 8,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                            width: buttonSize,
+                            child: tiamat.IconButton(
+                              icon: Icons.minimize,
+                              onPressed: onBack,
+                            )),
+                        SizedBox(
+                            width: buttonSize,
+                            child: tiamat.IconButton(
+                              icon: Icons.close,
+                              onPressed: () {
+                                runner?.dispose();
+                                Navigator.of(context).pop();
+                              },
+                            )),
+                      ],
+                    ),
+                  )),
+              if (showing)
+                Expanded(
+                    child: MatrixWidgetInappwebviewRunnerWidget(
+                  keepAlive: widget.keepAlive,
+                  url: widget.creationParms?.url,
+                  info: widget.info,
+                  widgetId: widget.creationParms?.widgetId,
+                  userScript: widget.creationParms?.userScript,
+                  room: widget.creationParms?.room,
+                  component: widget.creationParms?.component,
+                  initialize: widget.creationParms != null,
+                  onRunnerCreated: (p0) {
+                    Log.i("Created widget runner!");
 
-                  setState(() {
-                    runner = p0;
-                  });
-                },
-              )),
-          ],
+                    setState(() {
+                      runner = p0;
+                    });
+                  },
+                )),
+            ],
+          ),
         ),
       ),
     );
