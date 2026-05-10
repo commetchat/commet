@@ -48,6 +48,7 @@ class MatrixWidgetInappwebviewPage extends StatefulWidget {
 class _MatrixWidgetInappwebviewPageState
     extends State<MatrixWidgetInappwebviewPage> {
   bool showing = true;
+
   MatrixUserWidgetInAppWebviewRunner? runner;
 
   @override
@@ -57,12 +58,19 @@ class _MatrixWidgetInappwebviewPageState
   }
 
   void onBack() {
+    moveToOverlay();
+    Navigator.of(context).pop();
+  }
+
+  void moveToOverlay() {
     OverlayState overlayState = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
     setState(() {
       showing = false;
     });
+
+    runner!.controller.platform.pauseTimers();
 
     var removeStream = StreamController();
 
@@ -82,7 +90,6 @@ class _MatrixWidgetInappwebviewPageState
 
     // Inserting the OverlayEntry into the Overlay
     overlayState.insert(overlayEntry);
-    Navigator.of(context).pop();
   }
 
   @override
@@ -90,58 +97,66 @@ class _MatrixWidgetInappwebviewPageState
     const buttonSize = 40.0;
 
     return Material(
-      child: tiamat.Tile.lowest(
-        child: ScaledSafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                  height: buttonSize,
-                  child: HeaderView(
-                    text: widget.info.name,
-                    showBurger: false,
-                    menu: Row(
-                      spacing: 8,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                            width: buttonSize,
-                            child: tiamat.IconButton(
-                              icon: Icons.minimize,
-                              onPressed: onBack,
-                            )),
-                        SizedBox(
-                            width: buttonSize,
-                            child: tiamat.IconButton(
-                              icon: Icons.close,
-                              onPressed: () {
-                                runner?.dispose();
-                                Navigator.of(context).pop();
-                              },
-                            )),
-                      ],
-                    ),
-                  )),
-              if (showing)
-                Expanded(
-                    child: MatrixWidgetInappwebviewRunnerWidget(
-                  keepAlive: widget.keepAlive,
-                  url: widget.creationParms?.url,
-                  info: widget.info,
-                  widgetId: widget.creationParms?.widgetId,
-                  userScript: widget.creationParms?.userScript,
-                  room: widget.creationParms?.room,
-                  component: widget.creationParms?.component,
-                  initialize: widget.creationParms != null,
-                  onRunnerCreated: (p0) {
-                    Log.i("Created widget runner!");
+      child: PopScope(
+        onPopInvokedWithResult: (didPop, result) {
+          if (showing) {
+            moveToOverlay();
+          }
+        },
+        child: tiamat.Tile.lowest(
+          child: ScaledSafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                SizedBox(
+                    height: buttonSize,
+                    child: HeaderView(
+                      text: widget.info.name,
+                      showBurger: false,
+                      menu: Row(
+                        spacing: 8,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                              width: buttonSize,
+                              child: tiamat.IconButton(
+                                icon: Icons.minimize,
+                                onPressed: onBack,
+                              )),
+                          SizedBox(
+                              width: buttonSize,
+                              child: tiamat.IconButton(
+                                icon: Icons.close,
+                                onPressed: () {
+                                  showing = false;
+                                  runner?.dispose();
+                                  Navigator.of(context).pop();
+                                },
+                              )),
+                        ],
+                      ),
+                    )),
+                if (showing)
+                  Expanded(
+                      child: MatrixWidgetInappwebviewRunnerWidget(
+                    keepAlive: widget.keepAlive,
+                    url: widget.creationParms?.url,
+                    info: widget.info,
+                    widgetId: widget.creationParms?.widgetId,
+                    userScript: widget.creationParms?.userScript,
+                    room: widget.creationParms?.room,
+                    component: widget.creationParms?.component,
+                    initialize: widget.creationParms != null,
+                    onRunnerCreated: (p0) {
+                      Log.i("Created widget runner!");
 
-                    setState(() {
-                      runner = p0;
-                    });
-                  },
-                )),
-            ],
+                      setState(() {
+                        runner = p0;
+                      });
+                    },
+                  )),
+              ],
+            ),
           ),
         ),
       ),

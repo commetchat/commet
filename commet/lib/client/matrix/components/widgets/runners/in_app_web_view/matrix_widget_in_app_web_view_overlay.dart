@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class InAppWebViewWidgetOverlay extends StatelessWidget {
+class InAppWebViewWidgetOverlay extends StatefulWidget {
   const InAppWebViewWidgetOverlay({
     super.key,
     required this.removeStream,
@@ -25,11 +25,25 @@ class InAppWebViewWidgetOverlay extends StatelessWidget {
   final MatrixUserWidgetInAppWebviewRunner runner;
 
   @override
+  State<InAppWebViewWidgetOverlay> createState() =>
+      _InAppWebViewWidgetOverlayState();
+}
+
+class _InAppWebViewWidgetOverlayState extends State<InAppWebViewWidgetOverlay> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.runner.controller.platform.resumeTimers();
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double width = 300;
 
     if (Layout.mobile) {
-      width = 200;
+      width = 350;
     }
 
     var height = width * (9 / 16);
@@ -44,8 +58,8 @@ class InAppWebViewWidgetOverlay extends StatelessWidget {
             child: Stack(
           children: [
             MatrixWidgetInappwebviewRunnerWidget(
-              keepAlive: keepAlive,
-              info: runner.info,
+              keepAlive: widget.keepAlive,
+              info: widget.runner.info,
             ),
             ShowOnHover(
                 background: Container(
@@ -93,19 +107,19 @@ class InAppWebViewWidgetOverlay extends StatelessWidget {
   }
 
   onFullscreen() {
-    removeStream.add(null);
+    widget.removeStream.add(null);
 
     NavigationUtils.navigateTo(
         navigator.currentContext!,
         MatrixWidgetInappwebviewPage(
-          keepAlive: keepAlive,
-          info: runner.info,
-          runner: runner,
+          keepAlive: widget.keepAlive,
+          info: widget.runner.info,
+          runner: widget.runner,
         ));
   }
 
   onClose() {
-    runner.dispose();
-    removeStream.add(null);
+    widget.removeStream.add(null);
+    widget.runner.dispose();
   }
 }

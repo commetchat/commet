@@ -148,12 +148,6 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
       var finalScript = userScript.replaceAll("//\${SEND_IPC_CODE}", callIpc);
 
-      finalScript = userScript +
-          """
-\n\n
-console.log('hello!');
-""";
-
       Log.i("Final user script: $finalScript");
 
       var keepAlive = InAppWebViewKeepAlive();
