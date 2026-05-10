@@ -25,9 +25,12 @@ class MatrixWidgetCapabilitiesManager
 
   @override
   Future<List<String>> requestCapabilities(List<String> capabilities) async {
+
+    var items = Set<String>.from(capabilities);
+
     var picked = await AdaptiveDialog.pickMultiple(navigator.currentContext!,
         title: "Widget Permissions",
-        items: capabilities,
+        items: items.toList(),
         itemBuilder: (context, i) => tiamat.Text.label(i));
 
     if (picked == null) return [];

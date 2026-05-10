@@ -59,12 +59,12 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     var result = List<MatrixUserWidgetInfo>.empty(growable: true);
 
     for (var s in states.entries) {
-      String? id = s.value.content.tryGet("id");
+      String? id = s.value.content.tryGet("id") ?? s.key;
       String? url = s.value.content.tryGet("url");
       String? type = s.value.content.tryGet("type");
       String? name = s.value.content.tryGet("name");
 
-      if (id == null || url == null || type == null || name == null) continue;
+      if (url == null || type == null || name == null) continue;
 
       url = Uri.encodeFull(url);
 
