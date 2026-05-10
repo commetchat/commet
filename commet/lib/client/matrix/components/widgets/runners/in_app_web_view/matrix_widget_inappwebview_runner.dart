@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -28,60 +29,92 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   @override
   late WidgetCapabilityManager capabilities;
 
+  late InAppWebViewController controller;
+
+  InAppWebViewKeepAlive keepAlive;
+
+  UserWidgetInfo info;
+
   MatrixUserWidgetInAppWebviewRunner(
       {required InAppWebViewController webViewController,
       required this.room,
       required this.widgetId,
+      required this.info,
       required BuildContext context,
+      required this.keepAlive,
       required this.client}) {
     var tx = MatrixInAppWebViewWidgetTransceiver(webViewController);
+
+    this.controller = webViewController;
+
     messageTransport = MatrixWidgetTransport(tx);
     eventHandler = MatrixWidgetMessageHandler(runner: this);
     capabilities =
         MatrixWidgetCapabilitiesManager(runner: this, context: context);
   }
-}
-
-class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
-  const MatrixWidgetInappwebviewRunnerWidget(
-      {required this.url,
-      required this.widgetId,
-      required this.userScript,
-      required this.room,
-      required this.component,
-      super.key});
-  final String userScript;
-  final String url;
-  final String widgetId;
-  final MatrixRoom room;
-  final MatrixWidgetComponent component;
 
   @override
-  State<MatrixWidgetInappwebviewRunnerWidget> createState() =>
-      _MatrixWidgetInappwebviewRunnerWidgetState();
+  void dispose() {
+    Log.w("Disposing widget runner!");
+    controller.platform.disposeKeepAlive(keepAlive);
+    controller.dispose(isKeepAlive: false);
+  }
 }
 
-class _MatrixWidgetInappwebviewRunnerWidgetState
-    extends State<MatrixWidgetInappwebviewRunnerWidget> {
+class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
+  const MatrixWidgetInappwebviewRunnerWidget(
+      {this.url,
+      this.widgetId,
+      this.userScript,
+      this.room,
+      this.component,
+      required this.keepAlive,
+      this.initialize = false,
+      required this.info,
+      this.onRunnerCreated,
+      this.initialRunner,
+      super.key});
+  final String? userScript;
+  final String? url;
+  final String? widgetId;
+  final MatrixRoom? room;
+  final MatrixWidgetComponent? component;
+  final UserWidgetInfo info;
+  final bool initialize;
+  final InAppWebViewKeepAlive keepAlive;
+  final MatrixUserWidgetInAppWebviewRunner? initialRunner;
+  final void Function(MatrixUserWidgetInAppWebviewRunner)? onRunnerCreated;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+        keepAlive: keepAlive,
+        initialUrlRequest: initialize ? URLRequest(url: WebUri(url!)) : null,
+        onConsoleMessage: (controller, consoleMessage) {
+          Log.i("InAppWebView] $consoleMessage");
+        },
         onWebViewCreated: (controller) {
-          controller.addUserScript(
-              userScript: UserScript(
-                  source: widget.userScript,
-                  injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START));
+          if (userScript != null) {
+            controller.addUserScript(
+                userScript: UserScript(
+                    source: userScript!,
+                    injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START));
+          }
+
+          if (!initialize) return;
 
           var runner = MatrixUserWidgetInAppWebviewRunner(
               webViewController: controller,
-              room: widget.room,
+              info: info,
+              room: room,
               context: context,
-              widgetId: widget.widgetId,
-              client: widget.room.client as MatrixClient);
+              keepAlive: keepAlive,
+              widgetId: widgetId!,
+              client: room!.client as MatrixClient);
 
-          widget.component.registerRunner(runner);
+          component!.registerRunner(runner);
+          onRunnerCreated?.call(runner);
         },
       ),
     );

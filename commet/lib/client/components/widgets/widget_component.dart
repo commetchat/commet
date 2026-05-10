@@ -39,6 +39,8 @@ abstract class WidgetRunner<T, R> {
   WidgetMessageTransport get messageTransport;
   T get client;
   R? get room;
+
+  void dispose();
 }
 
 abstract class WidgetComponent<T extends Client> implements Component<T> {

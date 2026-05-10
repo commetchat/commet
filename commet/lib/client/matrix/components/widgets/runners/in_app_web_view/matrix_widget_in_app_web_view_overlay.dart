@@ -1,0 +1,102 @@
+import 'dart:async';
+
+import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_in_app_web_view_page.dart';
+import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_inappwebview_runner.dart';
+
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/floating_tile.dart';
+import 'package:commet/ui/molecules/show_on_hover.dart';
+import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
+
+class InAppWebViewWidgetOverlay extends StatelessWidget {
+  const InAppWebViewWidgetOverlay({
+    super.key,
+    required this.removeStream,
+    required this.keepAlive,
+    required this.runner,
+  });
+
+  final StreamController<dynamic> removeStream;
+  final InAppWebViewKeepAlive keepAlive;
+  final MatrixUserWidgetInAppWebviewRunner runner;
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingTile(
+        child: SizedBox(
+      height: 300,
+      width: 400,
+      child: ClipRRect(
+        borderRadius: BorderRadiusGeometry.circular(10),
+        child: Container(
+            child: Stack(
+          children: [
+            MatrixWidgetInappwebviewRunnerWidget(
+              keepAlive: keepAlive,
+              info: runner.info,
+            ),
+            ShowOnHover(
+                background: Container(
+                  color: Colors.transparent,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+                child: Container(
+                  color: ColorScheme.of(context)
+                      .surfaceContainerLow
+                      .withAlpha(100),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: AlignmentGeometry.topRight,
+                        child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: tiamat.IconButton(
+                              icon: Icons.close,
+                              size: 25,
+                              onPressed: onClose,
+                              iconColor: ColorScheme.of(context).onSurface,
+                            )),
+                      ),
+                      Center(
+                          child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: tiamat.IconButton(
+                                icon: Icons.fullscreen,
+                                size: 25,
+                                onPressed: onFullscreen,
+                                iconColor: ColorScheme.of(context).onSurface,
+                              ))),
+                    ],
+                  ),
+                )),
+          ],
+        )),
+      ),
+    ));
+  }
+
+  onFullscreen() {
+    removeStream.add(null);
+
+    NavigationUtils.navigateTo(
+        navigator.currentContext!,
+        MatrixWidgetInappwebviewPage(
+          keepAlive: keepAlive,
+          info: runner.info,
+          runner: runner,
+        ));
+  }
+
+  onClose() {
+    runner.dispose();
+    removeStream.add(null);
+  }
+}

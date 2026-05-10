@@ -31,6 +31,8 @@ class MatrixUserWidgetDesktopRunner implements MatrixWidgetRunner {
   @override
   late WidgetCapabilityManager capabilities;
 
+  late Process process;
+
   MatrixUserWidgetDesktopRunner(
       {required Process process,
       required this.room,
@@ -38,6 +40,7 @@ class MatrixUserWidgetDesktopRunner implements MatrixWidgetRunner {
       required BuildContext context,
       required this.client}) {
     var tx = MatrixIoWidgetTransceiver(process: process);
+    this.process = process;
     messageTransport = MatrixWidgetTransport(tx);
     eventHandler = MatrixWidgetMessageHandler(runner: this);
     capabilities =
@@ -59,5 +62,10 @@ class MatrixUserWidgetDesktopRunner implements MatrixWidgetRunner {
         }));
       });
     });
+  }
+
+  @override
+  void dispose() {
+    process.kill();
   }
 }

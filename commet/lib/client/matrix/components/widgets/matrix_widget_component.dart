@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
+import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_in_app_web_view_page.dart';
 import 'package:commet/client/matrix/components/widgets/runners/matrix_widget_desktop_runner.dart';
-import 'package:commet/client/matrix/components/widgets/runners/matrix_widget_inappwebview_runner.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
@@ -14,6 +14,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixUserWidgetInfo implements UserWidgetInfo {
@@ -83,7 +84,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
           .generateToWidgetEvent(action: "capabilities", data: {}));
 
       // I can't explain why this is platform specific
-      if (PlatformUtils.isAndroid) {
+      if (PlatformUtils.isAndroid || PlatformUtils.isWindows) {
         (runner.capabilities as MatrixWidgetCapabilitiesManager)
             .notifyCapabilities(["io.element.requires_client"]);
       }
@@ -121,7 +122,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     url = uri.toString();
 
-    if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
+    if (PlatformUtils.isLinux) {
       var exe = Platform.resolvedExecutable;
       var process = await Process.start(exe, [
         '--widget_runner',
@@ -139,7 +140,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       registerRunner(runner);
     }
 
-    if (PlatformUtils.isAndroid) {
+    if (PlatformUtils.isAndroid || PlatformUtils.isWindows) {
       var userScript =
           await rootBundle.loadString('assets/data/widgets_ipc.js');
       var callIpc =
@@ -147,17 +148,28 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
       var finalScript = userScript.replaceAll("//\${SEND_IPC_CODE}", callIpc);
 
+      finalScript = userScript +
+          """
+\n\n
+console.log('hello!');
+""";
+
       Log.i("Final user script: $finalScript");
+
+      var keepAlive = InAppWebViewKeepAlive();
 
       NavigationUtils.navigateTo(
           navigator.currentContext!,
-          MatrixWidgetInappwebviewRunnerWidget(
-            url: url,
-            userScript: finalScript,
-            widgetId: widget.id,
-            room: room as MatrixRoom,
-            component: this,
-          ));
+          MatrixWidgetInappwebviewPage(
+              keepAlive: keepAlive,
+              info: info,
+              creationParms: MatrixWidgetInAppWebviewCreationParms(
+                url: url,
+                userScript: finalScript,
+                widgetId: widget.id,
+                room: room as MatrixRoom,
+                component: this,
+              )));
     }
   }
 }
