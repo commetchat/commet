@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_in_app_web_view_page.dart';
 import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_inappwebview_runner.dart';
+import 'package:commet/config/layout_config.dart';
 
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/floating_tile.dart';
@@ -25,10 +26,18 @@ class InAppWebViewWidgetOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = 300;
+
+    if (Layout.mobile) {
+      width = 200;
+    }
+
+    var height = width * (9 / 16);
+
     return FloatingTile(
         child: SizedBox(
-      height: 300,
-      width: 400,
+      height: height,
+      width: width,
       child: ClipRRect(
         borderRadius: BorderRadiusGeometry.circular(10),
         child: Container(
@@ -49,7 +58,7 @@ class InAppWebViewWidgetOverlay extends StatelessWidget {
                 child: Container(
                   color: ColorScheme.of(context)
                       .surfaceContainerLow
-                      .withAlpha(100),
+                      .withAlpha(150),
                   child: Stack(
                     children: [
                       Align(
