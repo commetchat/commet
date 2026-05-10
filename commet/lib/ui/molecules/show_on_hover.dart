@@ -19,6 +19,12 @@ class _ShowOnHoverState extends State<ShowOnHover> {
   bool showing = false;
 
   @override
+  void dispose() {
+    hideTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (event) {
@@ -48,9 +54,10 @@ class _ShowOnHoverState extends State<ShowOnHover> {
                 });
 
                 hideTimer = Timer(Duration(seconds: 3), () {
-                  setState(() {
-                    showing = false;
-                  });
+                  if (mounted)
+                    setState(() {
+                      showing = false;
+                    });
                 });
               }
             },
