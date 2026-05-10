@@ -4,21 +4,21 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_component.
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
-class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
+class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
   @override
   MatrixWidgetRunner runner;
 
   String eventType;
   String? eventKey;
 
-  MatrixCapabilitySendEvent(
+  MatrixCapabilitySendStateEvent(
       {required this.runner, required this.eventType, this.eventKey});
 
-  static const String name = "org.matrix.msc2762.send.event";
+  static String name = "org.matrix.msc2762.send.state_event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
       name,
-      (runner, type, key) => MatrixCapabilitySendEvent(
+      (runner, type, key) => MatrixCapabilitySendStateEvent(
           runner: runner, eventType: type!, eventKey: key));
 
   static String getNameForType(String eventType, String? key) =>
@@ -26,45 +26,34 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
 
   @override
   String toString() {
-    return "Send Event: $eventType";
+    return "Send State event: $eventType";
   }
 
   @override
   bool canHandleRequest(MatrixWidgetMessage message) {
-    if (runner.room == null) return false;
-
     if (message.action != "send_event") return false;
-
-    var content = message.data.tryGetMap<String, dynamic>("content");
 
     var type = message.data.tryGet<String>("type");
     if (type != eventType) return false;
 
-    var msgtype = content?.tryGet<String>("msgtype");
+    if (message.data.containsKey("state_key") == false) return false;
 
-    if (eventKey != null && msgtype != eventKey) return false;
-
-    if (message.data.containsKey("state_key")) return false;
+    if (eventKey != null && message.data["state_key"] != eventKey) return false;
 
     return true;
   }
 
   @override
   void handleRequest(MatrixWidgetMessage message) async {
+    var key = message.data.tryGet<String>("state_key");
     var content = message.data.tryGetMap<String, dynamic>("content");
 
     if (content == null) return;
 
-    var id = await runner.room!.matrixRoom.sendEvent(content, type: eventType);
+    var result = await runner.room!.matrixRoom.client
+        .setRoomStateWithKey(runner.room!.identifier, eventType, key!, content);
 
-    runner.messageTransport.send(message.createResponse(data: {
-      "content": content,
-      "event_id": id,
-      "sender": runner.client.self!.identifier,
-      "type": eventType,
-    }, response: {
-      "room_id": runner.room!.identifier,
-      "event_id": id!,
-    }));
+    runner.messageTransport.send(message.createResponse(
+        response: {"room_id": runner.room!.identifier, "event_id": result}));
   }
 }

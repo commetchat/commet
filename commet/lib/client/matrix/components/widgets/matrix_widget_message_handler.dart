@@ -24,7 +24,7 @@ class MatrixWidgetMessage {
       "widgetId": widgetId,
       "requestId": requestId,
       "action": action,
-      "data": data == {} ? this.data : data,
+      "data": data.isEmpty ? this.data : data,
       "response": response,
     };
   }
@@ -101,12 +101,12 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
         "org.matrix.msc2871", // Capabilities Notifications
         "org.matrix.msc2974", // Widgets: Capabilities re-exchange
         "org.matrix.msc4039", // Access the Content repository with the Widget API
+        "town.robin.msc3846", // Allowing widgets to access TURN servers
+        "org.matrix.msc3819", // Allowing widgets to send/receive to-device messages
         if (BuildConfig.DEBUG) ...[
           "org.matrix.msc2873", //  Identifying clients and user settings in widgets
           "org.matrix.msc2931", // Allow widgets to navigate with matrix.to URIs
           "org.matrix.msc2876", // Allowing widgets to read events in a room (Closed)
-          "org.matrix.msc3819", // Allowing widgets to send/receive to-device messages
-          "town.robin.msc3846", // Allowing widgets to access TURN servers
           "org.matrix.msc3869", // Read event relations with the Widget API
           "org.matrix.msc3973", // Search users in the user directory with the Widget API
         ]

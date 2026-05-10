@@ -1,8 +1,15 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_download_file.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_get_media_config.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_read_relations.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_receive_event.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_receive_state.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_receive_to_device.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_event.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_state.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_to_device.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_turn_servers.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
@@ -12,6 +19,13 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:matrix/matrix.dart' as matrix;
+
+typedef MatrixWidgetCapability MatrixCapabilityConstructor(
+    MatrixWidgetRunner runner, String? type, String? key);
+
+typedef MatrixWidgetCapabilityConstructorEntry
+    = MapEntry<String, MatrixCapabilityConstructor>;
 
 class MatrixWidgetCapabilitiesManager
     implements WidgetCapabilityManager<MatrixWidgetMessage> {
@@ -23,17 +37,30 @@ class MatrixWidgetCapabilitiesManager
   MatrixWidgetCapabilitiesManager(
       {required this.runner, required this.context});
 
+  static const List<String> defaultCapabilities = const [
+    // It is safe to allow this by default, as the implementation will only return events
+    // for which the corresponding capability has already been granted
+    MatrixCapabilityReadEventRelations.name,
+    MatrixCapabilityGetMediaConfig.name
+  ];
+
   @override
   Future<List<String>> requestCapabilities(List<String> capabilities) async {
-
     var items = Set<String>.from(capabilities);
 
     var picked = await AdaptiveDialog.pickMultiple(navigator.currentContext!,
         title: "Widget Permissions",
         items: items.toList(),
+        selected: items.toList(),
         itemBuilder: (context, i) => tiamat.Text.label(i));
 
     if (picked == null) return [];
+
+    for (var defaultcapability in defaultCapabilities) {
+      if (picked.contains(defaultcapability) == false) {
+        picked.add(defaultcapability);
+      }
+    }
 
     for (var i in capabilities) {
       if (picked.contains(i) == false &&
@@ -68,14 +95,18 @@ class MatrixWidgetCapabilitiesManager
     String? eventType;
     String? eventKey;
 
-    if (split.length >= 2) {
-      var eventTypeSplit = split[1].split("#");
+    var splitRemainder = split.sublist(1).join(":");
 
-      eventType = eventTypeSplit.first;
+    var eventTypeSplit = splitRemainder.split("#");
 
-      if (eventTypeSplit.length >= 2) {
-        eventKey = eventTypeSplit.sublist(1).join("#");
-      }
+    eventType = eventTypeSplit.first;
+
+    if (eventType.endsWith("#")) {
+      eventKey = "";
+    }
+
+    if (eventTypeSplit.length >= 2) {
+      eventKey = eventTypeSplit.sublist(1).join("#");
     }
 
     return (parsedName, eventType, eventKey);
@@ -85,18 +116,19 @@ class MatrixWidgetCapabilitiesManager
     Log.i("Granting capabilities: $capabilities");
     List<String> granted = List.empty(growable: true);
 
-    var builders =
-        <String, MatrixWidgetCapability Function(String? type, String? key)>{
-      "org.matrix.msc4039.upload_file": (_, __) =>
-          MatrixCapabilityUploadFile(runner),
-      "org.matrix.msc4039.download_file": (_, __) =>
-          MatrixCapabilityDownloadFile(runner),
-      "org.matrix.msc2762.receive.event": (type, key) =>
-          MatrixCapabilityReceiveEvent(
-              runner: runner, eventType: type!, eventKey: key),
-      "org.matrix.msc2762.send.event": (type, key) => MatrixCapabilitySendEvent(
-          runner: runner, eventType: type!, eventKey: key),
-    };
+    var builders = Map.fromEntries([
+      MatrixCapabilityReceiveEvent.entry,
+      MatrixCapabilitySendEvent.entry,
+      MatrixCapabilityUploadFile.entry,
+      MatrixCapabilityDownloadFile.entry,
+      MatrixCapabilitySendStateEvent.entry,
+      MatrixCapabilityReceiveStateEvent.entry,
+      MatrixCapabilitySendToDeviceEvent.entry,
+      MatrixCapabilityReceiveToDeviceEvent.entry,
+      MatrixCapabilityTurnServers.entry,
+      MatrixCapabilityGetMediaConfig.entry,
+      MatrixCapabilityReadEventRelations.entry,
+    ]);
 
     for (var name in capabilities) {
       if (grantedCapabilities.containsKey(name)) continue;
@@ -104,15 +136,22 @@ class MatrixWidgetCapabilitiesManager
       var (capability, eventType, eventKey) = parseCapability(name);
 
       if (builders.containsKey(capability)) {
-        grantedCapabilities[name] = builders[capability]!(eventType, eventKey);
+        grantedCapabilities[name] =
+            builders[capability]!(runner, eventType, eventKey);
         granted.add(name);
         rejectedCapabilities.remove(name);
       }
     }
 
-    Log.i("Successfully granted capabilities: $granted");
+    Log.i("Successfully granted capabilities:");
+    for (var g in granted) {
+      Log.i(g);
+    }
 
-    Log.i("Capabilities: $grantedCapabilities");
+    Log.w("Rejected Capabilities:");
+    for (var g in rejectedCapabilities) {
+      Log.i(g);
+    }
 
     return granted;
   }
@@ -133,6 +172,33 @@ class MatrixWidgetCapabilitiesManager
     return key;
   }
 
+  bool canWidgetReadEvent(matrix.MatrixEvent event) {
+    var msgType = event.content.tryGet<String>("msgtype");
+
+    var mockAction = MatrixWidgetMessage(
+      action: "org.matrix.msc2876.read_events",
+      widgetId: runner.widgetId,
+      requestId: "fake",
+      data: {
+        "type": event.type,
+        if (msgType != null) "msgtype": msgType,
+        if (event.stateKey != null) "state_key": event.stateKey
+      },
+    );
+
+    for (var capability in grantedCapabilities.values) {
+      if (capability.canHandleRequest(mockAction) == true) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool canWidgetReadEventType(matrix.Event event) {
+    return false;
+  }
+
   @override
   void handleEvent(MatrixWidgetMessage event) {
     var key = eventToCapabilityName(event);
@@ -149,6 +215,6 @@ class MatrixWidgetCapabilitiesManager
       }
     }
 
-    Log.e("Unhandled widget request $event");
+    Log.e("Unhandled widget request ${event.action}\n${event.data}");
   }
 }

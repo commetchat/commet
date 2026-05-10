@@ -281,6 +281,19 @@
             this._eventManager.addListener(name, callback);
         }
 
+        getStats(selector) {
+            let [id, promise] = window.toWebView.createPromise()
+            console.log("Calling getStats for: ", selector);
+
+            sendIpc({
+                type: "GetStats",
+                pc_id: this.id,
+                promise_id: id,
+            })
+
+            return promise
+        }
+
     }
 
     class ToWebview {

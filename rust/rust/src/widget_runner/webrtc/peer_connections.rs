@@ -1,8 +1,12 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    sync::Arc,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use once_cell::sync::Lazy;
 
-use serde_json::json;
+use serde_json::{json, Map};
 use tao::event_loop::EventLoopProxy;
 use tokio::sync::Mutex;
 use uuid::Uuid;
@@ -13,6 +17,7 @@ use webrtc::{
         configuration::RTCConfiguration, sdp::session_description::RTCSessionDescription,
         RTCPeerConnection,
     },
+    stats::StatsReportType,
 };
 
 use log::info;
@@ -219,6 +224,126 @@ pub async fn add_ice_candidate(id: &String, candidate: String) {
                 .await;
         }
         None => {}
+    }
+}
+
+fn now_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64
+}
+
+pub async fn get_stats(id: &String, promise_id: String) -> ResolvedPromise {
+    info!("Gettings stats");
+
+    let conn = internal_get_peer_connection(id).await;
+
+    match conn {
+        Some(conn) => {
+            let stats = conn.connection.get_stats().await;
+
+            let mut root = Map::<String, serde_json::Value>::new();
+
+            for report in stats.reports {
+                let id = report.0.clone();
+
+                let value = match report.1 {
+                    StatsReportType::InboundRTP(stats) => {
+                        json!({
+                            "id": stats.id,
+                            "type": "inbound-rtp",
+                            "timestamp": now_ms(),
+                            "ssrc": stats.ssrc,
+                            "kind": stats.kind,
+                            "packetsReceived": stats.packets_received,
+                            "bytesReceived": stats.bytes_received,
+                        })
+                    }
+
+                    StatsReportType::OutboundRTP(stats) => {
+                        json!({
+                            "id": stats.id,
+                            "type": "outbound-rtp",
+                            "timestamp": now_ms(),
+                            "ssrc": stats.ssrc,
+                            "kind": stats.kind,
+
+                            "packetsSent": stats.packets_sent,
+                            "bytesSent": stats.bytes_sent,
+
+
+                        })
+                    }
+
+                    StatsReportType::CandidatePair(stats) => {
+                        json!({
+                            "id": stats.id,
+                            "type": "candidate-pair",
+                            "timestamp": now_ms(),
+
+                            "state": stats.state,
+                            "nominated": stats.nominated,
+
+                            "bytesSent": stats.bytes_sent,
+                            "bytesReceived": stats.bytes_received,
+
+                            "currentRoundTripTime":
+                                stats.current_round_trip_time,
+
+                            "localCandidateId": stats.local_candidate_id,
+                            "remoteCandidateId": stats.remote_candidate_id,
+                        })
+                    }
+
+                    StatsReportType::LocalCandidate(stats) => {
+                        json!({
+                            "id": stats.id,
+                            "type": "local-candidate",
+                            "timestamp": now_ms(),
+
+                            "candidateType": stats.candidate_type,
+                            "ip": stats.ip,
+                            "port": stats.port,
+                        })
+                    }
+
+                    StatsReportType::RemoteCandidate(stats) => {
+                        json!({
+                            "id": stats.id,
+                            "type": "remote-candidate",
+                            "timestamp": now_ms(),
+
+                            "candidateType": stats.candidate_type,
+                            "ip": stats.ip,
+                            "port": stats.port,
+                        })
+                    }
+
+                    other => {
+                        json!({
+                            "id": id,
+                            "type": format!("{:?}", other),
+                        })
+                    }
+                };
+
+                root.insert(id, value);
+            }
+
+            info!("Got stats: {:#?}", root);
+
+            return ResolvedPromise {
+                promise_id,
+                value: serde_json::Value::Object(root),
+            };
+        }
+        None => {
+            return ResolvedPromise {
+                promise_id,
+                value: json!({}),
+            };
+        }
     }
 }
 

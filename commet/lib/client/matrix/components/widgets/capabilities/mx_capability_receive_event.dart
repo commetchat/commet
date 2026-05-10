@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
@@ -26,6 +27,13 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
   String toString() {
     return "Receive Event: $eventType";
   }
+
+  static const String name = "org.matrix.msc2762.receive.event";
+
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
+      name,
+      (runner, type, key) => MatrixCapabilityReceiveEvent(
+          runner: runner, eventType: type!, eventKey: key));
 
   @override
   void handleRequest(MatrixWidgetMessage message) async {
@@ -73,6 +81,8 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
     var key = message.data.tryGet<String>("msgtype");
 
     if (eventKey != null && key != eventKey) return false;
+
+    if (message.data.containsKey("state_key")) return false;
 
     return true;
   }

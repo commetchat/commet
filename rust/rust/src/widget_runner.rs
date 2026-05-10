@@ -73,6 +73,8 @@ pub fn run() {
     let event_loop: EventLoop<UserEvent> = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let event_proxy = event_loop.create_proxy();
 
+    let apply_webrtc_patch = false;
+
     thread::spawn(move || {
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -111,6 +113,10 @@ pub fn run() {
                                     }
                                 }
                                 IpcMessage::WebRTC { data } => {
+                                    if apply_webrtc_patch == false {
+                                        return;
+                                    }
+
                                     let result =
                                         widget_runner::webrtc::handle(data, event_proxy.clone())
                                             .await;
@@ -204,8 +210,10 @@ pub fn run() {
     let _webview = builder.build(&window).unwrap();
 
     #[cfg(target_os = "linux")]
-    let builder =
-        builder.with_initialization_script(include_str!("../javascript/webrtc_polyfill.js"));
+    if apply_webrtc_patch {
+        builder =
+            builder.with_initialization_script(include_str!("../javascript/webrtc_polyfill.js"));
+    }
 
     #[cfg(target_os = "linux")]
     let _webview = {

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:commet/debug/log.dart';
@@ -16,6 +17,11 @@ class MatrixCapabilityUploadFile implements MatrixWidgetCapability {
   String toString() {
     return "Upload File";
   }
+
+  static const String name = "org.matrix.msc4039.upload_file";
+
+  static MatrixWidgetCapabilityConstructorEntry entry =
+      MapEntry(name, (runner, type, key) => MatrixCapabilityUploadFile(runner));
 
   @override
   void handleRequest(MatrixWidgetMessage message) async {

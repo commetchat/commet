@@ -40,6 +40,10 @@ pub enum JsToRust {
         pc_id: String,
         candidate: String,
     },
+    GetStats {
+        pc_id: String,
+        promise_id: String,
+    },
     SendData {
         dc_id: String,
         data: String,
@@ -92,6 +96,10 @@ pub async fn handle(
             peer_connections::add_ice_candidate(&pc_id, candidate).await;
         }
         JsToRust::SendData { dc_id, data } => data_channels::send(dc_id, data).await,
+        JsToRust::GetStats { pc_id, promise_id } => {
+            let result = peer_connections::get_stats(&pc_id, promise_id).await;
+            return Some(result);
+        }
     };
 
     None

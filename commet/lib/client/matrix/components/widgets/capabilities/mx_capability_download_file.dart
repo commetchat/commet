@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.dart';
@@ -21,6 +22,11 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
   String toString() {
     return "Download File";
   }
+
+  static const String name = "org.matrix.msc4039.download_file";
+
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
+      name, (runner, type, key) => MatrixCapabilityDownloadFile(runner));
 
   @override
   void handleRequest(MatrixWidgetMessage message) async {

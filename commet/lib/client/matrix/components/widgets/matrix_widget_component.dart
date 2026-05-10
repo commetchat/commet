@@ -124,11 +124,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     if (PlatformUtils.isLinux) {
       var exe = Platform.resolvedExecutable;
-      var process = await Process.start(exe, [
-        '--widget_runner',
-        '--title="commet | Widget Runner"',
-        '--url=${url}'
-      ]);
+      var process = await Process.start(
+        exe,
+        ['--widget_runner', '--title="commet | Widget Runner"', '--url=${url}'],
+      );
 
       var runner = MatrixUserWidgetDesktopRunner(
           process: process,
