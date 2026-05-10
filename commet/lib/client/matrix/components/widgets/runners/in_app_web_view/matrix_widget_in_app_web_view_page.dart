@@ -138,22 +138,24 @@ class _MatrixWidgetInappwebviewPageState
                     )),
                 if (showing)
                   Expanded(
-                      child: MatrixWidgetInappwebviewRunnerWidget(
-                    keepAlive: widget.keepAlive,
-                    url: widget.creationParms?.url,
-                    info: widget.info,
-                    widgetId: widget.creationParms?.widgetId,
-                    userScript: widget.creationParms?.userScript,
-                    room: widget.creationParms?.room,
-                    component: widget.creationParms?.component,
-                    initialize: widget.creationParms != null,
-                    onRunnerCreated: (p0) {
-                      Log.i("Created widget runner!");
+                      child: Placeholder(
+                    child: MatrixWidgetInappwebviewRunnerWidget(
+                      keepAlive: widget.keepAlive,
+                      url: widget.creationParms?.url,
+                      info: widget.info,
+                      widgetId: widget.creationParms?.widgetId,
+                      userScript: widget.creationParms?.userScript,
+                      room: widget.creationParms?.room,
+                      component: widget.creationParms?.component,
+                      initialize: widget.creationParms != null,
+                      onRunnerCreated: (p0) {
+                        Log.i("Created widget runner!");
 
-                      setState(() {
-                        runner = p0;
-                      });
-                    },
+                        setState(() {
+                          runner = p0;
+                        });
+                      },
+                    ),
                   )),
               ],
             ),

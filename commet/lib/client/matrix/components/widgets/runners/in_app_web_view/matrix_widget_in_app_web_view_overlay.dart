@@ -107,15 +107,21 @@ class _InAppWebViewWidgetOverlayState extends State<InAppWebViewWidgetOverlay> {
   }
 
   onFullscreen() {
+    var keepAlive = widget.keepAlive;
+    var info = widget.runner.info;
+    var runner = widget.runner;
+
     widget.removeStream.add(null);
 
-    NavigationUtils.navigateTo(
-        navigator.currentContext!,
-        MatrixWidgetInappwebviewPage(
-          keepAlive: widget.keepAlive,
-          info: widget.runner.info,
-          runner: widget.runner,
-        ));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NavigationUtils.navigateTo(
+          navigator.currentContext!,
+          MatrixWidgetInappwebviewPage(
+            keepAlive: keepAlive,
+            info: info,
+            runner: runner,
+          ));
+    });
   }
 
   onClose() {
