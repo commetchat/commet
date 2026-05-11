@@ -146,10 +146,9 @@ class BackgroundNotificationsManager2 {
         return;
       }
 
-      Log.i("Found room: ${room?.displayName}");
+      Log.i("Found room: ${room.displayName}");
 
-      final isDirectMessage =
-          directMessages?.isRoomDirectMessage(room!) == true;
+      final isDirectMessage = directMessages?.isRoomDirectMessage(room) == true;
       Log.i("Is direct message: $isDirectMessage");
 
       TimelineEvent? event;
@@ -157,7 +156,7 @@ class BackgroundNotificationsManager2 {
 
       for (int i = 0; i < 5; i++) {
         try {
-          event = await room!.getEvent(eventId);
+          event = await room.getEvent(eventId);
           break;
         } catch (e, s) {
           Log.onError(e, s);
