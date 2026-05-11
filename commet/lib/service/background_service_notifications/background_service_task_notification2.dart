@@ -173,7 +173,7 @@ class BackgroundNotificationsManager2 {
 
       Log.e("got event: ${event}");
 
-      var member = await room!.fetchMember(event.senderId);
+      var member = await room.fetchMember(event.senderId);
 
       var content = MessageNotificationContent(
           senderName: member.displayName,
