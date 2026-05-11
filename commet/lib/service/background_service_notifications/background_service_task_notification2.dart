@@ -139,6 +139,13 @@ class BackgroundNotificationsManager2 {
         await room.init();
       }
 
+      if (room == null) {
+        NotificationManager.notify(ErrorNotificationContent(
+            title: "An error occurred while processing notifications",
+            content: "Failed to find room: $roomId  ${data}"));
+        return;
+      }
+
       Log.i("Found room: ${room?.displayName}");
 
       final isDirectMessage =
