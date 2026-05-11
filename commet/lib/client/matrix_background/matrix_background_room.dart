@@ -20,6 +20,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/painting/image_provider.dart';
 import 'package:flutter/src/widgets/icon_data.dart';
+import 'package:matrix/encryption/utils/stored_inbound_group_session.dart'
+    show StoredInboundGroupSession;
 import 'package:matrix_dart_sdk_drift_db/database.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -182,6 +184,90 @@ class MatrixBackgroundRoom implements Room {
     return null;
   }
 
+  Future<matrix.MatrixEvent?> attemptDecrypt(matrix.MatrixEvent result,
+      String cipherText, StoredInboundGroupSession session) async {
+    var key = jsonDecode(session.content);
+    var sessionKey = key["session_key"];
+
+    if (vod.isInitialized() == false) {
+      await vod.init();
+    }
+
+    var sess = _createSession(sessionKey);
+
+    if (sess != null) {
+      try {
+        var decrypted = sess.decrypt(cipherText);
+
+        Log.i("Got decrypted: ${decrypted}");
+
+        return matrix.MatrixEvent.fromJson({
+          ...jsonDecode(decrypted.plaintext),
+          "event_id": result.eventId,
+          "room_id": result.roomId,
+          "origin_server_ts": result.originServerTs.millisecondsSinceEpoch,
+          "sender": result.senderId,
+        });
+      } catch (_) {
+        Log.w("Decryption failed");
+      }
+    } else {
+      Log.w("Failed to create session to decrypt event!");
+    }
+    return null;
+  }
+
+  Future<matrix.MatrixEvent> tryDecryptEvent(matrix.MatrixEvent result) async {
+    Log.i("Attempting to decrypt incoming notification content");
+    var ciphertext = result.content.tryGet<String>("ciphertext");
+    var sessionId = result.content.tryGet<String>("session_id");
+    var senderKey = result.content.tryGet<String>("sender_key");
+
+    if (ciphertext == null) return result;
+
+    StoredInboundGroupSession? session;
+
+    if (senderKey != null) {
+      var database = backgroundClient.database;
+
+      var data = await (database.db.select(database.db.inboundGroupSession)
+            ..where((tbl) =>
+                tbl.roomId.equals(roomId) & tbl.senderKey.equals(senderKey)))
+          .get();
+
+      Log.i("Found ${data.length} sessions with matching sender_key");
+      for (var entry in data) {
+        Log.i("Got session via sender_key");
+        session = StoredInboundGroupSession(
+            roomId: entry.roomId,
+            sessionId: entry.sessionId,
+            pickle: entry.pickle,
+            content: entry.content,
+            indexes: entry.indexes,
+            allowedAtIndex: entry.allowedAtIndex,
+            senderKey: entry.senderKey,
+            senderClaimedKeys: entry.senderClaimedKey);
+
+        var decrypted = await attemptDecrypt(result, ciphertext, session);
+        if (decrypted != null) {
+          return decrypted;
+        }
+      }
+    } else {
+      session = await backgroundClient.database
+          .getInboundGroupSession(result.roomId!, sessionId as String);
+
+      if (session != null) {
+        var decrypted = await attemptDecrypt(result, ciphertext, session);
+        if (decrypted != null) {
+          return decrypted;
+        }
+      }
+    }
+
+    return result;
+  }
+
   @override
   Future<TimelineEvent<Client>?> getEvent(String eventId) async {
     var result =
@@ -189,44 +275,7 @@ class MatrixBackgroundRoom implements Room {
     Log.i("Received event: ${result}");
 
     if (result.type == matrix.EventTypes.Encrypted) {
-      Log.i("Attempting to decrypt incoming notification content");
-      var ciphertext = result.content["ciphertext"];
-
-      var sessionId = result.content["session_id"];
-
-      var session = await backgroundClient.database
-          .getInboundGroupSession(result.roomId!, sessionId as String);
-
-      var senderKey = result.content["sender_key"];
-
-      if (session != null) {
-        if (session.senderKey == senderKey) {
-          var key = jsonDecode(session.content);
-          var sessionKey = key["session_key"];
-
-          if (vod.isInitialized() == false) {
-            await vod.init();
-          }
-
-          var sess = _createSession(sessionKey);
-
-          if (sess != null) {
-            var decrypted = sess.decrypt(ciphertext as String);
-
-            Log.i("Got decrypted: ${decrypted}");
-
-            result = matrix.MatrixEvent.fromJson({
-              ...jsonDecode(decrypted.plaintext),
-              "event_id": result.eventId,
-              "room_id": result.roomId,
-              "origin_server_ts": result.originServerTs.millisecondsSinceEpoch,
-              "sender": result.senderId,
-            });
-          } else {
-            Log.w("Failed to create session to decrypt event!");
-          }
-        }
-      }
+      result = await tryDecryptEvent(result);
     }
 
     if ([

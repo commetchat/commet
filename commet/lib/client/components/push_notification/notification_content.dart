@@ -43,6 +43,7 @@ class MessageNotificationContent extends NotificationContent {
   ImageProvider? senderImage;
   String? senderImageId;
   ImageProvider? attachedImage;
+  Room? room;
 
   MessageNotificationContent({
     required String senderName,
@@ -60,6 +61,7 @@ class MessageNotificationContent extends NotificationContent {
     this.senderImage,
     this.senderImageId,
     this.attachedImage,
+    this.room,
   }) : super(title: senderName);
 
   static Future<MessageNotificationContent?> fromEvent(
@@ -85,6 +87,7 @@ class MessageNotificationContent extends NotificationContent {
                     ?.thumbnail,
         formatType: msg.bodyFormat,
         formattedContent: msg.formattedBody,
+        room: room,
         isDirectMessage: room.client
                 .getComponent<DirectMessagesComponent>()
                 ?.isRoomDirectMessage(room) ??
@@ -105,6 +108,7 @@ class MessageNotificationContent extends NotificationContent {
         eventId: msg.eventId,
         attachedImage: msg.stickerImage,
         formattedContent: "",
+        room: room,
         formatType: "chat.commet.custom.matrix_plain",
         isDirectMessage: room.client
                 .getComponent<DirectMessagesComponent>()
@@ -132,6 +136,7 @@ class CallNotificationContent extends NotificationContent {
 
   ImageProvider? senderImage;
   String? senderImageId;
+  Room? room;
 
   CallNotificationContent({
     required this.roomId,
@@ -147,5 +152,6 @@ class CallNotificationContent extends NotificationContent {
     required super.content,
     this.roomImage,
     this.roomImageId,
+    this.room,
   });
 }
