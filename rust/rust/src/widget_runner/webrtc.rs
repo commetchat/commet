@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tao::event_loop::EventLoopProxy;
+
+#[cfg(target_os = "linux")]
 use webrtc::ice_transport::ice_server::RTCIceServer;
 
 use crate::widget_runner::UserEvent;
@@ -10,6 +12,7 @@ pub mod data_channels;
 #[cfg(target_os = "linux")]
 pub mod peer_connections;
 
+#[cfg(target_os = "linux")]
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum JsToRust {
