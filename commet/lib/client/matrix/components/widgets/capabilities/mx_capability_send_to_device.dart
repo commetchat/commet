@@ -69,7 +69,7 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
 
     final txn = runner.client.matrixClient.generateUniqueTransactionId();
 
-    await runner.client.matrixClient.sendToDevice(type, txn, {});
+    await runner.client.matrixClient.sendToDevice(type, txn, map);
 
     return message.createResponseObject();
   }
