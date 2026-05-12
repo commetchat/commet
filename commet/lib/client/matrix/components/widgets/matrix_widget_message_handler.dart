@@ -8,13 +8,29 @@ class MatrixWidgetMessage {
   String requestId;
   String action;
   String widgetId;
+  String api;
   Map<String, dynamic> data;
+  Map<String, dynamic>? response;
 
-  MatrixWidgetMessage(
-      {required this.requestId,
-      required this.action,
-      required this.data,
-      required this.widgetId});
+  MatrixWidgetMessage({
+    required this.requestId,
+    required this.action,
+    required this.data,
+    required this.api,
+    required this.widgetId,
+    this.response,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "api": api,
+      "widgetId": widgetId,
+      "requestId": requestId,
+      "action": action,
+      "data": data,
+      if (response != null) "response": response,
+    };
+  }
 
   Map<String, dynamic> createResponse(
       {Map<String, dynamic> data = const {},
@@ -27,6 +43,31 @@ class MatrixWidgetMessage {
       "data": data.isEmpty ? this.data : data,
       "response": response,
     };
+  }
+
+  MatrixWidgetMessage createResponseObject(
+      {Map<String, dynamic> data = const {},
+      Map<String, dynamic> response = const {}}) {
+    return MatrixWidgetMessage(
+        api: api,
+        widgetId: widgetId,
+        requestId: requestId,
+        action: action,
+        data: data.isEmpty ? this.data : data,
+        response: response);
+  }
+
+  MatrixWidgetMessage createResponseError(
+      {Map<String, dynamic> data = const {}, required String message}) {
+    return MatrixWidgetMessage(
+        api: api,
+        widgetId: widgetId,
+        requestId: requestId,
+        action: action,
+        data: data.isEmpty ? this.data : data,
+        response: {
+          "error": {"message": message}
+        });
   }
 }
 
@@ -44,7 +85,7 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
     };
   }
 
-  void onMessageReceived(Map<String, dynamic> data) {
+  void onMessageReceived(Map<String, dynamic> data) async {
     String? requestId = data.tryGet("requestId");
     String? api = data.tryGet("api");
     String? action = data.tryGet("action");
@@ -55,6 +96,7 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
     // This is a request initiated by the widget, to us
     if (api == "fromWidget") {
       var request = MatrixWidgetMessage(
+          api: api!,
           requestId: requestId,
           action: action,
           data: messageData,
@@ -69,7 +111,9 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
 
       var c = runner.capabilities as MatrixWidgetCapabilitiesManager;
 
-      c.handleEvent(request);
+      var response = await c.handleEvent(request);
+
+      runner.messageTransport.send(response.toJson());
     }
 
     // this event is a response to a request initiated by us

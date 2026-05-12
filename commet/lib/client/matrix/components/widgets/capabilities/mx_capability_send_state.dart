@@ -44,17 +44,15 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var key = message.data.tryGet<String>("state_key");
     var content = message.data.tryGetMap<String, dynamic>("content");
 
-    if (content == null) return;
+    if (content == null)
+      return message.createResponseError(message: "Invalid message");
 
     var result = await runner.room!.matrixRoom.client
         .setRoomStateWithKey(runner.room!.identifier, eventType, key!, content);
-
-    runner.messageTransport.send(message.createResponse(
-        response: {"room_id": runner.room!.identifier, "event_id": result}));
 
     runner.messageTransport.send(
         runner.eventHandler.generateToWidgetEvent(action: "send_event", data: {
@@ -66,5 +64,8 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
       "origin_server_ts": DateTime.now().millisecondsSinceEpoch,
       "room_id": runner.room!.identifier
     }));
+
+    return message.createResponseObject(
+        response: {"room_id": runner.room!.identifier, "event_id": result});
   }
 }

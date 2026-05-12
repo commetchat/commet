@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/notifying_list.dart';
 
 class MatrixWidgetBlob {
   Uint8List bytes;
@@ -14,6 +15,10 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
   WidgetTransceiver transceiver;
 
   MatrixWidgetTransport(this.transceiver);
+
+  @override
+  NotifyingList<(WidgetMessageDirection, Map<String, dynamic>)> messageLogs =
+      NotifyingList.empty(growable: true);
 
   dynamic decodeArrayBuffers(dynamic input) {
     if (input is Map<String, dynamic>) {
@@ -66,13 +71,19 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
       transceiver.onReceived.map((i) {
         var decoded = jsonDecode(Utf8Decoder().convert(i));
         decoded = decodeArrayBuffers(decoded);
+
+        messageLogs.add((WidgetMessageDirection.incoming, decoded));
         return decoded;
       });
 
   @override
   void send(Map<String, dynamic> msg) {
     Log.i("Sending message: $msg");
-    transceiver
-        .send(Utf8Encoder().convert(jsonEncode(encodeArrayBuffers(msg))));
+
+    var encoded = encodeArrayBuffers(msg);
+    messageLogs.add(
+        (WidgetMessageDirection.outgoing, Map<String, dynamic>.from(encoded)));
+
+    transceiver.send(Utf8Encoder().convert(jsonEncode(encoded)));
   }
 }

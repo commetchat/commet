@@ -2,6 +2,8 @@ import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widg
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/debug/log.dart';
+import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
   @override
@@ -25,14 +27,50 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
 
   @override
   String toString() {
-    return "Receive State event: $eventType";
+    return "Send To Device event: $eventType";
   }
 
   @override
   bool canHandleRequest(MatrixWidgetMessage message) {
-    return false;
+    if (message.action != "send_to_device") return false;
+    if (message.api != "fromWidget") return false;
+    var type = message.data.tryGet<String>("type");
+    if (type != eventType) return false;
+
+    return true;
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {}
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
+    var type = message.data.tryGet<String>("type")!;
+    var encrypted = message.data.tryGet<bool>("encrypted") ?? false;
+
+    var messages = message.data.tryGetMap<String, dynamic>("messages");
+
+    Map<String, Map<String, Map<String, dynamic>>> map = Map();
+
+    for (var pair in messages!.entries) {
+      var mapB = pair.value as Map<dynamic, dynamic>;
+
+      if (map[pair.key] == null) {
+        map[pair.key] = {};
+      }
+
+      for (var pairB in mapB.entries) {
+        if (map[pair.key]![pairB.key] == null) {
+          map[pair.key]![pairB.key] = {};
+        }
+
+        var mapC = pairB.value as Map<String, dynamic>;
+
+        map[pair.key]![pairB.key!] = mapC;
+      }
+    }
+
+    final txn = runner.client.matrixClient.generateUniqueTransactionId();
+
+    await runner.client.matrixClient.sendToDevice(type, txn, {});
+
+    return message.createResponseObject();
+  }
 }

@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 
 class MatrixUserWidgetDesktopRunner implements MatrixWidgetRunner {
@@ -33,6 +34,9 @@ class MatrixUserWidgetDesktopRunner implements MatrixWidgetRunner {
 
   late Process process;
 
+  @override
+  NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
+
   MatrixUserWidgetDesktopRunner(
       {required Process process,
       required this.room,
@@ -43,12 +47,12 @@ class MatrixUserWidgetDesktopRunner implements MatrixWidgetRunner {
     this.process = process;
     messageTransport = MatrixWidgetTransport(tx);
     eventHandler = MatrixWidgetMessageHandler(runner: this);
+
     capabilities =
         MatrixWidgetCapabilitiesManager(runner: this, context: context);
 
-    process.stderr
-        .map((i) => Utf8Decoder().convert(i))
-        .listen((i) => i.split("\n").forEach((i) => Log.d("Widget: ${i}")));
+    process.stderr.map((i) => Utf8Decoder().convert(i)).listen((i) =>
+        i.split("\n").forEach((i) => logs.add(LogEntry(LogType.info, i))));
 
     Future.delayed(Duration(seconds: 1)).then((_) {
       messageTransport.send(

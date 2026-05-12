@@ -2,6 +2,8 @@ import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widg
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/debug/log.dart';
+import 'package:matrix/src/utils/to_device_event.dart';
 
 class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
   @override
@@ -11,7 +13,9 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
   String? eventKey;
 
   MatrixCapabilityReceiveToDeviceEvent(
-      {required this.runner, required this.eventType, this.eventKey});
+      {required this.runner, required this.eventType, this.eventKey}) {
+    runner.client.matrixClient.onToDeviceEvent.stream.listen(onToDeviceMessage);
+  }
 
   static String name = "org.matrix.msc3819.receive.to_device";
 
@@ -25,7 +29,7 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
 
   @override
   String toString() {
-    return "Receive State event: $eventType";
+    return "Receive To Device event: $eventType";
   }
 
   @override
@@ -34,5 +38,22 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {}
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
+    return message.createResponseError(message: "Unimplemented");
+  }
+
+  void onToDeviceMessage(ToDeviceEvent event) {
+    Log.i("Widget Capability received to device event");
+    if (event.type != eventType) return;
+
+    Log.i("Sending to device event to widget!");
+
+    runner.messageTransport.send(runner.eventHandler
+        .generateToWidgetEvent(action: "send_to_device", data: {
+      "type": event.type,
+      "sender": event.senderId,
+      "encrypted": event.encryptedContent != null,
+      "content": event.content
+    }));
+  }
 }

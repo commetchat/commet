@@ -5,7 +5,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 abstract class MatrixWidgetCapability {
   MatrixWidgetRunner get runner;
 
-  void handleRequest(MatrixWidgetMessage message);
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message);
 
   bool canHandleRequest(MatrixWidgetMessage message);
 }

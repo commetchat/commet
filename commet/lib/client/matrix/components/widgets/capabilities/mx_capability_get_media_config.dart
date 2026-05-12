@@ -23,15 +23,14 @@ class MatrixCapabilityGetMediaConfig implements MatrixWidgetCapability {
       name, (runner, type, key) => MatrixCapabilityGetMediaConfig(runner));
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var config = (runner.room!.client as MatrixClient).config;
 
     if (config == null) {
       config = await runner.room!.matrixRoom.client.getConfig();
     }
 
-    runner.messageTransport
-        .send(message.createResponse(response: config.toJson()));
+    return message.createResponseObject(response: config.toJson());
   }
 
   @override

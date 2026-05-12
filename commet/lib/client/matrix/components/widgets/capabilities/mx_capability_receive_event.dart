@@ -38,7 +38,7 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
           runner: runner, eventType: type!, eventKey: key));
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var timeline = (runner.room?.timeline ?? await runner.room!.getTimeline())
         as MatrixTimeline;
 
@@ -58,11 +58,7 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
             })
         .toList();
 
-    var response = message.createResponse(response: {"events": result});
-
-    Log.i("Sending events: $response");
-
-    runner.messageTransport.send(response);
+    return message.createResponseObject(response: {"events": result});
   }
 
   @override

@@ -1,7 +1,7 @@
 use std::{sync::Arc, thread};
 
 use image::GenericImageView;
-use log::{error, info};
+use log::{error, info, trace};
 use serde::{Deserialize, Serialize};
 use tao::{
     dpi::{PhysicalSize, Size},
@@ -73,7 +73,7 @@ pub fn run() {
     let event_loop: EventLoop<UserEvent> = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let event_proxy = event_loop.create_proxy();
 
-    let apply_webrtc_patch = false;
+    let apply_webrtc_patch = true;
 
     thread::spawn(move || {
         let rt = tokio::runtime::Builder::new_current_thread()
@@ -87,8 +87,6 @@ pub fn run() {
 
             loop {
                 let val = rx.recv().await;
-
-                info!("Handling IPC Request: {:?}", val);
 
                 match val {
                     Some(val) => match val {
@@ -167,8 +165,11 @@ pub fn run() {
 
     let tx = Arc::new(tx);
 
+    info!("Setting custom user agent");
+
     let mut builder = WebViewBuilder::new()
         .with_incognito(true)
+        .with_user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) WebKitGTK/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36")
         .with_ipc_handler(move |data| {
             let result = tx
                 .clone()
@@ -259,14 +260,14 @@ pub fn run() {
                         .unwrap();
                 }
                 UserEvent::PostMessage(content) => {
-                    info!("Handling post message user event");
+                    trace!("Handling post message user event");
 
                     let result =
                         serde_json::to_string(&serde_json::Value::String(content)).unwrap();
 
                     let js = format!("window.onMessagePolyfill({})", result);
 
-                    info!("Executing: {}", js);
+                    trace!("Executing: {}", js);
 
                     view.clone().evaluate_script(js.as_str()).unwrap();
                 }

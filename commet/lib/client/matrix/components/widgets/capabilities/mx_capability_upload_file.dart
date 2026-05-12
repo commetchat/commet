@@ -24,7 +24,7 @@ class MatrixCapabilityUploadFile implements MatrixWidgetCapability {
       MapEntry(name, (runner, type, key) => MatrixCapabilityUploadFile(runner));
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     Log.d("Handling upload file!");
     var file = message.data.tryGet<Uint8List>("file");
 
@@ -34,10 +34,10 @@ class MatrixCapabilityUploadFile implements MatrixWidgetCapability {
 
       Log.d("Upload finished!");
 
-      var response =
-          message.createResponse(response: {"content_uri": result.toString()});
-
-      runner.messageTransport.send(response);
+      return message.createResponseObject(
+          data: {}, response: {"content_uri": result.toString()});
+    } else {
+      return message.createResponseError(message: "Invalid message");
     }
   }
 

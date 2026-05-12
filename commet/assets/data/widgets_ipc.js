@@ -89,7 +89,6 @@
     }
 
     window.parent.postMessage = (message, options) => {
-        console.log("Posting message to parent: ", message, options);
         var msg = encodeArrayBuffers(message);
         var data = JSON.stringify(msg)
 
@@ -104,7 +103,7 @@
     window.addEventListener = (type, callback) => {
         if (type == "message") {
             callbacks.push(callback);
-            console.log("Got callback for onMessage");
+
         } else {
             original(type, callback);
         }
@@ -112,9 +111,6 @@
 
 
     window.onMessagePolyfill = (message) => {
-        console.log("Received message from stdin!")
-        console.log(message);
-
         var data = JSON.parse(message)
         data = decodeArrayBuffers(data)
 
@@ -123,13 +119,11 @@
             data: data
         }
 
-        console.log("Dispatching message");
-
         if (window.onmessage != null) {
             window.onmessage(event);
         }
 
-        callbacks.forEach((i) => { console.log(i); console.log(event); i(event) });
+        callbacks.forEach((i) => { i(event) });
     }
 
 

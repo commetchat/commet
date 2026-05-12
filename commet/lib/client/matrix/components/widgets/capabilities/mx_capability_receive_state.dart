@@ -57,7 +57,7 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var events = eventKey == null
         ? runner.room!.matrixRoom.states[eventType]?.entries
             .map((i) => i.value)
@@ -65,15 +65,14 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
         : [runner.room!.matrixRoom.states[eventType]?[eventKey]];
 
     if (events == null || events.nonNulls.isEmpty == true) {
-      runner.messageTransport.send(message.createResponse(response: {
+      return message.createResponseObject(response: {
         "events": [],
-      }));
-      return;
+      });
     }
 
     var finalEvents = events.nonNulls;
 
-    runner.messageTransport.send(message.createResponse(response: {
+    return message.createResponseObject(response: {
       "events": finalEvents.map((i) {
         if (i is Event) {
           return {
@@ -82,6 +81,7 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
             "state_key": i.stateKey!,
             "type": i.type,
             "event_id": i.eventId,
+            if (i.unsigned != null) "unsigned": i.unsigned,
             "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
             "room_id": runner.room!.identifier
           };
@@ -97,7 +97,7 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
           throw UnimplementedError();
         }
       }).toList()
-    }));
+    });
   }
 
   void onEvent(({String roomId, StrippedStateEvent state}) event) {

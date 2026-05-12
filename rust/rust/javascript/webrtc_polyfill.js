@@ -15,7 +15,7 @@
             this.label = label;
             this.onopen = null;
             this.readyState = "connecting"
-            this._eventManager = new PolyfillEventManager()
+            this._eventManager = new EventTarget()
 
             console.log("Creating RTCDataChannel")
 
@@ -27,8 +27,14 @@
             })
         }
 
-        addEventListener(event, callback) {
-            this._eventManager.addListener(event, callback);
+        addEventListener(event, callback, options) {
+            console.log("RTCDataChannel adding event listener: ", event);
+            this._eventManager.addEventListener(event, callback, options);
+        }
+
+        removeEventListener(event, callback, options) {
+            console.log("RTCDataChannel removing event listener: ", event);
+            this._eventManager.removeEventListener(event, callback, options);
         }
 
 
@@ -84,7 +90,7 @@
                 console.log(msg);
 
                 this.onmessage(msg)
-                this._eventManager.invoke("message", msg)
+                this._eventManager.dispatchEvent(new Event("message", msg))
             } else {
                 console.log("Unhandled data channel event: ", type, data)
             }
@@ -106,46 +112,87 @@
             console.log("Creating new rtc session description: ", args)
 
             this.sdp = args.sdp;
+            this.type = args.type;
+        }
+
+        toJSON() {
+            console.log("Converting Session Description to JSON");
+            return {
+                "sdp": this.sdp,
+                "type": this.type,
+            }
         }
     }
 
-    class PolyfillEventManager {
-        constructor() {
-            console.log("Creating callbacks map")
-            this.callbacks = new Map()
-            console.log("Done!")
+    class PolyfillRTCStatsReport {
+        constructor(data) {
+            this.data = data;
         }
 
-        addListener(type, callback) {
-            if (!this.callbacks.has(type)) {
-                this.callbacks.set(type, new Array());
+        get(key) {
+            if (this.data.hasOwnProperty(key)) {
+                return this.data[key];
+            }
+            return undefined;
+        }
+
+        keys() {
+            return Object.keys(this.data)
+        }
+
+        values() {
+            var v = Object.values(this.data);
+            return v;
+        }
+    }
+
+    class PolyfillRTCIceCandidate {
+        constructor(args) {
+            console.log("Constructing RTC ice candidate: ", args)
+            this.candidate = args['candidate'];
+
+            if (args.hasOwnProperty("usernameFragment")) {
+                this.usernameFragment = args.usernameFragment;
+            } else {
+                this.usernameFragment = null;
             }
 
-            var list = this.callbacks.get(type);
-            list.push(callback);
-            this.callbacks.set(type, list);
+
+            if (args.hasOwnProperty("sdpMid")) {
+                this.sdpMid = args.sdpMid;
+            } else {
+                this.sdpMid = "";
+            }
+
+            if (args.hasOwnProperty("sdpMLineIndex")) {
+                this.sdpMLineIndex = args.sdpMLineIndex;
+            } else {
+                this.sdpMLineIndex = "";
+            }
+
+            console.log("Result: ", this);
         }
 
-        invoke(type, value) {
-            var list = this.callbacks.get(type);
-            if (list == undefined || list == null) return;
-
-            for (var i = 0; i < list.length; i++) {
-                var callback = list[i];
-                callback(value);
+        toJSON() {
+            return {
+                "candidate": this.candidate,
+                "sdpMid": "",
+                "sdpMLineIndex": 0,
+                "usernameFragment": null
             }
         }
     }
 
     class RTCPeerConnectionPolyfill {
-        constructor() {
+        constructor(args) {
             console.log("Creating RTCPeerConnection")
             this.id = uuid();
             this.ondatachannel = null;
             this.onicecandidate = null;
+            console.log(args);
 
             console.log("Creating Event Manager")
-            this._eventManager = new PolyfillEventManager()
+            this._eventManager = new EventTarget()
             this._dataChannels = new Map()
 
             console.log("Registering event handlers")
@@ -154,9 +201,43 @@
                 var eventType = value.event_type;
                 var eventData = value.event_data;
 
-                if (eventType == "onicecandidate") {
-                    this.onicecandidate(eventData)
-                    this._eventManager.invoke("onicecandidate", eventData);
+                console.log("RTCPeerConnection got event: ", eventType);
+                console.log(eventData);
+
+                if (eventType == "icecandidate") {
+
+
+                    var ev = new Event("icecandidate", {});
+
+                    if (eventData['candidate'] != null) {
+                        ev.candidate = new PolyfillRTCIceCandidate(eventData['candidate']);
+                    } else {
+                        ev.candidate = null;
+                    }
+
+                    console.log("Dispatching event: ", ev);
+                    if (this.onicecandidate != null) {
+                        this.onicecandidate(ev)
+                    }
+
+                    this._eventManager.dispatchEvent(ev);
+                }
+
+                if (eventType == "negotiationneeded") {
+                    console.log("Dispatching negotiation needed event");
+                    this._eventManager.dispatchEvent(new Event("negotiationneeded"))
+                }
+
+                if (eventType == "signalingstatechange") {
+                    this._eventManager.dispatchEvent(new Event("signalingstatechange", eventData));
+                }
+
+                if (eventType == "icegatheringstatechange") {
+                    this._eventManager.dispatchEvent(new Event("icegatheringstatechange", eventData));
+                }
+
+                if (eventType == "iceconnectionstatechanged") {
+                    this._eventManager.dispatchEvent(new Event("iceconnectionstatechanged", eventData));
                 }
 
                 if (eventType.startsWith("data_channel")) {
@@ -184,6 +265,7 @@
                 type: "CreatePeer",
                 id: this.id,
                 event_callback_id: this._eventCallbackId,
+                ice_servers: args.iceServers,
             });
         }
 
@@ -206,15 +288,27 @@
             var channel = new RTCDataChannelPolyfill(this.id, label)
             this._dataChannels.set(channel.id, channel);
 
+            console.log("Dispatching datachannel event");
+            this._eventManager.dispatchEvent(new Event("datachannel", {
+                "channel": channel
+            }));
+
             return channel
         }
 
         addIceCandidate(candidate) {
-            sendIpc({
-                type: "AddIceCandidate",
-                pc_id: this.id,
-                candidate: JSON.stringify(candidate),
-            })
+
+            console.log("Adding ice candidate: ", candidate)
+
+            if (candidate != null) {
+                sendIpc({
+                    type: "AddIceCandidate",
+                    pc_id: this.id,
+                    candidate: JSON.stringify(candidate.toJSON()),
+                })
+            } else {
+
+            }
         }
 
         async createOffer(args) {
@@ -248,12 +342,18 @@
         setLocalDescription(sessionDescription, successCallback, errorCallback) {
             console.log("Attempting to set local description!", sessionDescription, successCallback, errorCallback);
 
-
-            sendIpc({
-                type: "SetLocalDescription",
-                pc_id: this.id,
-                sdp: sessionDescription.sdp,
-            });
+            if (sessionDescription != null) {
+                sendIpc({
+                    type: "SetLocalDescription",
+                    pc_id: this.id,
+                    sdp: sessionDescription.sdp,
+                });
+            } else {
+                sendIpc({
+                    type: "SetLocalDescription",
+                    pc_id: this.id,
+                });
+            }
 
         }
 
@@ -268,22 +368,59 @@
                 type: "SetRemoteDescription",
                 pc_id: this.id,
                 sdp: sdp.sdp,
+                sdp_type: sdp.type
             })
 
             return promise
         }
 
-        createAnswer(options) {
-            console.log("TODO: implement createAnswer:", options)
-        }
+        async createAnswer(options) {
 
-        addEventListener(name, callback) {
-            this._eventManager.addListener(name, callback);
-        }
+            console.log("Attempting to create webrtc answer: ", options)
 
-        getStats(selector) {
             let [id, promise] = window.toWebView.createPromise()
-            console.log("Calling getStats for: ", selector);
+
+            console.log("Promise: ", id, promise)
+
+            sendIpc({
+                type: "CreateAnswer",
+                pc_id: this.id,
+                promise_id: id,
+            })
+
+            var result = await promise;
+
+            console.log("Received value: ", result);
+
+            if (result.hasOwnProperty("error")) {
+                throw new Error(result.error);
+            }
+
+            var returnValue = {
+                type: "answer",
+                sdp: result.sdp
+            }
+
+            console.log("Returning: ", returnValue);
+
+            return returnValue
+        }
+
+        addEventListener(type, listener, options) {
+            console.log("RTCPeerConnection adding event listener: ", type)
+            this._eventManager.addEventListener(type, listener, options);
+        }
+
+        removeEventListener(type, listener, options) {
+            console.log("RTCPeerConnection removing event listener: ", type)
+            if (type == "icecandidate") {
+                console.log("Removing ice candidate event listener");
+            }
+            this._eventManager.removeEventListener(type, listener, options);
+        }
+
+        async getStats(selector) {
+            let [id, promise] = window.toWebView.createPromise()
 
             sendIpc({
                 type: "GetStats",
@@ -291,7 +428,9 @@
                 promise_id: id,
             })
 
-            return promise
+            var data = await promise;
+
+            return new PolyfillRTCStatsReport(data)
         }
 
     }
@@ -347,8 +486,6 @@
         }
 
         resolvePromise(id, result) {
-            console.log("Attempting to resolve promise: ", id, result);
-
             var callbacks = this.promises.get(id);
             var resolve = callbacks[0];
 
@@ -374,4 +511,5 @@
     window.toWebView = new ToWebview()
     window.RTCPeerConnection = RTCPeerConnectionPolyfill;
     window.RTCSessionDescription = RTCSessionDescriptionPolyfill;
+    window.RTCIceCandidate = PolyfillRTCIceCandidate;
 })();

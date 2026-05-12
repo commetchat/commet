@@ -1,4 +1,4 @@
-use log::info;
+use log::{info, trace};
 use serde::{Deserialize, Serialize};
 use tao::event_loop::EventLoopProxy;
 use tokio::io::AsyncBufReadExt;
@@ -25,14 +25,14 @@ pub async fn read_stdin(event_sender: EventLoopProxy<UserEvent>) {
 
             match line {
                 Some(line) => {
-                    info!("Received line from stdin = {}", line);
+                    trace!("Received line from stdin = {}", line);
 
                     event_sender
                         .send_event(UserEvent::PostMessage(line))
                         .unwrap();
                 }
                 None => {
-                    info!("Received None from stdin")
+                    trace!("Received None from stdin")
                 }
             };
         }
@@ -44,7 +44,7 @@ pub async fn handle(
     event_sender: EventLoopProxy<UserEvent>,
 ) -> Option<ResolvedPromise> {
     let msg = serde_json::from_str::<JsToRust>(&command).unwrap();
-    info!("Received command: {:?}", msg);
+    trace!("Received command: {:?}", msg);
 
     match msg {
         JsToRust::PostMessage { message } => {
@@ -52,7 +52,6 @@ pub async fn handle(
 
             let result = message + "\n";
             let _ = stdout.write_all(result.as_bytes()).await;
-            info!("Wrote out data! {}", result);
         }
     }
 

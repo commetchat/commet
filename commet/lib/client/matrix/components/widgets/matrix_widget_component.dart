@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:commet/client/client.dart';
@@ -12,10 +13,17 @@ import 'package:commet/client/room.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/atoms/notifying_list_builder.dart';
+import 'package:commet/ui/molecules/widget_debug_view.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:flutter/material.dart' as m;
 
 class MatrixUserWidgetInfo implements UserWidgetInfo {
   late String _name;
@@ -89,6 +97,14 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
             .notifyCapabilities(["io.element.requires_client"]);
       }
     });
+
+    AdaptiveDialog.show(
+      navigator.currentContext!,
+      builder: (context) {
+        return SizedBox(
+            width: 700, height: 700, child: WidgetDebugView(runner));
+      },
+    );
   }
 
   @override

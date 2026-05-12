@@ -137,6 +137,8 @@ pub fn register_data_channel_callbacks(
     let id = data_channel_id.clone();
 
     data_channel.on_close(Box::new(move || {
+        info!("Data channel Closed!");
+
         let val = json!({
             "event_type": "data_channel_closed",
             "event_data": {

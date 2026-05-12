@@ -50,16 +50,18 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var content = message.data.tryGetMap<String, dynamic>("content");
 
-    if (content == null) return;
+    if (content == null) {
+      return message.createResponseError(message: "Invalid request");
+    }
 
     var id = await runner.room!.matrixRoom.sendEvent(content, type: eventType);
 
-    runner.messageTransport.send(message.createResponse(response: {
+    return message.createResponseObject(response: {
       "room_id": runner.room!.identifier,
       "event_id": id!,
-    }));
+    });
   }
 }

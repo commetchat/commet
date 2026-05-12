@@ -16,6 +16,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -31,6 +32,11 @@ class MatrixWidgetCapabilitiesManager
     implements WidgetCapabilityManager<MatrixWidgetMessage> {
   Map<String, MatrixWidgetCapability> grantedCapabilities = {};
   Set<String> rejectedCapabilities = {};
+
+  @override
+  NotifyingList<String> grantedCapabilityNames =
+      NotifyingList.empty(growable: true);
+
   MatrixWidgetRunner runner;
   final BuildContext context;
 
@@ -136,9 +142,12 @@ class MatrixWidgetCapabilitiesManager
       var (capability, eventType, eventKey) = parseCapability(name);
 
       if (builders.containsKey(capability)) {
-        grantedCapabilities[name] =
-            builders[capability]!(runner, eventType, eventKey);
+        var created = builders[capability]!(runner, eventType, eventKey);
+        grantedCapabilities[name] = created;
         granted.add(name);
+
+        grantedCapabilityNames.add(created.toString());
+
         rejectedCapabilities.remove(name);
       }
     }
@@ -176,6 +185,7 @@ class MatrixWidgetCapabilitiesManager
     var msgType = event.content.tryGet<String>("msgtype");
 
     var mockAction = MatrixWidgetMessage(
+      api: "fromWidget",
       action: "org.matrix.msc2876.read_events",
       widgetId: runner.widgetId,
       requestId: "fake",
@@ -196,25 +206,30 @@ class MatrixWidgetCapabilitiesManager
   }
 
   bool canWidgetReadEventType(matrix.Event event) {
-    return false;
+    return canWidgetReadEvent(event);
   }
 
   @override
-  void handleEvent(MatrixWidgetMessage event) {
+  Future<MatrixWidgetMessage> handleEvent(MatrixWidgetMessage event) async {
     var key = eventToCapabilityName(event);
 
     if (rejectedCapabilities.contains(key)) {
-      Log.e("Widget requested rejected capability: $key");
-      return;
+      return event.createResponseError(message: "Rejected");
     }
 
     for (var capability in grantedCapabilities.values) {
       if (capability.canHandleRequest(event) == true) {
-        capability.handleRequest(event);
-        return;
+        try {
+          var response = await capability.handleRequest(event);
+          return response;
+        } catch (e, s) {
+          Log.onError(e, s, content: "Error handling widget message: $event");
+          return event.createResponseError(message: "Unknown error occurred");
+        }
       }
     }
 
-    Log.e("Unhandled widget request ${event.action}\n${event.data}");
+    return event.createResponseError(
+        message: "Unhandled widget request ${event.action}\n${event.data}");
   }
 }

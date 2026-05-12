@@ -5,6 +5,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +13,8 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:url_launcher/url_launcher.dart';
 
 class LogPage extends StatefulWidget {
-  const LogPage({super.key});
+  const LogPage(this.logs, {super.key});
+  final NotifyingList<LogEntry> logs;
 
   @override
   State<LogPage> createState() => _LogPageState();
@@ -45,8 +47,8 @@ class _LogPageState extends State<LogPage> {
 
   @override
   void initState() {
-    sub = Log.log.onListUpdated.listen(onLogsUpdated);
-    count = Log.log.length;
+    sub = widget.logs.onListUpdated.listen(onLogsUpdated);
+    count = widget.logs.length;
     super.initState();
   }
 
@@ -61,7 +63,7 @@ class _LogPageState extends State<LogPage> {
     return ListView.builder(
       itemCount: count,
       itemBuilder: (context, index) {
-        var item = Log.log[Log.log.length - index - 1];
+        var item = widget.logs[widget.logs.length - index - 1];
         return buildLog(item, index);
       },
     );
@@ -197,7 +199,7 @@ class _LogPageState extends State<LogPage> {
 
   void onLogsUpdated(event) {
     setState(() {
-      count = Log.log.length;
+      count = widget.logs.length;
     });
   }
 

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use tao::event_loop::EventLoopProxy;
+use webrtc::ice_transport::ice_server::RTCIceServer;
 
 use crate::widget_runner::UserEvent;
 
@@ -15,6 +16,7 @@ pub enum JsToRust {
     CreatePeer {
         id: String,
         event_callback_id: String,
+        ice_servers: Vec<RTCIceServer>,
     },
     ClosePeer {
         id: String,
@@ -28,13 +30,18 @@ pub enum JsToRust {
         pc_id: String,
         promise_id: String,
     },
+    CreateAnswer {
+        pc_id: String,
+        promise_id: String,
+    },
     SetLocalDescription {
         pc_id: String,
-        sdp: String,
+        sdp: Option<String>,
     },
     SetRemoteDescription {
         pc_id: String,
         sdp: String,
+        sdp_type: String,
     },
     AddIceCandidate {
         pc_id: String,
@@ -68,16 +75,26 @@ pub async fn handle(
     command: String,
     event_sender: EventLoopProxy<UserEvent>,
 ) -> Option<ResolvedPromise> {
+    use log::info;
+
     #[cfg(not(target_os = "linux"))]
     return;
 
     let msg = serde_json::from_str::<JsToRust>(&command).unwrap();
 
+    match &msg {
+        JsToRust::GetStats { pc_id, promise_id } => (),
+        _ => {
+            info!("Handling IPC Request: {:?}", command);
+        }
+    }
+
     match msg {
         JsToRust::CreatePeer {
             id,
             event_callback_id,
-        } => peer_connections::create(id, event_callback_id, event_sender).await,
+            ice_servers,
+        } => peer_connections::create(id, event_callback_id, ice_servers, event_sender).await,
         JsToRust::ClosePeer { id } => peer_connections::close(id).await,
         JsToRust::CreateDataChannel { pc_id, id, label } => {
             data_channels::create(pc_id, id, label).await
@@ -86,12 +103,18 @@ pub async fn handle(
             let result = peer_connections::create_offer(&pc_id, promise_id).await;
             return Some(result);
         }
+        JsToRust::CreateAnswer { pc_id, promise_id } => {
+            let result = peer_connections::create_answer(&pc_id, promise_id).await;
+            return Some(result);
+        }
         JsToRust::SetLocalDescription { pc_id, sdp } => {
             peer_connections::set_local_description(&pc_id, sdp).await;
         }
-        JsToRust::SetRemoteDescription { pc_id, sdp } => {
-            peer_connections::set_remote_description(&pc_id, sdp).await
-        }
+        JsToRust::SetRemoteDescription {
+            pc_id,
+            sdp,
+            sdp_type,
+        } => peer_connections::set_remote_description(&pc_id, sdp, sdp_type).await,
         JsToRust::AddIceCandidate { pc_id, candidate } => {
             peer_connections::add_ice_candidate(&pc_id, candidate).await;
         }

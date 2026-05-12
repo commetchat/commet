@@ -25,19 +25,21 @@ class MatrixCapabilityTurnServers implements MatrixWidgetCapability {
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     if (message.action == "watch_turn_servers") {
-      runner.messageTransport.send(message.createResponse());
+      runner.client.matrixClient.getTurnServer().then((config) async {
+        runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+            action: "update_turn_servers",
+            data: {
+              "uris": config.uris,
+              "username": config.username,
+              "password": config.password
+            }));
+      });
 
-      var config = await runner.client.matrixClient.getTurnServer();
-
-      runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
-          action: "update_turn_servers",
-          data: {
-            "uris": config.uris,
-            "username": config.username,
-            "password": config.password
-          }));
+      return message.createResponseObject();
     }
+
+    return message.createResponseError(message: "Unimplemented");
   }
 }

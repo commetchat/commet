@@ -37,18 +37,21 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
   }
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var eventId = message.data.tryGet<String>("event_id")!;
 
     var event = await runner.room!.matrixRoom.getEventById(eventId);
-    if (event == null) return;
+    if (event == null) {
+      return message.createResponseError(message: "Invalid request");
+    }
 
     var eventType = message.data.tryGet<String>("event_type");
 
-    if (eventType != null &&
-        capabilities.canWidgetReadEventType(event) == false) return;
-
-    if (capabilities.canWidgetReadEvent(event) == false) return;
+    if (capabilities.canWidgetReadEvent(event) == false) {
+      return message.createResponseError(
+          message:
+              "Rejected: Cannot read type of requested event: ${event.eventId} (${event.type})");
+    }
 
     var relType = message.data.tryGet<String>("rel_type");
 
@@ -84,19 +87,21 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     }
 
     var allowedEvents = chunk.where((i) => capabilities.canWidgetReadEvent(i));
-
-    runner.messageTransport.send(message.createResponse(response: {
+    var response = message.createResponseObject(response: {
       "next_batch": nextBatch,
       "prev_batch": prevBatch,
-      "chunk": allowedEvents.map((i) => {
-            "content": i.content,
-            "sender": i.senderId,
-            if (i.stateKey != null) "state_key": i.stateKey!,
-            "type": i.type,
-            "event_id": i.eventId,
-            "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-            "room_id": runner.room!.identifier
-          })
-    }));
+      "chunk": allowedEvents
+          .map((i) => {
+                "content": i.content,
+                "sender": i.senderId,
+                if (i.stateKey != null) "state_key": i.stateKey!,
+                "type": i.type,
+                "event_id": i.eventId,
+                "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
+                "room_id": runner.room!.identifier
+              })
+          .toList()
+    });
+    return response;
   }
 }

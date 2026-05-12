@@ -42,17 +42,15 @@ static PEER_CONNECTIONS: Lazy<Mutex<HashMap<String, PeerConnection>>> = Lazy::ne
 pub async fn create(
     id: String,
     event_callback_id: String,
+    ice_servers: Vec<RTCIceServer>,
     event_sender: EventLoopProxy<UserEvent>,
 ) {
     info!("Creating peer connection: {}", id);
-
+    info!("Creating with ice servers: {:?}", ice_servers);
     let api = APIBuilder::new().build();
 
     let config = RTCConfiguration {
-        ice_servers: vec![RTCIceServer {
-            urls: vec!["stun:stun.l.google.com:19302".to_owned()],
-            ..Default::default()
-        }],
+        ice_servers: ice_servers,
         ..Default::default()
     };
 
@@ -74,6 +72,7 @@ pub async fn create(
 
     let c = connection.clone();
 
+    let event_id = event_callback_id.clone();
     connection.connection.on_data_channel(Box::new(move |e| {
         info!("Data channel opened! {}", e.label());
 
@@ -86,6 +85,143 @@ pub async fn create(
         Box::pin(async {})
     }));
 
+    let event_id = event_callback_id.clone();
+    let sender = event_sender.clone();
+
+    connection
+        .connection
+        .on_ice_gathering_state_change(Box::new(move |e| {
+            info!(
+                "Ice gathering state chenged: {:?}  ({})",
+                e,
+                event_id.clone()
+            );
+
+            let val = json!({
+                "event_type": "icegatheringstatechange",
+                "event_data": {
+                    "type": "icegatheringstatechange",
+                    "iceGatheringState": match e {
+                        webrtc::ice_transport::ice_gatherer_state::RTCIceGathererState::Unspecified => "unspecified",
+                        webrtc::ice_transport::ice_gatherer_state::RTCIceGathererState::New => "new",
+                        webrtc::ice_transport::ice_gatherer_state::RTCIceGathererState::Gathering => "gathering",
+                        webrtc::ice_transport::ice_gatherer_state::RTCIceGathererState::Complete => "complete",
+                        webrtc::ice_transport::ice_gatherer_state::RTCIceGathererState::Closed => "closed",
+                    },
+                }
+            });
+
+            let val_str = serde_json::to_string(&val).unwrap();
+
+            let _ =
+                sender.send_event(UserEvent::RaiseEvent(event_id.clone(), val_str));
+
+            Box::pin(async {})
+        }));
+
+    let event_id = event_callback_id.clone();
+    let sender = event_sender.clone();
+
+
+    connection
+        .connection
+        .on_ice_connection_state_change(Box::new(move |e| {
+            info!(
+                "Ice connection state changed: {:?}  ({})",
+                e,
+                event_id.clone()
+            );
+
+            
+
+            let val = json!({
+                "event_type": "iceconnectionstatechanged",
+                "event_data": {
+                    "type": "iceconnectionstatechanged",
+                    "iceConnectionState": match e {
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Unspecified => "unspecified",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::New => "new",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Checking => "checking",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Connected => "connected",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Completed => "completed",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Disconnected => "disconnected",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Failed => "failed",
+                        webrtc::ice_transport::ice_connection_state::RTCIceConnectionState::Closed => "closed",
+                    },
+                }
+            });
+
+            let val_str = serde_json::to_string(&val).unwrap();
+
+            let _ =
+                sender.send_event(UserEvent::RaiseEvent(event_id.clone(), val_str));
+
+            Box::pin(async {})
+        }));
+
+    let event_id = event_callback_id.clone();
+    let sender = event_sender.clone();
+
+    connection
+        .connection
+        .on_negotiation_needed(Box::new(move || {
+            info!(
+                "Ice negotiation needed",
+            );
+
+                let val = json!({
+                "event_type": "negotiationneeded",
+                "event_data": {
+                    "type": "negotiationneeded",
+
+                }
+            });
+
+            let val_str = serde_json::to_string(&val).unwrap();
+
+            let _ =
+                sender.send_event(UserEvent::RaiseEvent(event_id.clone(), val_str));
+
+
+            Box::pin(async {})
+        }));
+
+    let event_id = event_callback_id.clone();
+    let sender = event_sender.clone();
+
+
+    connection.connection.on_signaling_state_change(Box::new(move |e| {
+            info!(
+                "Ice gathering state chenged: {:?}  ({})",
+                e,
+                event_id.clone()
+            );
+
+            let val = json!({
+                "event_type": "signalingstatechange",
+                "event_data": {
+                    "type": "signalingstatechange",
+                    "signalingState": match e {
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::Unspecified => "unspecified",
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::Stable => "stable",
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::HaveLocalOffer => "have-local-offer",
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::HaveRemoteOffer => "have-remote-offer",
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::HaveLocalPranswer => "have-local-pranswer",
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::HaveRemotePranswer => "have-local-pranswer",
+                        webrtc::peer_connection::signaling_state::RTCSignalingState::Closed => "closed",
+                    },
+                }
+            });
+
+            let val_str = serde_json::to_string(&val).unwrap();
+
+            let _ =
+                sender.send_event(UserEvent::RaiseEvent(event_id.clone(), val_str));
+
+            Box::pin(async {})
+        }));
+
+    let event_id = event_callback_id.clone();
     connection.connection.on_ice_candidate(Box::new(move |e| {
         info!("Received Ice Candidate: {:?}  ({})", e, event_callback_id);
 
@@ -125,22 +261,21 @@ pub async fn create(
                 );
 
                 let val = json!({
-                    "event_type": "onicecandidate",
+                    "event_type": "icecandidate",
                     "event_data": {
                         "type": "icecandidate",
-                        "options": {
-                            "candidate": {
-                                "candidate": candidate_str,
-                                "address": e.address,
-                                "port": e.port,
-                                "priority": e.priority,
-                                "protocol":  protocol_str,
-                                "relatedAddress": e.related_address,
-                                "relatedPort": e.related_port,
-                                "type": candidate_type,
-                                "foundation": e.foundation,
-                            }
+                        "candidate": {
+                            "candidate": candidate_str,
+                            "address": e.address,
+                            "port": e.port,
+                            "priority": e.priority,
+                            "protocol":  protocol_str,
+                            "relatedAddress": e.related_address,
+                            "relatedPort": e.related_port,
+                            "type": candidate_type,
+                            "foundation": e.foundation,
                         }
+                        
                     }
                 });
 
@@ -151,12 +286,10 @@ pub async fn create(
             }
             None => {
                 let val = json!({
-                    "event_type": "onicecandidate",
+                    "event_type": "icecandidate",
                     "event_data": {
                         "type": "icecandidate",
-                        "options": {
-                            "candidate": serde_json::Value::Null
-                        }
+                        "candidate": serde_json::Value::Null
                     }
                 });
 
@@ -211,6 +344,44 @@ pub async fn create_offer(id: &String, promise_id: String) -> ResolvedPromise {
     }
 }
 
+
+pub async fn create_answer(id: &String, promise_id: String) -> ResolvedPromise {
+    info!("Creating answer for connection: {}", id);
+
+    let conn = internal_get_peer_connection(id).await;
+
+    match conn {
+        Some(v) => {
+            let offer = v.connection.create_answer(None).await;
+
+            match offer {
+                Ok(offer) => {
+
+                    
+                    return ResolvedPromise {
+                        promise_id,
+                        value: json!({
+                            "sdp": offer.clone().sdp
+                        }),
+                    };
+                },
+                Err(e) => return ResolvedPromise {
+                        promise_id,
+                        value: json!({
+                            "error": format!("{}", e)
+                        }),
+                    },
+            }
+        }
+        None => {
+            return ResolvedPromise {
+                promise_id,
+                value: json!({}),
+            }
+        }
+    }
+}
+
 pub async fn add_ice_candidate(id: &String, candidate: String) {
     info!("Adding ice candidate: {} -> {}", id, candidate);
 
@@ -235,8 +406,6 @@ fn now_ms() -> u64 {
 }
 
 pub async fn get_stats(id: &String, promise_id: String) -> ResolvedPromise {
-    info!("Gettings stats");
-
     let conn = internal_get_peer_connection(id).await;
 
     match conn {
@@ -248,90 +417,15 @@ pub async fn get_stats(id: &String, promise_id: String) -> ResolvedPromise {
             for report in stats.reports {
                 let id = report.0.clone();
 
-                let value = match report.1 {
-                    StatsReportType::InboundRTP(stats) => {
-                        json!({
-                            "id": stats.id,
-                            "type": "inbound-rtp",
-                            "timestamp": now_ms(),
-                            "ssrc": stats.ssrc,
-                            "kind": stats.kind,
-                            "packetsReceived": stats.packets_received,
-                            "bytesReceived": stats.bytes_received,
-                        })
+                let m = serde_json::to_value(report.1);
+
+                match m {
+                    Ok(val) => {
+                        root.insert(id, val);
                     }
-
-                    StatsReportType::OutboundRTP(stats) => {
-                        json!({
-                            "id": stats.id,
-                            "type": "outbound-rtp",
-                            "timestamp": now_ms(),
-                            "ssrc": stats.ssrc,
-                            "kind": stats.kind,
-
-                            "packetsSent": stats.packets_sent,
-                            "bytesSent": stats.bytes_sent,
-
-
-                        })
-                    }
-
-                    StatsReportType::CandidatePair(stats) => {
-                        json!({
-                            "id": stats.id,
-                            "type": "candidate-pair",
-                            "timestamp": now_ms(),
-
-                            "state": stats.state,
-                            "nominated": stats.nominated,
-
-                            "bytesSent": stats.bytes_sent,
-                            "bytesReceived": stats.bytes_received,
-
-                            "currentRoundTripTime":
-                                stats.current_round_trip_time,
-
-                            "localCandidateId": stats.local_candidate_id,
-                            "remoteCandidateId": stats.remote_candidate_id,
-                        })
-                    }
-
-                    StatsReportType::LocalCandidate(stats) => {
-                        json!({
-                            "id": stats.id,
-                            "type": "local-candidate",
-                            "timestamp": now_ms(),
-
-                            "candidateType": stats.candidate_type,
-                            "ip": stats.ip,
-                            "port": stats.port,
-                        })
-                    }
-
-                    StatsReportType::RemoteCandidate(stats) => {
-                        json!({
-                            "id": stats.id,
-                            "type": "remote-candidate",
-                            "timestamp": now_ms(),
-
-                            "candidateType": stats.candidate_type,
-                            "ip": stats.ip,
-                            "port": stats.port,
-                        })
-                    }
-
-                    other => {
-                        json!({
-                            "id": id,
-                            "type": format!("{:?}", other),
-                        })
-                    }
-                };
-
-                root.insert(id, value);
+                    Err(_) => todo!(),
+                }
             }
-
-            info!("Got stats: {:#?}", root);
 
             return ResolvedPromise {
                 promise_id,
@@ -347,35 +441,61 @@ pub async fn get_stats(id: &String, promise_id: String) -> ResolvedPromise {
     }
 }
 
-pub async fn set_remote_description(id: &String, sdp: String) {
+pub async fn set_remote_description(id: &String, sdp: String, description_type: String) {
     info!("Setting remote description: {} -> {}", id, sdp);
 
     let conn = internal_get_peer_connection(id).await;
 
     match conn {
         Some(v) => {
+
+            let desc = match description_type.as_str() {
+                "offer" => RTCSessionDescription::offer(sdp).unwrap(),
+                "answer" => RTCSessionDescription::answer(sdp).unwrap(),
+                _=>panic!()
+            };
+
             let _ = v
                 .connection
-                .set_remote_description(RTCSessionDescription::answer(sdp).unwrap())
+                .set_remote_description(desc)
                 .await;
         }
         None => {}
     }
 }
 
-pub async fn set_local_description(id: &String, sdp: String) {
-    info!("Setting local description: {} {}", id, sdp);
+pub async fn set_local_description(id: &String, sdp: Option<String>) {
+    info!("Setting local description: {} {:?}", id, sdp);
+
+    let conn = internal_get_peer_connection(id).await;
+
+    match sdp {
+        Some(sdp)    => {
+            match conn {
+            
+                Some(v) => {
+                    let _ = v
+                    .connection
+                    .set_local_description(RTCSessionDescription::offer(sdp).unwrap())
+                    .await;
+            }
+            None => (),
+        }
+    },
+    None => {
+
+        info!("Did not receive local description, so generating one instead");
 
     let conn = internal_get_peer_connection(id).await;
 
     match conn {
-        Some(v) => {
-            let _ = v
-                .connection
-                .set_local_description(RTCSessionDescription::offer(sdp).unwrap())
-                .await;
-        }
+        Some(c) => {
+            let offer = c.connection.create_offer(None).await.unwrap();
+            c.connection.set_local_description(offer).await.unwrap();
+        },
         None => (),
+    }
+    },
     }
 }
 

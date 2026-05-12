@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -34,6 +35,9 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   InAppWebViewKeepAlive keepAlive;
 
   UserWidgetInfo info;
+
+  @override
+  NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
 
   MatrixUserWidgetInAppWebviewRunner(
       {required InAppWebViewController webViewController,

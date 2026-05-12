@@ -29,14 +29,19 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
       name, (runner, type, key) => MatrixCapabilityDownloadFile(runner));
 
   @override
-  void handleRequest(MatrixWidgetMessage message) async {
+  Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     Log.i("Handling download file: ${message.data}");
 
     var url = message.data.tryGet<String>("content_uri");
-    if (url == null) return;
+    if (url == null) {
+      return message.createResponseError(message: "Invalid request");
+    }
 
     var uri = Uri.parse(url);
-    if (uri.scheme != "mxc") return;
+    if (uri.scheme != "mxc") {
+      return message.createResponseError(message: "Invalid request");
+    }
+
     Uint8List? bytes;
 
     if (!kIsWeb) {
@@ -52,8 +57,8 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
       bytes = response.data;
     }
 
-    runner.messageTransport.send(
-        message.createResponse(response: {"file": MatrixWidgetBlob(bytes)}));
+    return message
+        .createResponseObject(response: {"file": MatrixWidgetBlob(bytes)});
   }
 
   @override
