@@ -39,6 +39,7 @@ pub enum JsToRust {
     },
     SetLocalDescription {
         pc_id: String,
+        promise_id: String,
         sdp: Option<String>,
     },
     SetRemoteDescription {
@@ -48,7 +49,7 @@ pub enum JsToRust {
     },
     AddIceCandidate {
         pc_id: String,
-        candidate: String,
+        candidate: Option<String>,
     },
     GetStats {
         pc_id: String,
@@ -57,6 +58,7 @@ pub enum JsToRust {
     SendData {
         dc_id: String,
         data: String,
+        binary: bool,
     },
 }
 
@@ -110,8 +112,13 @@ pub async fn handle(
             let result = peer_connections::create_answer(&pc_id, promise_id).await;
             return Some(result);
         }
-        JsToRust::SetLocalDescription { pc_id, sdp } => {
-            peer_connections::set_local_description(&pc_id, sdp).await;
+        JsToRust::SetLocalDescription {
+            pc_id,
+            promise_id,
+            sdp,
+        } => {
+            let result = peer_connections::set_local_description(&pc_id, promise_id, sdp).await;
+            return Some(result);
         }
         JsToRust::SetRemoteDescription {
             pc_id,
@@ -121,7 +128,11 @@ pub async fn handle(
         JsToRust::AddIceCandidate { pc_id, candidate } => {
             peer_connections::add_ice_candidate(&pc_id, candidate).await;
         }
-        JsToRust::SendData { dc_id, data } => data_channels::send(dc_id, data).await,
+        JsToRust::SendData {
+            dc_id,
+            data,
+            binary,
+        } => data_channels::send(dc_id, data, binary).await,
         JsToRust::GetStats { pc_id, promise_id } => {
             let result = peer_connections::get_stats(&pc_id, promise_id).await;
             return Some(result);

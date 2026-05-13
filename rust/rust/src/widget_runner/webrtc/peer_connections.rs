@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     sync::Arc,
-    time::{SystemTime, UNIX_EPOCH},
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use once_cell::sync::Lazy;
@@ -12,10 +12,9 @@ use tokio::sync::Mutex;
 use uuid::Uuid;
 use webrtc::{
     api::APIBuilder,
-    ice_transport::ice_server::RTCIceServer,
+    ice_transport::{ice_candidate::RTCIceCandidateInit, ice_server::RTCIceServer},
     peer_connection::{
-        configuration::RTCConfiguration, sdp::session_description::RTCSessionDescription,
-        RTCPeerConnection,
+        RTCPeerConnection, configuration::RTCConfiguration, sdp::session_description::RTCSessionDescription
     },
     stats::StatsReportType,
 };
@@ -32,6 +31,8 @@ pub struct PeerConnection {
     pub connection: Arc<RTCPeerConnection>,
     pub event_sender: EventLoopProxy<UserEvent>,
     pub event_callback_id: String,
+    pub remote_description_set: bool,
+    pub pending_ice_candidates: Vec<RTCIceCandidateInit>
 }
 
 static PEER_CONNECTIONS: Lazy<Mutex<HashMap<String, PeerConnection>>> = Lazy::new(|| {
@@ -61,6 +62,8 @@ pub async fn create(
         event_sender: sender,
         connection: peer_connection,
         event_callback_id: event_callback_id.clone(),
+        remote_description_set: false,
+        pending_ice_candidates: vec![]
     };
 
     let mut connections = PEER_CONNECTIONS.lock().await;
@@ -81,6 +84,37 @@ pub async fn create(
         data_channels::register_data_channel_callbacks(&c, id.clone(), e.clone());
 
         data_channels::insert(id, e.clone());
+
+        Box::pin(async {})
+    }));
+
+    let event_id = event_callback_id.clone();
+    let sender = event_sender.clone();
+
+        let event_id = event_callback_id.clone();
+    connection.connection.on_peer_connection_state_change(Box::new(move |e| {
+
+            let val = json!({
+                "event_type": "connectionstatechange",
+                "event_data": {
+                    "type": "connectionstatechange",
+                    "connectionState": match e {
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::Unspecified => "unspecified",
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::New => "new",
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::Connecting => "connecting",
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::Connected => "connected",
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::Disconnected => "disconnected",
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::Failed => "failed",
+                        webrtc::peer_connection::peer_connection_state::RTCPeerConnectionState::Closed => "closed",
+                    },
+                }
+            });
+
+            let val_str = serde_json::to_string(&val).unwrap();
+
+            let _ =
+                sender.send_event(UserEvent::RaiseEvent(event_id.clone(), val_str));
+
 
         Box::pin(async {})
     }));
@@ -382,17 +416,36 @@ pub async fn create_answer(id: &String, promise_id: String) -> ResolvedPromise {
     }
 }
 
-pub async fn add_ice_candidate(id: &String, candidate: String) {
-    info!("Adding ice candidate: {} -> {}", id, candidate);
+pub async fn add_ice_candidate(id: &String, candidate: Option<String>) {
+    info!("Adding ice candidate: {} -> {:?}", id, candidate);
 
-    let conn = internal_get_peer_connection(id).await;
+    let mut connections = PEER_CONNECTIONS.lock().await;
+    let conn = connections.get_mut(id);
+
+    let ice_candidate = match  candidate {
+        Some(c) => serde_json::from_str(&c).unwrap(),
+        None => RTCIceCandidateInit {
+                        candidate: "".to_owned(),
+                        sdp_mid: Some("0".to_owned()),
+                        sdp_mline_index: Some(0),
+                        username_fragment: None,
+                    },
+    };
 
     match conn {
         Some(v) => {
-            let _ = v
-                .connection
-                .add_ice_candidate(serde_json::from_str(&candidate).unwrap())
-                .await;
+
+
+            if v.remote_description_set == false {
+                log::info!("Queing candidate because no remote description has been received");
+                v
+                .pending_ice_candidates
+                .push(ice_candidate);
+                
+                return
+            }
+
+            v.connection.add_ice_candidate(ice_candidate).await.unwrap();
         }
         None => {}
     }
@@ -442,9 +495,11 @@ pub async fn get_stats(id: &String, promise_id: String) -> ResolvedPromise {
 }
 
 pub async fn set_remote_description(id: &String, sdp: String, description_type: String) {
+
     info!("Setting remote description: {} -> {}", id, sdp);
 
-    let conn = internal_get_peer_connection(id).await;
+    let mut connections = PEER_CONNECTIONS.lock().await;
+    let conn = connections.get_mut(id);
 
     match conn {
         Some(v) => {
@@ -455,16 +510,24 @@ pub async fn set_remote_description(id: &String, sdp: String, description_type: 
                 _=>panic!()
             };
 
-            let _ = v
-                .connection
-                .set_remote_description(desc)
-                .await;
+            
+            v
+            .connection
+            .set_remote_description(desc)
+            .await.unwrap();
+
+            v.remote_description_set = true;
+        
+            for c in v.pending_ice_candidates.drain(..) {
+                log::info!("Draining ice candidate queue");
+                v.connection.add_ice_candidate(c).await.unwrap();
+            }
         }
         None => {}
     }
 }
 
-pub async fn set_local_description(id: &String, sdp: Option<String>) {
+pub async fn set_local_description(id: &String, promise_id: String, sdp: Option<String>) -> ResolvedPromise {
     info!("Setting local description: {} {:?}", id, sdp);
 
     let conn = internal_get_peer_connection(id).await;
@@ -476,10 +539,20 @@ pub async fn set_local_description(id: &String, sdp: Option<String>) {
                 Some(v) => {
                     let _ = v
                     .connection
-                    .set_local_description(RTCSessionDescription::offer(sdp).unwrap())
+                    .set_local_description(RTCSessionDescription::offer(sdp.clone()).unwrap())
                     .await;
+
+                return ResolvedPromise {
+                promise_id,
+                value: json!(RTCSessionDescription::offer(sdp).unwrap()),
+                };
             }
-            None => (),
+            None => {
+                return ResolvedPromise {
+                promise_id,
+                value: json!({}),
+            };
+            },
         }
     },
     None => {
@@ -491,9 +564,21 @@ pub async fn set_local_description(id: &String, sdp: Option<String>) {
     match conn {
         Some(c) => {
             let offer = c.connection.create_offer(None).await.unwrap();
-            c.connection.set_local_description(offer).await.unwrap();
+
+            c.connection.set_local_description(offer.clone()).await.unwrap();
+
+            return ResolvedPromise {
+                promise_id,
+                value: json!(offer),
+            };
+
         },
-        None => (),
+        None => {
+            return ResolvedPromise {
+                promise_id,
+                value: json!({}),
+            };
+        },
     }
     },
     }

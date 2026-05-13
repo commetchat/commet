@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use log::{info, trace};
 use serde::{Deserialize, Serialize};
 use tao::event_loop::EventLoopProxy;
@@ -15,6 +17,7 @@ pub enum JsToRust {
 pub async fn read_stdin(event_sender: EventLoopProxy<UserEvent>) {
     tokio::spawn(async move {
         let stdin = io::stdin();
+
         // Create a buffered wrapper, which implements BufRead
         let reader = BufReader::new(stdin);
         // Take a stream of lines from this
@@ -31,8 +34,10 @@ pub async fn read_stdin(event_sender: EventLoopProxy<UserEvent>) {
                         .send_event(UserEvent::PostMessage(line))
                         .unwrap();
                 }
+                // stdin closed, parent dead
                 None => {
-                    trace!("Received None from stdin")
+                    trace!("Received None from stdin");
+                    exit(0);
                 }
             };
         }

@@ -8,6 +8,55 @@
         return crypto.randomUUID();
     }
 
+    function unimplemented(message) {
+        alert("Unimplemented: " + message);
+    }
+
+    const COMMET_WIDGET_RUNNER_DEBUG = true;
+    const COMMET_WIDGET_RUNNER_ALERT_UNIMPLEMENTED = true;
+
+    function dbg(args) {
+        if (COMMET_WIDGET_RUNNER_DEBUG) {
+            console.log(args)
+        }
+    }
+
+    function createUnimplementedPropertyHandlers(object, propertyNames) {
+
+        if (!COMMET_WIDGET_RUNNER_ALERT_UNIMPLEMENTED) return;
+
+        propertyNames.forEach((property) => {
+            var name = object.constructor.name + "." + property
+            if (object.hasOwnProperty(property) == false) {
+                dbg("Creating undefined property handler: ", name);
+
+                Object.defineProperty(object, property, {
+                    get() {
+                        unimplemented(name)
+                    }
+                });
+            } else {
+                dbg("Property was defined: ", name);
+            }
+        });
+    }
+
+    function createUnimplementedFunctionHandlers(object, functionNames) {
+        if (!COMMET_WIDGET_RUNNER_ALERT_UNIMPLEMENTED) return;
+
+        functionNames.forEach((fn) => {
+            var name = object.constructor.name + "." + fn + "();";
+            if (typeof object[fn] != "function") {
+                object[fn] = (args) => {
+                    dbg("Creating unimplemented function handler: ", name);
+                    unimplemented(object.constructor.name + "." + fn + "();")
+                }
+            } else {
+                dbg("Function was implemented: ", name);
+            }
+        });
+    }
+
     class RTCDataChannelPolyfill {
         constructor(peerConnectionID, label) {
             this.peerConnectionID = peerConnectionID;
@@ -25,6 +74,27 @@
                 id: this.id,
                 label: this.label
             })
+
+            createUnimplementedPropertyHandlers(this, [
+                "binaryType",
+                "bufferedAmount",
+                "bufferedAmountLowThreshold",
+                "id",
+                "label",
+                "maxPacketLifeTime",
+                "maxRetransmits",
+                "negotiated",
+                "ordered",
+                "priority",
+                "protocol",
+                "readyState",
+                "reliable",
+            ]);
+
+            createUnimplementedFunctionHandlers(this, [
+                "close",
+                "send",
+            ]);
         }
 
         addEventListener(event, callback, options) {
@@ -75,35 +145,57 @@
 
             if (type == "data_channel_opened") {
                 this.readyState = "open";
-                this.onopen();
-                this._eventManager.invoke("open", null)
-            } else if (type == "data_channel_on_message") {
 
-                var bytes = this._base64ToArrayBuffer(data.data)
-
-                console.log("Received bytes: ", bytes.byteLength, this._arrayBufferToHex(bytes));
-
-                var msg = {
-                    data: bytes
+                if (this.onopen != null) {
+                    this.onopen();
                 }
 
-                console.log(msg);
+                this._eventManager.dispatchEvent(new Event("open"))
+            } else if (type == "data_channel_on_message") {
+
+                var msg = {};
+
+
+                var event = new Event("message")
+
+                if (data.type == "b64") {
+                    var bytes = this._base64ToArrayBuffer(data.data)
+
+                    event.data = bytes
+
+                }
+
+                if (data.type == "string") {
+                    event.data = data.data
+                }
+
+                console.log(event);
 
                 this.onmessage(msg)
-                this._eventManager.dispatchEvent(new Event("message", msg))
+                this._eventManager.dispatchEvent(event)
             } else {
                 console.log("Unhandled data channel event: ", type, data)
             }
         }
 
         send(msg) {
-            // console.log("Sending data to channel: ", msg)
+            console.log("Sending data to channel: ", msg)
 
-            sendIpc({
-                type: "SendData",
-                dc_id: this.id,
-                data: this._arrayBufferToBase64(msg)
-            })
+            if (typeof msg === 'string' || msg instanceof String) {
+                sendIpc({
+                    type: "SendData",
+                    dc_id: this.id,
+                    data: msg,
+                    binary: false,
+                })
+            } else {
+                sendIpc({
+                    type: "SendData",
+                    dc_id: this.id,
+                    data: this._arrayBufferToBase64(msg),
+                    binary: true,
+                })
+            }
         }
     }
 
@@ -113,6 +205,15 @@
 
             this.sdp = args.sdp;
             this.type = args.type;
+
+            createUnimplementedPropertyHandlers(this, [
+                "sdp",
+                "type"
+            ]);
+
+            createUnimplementedFunctionHandlers(this, [
+                "toJSON"
+            ]);
         }
 
         toJSON() {
@@ -127,6 +228,19 @@
     class PolyfillRTCStatsReport {
         constructor(data) {
             this.data = data;
+
+            createUnimplementedPropertyHandlers(this, [
+                "size"
+            ]);
+
+            createUnimplementedFunctionHandlers(this, [
+                "entries",
+                "forEach",
+                "get",
+                "has",
+                "keys",
+                "values",
+            ]);
         }
 
         get(key) {
@@ -165,26 +279,49 @@
             }
 
             if (args.hasOwnProperty("sdpMLineIndex")) {
-                this.sdpMLineIndex = args.sdpMLineIndex;
+                this.sdpMLineIndex = 0; //args.sdpMLineIndex;
             } else {
-                this.sdpMLineIndex = "";
+                this.sdpMLineIndex = 0; //"";
             }
 
             console.log("Result: ", this);
+
+
+            createUnimplementedPropertyHandlers(this, [
+                "address",
+                "candidate",
+                "component",
+                "foundation",
+                "port",
+                "priority",
+                "protocol",
+                "relatedAddress",
+                "relatedPort",
+                "sdpMid",
+                "sdpMLineIndex",
+                "tcpType",
+                "type",
+                "usernameFragment",
+            ]);
+
+            createUnimplementedFunctionHandlers(this, [
+                "toJSON"
+            ]);
         }
 
         toJSON() {
             return {
                 "candidate": this.candidate,
-                "sdpMid": "",
-                "sdpMLineIndex": 0,
-                "usernameFragment": null
+                "sdpMid": this.sdpMid,
+                "sdpMLineIndex": this.sdpMLineIndex,
+                "usernameFragment": this.usernameFragment
             }
         }
     }
 
     class RTCPeerConnectionPolyfill {
         constructor(args) {
+
             console.log("Creating RTCPeerConnection")
             this.id = uuid();
             this.ondatachannel = null;
@@ -194,6 +331,12 @@
             console.log("Creating Event Manager")
             this._eventManager = new EventTarget()
             this._dataChannels = new Map()
+
+            this.connectionState = "new";
+            this.iceGatheringState = "new";
+            this.iceConnectionState = "new";
+            this.localDescription = null;
+            this.signalingState = "stable";
 
             console.log("Registering event handlers")
 
@@ -229,15 +372,33 @@
                 }
 
                 if (eventType == "signalingstatechange") {
-                    this._eventManager.dispatchEvent(new Event("signalingstatechange", eventData));
+                    var event = new Event("signalingstatechange")
+                    event.signalingState = eventData['signalingState'];
+                    this.signalingState = eventData['signalingState'];
+
+                    this._eventManager.dispatchEvent(event);
                 }
 
                 if (eventType == "icegatheringstatechange") {
-                    this._eventManager.dispatchEvent(new Event("icegatheringstatechange", eventData));
+                    var event = new Event("icegatheringstatechange", eventData);
+                    event.iceGatheringState = eventData['iceGatheringState'];
+                    this.iceGatheringState = eventData['iceGatheringState'];
+
+                    this._eventManager.dispatchEvent(event);
                 }
 
                 if (eventType == "iceconnectionstatechanged") {
-                    this._eventManager.dispatchEvent(new Event("iceconnectionstatechanged", eventData));
+                    var event = new Event("iceconnectionstatechanged")
+                    event.iceConnectionState = eventData['iceConnectionState'];
+                    this.iceConnectionState = eventData['iceConnectionState'];
+                    this._eventManager.dispatchEvent(event);
+                }
+
+                if (eventType == "connectionstatechange") {
+                    var event = new Event("connectionstatechange")
+                    event.connectionState = eventData['connectionState'];
+                    this.connectionState = eventData['connectionState'];
+                    this._eventManager.dispatchEvent(event);
                 }
 
                 if (eventType.startsWith("data_channel")) {
@@ -267,6 +428,49 @@
                 event_callback_id: this._eventCallbackId,
                 ice_servers: args.iceServers,
             });
+
+
+            createUnimplementedPropertyHandlers(this, [
+                "localDescription",
+                "canTrickleIceCandidates",
+                "connectionState",
+                "currentLocalDescription",
+                "currentRemoteDescription",
+                "iceConnectionState",
+                "iceGatheringState",
+                "idpLoginUrl",
+                "localDescription",
+                "peerIdentity",
+                "pendingLocalDescription",
+                "pendingRemoteDescription",
+                "remoteDescription",
+                "sctp",
+                "signalingState",
+            ]);
+
+            createUnimplementedFunctionHandlers(this, [
+                "addIceCandidate",
+                "addStream",
+                "addTrack",
+                "addTransceiver",
+                "close",
+                "createAnswer",
+                "createDataChannel",
+                "createDTMFSender",
+                "createOffer",
+                "getConfiguration",
+                "getIdentityAssertion",
+                "getReceivers",
+                "getSenders",
+                "getStats",
+                "removeStream",
+                "removeTrack",
+                "restartIce",
+                "setConfiguration",
+                "setIdentityProvider",
+                "setLocalDescription",
+                "setRemoteDescription",
+            ]);
         }
 
         close() {
@@ -307,7 +511,10 @@
                     candidate: JSON.stringify(candidate.toJSON()),
                 })
             } else {
-
+                sendIpc({
+                    type: "AddIceCandidate",
+                    pc_id: this.id,
+                })
             }
         }
 
@@ -339,22 +546,34 @@
             return returnValue
         }
 
-        setLocalDescription(sessionDescription, successCallback, errorCallback) {
+        async setLocalDescription(sessionDescription, successCallback, errorCallback) {
             console.log("Attempting to set local description!", sessionDescription, successCallback, errorCallback);
+
+            let [id, promise] = window.toWebView.createPromise()
+
 
             if (sessionDescription != null) {
                 sendIpc({
                     type: "SetLocalDescription",
+                    promise_id: id,
                     pc_id: this.id,
                     sdp: sessionDescription.sdp,
                 });
             } else {
                 sendIpc({
                     type: "SetLocalDescription",
+                    promise_id: id,
                     pc_id: this.id,
                 });
             }
 
+            let result = await promise;
+
+            console.log("Got result from setLocalDescription!");
+            console.log(result);
+
+
+            this.localDescription = new RTCSessionDescriptionPolyfill(result);
         }
 
         setRemoteDescription(sdp) {
