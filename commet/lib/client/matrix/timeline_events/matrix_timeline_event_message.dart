@@ -105,13 +105,9 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     var displayEvent = getDisplayEvent(timeline);
     bool isFormatted = displayEvent.content.tryGet<String>("format") != null;
 
-    if (displayEvent.content.containsKey("m.mentions")) {
-      isFormatted = true;
-    }
-
     var mentions = displayEvent.content.tryGetMap("m.mentions");
 
-    if (mentions != null) {
+    if (mentions?.isNotEmpty == true) {
       isFormatted = true;
     }
 
