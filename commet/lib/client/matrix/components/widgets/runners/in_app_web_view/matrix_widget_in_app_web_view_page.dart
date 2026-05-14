@@ -8,6 +8,8 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/molecules/widget_debug_view.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -92,6 +94,16 @@ class _MatrixWidgetInappwebviewPageState
     overlayState.insert(overlayEntry);
   }
 
+  showDebugPage() {
+    AdaptiveDialog.show(
+      context,
+      builder: (context) {
+        return SizedBox(
+            width: 700, height: 700, child: WidgetDebugView(runner!));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const buttonSize = 40.0;
@@ -117,6 +129,12 @@ class _MatrixWidgetInappwebviewPageState
                         spacing: 8,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          SizedBox(
+                              width: buttonSize,
+                              child: tiamat.IconButton(
+                                icon: Icons.bug_report,
+                                onPressed: showDebugPage,
+                              )),
                           SizedBox(
                               width: buttonSize,
                               child: tiamat.IconButton(

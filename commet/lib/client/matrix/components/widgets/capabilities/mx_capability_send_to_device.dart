@@ -2,7 +2,6 @@ import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widg
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
-import 'package:commet/debug/log.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
@@ -44,6 +43,11 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var type = message.data.tryGet<String>("type")!;
     var encrypted = message.data.tryGet<bool>("encrypted") ?? false;
+
+    if (encrypted) {
+      throw UnimplementedError(
+          "Not yet implemented suport for sending encrypted toDevice events");
+    }
 
     var messages = message.data.tryGetMap<String, dynamic>("messages");
 

@@ -1,7 +1,6 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/debug/log.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixWidgetMessage {
@@ -118,7 +117,7 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
 
     // this event is a response to a request initiated by us
     if (api == "toWidget") {
-      Log.i("Received Response: $data");
+      //  Log.i("Received Response: $data");
     }
   }
 

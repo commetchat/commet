@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class MatrixWidgetBlob {
@@ -78,8 +77,6 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
 
   @override
   void send(Map<String, dynamic> msg) {
-    Log.i("Sending message: $msg");
-
     var encoded = encodeArrayBuffers(msg);
     messageLogs.add(
         (WidgetMessageDirection.outgoing, Map<String, dynamic>.from(encoded)));

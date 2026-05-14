@@ -56,13 +56,17 @@
         return input;
     }
 
-
-    function decodeArrayBuffers(input) {
+    async function decodeArrayBuffers(input) {
         if (Array.isArray(input)) {
-            return input.map(decodeArrayBuffers);
+            return await Promise.all(
+                input.map(async (element) => {
+                    return await decodeArrayBuffers(element)
+                })
+            );
         }
 
         if (input !== null && typeof input === "object") {
+
             if (
                 input.__type === "ArrayBuffer" &&
                 typeof input.data === "string"
@@ -80,7 +84,7 @@
 
             const result = {};
             for (const key in input) {
-                result[key] = decodeArrayBuffers(input[key]);
+                result[key] = await decodeArrayBuffers(input[key]);
             }
             return result;
         }
@@ -112,18 +116,19 @@
 
     window.onMessagePolyfill = (message) => {
         var data = JSON.parse(message)
-        data = decodeArrayBuffers(data)
+        decodeArrayBuffers(data).then((value) => {
 
-        var event = {
-            origin: "commet://widget",
-            data: data
-        }
+            var event = {
+                origin: "commet://widget",
+                data: value
+            }
 
-        if (window.onmessage != null) {
-            window.onmessage(event);
-        }
+            if (window.onmessage != null) {
+                window.onmessage(event);
+            }
 
-        callbacks.forEach((i) => { i(event) });
+            callbacks.forEach((i) => { i(event) });
+        });
     }
 
 

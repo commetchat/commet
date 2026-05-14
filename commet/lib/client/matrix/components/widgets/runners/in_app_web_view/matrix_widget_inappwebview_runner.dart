@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
@@ -100,14 +101,17 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
         },
         onWebViewCreated: (controller) {
           if (userScript != null) {
-            controller.addUserScript(
-                userScript: UserScript(
-                    source: userScript!,
-                    injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START));
+            // For some reason this is unreliable on Windows, so we inject it later manually
+            if (PlatformUtils.isAndroid) {
+              controller.addUserScript(
+                  userScript: UserScript(
+                      source: userScript!,
+                      injectionTime:
+                          UserScriptInjectionTime.AT_DOCUMENT_START));
+            }
           }
 
           if (!initialize) return;
-
           var runner = MatrixUserWidgetInAppWebviewRunner(
               webViewController: controller,
               info: info,
@@ -116,6 +120,10 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
               keepAlive: keepAlive,
               widgetId: widgetId!,
               client: room!.client as MatrixClient);
+
+          if (PlatformUtils.isWindows) {
+            controller.evaluateJavascript(source: userScript!);
+          }
 
           component!.registerRunner(runner);
           onRunnerCreated?.call(runner);
