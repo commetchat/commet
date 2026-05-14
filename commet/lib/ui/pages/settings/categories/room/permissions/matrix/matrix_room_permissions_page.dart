@@ -157,7 +157,7 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       );
 
   String get labelMatrixPermissionsMentionRoomDescription => Intl.message(
-        "Allow the user to use @room to notify all members of the room",
+        "Allow use of '@room' to notify all members of the room",
         name: "labelMatrixPermissionsMentionRoomDescription",
         desc:
             "Description for the permission to use '@room' mentions in a message",
