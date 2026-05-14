@@ -78,8 +78,10 @@ class AutofillUtils {
             as AutofillSearchResult)
         .toList(growable: true);
 
-    r.add(AutofillSearchResult("@room", "@room",
-        alternateSearchTerm: "@everyone"));
+    if (room.permissions.canMentionRoom) {
+      r.add(AutofillSearchResult("@room", "@room",
+          alternateSearchTerm: "@everyone"));
+    }
 
     return r;
   }

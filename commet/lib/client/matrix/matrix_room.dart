@@ -966,8 +966,6 @@ class MatrixRoom extends Room {
     var result = Set<String>();
 
     for (var child in children) {
-      Log.i(child);
-
       if (child case html_dom.Element element) {
         if (element.localName == "pre" || element.localName == "code") continue;
 

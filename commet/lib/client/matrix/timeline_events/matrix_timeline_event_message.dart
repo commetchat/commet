@@ -5,6 +5,8 @@ import 'package:commet/client/matrix/components/threads/matrix_thread_timeline.d
 import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_mixin_reactions.dart';
@@ -107,9 +109,20 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
       isFormatted = true;
     }
 
+    var mentions = displayEvent.content.tryGetMap("m.mentions");
+
+    if (mentions != null) {
+      isFormatted = true;
+    }
+
     if (isFormatted) {
+      bool mentionsRoom = mentions?["room"] == true &&
+          MatrixRoomPermissions.canUserMentionRoom(
+              displayEvent.senderId, (room as MatrixRoom).matrixRoom);
+
       return MatrixHtmlParser.parse(
-          _getFormattedBody(timeline: timeline), client, room);
+          _getFormattedBody(timeline: timeline), client, room,
+          mentionsRoom: mentionsRoom);
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {
