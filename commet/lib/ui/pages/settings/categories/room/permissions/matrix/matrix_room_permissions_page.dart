@@ -150,6 +150,19 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         desc: "Title for the permission to add change the rooms avatar image",
       );
 
+  String get labelMatrixPermissionsMentionRoomTitle => Intl.message(
+        "Use @room mentions",
+        name: "labelMatrixPermissionsMentionRoomTitle",
+        desc: "Title for the permission to use '@room' mentions in a message",
+      );
+
+  String get labelMatrixPermissionsMentionRoomDescription => Intl.message(
+        "Allow use of '@room' to notify all members of the room",
+        name: "labelMatrixPermissionsMentionRoomDescription",
+        desc:
+            "Description for the permission to use '@room' mentions in a message",
+      );
+
   String get labelMatrixPermissionsChangeRoomNameTitle => Intl.message(
         "Change room name",
         name: "labelMatrixPermissionsChangeRoomNameTitle",
@@ -331,6 +344,14 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         powerLevel: 50,
       ),
       MatrixRoomPermissionEntry(
+        key: "room",
+        keyParent: "notifications",
+        title: labelMatrixPermissionsMentionRoomTitle,
+        description: labelMatrixPermissionsMentionRoomDescription,
+        icon: Icons.notification_add,
+        powerLevel: 50,
+      ),
+      MatrixRoomPermissionEntry(
         key: "m.room.power_levels",
         keyParent: "events",
         title: labelMatrixPermissionsChangeRoomPermissionsTitle,
@@ -474,6 +495,9 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
 
       var map = content;
       if (perm.keyParent != null) {
+        if (map.containsKey(perm.keyParent!) == false) {
+          map[perm.keyParent!] = Map<String, dynamic>();
+        }
         map = map[perm.keyParent]! as Map<String, dynamic>;
       }
 

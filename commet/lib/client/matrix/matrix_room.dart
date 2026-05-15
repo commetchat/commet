@@ -51,6 +51,8 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
+import 'package:html/dom.dart' as html_dom;
+import 'package:html/parser.dart' as html_parser;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
@@ -493,6 +495,23 @@ class MatrixRoom extends Room {
         event['format'] = 'org.matrix.custom.html';
         event['formatted_body'] = html;
       }
+
+      var document = html_parser.parse(html);
+
+      var mentionsList = _findEventMentions(document);
+
+      var mentions = {};
+
+      if (mentionsList.contains("@room")) {
+        mentions["room"] = true;
+        mentionsList.remove("@room");
+      }
+
+      if (mentionsList.isNotEmpty) {
+        mentions["user_ids"] = mentionsList.toList();
+      }
+
+      event["m.mentions"] = mentions;
 
       var id = await _matrixRoom.sendEvent(event,
           inReplyTo: replyingTo,
@@ -954,5 +973,53 @@ class MatrixRoom extends Room {
 
     await _matrixRoom.client
         .setRoomStateWithKey(_matrixRoom.id, state.type, "", state.content);
+  }
+
+  Set<String> _findEventMentions(html_dom.Document document) {
+    var result = Set<String>();
+
+    result.addAll(_findChildMentions(document.nodes));
+
+    return result;
+  }
+
+  static var roomMentionRegex = RegExp(r'(?<!\w)@room(?!\w)');
+
+  Set<String> _findChildMentions(html_dom.NodeList children) {
+    var result = Set<String>();
+
+    for (var child in children) {
+      if (child case html_dom.Element element) {
+        if (element.localName == "pre" || element.localName == "code") continue;
+
+        if (element.localName == "a") {
+          var url = child.attributes["href"];
+          if (url != null) {
+            var parsed = Uri.tryParse(url);
+            try {
+              if (parsed?.authority == "matrix.to") {
+                var id = parsed!.fragment.substring(1);
+                var userId = Uri.decodeQueryComponent(id);
+
+                if (userId.startsWith("@") && userId.isValidMatrixId) {
+                  result.add(userId);
+                }
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
+      if (child case html_dom.Text text) {
+        var data = text.data;
+        if (roomMentionRegex.hasMatch(data)) {
+          result.add("@room");
+        }
+      }
+
+      result.addAll(_findChildMentions(child.nodes));
+    }
+
+    return result;
   }
 }
