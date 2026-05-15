@@ -1,4 +1,3 @@
-import 'package:commet/config/preferences/bool_preference.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
