@@ -2,6 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_create_room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
@@ -40,6 +41,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.isThreadTimeline = false,
       this.previewMedia = false,
       this.highlightedEventId,
+      this.canCollapse = false,
       super.key});
   final Timeline timeline;
   final int initialIndex;
@@ -49,6 +51,7 @@ class TimelineViewEntry extends StatefulWidget {
   final Function(String eventId)? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;
+  final bool canCollapse;
   final String? highlightedEventId;
   final bool previewMedia;
 
@@ -67,8 +70,15 @@ class TimelineViewEntry extends StatefulWidget {
 enum TimelineEventWidgetDisplayType {
   message,
   generic,
+  emote,
+  roomCreate,
   poll,
   hidden,
+}
+
+enum TimelineEventWidgetCollapseType {
+  root,
+  child,
 }
 
 class TimelineViewEntryState extends State<TimelineViewEntry>
@@ -86,6 +96,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool isThreadReply = false;
   bool highlighted = false;
   bool redacted = false;
+
+  TimelineEventWidgetCollapseType? collapse = null;
+
   TimelineEventWidgetDisplayType _widgetType =
       TimelineEventWidgetDisplayType.hidden;
   LayerLink? timelineLayerLink;
@@ -129,8 +142,53 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     _widgetType = eventToDisplayType(event, polls: polls);
 
+    bool isCollapsible = false;
+    bool isPrevCollapsible = false;
+    bool isNextCollapsible = false;
+
+    isCollapsible = isEventTypeCollapsible(_widgetType);
+
+    bool showRedactions = false;
+
+    if (widget.timeline.events.length > eventIndex + 1) {
+      var prevEvent = widget.timeline.events[eventIndex + 1];
+      var prevEventType = eventToDisplayType(prevEvent, polls: polls);
+
+      isPrevCollapsible = isEventTypeCollapsible(prevEventType);
+      if (widget.timeline.isEventRedacted(prevEvent) == true) {
+        isPrevCollapsible = !showRedactions;
+      }
+    }
+
+    if (eventIndex > 0) {
+      var nextEvent = widget.timeline.events[eventIndex - 1];
+      var nextEventType = eventToDisplayType(nextEvent, polls: polls);
+      isNextCollapsible = isEventTypeCollapsible(nextEventType);
+
+      if (widget.timeline.isEventRedacted(nextEvent) == true) {
+        isNextCollapsible = !showRedactions;
+      }
+    }
+
+    if (isCollapsible && isNextCollapsible && !isPrevCollapsible) {
+      collapse = TimelineEventWidgetCollapseType.root;
+    }
+
+    if (isCollapsible && isPrevCollapsible) {
+      collapse = TimelineEventWidgetCollapseType.child;
+    }
+
     showDateSeperator = shouldEventShowDate(eventIndex);
     highlighted = event.eventId == widget.highlightedEventId;
+  }
+
+  bool isEventTypeCollapsible(TimelineEventWidgetDisplayType eventType) {
+    const collapsibleTypes = [
+      TimelineEventWidgetDisplayType.generic,
+      TimelineEventWidgetDisplayType.hidden
+    ];
+
+    return collapsibleTypes.contains(eventType);
   }
 
   static TimelineEventWidgetDisplayType eventToDisplayType(TimelineEvent event,
@@ -139,6 +197,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         event is TimelineEventSticker ||
         event is TimelineEventEncrypted) {
       return TimelineEventWidgetDisplayType.message;
+    }
+
+    if (event is MatrixTimelineEventCreateRoom) {
+      return TimelineEventWidgetDisplayType.roomCreate;
+    }
+
+    if (event is TimelineEventEmote) {
+      return TimelineEventWidgetDisplayType.emote;
     }
 
     if (event is TimelineEventGeneric) {
@@ -214,7 +280,71 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     BenchmarkValues.numTimelineEventsBuilt += 1;
 
     if (redacted) return Container();
+
+    if (widget.canCollapse && collapse == TimelineEventWidgetCollapseType.child)
+      return Container();
+
+    if (collapse != null &&
+        preferences.showStateEvents.value == false &&
+        preferences.developerMode.value == false) return Container();
+
     var result = buildEvent();
+
+    if (collapse == TimelineEventWidgetCollapseType.root &&
+        widget.canCollapse) {
+      int endIndex = index;
+
+      List<String> bodies = List.empty(growable: true);
+
+      var count = 0;
+      const maxBodies = 3;
+
+      for (int i = index; i > 0; i--) {
+        var event = widget.timeline.events[i];
+        var type = eventToDisplayType(event, polls: polls);
+        if (!isEventTypeCollapsible(type)) {
+          break;
+        }
+
+        if (type != TimelineEventWidgetDisplayType.hidden ||
+            preferences.developerMode.value) {
+          count += 1;
+          if (bodies.length < maxBodies) {
+            bodies.add(event.plainTextBody);
+          }
+        }
+
+        endIndex = i;
+      }
+
+      if (count == 0) return Container();
+
+      var diff = count - bodies.length;
+      var text = bodies.join(", ");
+      if (diff > 0) {
+        text += " and $diff more";
+      }
+      return ExpansionTile(
+        title: Padding(
+          padding: const EdgeInsets.fromLTRB(52, 0, 0, 0),
+          child: tiamat.Text.labelLow(text),
+        ),
+        children: [
+          Column(
+            children: [
+              for (int i = index; i >= endIndex; i--)
+                TimelineViewEntry(
+                  timeline: widget.timeline,
+                  initialIndex: i,
+                  canCollapse: false,
+                  highlightedEventId: widget.highlightedEventId,
+                  onEventHovered: widget.onEventHovered,
+                )
+            ],
+          )
+        ],
+      );
+    }
 
     if (result == null) {
       return Container();
@@ -420,7 +550,19 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);
 
-    if (_widgetType == TimelineEventWidgetDisplayType.generic)
+    if (_widgetType == TimelineEventWidgetDisplayType.generic &&
+        (preferences.showStateEvents.value || preferences.developerMode.value))
+      return TimelineEventViewGeneric(
+        timeline: widget.timeline,
+        initialIndex: widget.initialIndex,
+        room: widget.timeline.room,
+        readReceipts: readReceipts,
+        onReadReceiptsTapped: onReadReceiptsTapped,
+        key: eventKey,
+      );
+
+    if (_widgetType == TimelineEventWidgetDisplayType.emote ||
+        _widgetType == TimelineEventWidgetDisplayType.roomCreate)
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
         initialIndex: widget.initialIndex,

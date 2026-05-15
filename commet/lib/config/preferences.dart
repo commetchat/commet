@@ -253,6 +253,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference showStateEvents =
+      BoolPreference("show_state_events", defaultValue: true);
+
   BoolPreference debugTranslations =
       BoolPreference("enable_translations_debug", defaultValue: false);
 
