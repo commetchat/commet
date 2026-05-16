@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/client/room.dart';
@@ -14,6 +15,22 @@ class RoomAppearanceSettingsPage extends StatefulWidget {
 
 class _RoomAppearanceSettingsPageState
     extends State<RoomAppearanceSettingsPage> {
+  late StreamSubscription _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = widget.room.onUpdate.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return RoomAppearanceSettingsView(

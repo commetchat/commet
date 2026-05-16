@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/utils/database/multiple_database_server.dart';
+import 'package:drift/native.dart';
 import 'package:matrix/matrix.dart';
 import 'package:matrix_dart_sdk_drift_db/matrix_dart_sdk_drift_db.dart';
 import 'package:path/path.dart' as p;
 
-Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
+Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName,
+    {bool onDatabaseIsolate = true}) async {
   var path = await AppConfig.getDriftDatabasePath();
   path = p.join(path, clientName, "data.db");
   var dir = p.dirname(path);
@@ -18,10 +20,16 @@ Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
 
   final file = File(path);
 
-  var connection = await DatabaseIsolate.connect(file.absolute.path);
+  if (onDatabaseIsolate) {
+    var connection = await DatabaseIsolate.connect(file.absolute.path);
 
-  return MatrixSdkDriftDatabase.init(connection, clientName,
-      benchmark: benchmarkFunc);
+    return MatrixSdkDriftDatabase.init(connection, clientName,
+        benchmark: benchmarkFunc);
+  } else {
+    var connection = NativeDatabase(file);
+    return MatrixSdkDriftDatabase.init(connection, clientName,
+        benchmark: benchmarkFunc);
+  }
 }
 
 Future<T> benchmarkFunc<T>(String name, Future<T> Function() func,

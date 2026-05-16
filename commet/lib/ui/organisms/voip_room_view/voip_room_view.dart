@@ -65,6 +65,12 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     var color = Theme.of(context).colorScheme.surfaceContainer;
 
     if (currentSession == null) return unjoinedView(color);
+    if (currentSession?.state == VoipState.ended) {
+      setState(() {
+        joining = false;
+      });
+      return unjoinedView(color);
+    }
 
     return CallWidget(currentSession!);
   }

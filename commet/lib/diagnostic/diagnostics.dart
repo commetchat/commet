@@ -13,7 +13,7 @@ class CumulativeDiagnostics {
   Map<String, CumulativeMeasurement> measurements = {};
 
   T time<T>(String name, T Function() func) {
-    if (!preferences.developerMode) return func();
+    if (!preferences.developerMode.value) return func();
     Stopwatch s = Stopwatch();
 
     s.start();
@@ -27,7 +27,7 @@ class CumulativeDiagnostics {
   }
 
   Future<T> timeAsync<T>(String name, Future<T> Function() func) async {
-    if (!preferences.developerMode) return func();
+    if (!preferences.developerMode.value) return func();
 
     Stopwatch s = Stopwatch();
     s.start();

@@ -8,6 +8,10 @@ extension ColorUtils on Color {
   static Color fromHexCode(String text) {
     final hexCode = text.replaceAll('#', '');
     final hexWithAlpha = hexCode.length == 6 ? 'FF$hexCode' : hexCode;
-    return Color(int.parse(hexWithAlpha, radix: 16));
+    try {
+      return Color(int.parse(hexWithAlpha, radix: 16));
+    } catch (e, _) {
+      return Color(0xFFFFFFFF);
+    }
   }
 }

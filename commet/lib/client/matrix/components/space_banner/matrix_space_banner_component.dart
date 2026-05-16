@@ -19,6 +19,8 @@ class MatrixSpaceBannerComponent
     final url = state.content["url"] as String?;
     if (url == null) return null;
 
+    if (!url.startsWith("mxc://")) return null;
+
     return MatrixMxcImage(Uri.parse(url), client.matrixClient);
   }
 
@@ -35,7 +37,7 @@ class MatrixSpaceBannerComponent
     var uploadResponse =
         await client.matrixClient.uploadContent(data, contentType: mimeType);
 
-    client.matrixClient.setRoomStateWithKey(
+    await client.matrixClient.setRoomStateWithKey(
       space.matrixRoom.id,
       key,
       '',
@@ -44,6 +46,18 @@ class MatrixSpaceBannerComponent
         if (mimeType != null) 'mimetype': mimeType,
       },
     );
+    space.notifyUpdate();
+  }
+
+  @override
+  Future<void> removeBanner() async {
+    await client.matrixClient.setRoomStateWithKey(
+      space.matrixRoom.id,
+      key,
+      '',
+      {},
+    );
+    space.notifyUpdate();
   }
 
   @override

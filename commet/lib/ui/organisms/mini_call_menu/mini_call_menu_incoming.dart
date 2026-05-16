@@ -17,7 +17,7 @@ class MiniCallMenuIncoming extends StatelessWidget {
   final Function()? onAccept;
   final Function()? onDecline;
 
-  String get incomingCallMessage =>
+  String incomingCallMessage(String callingUserName) =>
       Intl.message("Incoming call from $callingUserName!",
           desc: "Label to display that a user is calling",
           args: [callingUserName],
@@ -29,7 +29,7 @@ class MiniCallMenuIncoming extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          tiamat.Text.labelEmphasised(incomingCallMessage),
+          tiamat.Text.labelEmphasised(incomingCallMessage(callingUserName)),
           if (isRoomDirectMessage == false)
             tiamat.Text.labelLow(roomDisplayName),
           const SizedBox(

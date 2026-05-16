@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
@@ -58,41 +59,36 @@ class AndroidNotifier implements Notifier {
   static Future<void> onForegroundMessage(Map<String, dynamic> message) async {
     var roomId = message["room_id"] as String?;
     var eventId = message["event_id"] as String?;
-    var counts = message["counts"] as String?;
+    var counts = message["counts"];
+    var localClientId = message["local_client_id"] as String?;
+
+    Log.i("Received message: ${jsonEncode(message)}");
 
     if (roomId == null || eventId == null) {
       Log.w("TODO: Handle counts: $counts");
       return;
     }
 
-    var client = clientManager!.clients
-        .firstWhereOrNull((element) => element.hasRoom(roomId));
+    if (localClientId == null) {
+      Log.w("Received notification did not contain a client id!");
+      return;
+    }
 
-    if (client == null) {
-      client = clientManager!.clients.firstWhereOrNull((client) =>
-          client
-              .getComponent<InvitationComponent>()
-              ?.invitations
-              .any((i) => i.roomId == roomId) ==
-          true);
+    var client = clientManager!.getClient(localClientId);
 
-      for (client in clientManager!.clients) {
-        final comp = client.getComponent<InvitationComponent>();
+    if (client == null) return;
 
-        var invite =
-            comp?.invitations.firstWhereOrNull((i) => i.roomId == roomId);
+    final comp = client.getComponent<InvitationComponent>();
 
-        if (invite != null) {
-          var content = GenericRoomInviteNotificationContent(
-            content: "You received an invitation to chat!",
-            title: "Room Invite",
-          );
+    var invite = comp?.invitations.firstWhereOrNull((i) => i.roomId == roomId);
 
-          await NotificationManager.notify(content);
+    if (invite != null) {
+      var content = GenericRoomInviteNotificationContent(
+        content: "You received an invitation to chat!",
+        title: "Room Invite",
+      );
 
-          return;
-        }
-      }
+      await NotificationManager.notify(content);
 
       return;
     }
@@ -133,7 +129,7 @@ class AndroidNotifier implements Notifier {
   }
 
   @override
-  Future<void> notify(NotificationContent notification) async {
+  Future<void> notify(NotificationContent notification, {Room? room}) async {
     switch (notification) {
       case MessageNotificationContent _:
         return displayMessageNotification(notification);
@@ -149,10 +145,15 @@ class AndroidNotifier implements Notifier {
 
   Future<void> displayMessageNotification(
       MessageNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
-    var room = client?.getRoom(content.roomId);
+    var room = content.room;
 
     if (room == null) {
+      var client = clientManager?.getClient(content.clientId);
+      room = client?.getRoom(content.roomId);
+    }
+
+    if (room == null) {
+      Log.w("Could not get room for notification");
       return;
     }
 
@@ -236,6 +237,7 @@ class AndroidNotifier implements Notifier {
         groupKey: content.roomId,
         groupAlertBehavior: GroupAlertBehavior.all,
         styleInformation: style,
+        sound: RawResourceAndroidNotificationSound('message'),
         shortcutId: content.roomId,
         silent: content.priority == NotificationPriority.low,
         ticker: content.content,
@@ -448,5 +450,17 @@ class AndroidNotifier implements Notifier {
       notification.content,
       NotificationDetails(android: details),
     );
+  }
+
+  @override
+  Future<void> disableBadges() {
+    // TODO: implement disableBadges
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> enableBadges() {
+    // TODO: implement enableBadges
+    throw UnimplementedError();
   }
 }

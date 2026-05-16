@@ -84,7 +84,7 @@ class MatrixBackgroundClient implements Client {
   @override
   Future<void> init(bool loadingFromCache,
       {bool isBackgroundService = false}) async {
-    final db = await getMatrixDatabase(databaseId);
+    final db = await getMatrixDatabase(databaseId, onDatabaseIsolate: false);
     if (db is MatrixSdkDriftDatabase) {
       database = db;
     }

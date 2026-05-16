@@ -106,8 +106,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     var content = {
       "body": sticker.shortcode! + extension,
       "url": sticker.emojiUrl.toString(),
-      if (preferences.stickerCompatibilityMode) "msgtype": "m.image",
-      if (preferences.stickerCompatibilityMode)
+      if (preferences.stickerCompatibilityMode.value) "msgtype": "m.image",
+      if (preferences.stickerCompatibilityMode.value)
         "chat.commet.type": "chat.commet.sticker",
       "info": {
         "w": image.width,
@@ -117,7 +117,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     };
 
     var id = await room.matrixRoom.sendEvent(content,
-        type: preferences.stickerCompatibilityMode
+        type: preferences.stickerCompatibilityMode.value
             ? matrix.EventTypes.Message
             : matrix.EventTypes.Sticker,
         inReplyTo: replyingTo);

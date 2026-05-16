@@ -46,7 +46,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   @override
   void initState() {
-    state = preferences.hideRoomSidePanel && Layout.desktop
+    state = preferences.hideRoomSidePanel.value && Layout.desktop
         ? SidePanelState.nothing
         : SidePanelState.defaultView;
 
@@ -303,9 +303,9 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   }
 
   void onToggleSidePanel(void event) {
-    preferences.setHideRoomSidePanel(!preferences.hideRoomSidePanel);
+    preferences.hideRoomSidePanel.set(!preferences.hideRoomSidePanel.value);
 
-    if (preferences.hideRoomSidePanel) {
+    if (preferences.hideRoomSidePanel.value) {
       setState(() {
         state = SidePanelState.nothing;
       });

@@ -11,6 +11,8 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
+import 'package:commet/config/subplatforms/subplatforms.dart';
+import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
@@ -21,15 +23,18 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
 import 'package:commet/utils/android_intent_helper.dart';
+import 'package:commet/utils/custom_safe_area.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/database/database_server.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/first_time_setup.dart';
+import 'package:commet/utils/focus_node_monitor.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts.dart';
+import 'package:commet/utils/text_scale_changer.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:commet/utils/window_management.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -47,6 +52,7 @@ import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:desktop_webview_window/desktop_webview_window.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -129,11 +135,7 @@ void main(List<String> args) async {
     return;
   }
 
-  if (BuildConfig.RELEASE) {
-    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
-  } else {
-    appMain();
-  }
+  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
 }
 
 void appMain() async {
@@ -221,10 +223,15 @@ Future<void> initGuiRequirements() async {
 
   Future.wait([
     UnicodeEmojis.load(),
-    initializeMessages(locale.languageCode),
+    if (!preferences.debugTranslations.value)
+      initializeMessages(locale.languageCode),
+    if (preferences.debugTranslations.value) initializeMessagesDebug(),
     initializeDateFormatting(locale.languageCode),
-    // initializeMessagesDebug()
   ]);
+
+  tiamat.getAppScale = () {
+    return preferences.appScale.value;
+  };
 
   Intl.defaultLocale = locale.languageCode;
 }
@@ -258,7 +265,7 @@ Future<void> startGui() async {
     }
   }
 
-  double scale = preferences.appScale;
+  double scale = preferences.appScale.value;
 
   ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
     return scale;
@@ -266,7 +273,7 @@ Future<void> startGui() async {
 
   var initialTheme = await preferences.resolveTheme();
 
-  if (preferences.checkForUpdates == null &&
+  if (preferences.checkForUpdates.value == null &&
       UpdateChecker.shouldCheckForUpdates) {
     FirstTimeSetup.registerPostLoginSetup(UpdateCheckerSetup());
   }
@@ -278,7 +285,9 @@ Future<void> startGui() async {
     initialRoom: initialRoomId,
   ));
 
-  WindowManagement.init();
+  WindowManagement.init().then((_) {
+    Subplatforms.init();
+  });
 }
 
 void enableEdgeToEdge() async {
@@ -309,32 +318,41 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ThemeChanger(
-        shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
-        getDarkTheme: () {
-          return preferences.resolveTheme(overrideBrightness: Brightness.dark);
-        },
-        getLightTheme: () {
-          return preferences.resolveTheme(overrideBrightness: Brightness.light);
-        },
-        initialTheme: initialTheme ?? ThemeDark.theme,
-        materialAppBuilder: (context, theme) {
-          return MaterialApp(
-            title: 'Commet',
-            theme: theme,
-            debugShowCheckedModeBanner: false,
-            navigatorKey: navigator,
-            builder: (context, child) => Provider<ClientManager>(
-              create: (context) => clientManager,
-              child: child,
-            ),
-            home: AppView(
-              clientManager: clientManager,
-              initialClientId: initialClientId,
-              initialRoom: initialRoom,
-            ),
-          );
-        });
+    return CustomSafeArea(
+      child: FocusNodeMonitor(
+        child: TextScaleChanger(
+          child: ThemeChanger(
+              shouldFollowSystemTheme: () =>
+                  preferences.shouldFollowSystemTheme.value,
+              getDarkTheme: () {
+                return preferences.resolveTheme(
+                    overrideBrightness: Brightness.dark);
+              },
+              getLightTheme: () {
+                return preferences.resolveTheme(
+                    overrideBrightness: Brightness.light);
+              },
+              initialTheme: initialTheme ?? ThemeDark.theme,
+              materialAppBuilder: (context, theme) {
+                return MaterialApp(
+                  title: 'Commet',
+                  theme: theme,
+                  debugShowCheckedModeBanner: false,
+                  navigatorKey: navigator,
+                  builder: (context, child) => Provider<ClientManager>(
+                    create: (context) => clientManager,
+                    child: child,
+                  ),
+                  home: AppView(
+                    clientManager: clientManager,
+                    initialClientId: initialClientId,
+                    initialRoom: initialRoom,
+                  ),
+                );
+              }),
+        ),
+      ),
+    );
   }
 }
 
@@ -353,9 +371,33 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
+  StreamSubscription? _onClientRemovedSubscription;
+  StreamSubscription? _onClientAddedSubscription;
+  late bool isInitiallyLoggedIn;
+
   @override
   void initState() {
     super.initState();
+    _onClientRemovedSubscription =
+        widget.clientManager.onClientRemoved.stream.listen((_) {
+      if (!widget.clientManager.isLoggedIn()) {
+        navigator.currentState?.popUntil((route) => route.isFirst);
+        setState(() {});
+      }
+    });
+    _onClientAddedSubscription =
+        widget.clientManager.onClientAdded.stream.listen((_) {
+      setState(() {});
+    });
+
+    isInitiallyLoggedIn = widget.clientManager.isLoggedIn();
+  }
+
+  @override
+  void dispose() {
+    _onClientRemovedSubscription?.cancel();
+    _onClientAddedSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -365,12 +407,10 @@ class _AppViewState extends State<AppView> {
             widget.clientManager,
             initialClientId: widget.initialClientId,
             initialRoom: widget.initialRoom,
+            wasLoggedInAtStartup: isInitiallyLoggedIn,
           )
         : LoginPage(onSuccess: (_) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => MainPage(widget.clientManager)),
-              (route) => false,
-            );
+            setState(() {});
           });
   }
 }

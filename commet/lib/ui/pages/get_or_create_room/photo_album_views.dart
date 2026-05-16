@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class PhotoAlbumCreatorDescription extends StatelessWidget {
@@ -21,14 +22,17 @@ class PhotoAlbumCreatorDescription extends StatelessWidget {
     AssetImage("assets/images/placeholders/photos/pexels-byrahul-2162909.jpg"),
   ];
 
+  String get labelPhotoAlbumDescription =>
+      Intl.message("Share photos and videos with your friends or community!",
+          name: "labelPhotoAlbumDescription");
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        tiamat.Text.labelLow(
-            "Share photos and videos with your friends or community!"),
+        tiamat.Text.labelLow(labelPhotoAlbumDescription),
         SizedBox(
           height: 30,
         ),

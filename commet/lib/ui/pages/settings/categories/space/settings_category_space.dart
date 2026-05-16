@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/matrix_space.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
+import 'package:commet/ui/pages/settings/categories/room/security/room_security_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_developer_settings_view.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_general_settings_page.dart';
@@ -44,6 +45,18 @@ class SettingsCategorySpace implements SettingsCategory {
       name: "labelSettingsCategorySpace",
       desc: "Label for the overall space settings category");
 
+  String get labelSpaceSettingsSecurity => Intl.message(
+        "Security",
+        name: "labelSpaceSettingsSecurity",
+        desc: "Label for space security settings",
+      );
+
+  String get labelSpaceSettingsMembers => Intl.message(
+        "Members",
+        name: "labelSpaceSettingsMembers",
+        desc: "Label for space member settings",
+      );
+
   @override
   String get title => labelSettingsCategorySpace;
 
@@ -70,6 +83,18 @@ class SettingsCategorySpace implements SettingsCategory {
               space: space,
             );
           }),
+      if (space case MatrixSpace s)
+        SettingsTab(
+          label: labelSpaceSettingsSecurity,
+          icon: Icons.lock,
+          makeScrollable: false,
+          pageBuilder: (context) {
+            return RoomSecuritySettingsPage(
+                showEncryptionToggle: false,
+                room: MatrixRoom(space.client as MatrixClient, s.matrixRoom,
+                    s.matrixRoom.client));
+          },
+        ),
       if (emoticons != null &&
           (space.permissions.canEditRoomEmoticons ||
               emoticons.ownedPacks.isNotEmpty))
@@ -88,7 +113,7 @@ class SettingsCategorySpace implements SettingsCategory {
               return MatrixRoomPermissionsPage(
                   (space as MatrixSpace).matrixRoom);
             }),
-      if (preferences.developerMode)
+      if (preferences.developerMode.value)
         SettingsTab(
             label: labelSpaceDeveloperSettings,
             icon: Icons.code,
@@ -98,14 +123,14 @@ class SettingsCategorySpace implements SettingsCategory {
             }),
       if (space case MatrixSpace s)
         SettingsTab(
-          label: "Members",
+          label: labelSpaceSettingsMembers,
           icon: Icons.people,
           makeScrollable: false,
           pageBuilder: (context) {
             return RoomMemberList(MatrixRoom(space.client as MatrixClient,
                 s.matrixRoom, s.matrixRoom.client));
           },
-        )
+        ),
     ]);
   }
 }

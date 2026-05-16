@@ -82,6 +82,40 @@ class MatrixInvitationComponent
     var mx = client.getMatrixClient();
     var result = await mx.searchUserDirectory(term);
 
-    return result.results.map((e) => MatrixProfile(client, e)).toList();
+    var finalResult =
+        result.results.map((e) => MatrixProfile(client, e)).toList();
+    if (term.isValidMatrixId && !finalResult.any((i) => i.identifier == term)) {
+      finalResult = [
+        MatrixProfile(
+            client, matrix.Profile(userId: term, displayName: term.localpart)),
+        ...finalResult
+      ];
+    }
+
+    return finalResult;
+  }
+
+  @override
+  bool get allowInvitations {
+    var mx = client.getMatrixClient();
+    var data = mx.accountData["m.invite_permission_config"];
+
+    return data?.content["default_action"] == "block" ? false : true;
+  }
+
+  @override
+  Future<void> setInvitationsAllowed(bool allowed) async {
+    var mx = client.getMatrixClient();
+
+    Map<String, Object?> content = allowed
+        ? {}
+        : {
+            "default_action": "block",
+          };
+
+    await mx.setAccountData(mx.userID!, "m.invite_permission_config", content);
+
+    mx.accountData["m.invite_permission_config"] =
+        matrix.BasicEvent(type: "m.invite_permission_config", content: content);
   }
 }

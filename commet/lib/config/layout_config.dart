@@ -7,12 +7,12 @@ class Layout {
   static bool? _isWebDesktopCache;
 
   static bool get desktop {
-    if (preferences.layoutOverride == "desktop") {
+    if (preferences.layoutOverride.value == "desktop") {
       return true;
     }
 
-    if (preferences.layoutOverride != null &&
-        preferences.layoutOverride != "desktop") {
+    if (preferences.layoutOverride.value != null &&
+        preferences.layoutOverride.value != "desktop") {
       return false;
     }
 
@@ -29,12 +29,12 @@ class Layout {
   }
 
   static bool get mobile {
-    if (preferences.layoutOverride == "mobile") {
+    if (preferences.layoutOverride.value == "mobile") {
       return true;
     }
 
-    if (preferences.layoutOverride != null &&
-        preferences.layoutOverride != "mobile") {
+    if (preferences.layoutOverride.value != null &&
+        preferences.layoutOverride.value != "mobile") {
       return false;
     }
 

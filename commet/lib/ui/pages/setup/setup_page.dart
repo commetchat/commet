@@ -1,6 +1,7 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -57,7 +58,7 @@ class _SetupPageState extends State<SetupPage> {
                                 child: Align(
                                   alignment: Alignment.centerRight,
                                   child: tiamat.Button(
-                                    text: "Next",
+                                    text: CommonStrings.promptNext,
                                     onTap: goNextMenu,
                                   ),
                                 ),

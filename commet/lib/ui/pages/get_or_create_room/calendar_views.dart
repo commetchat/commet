@@ -2,6 +2,7 @@ import 'package:commet_calendar_widget/calendar.dart';
 import 'package:commet_calendar_widget/event_view.dart';
 import 'package:commet_calendar_widget/rfc8984.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class FakeCalendarConfig extends MatrixCalendarConfig {
@@ -48,13 +49,16 @@ class FakeCalendarConfig extends MatrixCalendarConfig {
 class CalendarCreatorDescription extends StatelessWidget {
   const CalendarCreatorDescription({super.key});
 
+  String get labelCalendarDescription => Intl.message(
+      "Create a shared calendar to keep track of your plans, and import your schedule from other calendars to let your friends know when you are busy.",
+      name: "labelCalendarDescription");
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        tiamat.Text.labelLow(
-            "Create a shared calendar to keep track of your plans, and import your schedule from other calendars to let your friends know when you are busy."),
+        tiamat.Text.labelLow(labelCalendarDescription),
         SizedBox(
           height: 10,
         ),

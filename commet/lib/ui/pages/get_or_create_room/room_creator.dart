@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -157,33 +158,54 @@ class RoomFieldEncryption implements RoomField {
 }
 
 class RoomFieldVisibility implements RoomField {
-  String get roomVisibilityPrivateExplanation => Intl.message(
+  Space? currentSpace;
+  Client client;
+
+  RoomFieldVisibility({required this.client, this.currentSpace});
+
+  static String get roomVisibilityPrivateExplanation => Intl.message(
         "This room will only be accessible by invitation",
         name: "roomVisibilityPrivateExplanation",
         desc: "Explains what 'private' room visibility means",
       );
 
-  String get roomVisibilityPublicExplanation => Intl.message(
+  static String get roomVisibilityPublicExplanation => Intl.message(
         "This room will be publically accessible by anyone on the internet",
         name: "roomVisibilityPublicExplanation",
         desc: "Explains what 'public' visibility means",
       );
 
-  String get labelVisibilityPrivate => Intl.message(
+  static String get labelVisibilityPrivate => Intl.message(
         "Private",
         name: "labelVisibilityPrivate",
         desc: "Short label for room visibility private",
       );
 
-  String get labelVisibilityPublic => Intl.message(
+  static String get labelVisibilityPublic => Intl.message(
         "Public",
         name: "labelVisibilityPublic",
         desc: "Short label for room visibility public",
       );
 
+  static String get roomVisibilityRestrictedExplanation => Intl.message(
+        "This room will be available to anyone who is a member of it's parent spaces",
+        name: "roomVisibilityRestrictedExplanation",
+        desc: "Explains what 'restricted' visibility means",
+      );
+
+  static String get labelVisibilityRestricted => Intl.message(
+        "Restricted",
+        name: "labelVisibilityRestricted",
+        desc: "Short label for room visibility restricted",
+      );
+
   @override
   void setDefaults(CreateRoomArgs args) {
-    args.visibility = RoomVisibility.private;
+    if (currentSpace != null) {
+      args.visibility = RoomVisibilityRestricted([currentSpace!.identifier]);
+    } else {
+      args.visibility = RoomVisibilityPrivate();
+    }
   }
 
   @override
@@ -195,65 +217,95 @@ class RoomFieldVisibility implements RoomField {
   Widget build(CreateRoomArgs args, Function() onArgsChanged) {
     return SizedBox(
       height: 90,
-      child: tiamat.DropdownSelector(
+      child: tiamat.DropdownSelector<RoomVisibility?>(
         itemHeight: 80,
         value: args.visibility,
         items: [
-          RoomVisibility.public,
-          RoomVisibility.private,
+          RoomVisibilityPrivate(),
+          RoomVisibilityPublic(),
+          if (currentSpace != null)
+            RoomVisibilityRestricted([currentSpace!.identifier])
         ],
         onItemSelected: (item) {
           args.visibility = item;
           onArgsChanged();
         },
         itemBuilder: (item) {
-          String? title;
-          IconData? icon;
-          String? subtitle;
-          switch (item) {
-            case RoomVisibility.public:
-              title = labelVisibilityPublic;
-              icon = Icons.public;
-              subtitle = roomVisibilityPublicExplanation;
-              break;
-            case RoomVisibility.private:
-            case RoomVisibility.invite:
-            case RoomVisibility.knock:
-              title = labelVisibilityPrivate;
-              icon = Icons.lock;
-              subtitle = roomVisibilityPrivateExplanation;
-
-              break;
-            case null:
-              break;
-          }
-
-          return Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                      child: Icon(icon),
-                    ),
-                    tiamat.Text.label(title!),
-                  ],
-                ),
-                tiamat.Text.labelLow(
-                  subtitle!,
-                  overflow: TextOverflow.fade,
-                ),
-              ],
-            ),
-          );
+          return buildRoomVisibility(client, item);
         },
       ),
+    );
+  }
+
+  static Widget buildRoomVisibility(Client client, RoomVisibility? item) {
+    String? title;
+    Widget icon = Icon(RoomVisibility.icon(item));
+    String? subtitle;
+    switch (item) {
+      case final RoomVisibilityPublic _:
+        title = labelVisibilityPublic;
+        subtitle = roomVisibilityPublicExplanation;
+        break;
+      case final RoomVisibilityPrivate _:
+        title = labelVisibilityPrivate;
+        subtitle = roomVisibilityPrivateExplanation;
+        break;
+      case final RoomVisibilityRestricted restricted:
+        title = labelVisibilityRestricted;
+        subtitle = roomVisibilityRestrictedExplanation;
+
+        icon = Row(
+            spacing: 4,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              for (var i in restricted.spaces) buildSpaceIcon(client, i),
+            ]);
+        break;
+      case null:
+        break;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 8, 0),
+                  child: icon,
+                ),
+                tiamat.Text.label(title!),
+              ],
+            ),
+          ),
+          tiamat.Text.labelLow(
+            subtitle!,
+            overflow: TextOverflow.fade,
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget buildSpaceIcon(Client client, String i) {
+    Space? space = client.getSpace(i);
+
+    return tiamat.Tooltip(
+      text: space?.displayName ?? i,
+      child: tiamat.Avatar(
+          radius: 13,
+          image: space?.avatar,
+          placeholderText: space?.displayName ?? i,
+          placeholderColor: space?.color ?? MatrixPeer.hashColor(i)),
     );
   }
 }

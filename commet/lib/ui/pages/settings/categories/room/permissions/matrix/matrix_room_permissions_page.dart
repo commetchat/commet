@@ -51,6 +51,12 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   late List<MatrixRoomPermissionEntry> permissions;
   bool loading = false;
 
+  String get labelMatrixPermissionsRoleOwner => Intl.message(
+        "Owner",
+        name: "labelMatrixPermissionsRoleOwner",
+        desc: "Label for the room owner role",
+      );
+
   String get labelMatrixPermissionsRoleAdmin => Intl.message(
         "Admin",
         name: "labelMatrixPermissionsRoleAdmin",
@@ -144,6 +150,19 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         desc: "Title for the permission to add change the rooms avatar image",
       );
 
+  String get labelMatrixPermissionsMentionRoomTitle => Intl.message(
+        "Use @room mentions",
+        name: "labelMatrixPermissionsMentionRoomTitle",
+        desc: "Title for the permission to use '@room' mentions in a message",
+      );
+
+  String get labelMatrixPermissionsMentionRoomDescription => Intl.message(
+        "Allow use of '@room' to notify all members of the room",
+        name: "labelMatrixPermissionsMentionRoomDescription",
+        desc:
+            "Description for the permission to use '@room' mentions in a message",
+      );
+
   String get labelMatrixPermissionsChangeRoomNameTitle => Intl.message(
         "Change room name",
         name: "labelMatrixPermissionsChangeRoomNameTitle",
@@ -223,23 +242,27 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
 
   String get labelMatrixPermissionsAddCalendarEventTitle => Intl.message(
         "Edit Calendar Events",
-        name: "labelMatrixPermissionsAddCalendarEvent",
+        name: "labelMatrixPermissionsAddCalendarEventTitle",
         desc: "Title for the permission to allow users to edit the calendar",
       );
 
   String get labelMatrixPermissionsAddCalendarEventDescription => Intl.message(
         "Allow users to edit events in the calendar",
-        name: "labelMatrixPermissionsCreateCalendarEventDescription",
+        name: "labelMatrixPermissionsAddCalendarEventDescription",
         desc:
             "Description for the permission to allow users to create an event on the calendar",
       );
 
   void initPermissions() {
     bool isCalendarRoom = widget.showCalendarPermissions;
+    var version = int.tryParse(widget.room.roomVersion ?? "1");
 
     roles = [
-      // MatrixRoomRoleEntry(
-      //     name: "Founder", powerlevel: 101, icon: Icons.star_rounded),
+      if (version != null && version >= 12)
+        MatrixRoomRoleEntry(
+            name: labelMatrixPermissionsRoleOwner,
+            powerlevel: 150,
+            icon: Icons.local_police),
       MatrixRoomRoleEntry(
         name: labelMatrixPermissionsRoleAdmin,
         powerlevel: 100,
@@ -250,14 +273,12 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         powerlevel: 50,
         icon: Icons.shield_rounded,
       ),
-
       if (isCalendarRoom)
         MatrixRoomRoleEntry(
           name: "Calendar Moderator",
           powerlevel: 25,
           icon: Icons.edit_calendar,
         ),
-
       MatrixRoomRoleEntry(
         name: labelMatrixPermissionsRoleMember,
         powerlevel: 0,
@@ -320,6 +341,14 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         title: labelMatrixPermissionsRoomAvatarTitle,
         description: labelMatrixPermissionsRoomAvatarDescription,
         icon: Icons.image,
+        powerLevel: 50,
+      ),
+      MatrixRoomPermissionEntry(
+        key: "room",
+        keyParent: "notifications",
+        title: labelMatrixPermissionsMentionRoomTitle,
+        description: labelMatrixPermissionsMentionRoomDescription,
+        icon: Icons.notification_add,
         powerLevel: 50,
       ),
       MatrixRoomPermissionEntry(
@@ -466,6 +495,9 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
 
       var map = content;
       if (perm.keyParent != null) {
+        if (map.containsKey(perm.keyParent!) == false) {
+          map[perm.keyParent!] = Map<String, dynamic>();
+        }
         map = map[perm.keyParent]! as Map<String, dynamic>;
       }
 

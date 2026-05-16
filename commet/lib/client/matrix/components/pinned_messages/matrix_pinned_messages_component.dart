@@ -43,6 +43,12 @@ class MatrixPinnedMessagesComponent
       return false;
     }
 
+    var pinned = state.content["pinned"];
+
+    if (pinned is! List<dynamic>) {
+      return false;
+    }
+
     final pins = state.content["pinned"] as List<dynamic>;
     return pins.contains(eventId);
   }

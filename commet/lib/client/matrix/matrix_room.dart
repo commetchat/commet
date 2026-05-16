@@ -13,6 +13,8 @@ import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
+import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
+import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
@@ -32,6 +34,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encry
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_membership.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_message.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_pinned_messages.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_power_levels.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_redaction.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_sticker.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_unknown.dart';
@@ -39,6 +42,7 @@ import 'package:commet/client/member.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/build_config.dart';
@@ -47,6 +51,8 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
+import 'package:html/dom.dart' as html_dom;
+import 'package:html/parser.dart' as html_parser;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
@@ -110,6 +116,9 @@ class MatrixRoom extends Room {
   TimelineEvent? lastEvent;
 
   @override
+  TimelineEvent? lastMessage;
+
+  @override
   Iterable<String> get memberIds =>
       _matrixRoom.getParticipants([matrix.Membership.join]).map((e) => e.id);
 
@@ -117,6 +126,7 @@ class MatrixRoom extends Room {
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
+  Color? hashColor;
   @override
   Color get defaultColor {
     var comp = client.getComponent<DirectMessagesComponent>();
@@ -130,12 +140,22 @@ class MatrixRoom extends Room {
       }
     }
 
-    return getColorOfUser(identifier);
+    if (hashColor != null) return hashColor!;
+
+    hashColor = MatrixPeer.hashColor(identifier);
+
+    return hashColor!;
   }
 
+  // cache the result of push rule because this was becoming an expensive operation for ui stuff
+  matrix.PushRuleState? _pushRule;
   @override
   PushRule get pushRule {
-    switch (_matrixRoom.pushRuleState) {
+    if (_pushRule == null) {
+      _pushRule = _matrixRoom.pushRuleState;
+    }
+
+    switch (_pushRule!) {
       case matrix.PushRuleState.notify:
         return PushRule.notify;
       case matrix.PushRuleState.mentionsOnly:
@@ -143,6 +163,27 @@ class MatrixRoom extends Room {
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    var newRule = _matrixRoom.pushRuleState;
+
+    switch (rule) {
+      case PushRule.notify:
+        newRule = matrix.PushRuleState.notify;
+        break;
+      case PushRule.mentionsOnly:
+        newRule = matrix.PushRuleState.mentionsOnly;
+        break;
+      case PushRule.dontNotify:
+        newRule = matrix.PushRuleState.dontNotify;
+        break;
+    }
+
+    await _matrixRoom.setPushRuleState(newRule);
+    _pushRule = _matrixRoom.pushRuleState;
+    _onUpdate.add(null);
   }
 
   @override
@@ -189,6 +230,10 @@ class MatrixRoom extends Room {
 
     if (latest != null) {
       lastEvent = convertEvent(latest);
+
+      if (latest.type == matrix.EventTypes.Message) {
+        lastMessage = lastEvent;
+      }
     }
 
     updateAvatar();
@@ -249,6 +294,18 @@ class MatrixRoom extends Room {
       } else if (event.originServerTs.isAfter(lastEvent!.originServerTs)) {
         lastEvent = event;
         _onUpdate.add(null);
+      }
+
+      if (event is TimelineEventMessage ||
+          event is TimelineEventSticker ||
+          event is TimelineEventEmote) {
+        if (lastMessage == null) {
+          lastMessage = event;
+          _onUpdate.add(null);
+        } else if (event.originServerTs.isAfter(lastMessage!.originServerTs)) {
+          lastMessage = event;
+          _onUpdate.add(null);
+        }
       }
     }
   }
@@ -439,6 +496,23 @@ class MatrixRoom extends Room {
         event['formatted_body'] = html;
       }
 
+      var document = html_parser.parse(html);
+
+      var mentionsList = _findEventMentions(document);
+
+      var mentions = {};
+
+      if (mentionsList.contains("@room")) {
+        mentions["room"] = true;
+        mentionsList.remove("@room");
+      }
+
+      if (mentionsList.isNotEmpty) {
+        mentions["user_ids"] = mentionsList.toList();
+      }
+
+      event["m.mentions"] = mentions;
+
       var id = await _matrixRoom.sendEvent(event,
           inReplyTo: replyingTo,
           editEventId: replaceEvent?.eventId,
@@ -483,6 +557,8 @@ class MatrixRoom extends Room {
           MatrixTimelineEventEncrypted(event, client: c),
         matrix.EventTypes.RoomCreate =>
           MatrixTimelineEventCreateRoom(event, client: c),
+        matrix.EventTypes.RoomPowerLevels =>
+          MatrixTimelineEventPowerLevels(event, client: c),
         matrix.EventTypes.Reaction =>
           MatrixTimelineEventAddReaction(event, client: c),
         matrix.EventTypes.RoomMember =>
@@ -519,26 +595,6 @@ class MatrixRoom extends Room {
   @override
   Future<void> enableE2EE() async {
     await _matrixRoom.enableEncryption();
-  }
-
-  @override
-  Future<void> setPushRule(PushRule rule) async {
-    var newRule = _matrixRoom.pushRuleState;
-
-    switch (rule) {
-      case PushRule.notify:
-        newRule = matrix.PushRuleState.notify;
-        break;
-      case PushRule.mentionsOnly:
-        newRule = matrix.PushRuleState.mentionsOnly;
-        break;
-      case PushRule.dontNotify:
-        newRule = matrix.PushRuleState.dontNotify;
-        break;
-    }
-
-    await _matrixRoom.setPushRuleState(newRule);
-    _onUpdate.add(null);
   }
 
   @override
@@ -615,8 +671,8 @@ class MatrixRoom extends Room {
           .getComponent<UserProfileComponent>()!
           .getProfile(comp!.getDirectMessagePartnerId(this)!);
 
-      if (user?.avatar != null) {
-        return user!.avatar;
+      if (user.avatar != null) {
+        return user.avatar;
       }
     }
 
@@ -687,10 +743,31 @@ class MatrixRoom extends Room {
 
     var ids = roles.keys;
 
-    var result =
-        ids.map((e) => (getMemberOrFallback(e), MatrixRole(roles[e]))).toList();
+    List<(Member, MatrixRole)> result = List.empty(growable: true);
 
-    result.removeWhere((element) => element.$2.rank == 0);
+    var creationEvent = _matrixRoom.states[matrix.EventTypes.RoomCreate]?[""];
+    var creator = creationEvent?.senderId;
+    var roomVersion = int.tryParse(_matrixRoom.roomVersion ?? "1");
+
+    if (roomVersion != null && roomVersion >= 12) {
+      if (_matrixRoom.roomVersion != null && creator != null) {
+        var additionalCreators =
+            creationEvent?.content.tryGetList<String>("additional_creators");
+
+        for (var id in [
+          creator,
+          if (additionalCreators != null) ...additionalCreators
+        ]) {
+          result.add((getMemberOrFallback(id), MatrixRole(150)));
+        }
+      }
+    }
+
+    result.addAll(ids
+        .map((e) => (getMemberOrFallback(e), MatrixRole(roles[e])))
+        .where((element) => element.$2.rank != 0));
+
+    result;
 
     result.sort((a, b) => b.$2.rank.compareTo(a.$2.rank));
 
@@ -704,7 +781,9 @@ class MatrixRoom extends Room {
 
   void onRoomStateUpdated(({String roomId, StrippedStateEvent state}) event) {
     _displayName = _matrixRoom.getLocalizedDisplayname();
-    if (event.state.type == "m.room.name") {
+    if (event.state.type == "m.room.name" ||
+        event.state.type == "m.room.avatar" ||
+        event.state.type == "m.room.topic") {
       _onUpdate.add(null);
     }
   }
@@ -725,22 +804,22 @@ class MatrixRoom extends Room {
   bool get shouldPreviewMedia {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
-        return preferences.previewMediaInPublicRooms;
+        return preferences.previewMediaInPublicRooms.value;
 
       case matrix.JoinRules.knock:
       case matrix.JoinRules.invite:
       case matrix.JoinRules.private:
-        return preferences.previewMediaInPrivateRooms;
+        return preferences.previewMediaInPrivateRooms.value;
 
       case matrix.JoinRules.restricted:
         if (_client.spaces.any((e) =>
-            e.visibility == RoomVisibility.public &&
+            e.visibility is RoomVisibilityPublic &&
             e.containsRoom(_matrixRoom.id))) {
           // if any public space contains this room, consider the room public
           // this is kind of flawed, because there could be public spaces we are not a member of
-          return preferences.previewMediaInPublicRooms;
+          return preferences.previewMediaInPublicRooms.value;
         } else {
-          return preferences.previewMediaInPrivateRooms;
+          return preferences.previewMediaInPrivateRooms.value;
         }
 
       default:
@@ -760,6 +839,7 @@ class MatrixRoom extends Room {
 
   void onRoomSyncUpdate(matrix.SyncUpdate event) {
     var update = event.rooms?.join?[_matrixRoom.id];
+
     if (update == null) return;
 
     _onUpdate.add(null);
@@ -805,8 +885,9 @@ class MatrixRoom extends Room {
   String? get topic => matrixRoom.topic;
 
   @override
-  Future<void> setTopic(String topic) {
-    return matrixRoom.setDescription(topic);
+  Future<void> setTopic(String topic) async {
+    await matrixRoom.setDescription(topic);
+    _onUpdate.add(null);
   }
 
   @override
@@ -822,12 +903,123 @@ class MatrixRoom extends Room {
 
     await matrixRoom.setAvatar(matrix.MatrixFile(bytes: bytes, name: name));
     _avatar = MemoryImage(bytes);
+    _onUpdate.add(null);
   }
 
   @override
   Future<void> markAsRead() async {
     var tl = await matrixRoom.getTimeline();
+    var readReceiptComponent = getComponent<MatrixReadReceiptComponent>();
 
-    await tl.setReadMarker();
+    bool public = true;
+    var presenceComp = client.getComponent<MatrixUserPresenceComponent>();
+
+    if (presenceComp?.usePublicReadReceipts != null) {
+      public = presenceComp!.usePublicReadReceipts;
+    }
+
+    if (readReceiptComponent?.usePublicReadReceiptsForRoom != null) {
+      public = readReceiptComponent!.usePublicReadReceiptsForRoom!;
+    }
+
+    await tl.setReadMarker(public: public);
+  }
+
+  @override
+  RoomVisibility get visibility {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return RoomVisibilityPublic();
+      case matrix.JoinRules.knock:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.invite:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.private:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.restricted:
+        return RoomVisibilityRestricted(matrixRoom
+                .getState(matrix.EventTypes.RoomJoinRules)
+                ?.content
+                .tryGetList<Map<String, dynamic>>("allow")
+                ?.map((i) => i.tryGet<String>("room_id"))
+                .nonNulls
+                .toList() ??
+            []);
+      case matrix.JoinRules.knockRestricted:
+        return RoomVisibilityPrivate();
+      case null:
+        return RoomVisibilityPublic();
+    }
+  }
+
+  @override
+  Future<void> setVisibility(RoomVisibility visibility) async {
+    var state = switch (visibility) {
+      final RoomVisibilityPrivate _ => matrix.StateEvent(content: {
+          "join_rule": "invite",
+        }, type: matrix.EventTypes.RoomJoinRules),
+      final RoomVisibilityPublic _ => matrix.StateEvent(
+          content: {"join_rule": "public"},
+          type: matrix.EventTypes.RoomJoinRules),
+      final RoomVisibilityRestricted restricted => matrix.StateEvent(content: {
+          "join_rule": "restricted",
+          "allow": [
+            for (var i in restricted.spaces)
+              {"room_id": i, "type": "m.room_membership"},
+          ]
+        }, type: matrix.EventTypes.RoomJoinRules),
+      RoomVisibility() => throw UnimplementedError(),
+    };
+
+    await _matrixRoom.client
+        .setRoomStateWithKey(_matrixRoom.id, state.type, "", state.content);
+  }
+
+  Set<String> _findEventMentions(html_dom.Document document) {
+    var result = Set<String>();
+
+    result.addAll(_findChildMentions(document.nodes));
+
+    return result;
+  }
+
+  static var roomMentionRegex = RegExp(r'(?<!\w)@room(?!\w)');
+
+  Set<String> _findChildMentions(html_dom.NodeList children) {
+    var result = Set<String>();
+
+    for (var child in children) {
+      if (child case html_dom.Element element) {
+        if (element.localName == "pre" || element.localName == "code") continue;
+
+        if (element.localName == "a") {
+          var url = child.attributes["href"];
+          if (url != null) {
+            var parsed = Uri.tryParse(url);
+            try {
+              if (parsed?.authority == "matrix.to") {
+                var id = parsed!.fragment.substring(1);
+                var userId = Uri.decodeQueryComponent(id);
+
+                if (userId.startsWith("@") && userId.isValidMatrixId) {
+                  result.add(userId);
+                }
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
+      if (child case html_dom.Text text) {
+        var data = text.data;
+        if (roomMentionRegex.hasMatch(data)) {
+          result.add("@room");
+        }
+      }
+
+      result.addAll(_findChildMentions(child.nodes));
+    }
+
+    return result;
   }
 }

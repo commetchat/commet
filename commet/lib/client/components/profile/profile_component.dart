@@ -85,7 +85,7 @@ abstract class ProfileWithBio {
 abstract class UserProfileComponent<T extends Client> implements Component<T> {
   /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
   /// This is so that you can display any given peer without having to load the data for it
-  Future<Profile?> getProfile(String identifier);
+  Future<Profile> getProfile(String identifier);
 
   Future<void> setBanner(Uint8List bytes);
 
@@ -98,6 +98,8 @@ abstract class UserProfileComponent<T extends Client> implements Component<T> {
   Future<void> setBio(String bio);
 
   Future<void> removeBio();
+
+  Future<void> removeBanner();
 
   Future<void> removeTimezone();
 

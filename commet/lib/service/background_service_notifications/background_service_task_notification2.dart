@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:commet/cache/file_cache.dart';
-import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/matrix_background/matrix_background_client.dart';
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/database/database_server.dart';
@@ -34,19 +34,19 @@ class BackgroundNotificationsManager2 {
       }
     }
 
-    if (clientManager == null) {
-      clientManager = ClientManager();
+    // if (clientManager == null) {
+    //   clientManager = ClientManager();
 
-      final clients = preferences.getRegisteredMatrixClients();
-      if (clients != null) {
-        for (var id in clients) {
-          var client = MatrixBackgroundClient(databaseId: id);
-          Log.i("Adding background matrix client: ${id}");
-          await client.init(true, isBackgroundService: true);
-          clientManager!.addClient(client);
-        }
-      }
-    }
+    //   final clients = preferences.getRegisteredMatrixClients();
+    //   if (clients != null) {
+    //     for (var id in clients) {
+    //       var client = MatrixBackgroundClient(databaseId: id);
+    //       Log.i("Adding background matrix client: ${id}");
+    //       await client.init(true, isBackgroundService: true);
+    //       clientManager!.addClient(client);
+    //     }
+    //   }
+    // }
 
     await NotificationManager.init(isBackgroundService: true);
   }
@@ -102,28 +102,32 @@ class BackgroundNotificationsManager2 {
     try {
       var roomId = data["room_id"] as String?;
       var eventId = data["event_id"] as String?;
-      var counts = data["counts"] as String?;
+      var counts = data["counts"];
+
+      var localClientId = data["local_client_id"] as String?;
 
       if (roomId == null || eventId == null) {
         Log.w("TODO: Handle counts: $counts");
         return;
       }
 
-      var client = clientManager!.clients
-          .firstWhereOrNull((element) => element.hasRoom(roomId));
-
-      // If the room does not already belong to any of our clients, it must be an invite
-      // I couldn't figure out a good way to determine which client received the invite
-      // So we will just display a generic notification
-      if (client == null) {
-        var content = GenericRoomInviteNotificationContent(
-          content: "You received an invitation to chat!",
-          title: "Room Invite",
-        );
-
-        await NotificationManager.notify(content);
+      if (localClientId == null) {
+        Log.w("Received notification did not contain a client id!");
         return;
       }
+
+      final clients = preferences.getRegisteredMatrixClients();
+      if (clients?.contains(localClientId) != true) {
+        NotificationManager.notify(ErrorNotificationContent(
+            title: "An error occurred while processing notifications",
+            content: "Failed to find client: $localClientId"));
+        return;
+      }
+
+      var client = MatrixBackgroundClient(databaseId: localClientId);
+
+      Log.i("Opening background matrix client: ${localClientId}");
+      await client.init(true, isBackgroundService: true);
 
       var directMessages = client.getComponent<DirectMessagesComponent>();
 
@@ -135,17 +139,38 @@ class BackgroundNotificationsManager2 {
         await room.init();
       }
 
-      Log.i("Found room: ${room?.displayName}");
+      if (room == null) {
+        NotificationManager.notify(ErrorNotificationContent(
+            title: "An error occurred while processing notifications",
+            content: "Failed to find room: $roomId  ${data}"));
+        return;
+      }
 
-      final isDirectMessage =
-          directMessages?.isRoomDirectMessage(room!) == true;
+      Log.i("Found room: ${room.displayName}");
+
+      final isDirectMessage = directMessages?.isRoomDirectMessage(room) == true;
       Log.i("Is direct message: $isDirectMessage");
 
-      var event = await room!.getEvent(eventId);
+      TimelineEvent? event;
+      Object? exception;
+
+      for (int i = 0; i < 5; i++) {
+        try {
+          event = await room.getEvent(eventId);
+          break;
+        } catch (e, s) {
+          Log.onError(e, s);
+          exception = e;
+          await Future.delayed(Duration(seconds: i * 2));
+        }
+      }
+
+      if (event == null) {
+        throw Exception(
+            "Unable to fetch room event for notification\n${exception}");
+      }
 
       Log.e("got event: ${event}");
-
-      if (event == null) return;
 
       var member = await room.fetchMember(event.senderId);
 
@@ -161,6 +186,7 @@ class BackgroundNotificationsManager2 {
           roomImageId: room.avatarId,
           senderImageId: member.avatarId,
           roomImage: room.avatar,
+          room: room,
           isDirectMessage: isDirectMessage);
 
       Log.i("Sender image: ${member.avatar}");

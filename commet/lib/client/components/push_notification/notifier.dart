@@ -20,4 +20,8 @@ abstract class Notifier {
   Future<void> init();
 
   Future<void> clearNotifications(Room room);
+
+  Future<void> enableBadges();
+
+  Future<void> disableBadges();
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
@@ -56,14 +57,26 @@ class Log {
         return;
       }
 
-      if (!preferences.isInit || preferences.developerMode == true) {
-        add(LogEntry(LogType.info, line));
+      if (!preferences.isInit || preferences.developerMode.value == true) {
+        add(LogEntry(LogType.debug, line));
       }
     },
     errorCallback: (self, parent, zone, error, stackTrace) {
-      parent.print(zone, "ERROR CALLBACK");
-      parent.print(zone, error.toString());
-      parent.print(zone, stackTrace?.toString() ?? "");
+      if (BuildConfig.DEBUG) {
+        parent.print(zone, "ERROR CALLBACK");
+        parent.print(zone, error.toString());
+        parent.print(zone, stackTrace?.toString() ?? "");
+      }
+
+      if (!kIsWeb) {
+        if (error case HttpException e) {
+          if (e.message ==
+              "Connection closed before full header was received") {
+            return;
+          }
+        }
+      }
+
       String? info =
           stackTrace != null ? getDetailFromStackTrace(stackTrace) : null;
       add(LogEntryException(

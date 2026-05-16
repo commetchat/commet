@@ -105,8 +105,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       color = Theme.of(context).colorScheme.onSurface;
     }
 
-    bool showRoomIcons = preferences.showRoomAvatars;
-    bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
+    bool showRoomIcons = preferences.showRoomAvatars.value;
+    bool useGenericIcons = preferences.usePlaceholderRoomAvatars.value;
 
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
@@ -182,7 +182,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
             icon: Icons.tag,
             onPressed: () =>
                 widget.onTap?.call(widget.room, bypassSpecialRoomType: true)),
-      if (voipRoom != null && preferences.developerMode)
+      if (voipRoom != null && preferences.developerMode.value)
         ContextMenuItem(
           text: "Clear Membership Status",
           icon: Icons.call_end,

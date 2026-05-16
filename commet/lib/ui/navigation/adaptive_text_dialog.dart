@@ -1,4 +1,5 @@
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -73,7 +74,7 @@ class _AdaptiveTextDialogWidgetState extends State<AdaptiveTextDialogWidget> {
               height: 10,
             ),
             tiamat.Button(
-              text: "Submit",
+              text: CommonStrings.promptSubmit,
               onTap: () => Navigator.of(context).pop(controller.text),
             )
           ],

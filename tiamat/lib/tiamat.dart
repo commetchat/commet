@@ -22,3 +22,5 @@ export './atoms/tooltip.dart';
 export './atoms/foundation.dart';
 export './atoms/text_button_expander.dart';
 export './utils.dart';
+
+double Function()? getAppScale;

@@ -67,7 +67,8 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   }
 
   void _onApplyTranslation() {
-    final mediaWidth = MediaQuery.of(context).size.width / preferences.appScale;
+    final mediaWidth =
+        MediaQuery.of(context).size.width / preferences.appScale.value;
     final animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
 
@@ -157,7 +158,8 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   }
 
   void reveal(RevealSide direction) {
-    final mediaWidth = MediaQuery.of(context).size.width / preferences.appScale;
+    final mediaWidth =
+        MediaQuery.of(context).size.width / preferences.appScale.value;
     final animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
 

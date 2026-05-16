@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class VoiceChatCreatorDescription extends StatelessWidget {
   const VoiceChatCreatorDescription({super.key});
+
+  String get labelVoiceChatDescription =>
+      Intl.message("A dedicated room for voice calls, for two or more people",
+          name: "labelVoiceChatDescription");
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +16,7 @@ class VoiceChatCreatorDescription extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 24,
       children: [
-        tiamat.Text.labelLow(
-            "A dedicated room for voice calls, for two or more people"),
+        tiamat.Text.labelLow(labelVoiceChatDescription),
         Container(
           decoration: BoxDecoration(
             color: ColorScheme.of(context).surfaceContainerLow,

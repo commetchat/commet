@@ -45,8 +45,8 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
       onSetNewSsss: (passphrase) {
         bootstrapper?.newSsss(passphrase);
       },
-      onAskSetupCrossSigning: () {
-        bootstrapper?.askSetupCrossSigning(
+      onAskSetupCrossSigning: () async {
+        await bootstrapper?.askSetupCrossSigning(
           setupMasterKey: true,
           setupSelfSigningKey: true,
           setupUserSigningKey: true,
@@ -70,11 +70,12 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
       },
       openExistingSsss: (key) async {
         await bootstrapper?.newSsssKey!.unlock(keyOrPassphrase: key);
-        await bootstrapper?.client.encryption!.crossSigning
-            .selfSign(keyOrPassphrase: key);
         await bootstrapper?.openExistingSsss();
-        await bootstrapper?.askSetupCrossSigning(setupMasterKey: true);
-        bootstrapper?.wipeOnlineKeyBackup(false);
+
+        if (bootstrapper!.encryption.crossSigning.enabled) {
+          await bootstrapper?.client.encryption!.crossSigning
+              .selfSign(keyOrPassphrase: key);
+        }
       },
       wipeCrossSigning: (wipe) {
         bootstrapper?.wipeCrossSigning(wipe);

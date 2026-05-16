@@ -10,8 +10,11 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
+import 'package:commet/utils/color_utils.dart';
+import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/matrix_api_lite/generated/model.dart';
 import 'package:uuid/uuid.dart';
@@ -20,12 +23,15 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
   MatrixClient client;
 
+  static RegExp sed_pattern = RegExp(r'^s\/([^\/]+)\/([^\n\r]*?)\/?\s*$');
+
   MatrixCommandComponent(this.client) {
     client.getMatrixClient().addCommand("sendjson", sendJson);
     client.getMatrixClient().addCommand("status", setStatus);
     client.getMatrixClient().addCommand("clearemojistats", clearEmojiStats);
     client.getMatrixClient().addCommand("setprofile", setProfile);
     client.getMatrixClient().addCommand("addwidget", addWidget);
+    client.getMatrixClient().addCommand("rainbow", sendRainbow);
   }
 
   @override
@@ -42,6 +48,25 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
       event = (interactingEvent as MatrixTimelineEvent).event;
     }
 
+    var match = sed_pattern.firstMatch(string);
+
+    if (match != null && interactingEvent == null && type == null) {
+      TimelineEvent? editingEvent;
+      for (final event in room.timeline!.events.take(20)) {
+        if (event.senderId != room.client.self!.identifier) continue;
+        if (event is! TimelineEventMessage) continue;
+        editingEvent = event;
+        break;
+      }
+      if (editingEvent != null) {
+        await room.sendMessage(
+            message:
+                editingEvent.plainTextBody.replaceFirst(match[1]!, match[2]!),
+            replaceEvent: editingEvent);
+        return;
+      }
+    }
+
     await client.getMatrixClient().parseAndRunCommand(
           mxRoom,
           string,
@@ -56,7 +81,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     if (string.startsWith("/")) {
       var command = string.substring(1).split(" ").first;
       return client.getMatrixClient().commands.containsKey(command);
-    }
+    } else if (sed_pattern.firstMatch(string) != null) return true;
 
     return false;
   }
@@ -139,5 +164,37 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
         args.room!.id, "im.vector.modular.widgets", id, content);
 
     return null;
+  }
+
+  FutureOr<String?> sendRainbow(
+      matrix.CommandArgs args, StringBuffer? out) async {
+    if (args.room == null) return null;
+    if (args.msg.isEmpty) return null;
+
+    String formatted = "";
+
+    double hue = 0;
+    var characters = args.msg.characters;
+    for (var char in args.msg.characters) {
+      var color = HSVColor.fromAHSV(1.0, hue, 1.0, 1.0);
+      var c = color.toColor().toHexCode();
+
+      hue += 360.0 / characters.length.toDouble();
+      formatted += '<span data-mx-color=\"$c\">${char}</span>';
+    }
+
+    final content = {
+      "msgtype": "m.text",
+      "body": args.msg,
+      "formatted_body": formatted,
+      "format": "org.matrix.custom.html",
+    };
+
+    return await args.room!.sendEvent(
+      content,
+      inReplyTo: args.inReplyTo,
+      editEventId: args.editEventId,
+      txid: args.txid,
+    );
   }
 }

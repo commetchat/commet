@@ -52,7 +52,7 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
         widget.shouldPushContent?.call() == true;
 
     if (sizeOverride != null && offset > sizeOverride!) {
-      preferences.setEmojiPickerHeight(offset);
+      preferences.emojiPickerHeight.set(offset);
       sizeOverride = null;
     }
 
@@ -92,9 +92,9 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
     var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
 
     if (offset < min) {
-      offset = preferences.emojiPickerHeight;
+      offset = preferences.emojiPickerHeight.value;
     } else {
-      preferences.setEmojiPickerHeight(offset);
+      preferences.emojiPickerHeight.set(offset);
     }
 
     sizeOverride = offset;

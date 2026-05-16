@@ -111,10 +111,10 @@ class _TileOverlayState extends State<TileOverlay> {
     var p = 10.0;
 
     var b = Rect.fromLTRB(
-        bounds.left / preferences.appScale,
-        bounds.top / preferences.appScale,
-        bounds.right / preferences.appScale,
-        bounds.bottom / preferences.appScale);
+        bounds.left / preferences.appScale.value,
+        bounds.top / preferences.appScale.value,
+        bounds.right / preferences.appScale.value,
+        bounds.bottom / preferences.appScale.value);
 
     var rect = Rect.fromLTRB(
         b.left + p + safeAreaPadding.left,

@@ -44,4 +44,28 @@ class MatrixRoomPermissions extends Permissions {
 
   @override
   bool get canChangeRoles => room.canChangePowerLevel;
+
+  @override
+  bool get canMentionRoom => canUserMentionRoom(room.client.userID!, room);
+
+  static bool canUserMentionRoom(String user, matrix.Room room) {
+    int powerLevel = 50;
+
+    var data = room
+        .getState(matrix.EventTypes.RoomPowerLevels)
+        ?.content
+        .tryGetMap<String, int>('notifications');
+
+    if (data != null) {
+      var level = data["room"];
+
+      if (level != null) powerLevel = level;
+    }
+
+    return room.getPowerLevelByUserId(user) >= powerLevel;
+  }
+
+  @override
+  bool get canChangeVisibility =>
+      room.canChangeStateEvent(matrix.EventTypes.RoomJoinRules);
 }

@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
@@ -6,12 +9,16 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
+import 'package:commet/utils/system_processes_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -41,21 +48,30 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       if (PlatformUtils.isAndroid) shortcuts(),
       backgroundTasks(),
       dumpDatabases(),
+      executeShellCommand(),
       tiamat.Panel(
         header: "Other Settings",
         mode: TileType.surfaceContainerLow,
         child: Column(
           children: [
             if (!BuildConfig.MOBILE)
-              GeneralSettingsPageState.settingToggle(
-                  preferences.disableTextCursorManagement, onChanged: (value) {
-                preferences
-                    .setdisableTextCursorManagement(value)
-                    .then((_) => setState(() {}));
-              },
-                  title: "Disable Text Cursor Management",
-                  description:
-                      "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that"),
+              BooleanPreferenceToggle(
+                preference: preferences.disableTextCursorManagement,
+                title: "Disable Text Cursor Management",
+                description:
+                    "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that",
+              ),
+            BooleanPreferenceToggle(
+                preference: preferences.debugTranslations,
+                title: "Debug Translations"),
+            DoublePreferenceSlider(
+              preference: preferences.customOnscreenKeyboardViewOffset,
+              title: "Keyboard Offset",
+              min: 0.0,
+              max: 1000,
+              description:
+                  "Amount to shift the app view up by when the onscreen keyboard is shown",
+            ),
           ],
         ),
       )
@@ -126,7 +142,21 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 text: "Timeline Viewer",
                 onTap: () => NavigationUtils.navigateTo(
                     context, const BenchmarkTimelineViewer()),
-              )
+              ),
+              tiamat.Button(
+                  text: "Notification Badges Stress Test",
+                  onTap: () async {
+                    for (int i = 0; i < 10000; i++) {
+                      int v = i % 9;
+                      (NotificationManager.notifier as LinuxNotifier?)
+                          ?.service
+                          .update(count: v, countVisible: v != 0);
+
+                      await Future.delayed(Duration(milliseconds: 100));
+
+                      print("Notification Badge Stress Test: $i");
+                    }
+                  })
             ],
           ),
         ]);
@@ -145,8 +175,16 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
             runSpacing: 8,
             children: [
               tiamat.Button(
+                text: "Maximize",
+                onTap: () => windowManager.maximize(),
+              ),
+              tiamat.Button(
                 text: "1280x720",
                 onTap: () => windowManager.setSize(const Size(1280, 720)),
+              ),
+              tiamat.Button(
+                text: "1280x800 (Steamdeck)",
+                onTap: () => windowManager.setSize(const Size(1280, 800)),
               ),
               tiamat.Button(
                 text: "1920x1080",
@@ -310,6 +348,56 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 String? empty;
                 empty!.split(" ");
               }),
+          tiamat.Button(
+              text: "Print Something",
+              onTap: () {
+                print("Hello, world!");
+              }),
+        ])
+      ],
+    );
+  }
+
+  Widget executeShellCommand() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Dangerous"),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      collapsedBackgroundColor:
+          Theme.of(context).colorScheme.surfaceContainerLow,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+            text: "Get Process List",
+            onTap: () async {
+              var list = await SystemProcessesUtils.getProcessList();
+              AdaptiveDialog.show(
+                context,
+                builder: (context) {
+                  return Codeblock(
+                      text: list
+                          .map((i) =>
+                              "[${i.processId}] = ${i.command}  ${i.args}")
+                          .join("\n"));
+                },
+              );
+            },
+          ),
+          tiamat.Button(
+              text: "Execute Shell Command",
+              onTap: () async {
+                var text = await AdaptiveDialog.textPrompt(context,
+                    title: "Execute Shell Command");
+                if (text != null) {
+                  var command = text.split(" ");
+                  var exe = command.first;
+                  var args = command.sublist(1);
+
+                  var process = await Process.start(exe, args);
+
+                  AdaptiveDialog.show(context,
+                      builder: (context) => ProcessOutputViewer(process));
+                }
+              }),
         ])
       ],
     );
@@ -350,5 +438,66 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         ])
       ],
     );
+  }
+}
+
+class ProcessOutputViewer extends StatefulWidget {
+  const ProcessOutputViewer(this.process, {super.key});
+  final Process process;
+
+  @override
+  State<ProcessOutputViewer> createState() => _ProcessOutputViewerState();
+}
+
+class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
+  String stdOut = "";
+  String stdError = "";
+
+  late List<StreamSubscription> subs;
+
+  @override
+  void initState() {
+    super.initState();
+
+    subs = [
+      widget.process.stdout.transform(utf8.decoder).listen(onStdout),
+      widget.process.stderr.transform(utf8.decoder).listen(onStderr),
+    ];
+  }
+
+  @override
+  void dispose() {
+    for (var sub in subs) {
+      sub.cancel();
+    }
+
+    widget.process.kill();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 1000,
+      child: SingleChildScrollView(
+        child: Codeblock(
+          text: stdOut,
+          clipboardText: stdOut,
+          language: "stdout",
+        ),
+      ),
+    );
+  }
+
+  void onStderr(String event) {
+    setState(() {
+      stdError += event;
+    });
+  }
+
+  void onStdout(String event) {
+    setState(() {
+      stdOut += event;
+    });
   }
 }

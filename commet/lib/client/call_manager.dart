@@ -9,6 +9,7 @@ import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
@@ -180,11 +181,11 @@ class CallManager {
   void playMuteSound() {
     if (muteSoundPlayer == null) {
       muteSoundPlayer ??= Player(configuration: PlayerConfiguration());
-      muteSoundPlayer!.setVolume(90);
       muteSoundPlayer?.open(Media("asset:///assets/sound/muted.ogg"));
       muteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
     }
 
+    muteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
     muteSoundPlayer?.seek(Duration.zero);
     muteSoundPlayer?.play();
   }
@@ -200,11 +201,11 @@ class CallManager {
   void playUnmuteSound() {
     if (unmuteSoundPlayer == null) {
       unmuteSoundPlayer ??= Player(configuration: PlayerConfiguration());
-      unmuteSoundPlayer!.setVolume(90);
       unmuteSoundPlayer?.open(Media("asset:///assets/sound/unmuted.ogg"));
       unmuteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
     }
 
+    unmuteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
     unmuteSoundPlayer?.seek(Duration.zero);
     unmuteSoundPlayer?.play();
   }
@@ -234,7 +235,7 @@ class CallManager {
 
   Player getSoundPlayer() {
     player ??= Player(configuration: PlayerConfiguration());
-    player!.setVolume(90);
+    player!.setVolume(preferences.notificationsVolume.value);
 
     return player!;
   }

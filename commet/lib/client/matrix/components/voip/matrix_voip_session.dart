@@ -9,6 +9,7 @@ import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
@@ -189,7 +190,7 @@ class MatrixVoipSession implements VoipSession {
     if (source is WebrtcAndroidScreencaptureSource) {
       stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
-          'mandatory': {'frameRate': 30.0}
+          'mandatory': {'frameRate': preferences.streamFramerate.value}
         }
       });
     }
@@ -197,10 +198,10 @@ class MatrixVoipSession implements VoipSession {
     if (source is WebrtcScreencaptureSource) {
       stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
-          'width': 1280,
-          'height': 720,
+          'width': 1920,
+          'height': 1080,
           'deviceId': {'exact': source.source.id},
-          'mandatory': {'frameRate': 30.0}
+          'mandatory': {'frameRate': preferences.streamFramerate.value}
         }
       });
     }

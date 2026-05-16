@@ -6,6 +6,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:commet/debug/log.dart';
 
 abstract class Space {
   late Key key = UniqueKey();
@@ -24,18 +25,33 @@ abstract class Space {
 
   List<Room> get roomsWithChildren {
     var result = List<Room>.from(rooms);
+    List<Space> handledSpaces = List.empty(growable: true);
 
     for (var space in subspaces) {
-      _addSubspaceRooms(result, space);
+      _addSubspaceRooms(result, space, handledSpaces);
     }
 
     return result;
   }
 
-  void _addSubspaceRooms(List<Room> rooms, Space space) {
+  void _addSubspaceRooms(
+      List<Room> rooms, Space space, List<Space> handledSpaces) {
     rooms.addAll(space.rooms);
+    handledSpaces.add(space);
     for (var subspace in space.subspaces) {
-      _addSubspaceRooms(rooms, subspace);
+      if (handledSpaces.contains(subspace)) {
+        var info = "";
+        for (var i in handledSpaces) {
+          info += " -> ${i.displayName}\n";
+        }
+        info += " -> ${subspace.displayName} <- this space is in a loop\n";
+
+        Log.e("Detected recursive space hierarchy, this is not good!\n${info}");
+      } else {
+        if (handledSpaces.contains(subspace) == false) {
+          _addSubspaceRooms(rooms, subspace, handledSpaces);
+        }
+      }
     }
   }
 
@@ -114,6 +130,8 @@ abstract class Space {
   Future<void> setSpaceChildRoom(Room room);
 
   Future<void> setSpaceChildSpace(Space room);
+
+  Future<void> removeChild(SpaceChild child);
 
   Future<void> setTopic(String topic);
 

@@ -87,7 +87,12 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     );
 
     if (Layout.desktop) {
-      result = SelectionArea(child: result);
+      result = SelectionArea(
+        child: result,
+        contextMenuBuilder: (context, selectableRegionState) {
+          return Container();
+        },
+      );
     }
 
     return result;

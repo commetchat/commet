@@ -58,32 +58,32 @@ class Button extends StatelessWidget {
     this.text = "Hello, World!",
     this.onTap,
     this.isLoading,
-  }) : type = ButtonType.secondary,
-       super(key: key);
+  })  : type = ButtonType.secondary,
+        super(key: key);
 
   const Button.success({
     Key? key,
     this.text = "Hello, World!",
     this.onTap,
     this.isLoading,
-  }) : type = ButtonType.success,
-       super(key: key);
+  })  : type = ButtonType.success,
+        super(key: key);
 
   const Button.danger({
     Key? key,
     this.text = "Hello, World!",
     this.onTap,
     this.isLoading,
-  }) : type = ButtonType.danger,
-       super(key: key);
+  })  : type = ButtonType.danger,
+        super(key: key);
 
   const Button.critical({
     Key? key,
     this.text = "Hello, World!",
     this.onTap,
     this.isLoading,
-  }) : type = ButtonType.critical,
-       super(key: key);
+  })  : type = ButtonType.critical,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -92,45 +92,46 @@ class Button extends StatelessWidget {
     switch (type) {
       case ButtonType.primary:
         style = Theme.of(context).elevatedButtonTheme.style?.copyWith(
-          foregroundColor: WidgetStatePropertyAll(
-            Theme.of(context).colorScheme.onPrimary,
-          ),
-          backgroundColor: WidgetStatePropertyAll(
-            Theme.of(context).colorScheme.primary,
-          ),
-        );
+              foregroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.onPrimary,
+              ),
+              backgroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.primary,
+              ),
+            );
         break;
       case ButtonType.secondary:
         style = Theme.of(context).elevatedButtonTheme.style?.copyWith(
-          foregroundColor: WidgetStatePropertyAll(
-            Theme.of(context).colorScheme.onSecondaryContainer,
-          ),
-          backgroundColor: WidgetStatePropertyAll(
-            Theme.of(context).colorScheme.secondaryContainer,
-          ),
-        );
+              foregroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.onSecondaryContainer,
+              ),
+              backgroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.secondaryContainer,
+              ),
+            );
         break;
       case ButtonType.success:
         style = Theme.of(context).elevatedButtonTheme.style?.copyWith(
-          backgroundColor: WidgetStatePropertyAll(Colors.green.shade400),
-        );
+              backgroundColor: WidgetStatePropertyAll(Colors.green.shade400),
+            );
 
         break;
       case ButtonType.danger:
         style = Theme.of(context).elevatedButtonTheme.style?.copyWith(
-          backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
-          shadowColor: const WidgetStatePropertyAll(Colors.transparent),
-          side: WidgetStatePropertyAll(
-            BorderSide(color: Theme.of(context).colorScheme.error, width: 1),
-          ),
-        );
+              backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+              shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+              side: WidgetStatePropertyAll(
+                BorderSide(
+                    color: Theme.of(context).colorScheme.error, width: 1),
+              ),
+            );
         break;
       case ButtonType.critical:
         style = Theme.of(context).elevatedButtonTheme.style?.copyWith(
-          backgroundColor: WidgetStatePropertyAll(
-            Theme.of(context).colorScheme.error,
-          ),
-        );
+              backgroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.error,
+              ),
+            );
         break;
     }
 
@@ -144,13 +145,13 @@ class Button extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: isLoading == true
-            ? makeLoadingIndicator(context)
+            ? makeLoadingIndicator(context, style?.foregroundColor?.resolve({}))
             : tiamat.Text(text, color: style?.foregroundColor?.resolve({})),
       ),
     );
   }
 
-  Widget makeLoadingIndicator(BuildContext context) {
+  Widget makeLoadingIndicator(BuildContext context, Color? color) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -159,7 +160,7 @@ class Button extends StatelessWidget {
           width: 15,
           height: 15,
           child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: color ?? Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

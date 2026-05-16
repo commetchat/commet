@@ -96,6 +96,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate()),
       _clientManager.onSpaceRemoved.listen((_) => onSpaceUpdate()),
       _clientManager.onSpaceAdded.listen((_) => onSpaceUpdate()),
+      _clientManager.onClientRemoved.stream.listen((_) => onSpaceUpdate()),
       _clientManager.onDirectMessageRoomUpdated.stream
           .listen(onDirectMessageUpdated),
       EventBus.setFilterClient.stream.listen(setFilterClient),

@@ -3,6 +3,7 @@ import 'package:commet/client/components/photo_album_room/photo_album_room_compo
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/space_child.dart';
+import 'package:commet/ui/pages/get_or_create_room/room_creation_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -104,27 +105,27 @@ class _ExistingRoomPickerState extends State<ExistingRoomPicker> {
               multiSelectionEnabled: false,
               segments: [
                 ButtonSegment(
-                  tooltip: "Space",
+                  tooltip: RoomCreationStrings.labelRoomTypeSpace,
                   value: RoomType.space,
                   icon: Icon(Icons.spoke),
                 ),
                 ButtonSegment(
-                  tooltip: "Text Chat",
+                  tooltip: RoomCreationStrings.labelRoomTypeTextChat,
                   value: RoomType.defaultRoom,
                   icon: Icon(Icons.tag),
                 ),
                 ButtonSegment(
-                  tooltip: "Voice Chat",
+                  tooltip: RoomCreationStrings.labelRoomTypeVoiceChat,
                   value: RoomType.voipRoom,
                   icon: Icon(Icons.volume_up),
                 ),
                 ButtonSegment(
-                  tooltip: "Photo Album",
+                  tooltip: RoomCreationStrings.labelRoomTypePhotoAlbum,
                   value: RoomType.photoAlbum,
                   icon: Icon(Icons.photo),
                 ),
                 ButtonSegment(
-                  tooltip: "Calendar",
+                  tooltip: RoomCreationStrings.labelRoomTypeCalendar,
                   value: RoomType.calendar,
                   icon: Icon(Icons.calendar_month),
                 ),

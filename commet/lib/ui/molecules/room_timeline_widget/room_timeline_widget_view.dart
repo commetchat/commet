@@ -117,7 +117,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         receipts.onReadReceiptsUpdated.listen(onReadReceiptUpdated),
     ];
 
-    if (preferences.messageEffectsEnabled) {
+    if (preferences.messageEffectsEnabled.value) {
       for (int i = 0; i < 5; i++) {
         if (i >= timeline.events.length) break;
 
@@ -144,7 +144,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     super.dispose();
   }
 
-  void onEventAdded(int index) {
+  void onEventAdded(int index, {bool cascade = true}) {
     eventKeys.insert(index, (
       GlobalKey(debugLabel: timeline.events[index].eventId),
       timeline.events[index].eventId
@@ -156,24 +156,30 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.animateTo(controller.position.minScrollExtent,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutExpo);
-        });
+        scrollToBottom();
 
         widget.markAsRead?.call(timeline.events[0]);
       }
 
-      if (preferences.messageEffectsEnabled) {
+      if (preferences.messageEffectsEnabled.value) {
         effects?.doEffect(timeline.events[index]);
+      }
+    }
+
+    if (cascade) {
+      if (index > 0) {
+        onEventChanged(index - 1, cascade: false);
+      }
+
+      if (index < timeline.events.length - 1) {
+        onEventChanged(index + 1, cascade: false);
       }
     }
 
     setState(() {});
   }
 
-  void onEventChanged(int index) {
+  void onEventChanged(int index, {bool cascade = true}) {
     var event = timeline.events[index];
     var existing = eventKeys[index];
     eventKeys[index] = (existing.$1, event.eventId);
@@ -194,9 +200,29 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
+        scrollToBottom();
+
         widget.markAsRead?.call(timeline.events[0]);
       }
     }
+
+    if (cascade) {
+      if (index > 0) {
+        onEventChanged(index - 1, cascade: false);
+      }
+
+      if (index < timeline.events.length - 1) {
+        onEventChanged(index + 1, cascade: false);
+      }
+    }
+  }
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.animateTo(controller.position.minScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutExpo);
+    });
   }
 
   void onEventRemoved(int index) {
@@ -390,15 +416,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
                           return Container(
                             alignment: Alignment.center,
-                            color:
-                                preferences.developerMode && BuildConfig.DEBUG
-                                    ? Colors.blue[200 + sliverIndex % 4 * 100]!
-                                        .withAlpha(30)
-                                    : null,
+                            color: preferences.developerMode.value &&
+                                    BuildConfig.DEBUG
+                                ? Colors.blue[200 + sliverIndex % 4 * 100]!
+                                    .withAlpha(30)
+                                : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 timeline: timeline,
                                 onEventHovered: eventHovered,
+                                canCollapse: true,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
@@ -439,15 +466,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
                           return Container(
                             alignment: Alignment.center,
-                            color:
-                                preferences.developerMode && BuildConfig.DEBUG
-                                    ? Colors.red[200 + sliverIndex % 4 * 100]!
-                                        .withAlpha(30)
-                                    : null,
+                            color: preferences.developerMode.value &&
+                                    BuildConfig.DEBUG
+                                ? Colors.red[200 + sliverIndex % 4 * 100]!
+                                    .withAlpha(30)
+                                : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 onEventHovered: eventHovered,
                                 timeline: timeline,
+                                canCollapse: true,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
@@ -501,6 +529,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                         child: TimelineViewEntry(
                           key: highlightedEventOffstageKey,
                           timeline: timeline,
+                          canCollapse: true,
                           isThreadTimeline: widget.isThreadTimeline,
                           initialIndex: highlightedEventOffstageIndex!,
                         ),
@@ -608,8 +637,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (index == -1) {
       print("Could not find the event in the timeline view");
     }
-
-    print("Updating read receipts state: $event");
 
     if (state is TimelineEventViewWidget) {
       (state as TimelineEventViewWidget).update(index);

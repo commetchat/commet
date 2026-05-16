@@ -143,7 +143,7 @@ class _AccountManagementSettingsTabState
       Function? onLogoutClicked}) {
     String detailString = detail ?? "";
 
-    if (preferences.developerMode && internalId != null) {
+    if (preferences.developerMode.value && internalId != null) {
       detailString = "$detail - ($internalId)";
     }
 
