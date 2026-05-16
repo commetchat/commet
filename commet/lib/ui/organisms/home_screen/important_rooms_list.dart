@@ -51,6 +51,7 @@ class ImportantRoomsList extends StatelessWidget {
               return Padding(
                   padding: padding,
                   child: RoomPanel(
+                    key: ValueKey("RoomFavoritesList-${value.localId}"),
                     value,
                     onTap: () {
                       EventBus.doOpenRoom(value.identifier,
@@ -103,6 +104,7 @@ class ImportantRoomsList extends StatelessWidget {
             itemBuilder: (context, value) {
               return Padding(
                 padding: padding,
+                key: ValueKey("DirectMessagesList-${value.localId}"),
                 child: RoomPanel(value),
               );
             },
