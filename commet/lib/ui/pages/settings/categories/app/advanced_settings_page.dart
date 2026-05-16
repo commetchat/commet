@@ -1,5 +1,5 @@
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
