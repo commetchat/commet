@@ -141,8 +141,8 @@ class ChatView extends StatelessWidget {
             ?.getPrefixedAccount(input, state.room)
             ?.$1,
         onTapOverrideClient: (overrideClient) {
-          EventBus.openRoom
-              .add((state.room.identifier, overrideClient.identifier));
+          EventBus.doOpenRoom(state.room.identifier,
+              clientId: overrideClient.identifier);
 
           if (state.isThread) {
             WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
+import 'package:tiamat/tiamat.dart';
 import '../atoms/dot_indicator.dart';
 
 class DirectMessageList extends StatefulWidget {
@@ -103,16 +106,19 @@ class _DirectMessageListState extends State<DirectMessageList> {
             child: Row(
               children: [
                 Expanded(
-                  child: UserPanel(
-                    userId: id,
-                    key: ValueKey("home-screen-direct-message-entry-${id}"),
-                    client: room.client,
-                    contextRoom: room,
-                    isDirectMessage: true,
-                    onTap: () => setState(() {
-                      selectedRoom = room;
-                      widget.onSelected?.call(room);
-                    }),
+                  child: AdaptiveContextMenu(
+                    items: RoomTextButton.createRoomContextMenuItems(room),
+                    child: UserPanel(
+                      userId: id,
+                      key: ValueKey("home-screen-direct-message-entry-${id}"),
+                      client: room.client,
+                      contextRoom: room,
+                      isDirectMessage: true,
+                      onTap: () => setState(() {
+                        selectedRoom = room;
+                        widget.onSelected?.call(room);
+                      }),
+                    ),
                   ),
                 ),
                 room.displayNotificationCount > 0

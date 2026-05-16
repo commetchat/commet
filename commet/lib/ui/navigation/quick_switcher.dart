@@ -74,7 +74,7 @@ class QuickSwitcherSearchItemRoom implements QuickSwitcherSearchItem {
 
   @override
   void onTap(BuildContext context) {
-    EventBus.openRoom.add((room.identifier, room.client.identifier));
+    EventBus.doOpenRoom(room.identifier, clientId: room.client.identifier);
 
     Navigator.of(context).pop();
   }
@@ -160,8 +160,8 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        EventBus.openRoom
-                            .add((room.identifier, room.client.identifier));
+                        EventBus.doOpenRoom(room.identifier,
+                            clientId: room.client.identifier);
 
                         Navigator.of(context).pop();
                       },
@@ -187,8 +187,8 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     .sublist(0, 4))
                   RoomPanel(
                     onTap: () {
-                      EventBus.openRoom
-                          .add((room.identifier, room.client.identifier));
+                      EventBus.doOpenRoom(room.identifier,
+                          clientId: room.client.identifier);
 
                       Navigator.of(context).pop();
                     },

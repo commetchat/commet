@@ -319,9 +319,10 @@ class MainPageState extends State<MainPage> {
     });
   }
 
-  void onOpenRoomSignal((String, String?) strings) async {
-    var roomId = strings.$1;
-    var clientId = strings.$2;
+  void onOpenRoomSignal((String, String?, bool) args) async {
+    var roomId = args.$1;
+    var clientId = args.$2;
+    var bypassSpecialRoomType = args.$3;
 
     var originalId = roomId;
 
@@ -347,7 +348,7 @@ class MainPageState extends State<MainPage> {
     }
 
     if (filterClient != null && client != filterClient) {
-      askSwitchAccount(client, strings);
+      askSwitchAccount(client, (args.$1, args.$2));
       return;
     }
 
@@ -367,7 +368,7 @@ class MainPageState extends State<MainPage> {
         }
       }
 
-      selectRoom(room);
+      selectRoom(room, bypassSpecialRoomType: bypassSpecialRoomType);
     } else {
       GetOrCreateRoom.show(client, context,
           pickExisting: false,
@@ -386,7 +387,7 @@ class MainPageState extends State<MainPage> {
 
     EventBus.setFilterClient.add(newClient);
     preferences.filterClient.set(newClient.identifier);
-    EventBus.openRoom.add(strings);
+    EventBus.doOpenRoom(strings.$1, clientId: strings.$2);
   }
 
   void navigateRoomSettings() {

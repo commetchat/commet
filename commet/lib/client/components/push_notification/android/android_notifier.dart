@@ -365,7 +365,7 @@ class AndroidNotifier implements Notifier {
 
         session?.acceptCall(withMicrophone: true);
 
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.openRoom.add((uri.roomId, uri.clientId, false));
       }
 
       if (uri case DeclineCallUri _) {
@@ -386,7 +386,7 @@ class AndroidNotifier implements Notifier {
     if (details.notificationResponseType ==
         NotificationResponseType.selectedNotification) {
       if (uri is OpenRoomURI) {
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.openRoom.add((uri.roomId, uri.clientId, false));
       }
     }
   }

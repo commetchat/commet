@@ -8,6 +8,7 @@ import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,28 @@ class RoomTextButton extends StatefulWidget {
 
   @override
   State<RoomTextButton> createState() => _RoomTextButtonState();
+
+  static List<ContextMenuItem> createRoomContextMenuItems(Room room) {
+    var voipRoom = room.getComponent<VoipRoomComponent>();
+    return [
+      ContextMenuItem(
+          text: "Mark as Read",
+          icon: Icons.visibility,
+          onPressed: () => room.markAsRead()),
+      if (room.isSpecialRoomType)
+        ContextMenuItem(
+            text: "Open as Text Chat",
+            icon: Icons.tag,
+            onPressed: () => EventBus.openRoom
+                .add((room.identifier, room.client.identifier, true))),
+      if (voipRoom != null && preferences.developerMode.value)
+        ContextMenuItem(
+          text: "Clear Membership Status",
+          icon: Icons.call_end,
+          onPressed: () => voipRoom.clearAllCallMembershipStatus(),
+        ),
+    ];
+  }
 }
 
 class _RoomTextButtonState extends State<RoomTextButton> {
@@ -171,27 +194,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       ),
     );
 
-    var items = [
-      ContextMenuItem(
-          text: "Mark as Read",
-          icon: Icons.visibility,
-          onPressed: () => widget.room.markAsRead()),
-      if (widget.room.isSpecialRoomType)
-        ContextMenuItem(
-            text: "Open as Text Chat",
-            icon: Icons.tag,
-            onPressed: () =>
-                widget.onTap?.call(widget.room, bypassSpecialRoomType: true)),
-      if (voipRoom != null && preferences.developerMode.value)
-        ContextMenuItem(
-          text: "Clear Membership Status",
-          icon: Icons.call_end,
-          onPressed: () => voipRoom?.clearAllCallMembershipStatus(),
-        ),
-    ];
-
     result = AdaptiveContextMenu(
-      items: items,
+      items: RoomTextButton.createRoomContextMenuItems(widget.room),
       child: result,
     );
 

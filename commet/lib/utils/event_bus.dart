@@ -7,8 +7,19 @@ import 'package:flutter/material.dart';
 
 class EventBus {
   /// First string is room id, Second string is client id
-  static StreamController<(String, String?)> openRoom =
-      StreamController<(String, String?)>.broadcast();
+  static StreamController<
+          (String roomId, String? clientId, bool bypassSpecialRoomType)>
+      openRoom = StreamController<
+          (
+            String roomId,
+            String? clientId,
+            bool bypassSpecialRoomType
+          )>.broadcast();
+
+  static void doOpenRoom(String roomId,
+      {String? clientId, bool bypassSpecialRoomType = false}) {
+    openRoom.add((roomId, clientId, bypassSpecialRoomType));
+  }
 
   /// First string is user id, Second string is client id, third string is context room
   static StreamController<(String, String, String?)> openUserProfile =
