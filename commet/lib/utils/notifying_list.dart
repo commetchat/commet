@@ -4,24 +4,24 @@ import 'dart:math';
 class NotifyingList<T> implements List<T> {
   List<T> _internalList;
 
-  late StreamController<int> _onAdd = StreamController.broadcast();
+  late StreamController<T> _onAdd = StreamController.broadcast();
 
-  late StreamController<int> _onRemove = StreamController.broadcast();
+  late StreamController<T> _onRemove = StreamController.broadcast();
 
   late StreamController _onListUpdated = StreamController.broadcast();
 
-  late StreamController<int> _onItemUpdated = StreamController.broadcast();
+  late StreamController<T> _onItemUpdated = StreamController.broadcast();
 
   // This stream is called after an item is added to the list
-  Stream<int> get onAdd => _onAdd.stream;
+  Stream<T> get onAdd => _onAdd.stream;
 
   // This stream is called just before an item is removed from the list, the item will still be accessible at this index until the stream is completed
-  Stream<int> get onRemove => _onRemove.stream;
+  Stream<T> get onRemove => _onRemove.stream;
 
   // This stream is called whenever the items in the list are changed
   Stream get onListUpdated => _onListUpdated.stream;
 
-  Stream<int> get onItemUpdated => _onItemUpdated.stream;
+  Stream<T> get onItemUpdated => _onItemUpdated.stream;
 
   @override
   T get first => _internalList.first;
@@ -42,13 +42,13 @@ class NotifyingList<T> implements List<T> {
   @override
   set first(T value) {
     _internalList.first = value;
-    _onItemUpdated.add(0);
+    _onItemUpdated.add(value);
   }
 
   @override
   set last(T value) {
     _internalList.last = value;
-    _onItemUpdated.add(_internalList.length - 1);
+    _onItemUpdated.add(value);
   }
 
   @override
@@ -89,24 +89,20 @@ class NotifyingList<T> implements List<T> {
   @override
   void operator []=(int index, T value) {
     _internalList[index] = value;
-    _onItemUpdated.add(index);
+    _onItemUpdated.add(value);
   }
 
   @override
   void add(T value) {
     _internalList.add(value);
-    _onAdd.add(_internalList.length - 1);
+    _onAdd.add(value);
   }
 
   @override
   void addAll(Iterable<T> iterable) {
-    int prevLength = _internalList.length;
-    _internalList.addAll(iterable);
-    for (int i = 0; i < iterable.length; i++) {
-      _onAdd.add(prevLength + i);
+    for (final e in iterable) {
+      add(e);
     }
-
-    _onAnyUpdate(null);
   }
 
   @override
@@ -126,11 +122,11 @@ class NotifyingList<T> implements List<T> {
 
   @override
   void clear() {
-    for (int i = 0; i < _internalList.length; i++) {
-      _onRemove.add(i);
+    List<T> oldList = _internalList;
+    this._internalList = List.empty(growable: true);
+    for (final entry in oldList) {
+      _onRemove.add(entry);
     }
-
-    _internalList.clear();
   }
 
   @override
@@ -196,7 +192,7 @@ class NotifyingList<T> implements List<T> {
   @override
   void insert(int index, T element) {
     _internalList.insert(index, element);
-    _onAdd.add(index);
+    _onAdd.add(element);
   }
 
   @override
@@ -204,7 +200,7 @@ class NotifyingList<T> implements List<T> {
     int oldLength = iterable.length;
     _internalList.insertAll(index, iterable);
     for (int i = 0; i < oldLength; i++) {
-      _onAdd.add(oldLength + i);
+      _onAdd.add(_internalList[oldLength + i]);
     }
   }
 
@@ -249,10 +245,8 @@ class NotifyingList<T> implements List<T> {
 
   @override
   bool remove(Object? value) {
-    var index = _internalList.indexWhere((element) => element == value);
-    if (index != -1) {
-      _onRemove.add(index);
-      _internalList.removeAt(index);
+    if (_internalList.remove(value)) {
+      _onRemove.add(value as T);
       return true;
     }
 
@@ -261,33 +255,43 @@ class NotifyingList<T> implements List<T> {
 
   @override
   T removeAt(int index) {
-    _onRemove.add(index);
-    return _internalList.removeAt(index);
+    T value = _internalList.removeAt(index);
+    _onRemove.add(value);
+    return value;
   }
 
   @override
   T removeLast() {
-    _onRemove.add(_internalList.length - 1);
-    return _internalList.removeLast();
+    T value = _internalList.removeLast();
+    _onRemove.add(value);
+    return value;
   }
 
   @override
   void removeRange(int start, int end) {
+    List removed = List.empty(growable: true);
     for (int i = start; i < end; i++) {
-      _onRemove.add(i);
+      removed.add(i);
     }
-
-    return _internalList.removeRange(start, end);
+    _internalList.removeRange(start, end);
+    for (final e in removed) {
+      _onRemove.add(e);
+    }
   }
 
   @override
   void removeWhere(bool Function(T element) test) {
-    for (int i = 0; i < _internalList.length; i++) {
-      var item = _internalList[i];
-      if (test(item)) {
-        _onRemove.add(i);
-        _internalList.removeAt(i);
+    List<T> removed = List.empty(growable: true);
+    _internalList.removeWhere((element) {
+      if (test(element)) {
+        removed.add(element);
+        return true;
       }
+      ;
+      return false;
+    });
+    for (final entry in removed) {
+      _onRemove.add(entry);
     }
   }
 
@@ -296,7 +300,7 @@ class NotifyingList<T> implements List<T> {
     _internalList.replaceRange(start, end, replacements);
 
     for (int i = start; i < end; i++) {
-      _onItemUpdated.add(i);
+      _onItemUpdated.add(_internalList[i]);
     }
   }
 
@@ -310,20 +314,18 @@ class NotifyingList<T> implements List<T> {
 
   @override
   void setAll(int index, Iterable<T> iterable) {
+    _internalList.setAll(index, iterable);
     for (int i = 0; i < iterable.length; i++) {
-      _onItemUpdated.add(index + i);
+      _onItemUpdated.add(_internalList[index + i]);
     }
-
-    return _internalList.setAll(index, iterable);
   }
 
   @override
   void setRange(int start, int end, Iterable<T> iterable, [int skipCount = 0]) {
+    _internalList.setRange(start, end, iterable);
     for (int i = start; i < end; i++) {
-      _onItemUpdated.add(i);
+      _onItemUpdated.add(_internalList[i]);
     }
-
-    return _internalList.setRange(start, end, iterable);
   }
 
   @override
