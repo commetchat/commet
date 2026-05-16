@@ -53,8 +53,12 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineMessageBodyBuilt += 1;
+
+    const double mentionHighlightSize = 3;
+    double leftPadding = isMentioningSelf ? 16 - mentionHighlightSize : 16;
+
     Widget result = Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 8, 2),
+      padding: EdgeInsets.fromLTRB(leftPadding, 2, 8, 2),
       child: Column(
         children: [
           if (inResponseTo != null) inResponseTo!,
@@ -127,8 +131,10 @@ class TimelineEventLayoutMessage extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border(
                 left: BorderSide(
-                    color: Theme.of(context).colorScheme.tertiary, width: 3)),
-            color: Theme.of(context).colorScheme.tertiaryContainer),
+                    color: Theme.of(context).colorScheme.tertiary,
+                    width: mentionHighlightSize)),
+            color:
+                Theme.of(context).colorScheme.tertiaryContainer.withAlpha(30)),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: result,
