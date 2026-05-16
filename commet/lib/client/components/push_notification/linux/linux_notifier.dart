@@ -79,7 +79,9 @@ class LinuxNotifier implements Notifier {
 
     if ([callAccept, openRoom].contains(action)) {
       final roomId = payload['room_id']!;
-      EventBus.openRoom.add((roomId, null, false));
+
+      var clientId = payload['client_id'] as String?;
+      EventBus.doOpenRoom(roomId, clientId: clientId);
       windowManager.show();
       windowManager.focus();
     }

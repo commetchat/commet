@@ -350,10 +350,10 @@ class MainPageState extends State<MainPage> {
     });
   }
 
-  void onOpenRoomSignal((String, String?, bool) args) async {
-    var roomId = args.$1;
-    var clientId = args.$2;
-    var bypassSpecialRoomType = args.$3;
+  void onOpenRoomSignal(RoomOpenArgs args) async {
+    var roomId = args.roomId;
+    var clientId = args.clientId;
+    var bypassSpecialRoomType = args.bypassSpecialRoomTypes;
 
     var originalId = roomId;
 
@@ -379,7 +379,7 @@ class MainPageState extends State<MainPage> {
     }
 
     if (filterClient != null && client != filterClient) {
-      askSwitchAccount(client, (args.$1, args.$2));
+      askSwitchAccount(client, (args.roomId, args.clientId));
       return;
     }
 
@@ -390,7 +390,7 @@ class MainPageState extends State<MainPage> {
     }
 
     if (room != null) {
-      if (preferences.automaticallyOpenSpace.value) {
+      if (preferences.automaticallyOpenSpace.value && args.openInSpace) {
         var spacesWithRoom =
             client.spaces.where((element) => element.containsRoom(roomId));
 

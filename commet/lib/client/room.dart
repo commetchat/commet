@@ -93,6 +93,8 @@ abstract class Room {
 
   bool get isSpecialRoomType;
 
+  Future<void> setAsFavorite(bool favorite);
+
   bool get isFavorite;
 
   IconData get icon {

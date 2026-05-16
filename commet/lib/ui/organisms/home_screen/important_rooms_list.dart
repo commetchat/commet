@@ -1,11 +1,8 @@
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
-import 'package:commet/ui/atoms/room_panel_view.dart';
-import 'package:commet/ui/molecules/direct_message_list.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:commet/ui/atoms/notifying_list_builder.dart';
 
-import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -51,7 +48,16 @@ class ImportantRoomsList extends StatelessWidget {
               return child;
             },
             itemBuilder: (context, value) {
-              return Padding(padding: padding, child: RoomPanel(value));
+              return Padding(
+                  padding: padding,
+                  child: RoomPanel(
+                    value,
+                    onTap: () {
+                      EventBus.doOpenRoom(value.identifier,
+                          clientId: value.client.identifier,
+                          openInSpace: false);
+                    },
+                  ));
             },
           ),
           NotifyingListBuilder(

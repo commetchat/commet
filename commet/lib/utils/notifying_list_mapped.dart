@@ -324,7 +324,7 @@ class NotifyingListMapped<T, R> implements INotifyingList<T> {
   @override
   List<T> sublist(int start, [int? end]) {
     // TODO: implement sublist
-    throw UnimplementedError();
+    return _internalList.sublist(start, end);
   }
 
   @override

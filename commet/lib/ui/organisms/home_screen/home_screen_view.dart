@@ -2,9 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
-import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:commet/ui/molecules/invitation_display.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
@@ -105,8 +103,11 @@ class HomeScreenView extends StatelessWidget {
           initialAnimation: false,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, room) {
-            return RoomPanel(
-                key: ValueKey("recent-activity-room_${room.localId}"), room);
+            return Padding(
+              padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
+              child: RoomPanel(
+                  key: ValueKey("recent-activity-room_${room.localId}"), room),
+            );
           },
         ));
   }
@@ -125,8 +126,11 @@ class HomeScreenView extends StatelessWidget {
               shrinkWrap: true,
               itemData: rooms!,
               itemBuilder: (context, room) {
-                return RoomPanel(room,
-                    key: ValueKey("homescreen-room_${room.localId}"));
+                return Padding(
+                  padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
+                  child: RoomPanel(room,
+                      key: ValueKey("homescreen-room_${room.localId}")),
+                );
               },
             ),
             tiamat.CircleButton(

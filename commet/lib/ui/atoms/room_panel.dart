@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_panel_view.dart';
+import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class RoomPanel extends StatefulWidget {
-  const RoomPanel(this.room, {super.key});
+  const RoomPanel(this.room, {this.onTap, super.key});
 
   final Room room;
+  final Function()? onTap;
 
   @override
   State<RoomPanel> createState() => _RoomPanelState();
@@ -77,19 +80,26 @@ class _RoomPanelState extends State<RoomPanel> {
       }
     }
 
-    return RoomPanelView(
-      displayName: widget.room.displayName,
-      avatar: widget.room.avatar,
-      onTap: () {},
-      color: widget.room.defaultColor,
-      directMessagePartner: directMessagePartner,
-      userPresence: presence,
-      recentEventSender: eventSender,
-      recentEventSenderColor: widget.room.lastMessage != null
-          ? widget.room.getColorOfUser(widget.room.lastMessage!.senderId)
-          : null,
-      body: widget.room.lastMessage?.plainTextBody,
-      notificationCount: widget.room.notificationCount,
+    return AdaptiveContextMenu(
+      items: RoomTextButton.createRoomContextMenuItems(widget.room),
+      child: RoomPanelView(
+        displayName: widget.room.displayName,
+        avatar: widget.room.avatar,
+        onTap: widget.onTap ??
+            () {
+              EventBus.doOpenRoom(widget.room.identifier,
+                  clientId: widget.room.client.identifier);
+            },
+        color: widget.room.defaultColor,
+        directMessagePartner: directMessagePartner,
+        userPresence: presence,
+        recentEventSender: eventSender,
+        recentEventSenderColor: widget.room.lastMessage != null
+            ? widget.room.getColorOfUser(widget.room.lastMessage!.senderId)
+            : null,
+        body: widget.room.lastMessage?.plainTextBody,
+        notificationCount: widget.room.notificationCount,
+      ),
     );
   }
 

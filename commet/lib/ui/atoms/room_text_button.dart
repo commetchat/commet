@@ -36,12 +36,22 @@ class RoomTextButton extends StatefulWidget {
           text: "Mark as Read",
           icon: Icons.visibility,
           onPressed: () => room.markAsRead()),
+      if (!room.isFavorite)
+        ContextMenuItem(
+            text: "Set as Favorite",
+            icon: Icons.favorite,
+            onPressed: () => room.setAsFavorite(true)),
+      if (room.isFavorite)
+        ContextMenuItem(
+            text: "Unfavorite",
+            icon: Icons.heart_broken_outlined,
+            onPressed: () => room.setAsFavorite(false)),
       if (room.isSpecialRoomType)
         ContextMenuItem(
             text: "Open as Text Chat",
             icon: Icons.tag,
-            onPressed: () => EventBus.openRoom
-                .add((room.identifier, room.client.identifier, true))),
+            onPressed: () => EventBus.doOpenRoom(room.identifier,
+                clientId: room.client.identifier)),
       if (voipRoom != null && preferences.developerMode.value)
         ContextMenuItem(
           text: "Clear Membership Status",
