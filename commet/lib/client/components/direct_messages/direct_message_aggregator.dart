@@ -3,12 +3,8 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/stale_info.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
-import 'package:commet/utils/notifying_list_combiner.dart';
-import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/notifying_list_mapped.dart';
 
 class DirectMessagesAggregator implements DirectMessagesInterface {

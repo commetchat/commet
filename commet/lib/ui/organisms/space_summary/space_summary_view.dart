@@ -8,6 +8,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -553,25 +554,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
     if (item case SpaceChildRoom _) {
       final room = item.child;
-      result = RoomPanelView(
-        displayName: room.displayName,
-        avatar: room.avatar,
-        color: room.defaultColor,
-        onTap: orderChanged
-            ? null
-            : widget.onRoomTap != null
-                ? () {
-                    widget.onRoomTap?.call(room);
-                  }
-                : null,
-        body: room.lastMessage?.plainTextBody,
-        recentEventSender: room.lastMessage != null
-            ? room.getMemberOrFallback(room.lastMessage!.senderId).displayName
-            : null,
-        recentEventSenderColor: room.lastMessage != null
-            ? room.getColorOfUser(room.lastMessage!.senderId)
-            : null,
-      );
+      result = RoomPanel(room);
     } else if (item case SpaceChildSpace _) {
       result = Padding(
         padding: const EdgeInsets.all(8.0),

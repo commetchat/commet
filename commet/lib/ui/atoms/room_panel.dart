@@ -81,7 +81,7 @@ class _RoomPanelState extends State<RoomPanel> {
     }
 
     return AdaptiveContextMenu(
-      items: RoomTextButton.createRoomContextMenuItems(widget.room),
+      items: RoomTextButton.createRoomContextMenuItems(context, widget.room),
       child: RoomPanelView(
         displayName: widget.room.displayName,
         avatar: widget.room.avatar,

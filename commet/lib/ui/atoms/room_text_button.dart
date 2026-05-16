@@ -8,6 +8,8 @@ import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:commet_calendar_widget/calendar.dart';
@@ -29,7 +31,8 @@ class RoomTextButton extends StatefulWidget {
   @override
   State<RoomTextButton> createState() => _RoomTextButtonState();
 
-  static List<ContextMenuItem> createRoomContextMenuItems(Room room) {
+  static List<ContextMenuItem> createRoomContextMenuItems(
+      BuildContext context, Room room) {
     var voipRoom = room.getComponent<VoipRoomComponent>();
     return [
       ContextMenuItem(
@@ -58,6 +61,16 @@ class RoomTextButton extends StatefulWidget {
           icon: Icons.call_end,
           onPressed: () => voipRoom.clearAllCallMembershipStatus(),
         ),
+      ContextMenuItem(
+          text: "Settings",
+          icon: Icons.settings,
+          onPressed: () {
+            NavigationUtils.navigateTo(
+                context,
+                RoomSettingsPage(
+                  room: room,
+                ));
+          }),
     ];
   }
 }
@@ -205,7 +218,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
 
     result = AdaptiveContextMenu(
-      items: RoomTextButton.createRoomContextMenuItems(widget.room),
+      items: RoomTextButton.createRoomContextMenuItems(context, widget.room),
       child: result,
     );
 
