@@ -111,6 +111,14 @@ class CommonStrings {
   static String get promptCopy =>
       Intl.message("Copy", desc: "Prompt to copy text", name: "promptCopy");
 
+  static String get promptCancel => Intl.message("Cancel",
+      desc: "Generic prompt to cancel an action, usually shown on a button",
+      name: "promptCancel");
+
+  static String get promptRemove => Intl.message("Remove",
+      desc: "Generic prompt to remove something, usually shown on a button",
+      name: "promptRemove");
+
   static String get labelPublic =>
       Intl.message("Public", desc: "Label for public", name: "labelPublic");
 

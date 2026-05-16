@@ -87,6 +87,7 @@ class MessageInput extends StatefulWidget {
       this.onTapOverrideClient,
       this.disableEnterToSend = false,
       this.sendGif,
+      this.sendFavoriteGif,
       this.showGifSearch = true,
       this.size = 35,
       this.iconScale = 0.5,
@@ -126,6 +127,7 @@ class MessageInput extends StatefulWidget {
   final void Function()? onReadReceiptsClicked;
   final void Function(Emoticon sticker)? sendSticker;
   final Future<void> Function(GifSearchResult gif)? sendGif;
+  final Future<void> Function(FavoriteGif gif)? sendFavoriteGif;
   final void Function(bool focused)? onFocusChanged;
   final Function(String currentText)? onTextUpdated;
   final void Function()? cancelReply;
@@ -1093,6 +1095,12 @@ class MessageInputState extends State<MessageInput> {
             gifComponent: widget.gifComponent,
             onStickerPressed: (emoticon) {
               widget.sendSticker?.call(emoticon);
+              setState(() {
+                clearKeyboardOverride(debounce: false);
+              });
+            },
+            onFavoritePicked: (gif) async {
+              await widget.sendFavoriteGif?.call(gif);
               setState(() {
                 clearKeyboardOverride(debounce: false);
               });

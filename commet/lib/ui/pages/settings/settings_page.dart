@@ -68,7 +68,7 @@ class SettingsPage extends StatelessWidget {
       desc:
           "Prompt the user to donate to the project, without linking to their user account");
 
-  onDonateButtonTapped(BuildContext context) async {
+  static onDonateButtonTapped(BuildContext context) async {
     var client = await AdaptiveDialog.pickOne<dynamic>(
       title: promptPickDonationAccount,
       context,

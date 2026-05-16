@@ -9,15 +9,18 @@ import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/quick_switcher.dart';
 import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
+import 'package:commet/ui/organisms/update_installed_dialog/update_installed_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
+import 'package:commet/ui/pages/settings/settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -26,16 +29,22 @@ import 'package:commet/ui/pages/main/main_page_view_mobile.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/image/lod_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage(this.clientManager,
-      {super.key, this.initialClientId, this.initialRoom});
+      {super.key,
+      this.initialClientId,
+      this.initialRoom,
+      this.wasLoggedInAtStartup = false});
   final ClientManager clientManager;
   final String? initialRoom;
   final String? initialClientId;
+  final bool wasLoggedInAtStartup;
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -72,6 +81,11 @@ class MainPageState extends State<MainPage> {
       ? null
       : widget.clientManager.callManager
           .getCallInRoom(currentRoom!.client, currentRoom!.identifier);
+
+  String get updateInstalledTitle => Intl.message("Update Installed",
+      desc:
+          "Title for the dialog which is shown when an update has been installed",
+      name: "updateInstalledTitle");
 
   @override
   void initState() {
@@ -132,11 +146,30 @@ class MainPageState extends State<MainPage> {
     checkDonationFlow();
   }
 
-  void onFirstFrame(Duration timeStamp) {
+  void onFirstFrame(Duration timeStamp) async {
     if (widget.clientManager.isLoggedIn()) {
       var menus = FirstTimeSetup.postLogin;
       if (menus.isNotEmpty) {
-        NavigationUtils.navigateTo(context, SetupPage(menus));
+        await NavigationUtils.navigateTo(context, SetupPage(menus));
+      }
+
+      bool isNewVersion =
+          preferences.lastOpenedVersion.value != BuildConfig.VERSION_TAG;
+
+      preferences.lastOpenedVersion.set(BuildConfig.VERSION_TAG);
+
+      if (!kIsWeb && isNewVersion && widget.wasLoggedInAtStartup) {
+        await Future.delayed(Duration(seconds: 2));
+
+        await AdaptiveDialog.show(
+          context,
+          title: updateInstalledTitle,
+          builder: (buildContext) {
+            return UpdateInstalledDialog(
+              onDonateTapped: () => SettingsPage.onDonateButtonTapped(context),
+            );
+          },
+        );
       }
     }
   }

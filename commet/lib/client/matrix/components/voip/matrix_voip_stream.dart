@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -19,6 +20,7 @@ class MatrixVoipStream implements VoipStream {
   Stream<void> get onStreamChanged => _onChanged.stream;
 
   MatrixVoipStream(this.stream, this.session) {
+    setVolume(preferences.getVoipUserVolume(streamUserId));
     initRenderer();
     stream.onStreamChanged.stream.listen(_onStreamChanged);
   }
@@ -149,4 +151,20 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   bool get isMuted => stream.audioMuted;
+
+  @override
+  Future<void> setVolume(double volume) async {
+    preferences.setVoipUserVolume(streamUserId, volume);
+
+    var tracks = stream.stream?.getAudioTracks();
+
+    if (tracks != null) {
+      for (var track in tracks) {
+        await Helper.setVolume(volume, track);
+      }
+    }
+  }
+
+  @override
+  double get volume => preferences.getVoipUserVolume(streamUserId);
 }
