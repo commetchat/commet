@@ -300,25 +300,18 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (controller.offset >
             controller.position.maxScrollExtent - loadingThreshold &&
         !timeline.isLoadingHistory &&
-        timeline.canLoadHistory)
+        timeline.canLoadHistory) {
       timeline.loadMoreHistory().then((_) {
         WidgetsBinding.instance.addPostFrameCallback((_) => onScroll());
-      }).then((_) {
-        setState(() {});
       });
+    }
 
     if (controller.offset <
             (controller.position.minScrollExtent + loadingThreshold) &&
         !timeline.isLoadingFuture &&
-        timeline.canLoadFuture)
-      timeline.loadMoreFuture().then((_) {
-        setState(() {
-          eventKeys = List.from(
-              timeline.events
-                  .map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
-              growable: true);
-        });
-      });
+        timeline.canLoadFuture) {
+      timeline.loadMoreFuture();
+    }
   }
 
   void animateAndSnapToBottom() {
