@@ -566,18 +566,18 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   }
 
   Row buildNewMessagesMarker() {
+    var color = ColorScheme.of(context).primaryContainer;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
             child: Divider(
-          color: ColorScheme.of(context).primaryContainer,
+          color: color,
           thickness: 2.0,
         )),
         DecoratedBox(
           decoration: BoxDecoration(
-              color: ColorScheme.of(context).primaryContainer,
-              borderRadius: BorderRadius.circular(8)),
+              color: color, borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
             child: tiamat.Text(
@@ -589,7 +589,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         ),
         Expanded(
             child: Divider(
-          color: ColorScheme.of(context).primaryContainer,
+          color: color,
           thickness: 2.0,
         )),
       ],
