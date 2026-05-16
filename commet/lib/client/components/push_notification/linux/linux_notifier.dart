@@ -124,7 +124,7 @@ class LinuxNotifier implements Notifier {
 
     capabilities = await flutterLocalNotificationsPlugin!.getCapabilities();
 
-    clientManager!.directMessages.onHighlightedRoomsListUpdated
+    clientManager!.directMessages.highlightedRoomsList.onListUpdated
         .listen((_) => updateBadgeCount());
     clientManager!.onSpaceUpdated.stream.listen((_) => updateBadgeCount());
 

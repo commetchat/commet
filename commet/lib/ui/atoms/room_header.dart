@@ -275,7 +275,7 @@ class _HeaderBurgerState extends State<HeaderBurger> {
     super.initState();
     color = widget.notificationColor;
     subs = [
-      clientManager!.directMessages.onHighlightedRoomsListUpdated
+      clientManager!.directMessages.highlightedRoomsList.onListUpdated
           .listen((_) => updateState()),
       clientManager!.onSpaceUpdated.stream.listen((_) => updateState()),
     ];

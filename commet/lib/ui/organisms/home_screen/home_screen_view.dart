@@ -4,7 +4,7 @@ import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
-import 'package:commet/ui/atoms/room_text_button.dart';
+import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:commet/ui/molecules/invitation_display.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
@@ -105,31 +105,8 @@ class HomeScreenView extends StatelessWidget {
           initialAnimation: false,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, room) {
-            return AdaptiveContextMenu(
-                items: RoomTextButton.createRoomContextMenuItems(room),
-                child: RoomPanel(
-                  displayName: room.displayName,
-                  avatar: room.avatar,
-                  color: room.defaultColor,
-                  body: room.lastMessage?.plainTextBody,
-                  recentEventSender: room.lastMessage != null
-                      ? room
-                          .getMemberOrFallback(room.lastMessage!.senderId)
-                          .displayName
-                      : null,
-                  recentEventSenderColor: room.lastMessage != null
-                      ? room.getColorOfUser(room.lastMessage!.senderId)
-                      : null,
-                  onTap: () => onRoomClicked?.call(room),
-                  showUserAvatar: clientManager.rooms
-                          .where((element) =>
-                              element.identifier == room.identifier)
-                          .length >
-                      1,
-                  userAvatar: room.client.self!.avatar,
-                  userDisplayName: room.client.self!.displayName,
-                  userColor: room.client.self!.defaultColor,
-                ));
+            return RoomPanel(
+                key: ValueKey("recent-activity-room_${room.localId}"), room);
           },
         ));
   }
@@ -148,31 +125,8 @@ class HomeScreenView extends StatelessWidget {
               shrinkWrap: true,
               itemData: rooms!,
               itemBuilder: (context, room) {
-                return AdaptiveContextMenu(
-                    items: RoomTextButton.createRoomContextMenuItems(room),
-                    child: RoomPanel(
-                      displayName: room.displayName,
-                      avatar: room.avatar,
-                      color: room.defaultColor,
-                      body: room.lastMessage?.plainTextBody,
-                      recentEventSender: room.lastMessage != null
-                          ? room
-                              .getMemberOrFallback(room.lastMessage!.senderId)
-                              .displayName
-                          : null,
-                      recentEventSenderColor: room.lastMessage != null
-                          ? room.getColorOfUser(room.lastMessage!.senderId)
-                          : null,
-                      onTap: () => onRoomClicked?.call(room),
-                      showUserAvatar: clientManager.rooms
-                              .where((element) =>
-                                  element.identifier == room.identifier)
-                              .length >
-                          1,
-                      userAvatar: room.client.self!.avatar,
-                      userDisplayName: room.client.self!.displayName,
-                      userColor: room.client.self!.defaultColor,
-                    ));
+                return RoomPanel(room,
+                    key: ValueKey("homescreen-room_${room.localId}"));
               },
             ),
             tiamat.CircleButton(

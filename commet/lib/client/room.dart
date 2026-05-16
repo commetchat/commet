@@ -93,6 +93,8 @@ abstract class Room {
 
   bool get isSpecialRoomType;
 
+  bool get isFavorite;
+
   IconData get icon {
     var dm = client.getComponent<DirectMessagesComponent>();
     if (dm?.isRoomDirectMessage(this) == true) {

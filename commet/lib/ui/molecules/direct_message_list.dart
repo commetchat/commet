@@ -1,137 +1,132 @@
-import 'dart:async';
+// import 'dart:async';
 
-import 'package:commet/client/client.dart';
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/ui/atoms/adaptive_context_menu.dart';
-import 'package:commet/ui/atoms/room_text_button.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
-import 'package:commet/utils/event_bus.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
-import 'package:implicitly_animated_list/implicitly_animated_list.dart';
-import 'package:tiamat/tiamat.dart';
-import '../atoms/dot_indicator.dart';
+// import 'package:commet/client/client.dart';
+// import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+// import 'package:commet/ui/molecules/user_panel.dart';
+// import 'package:commet/utils/event_bus.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/widgets.dart';
+// import 'package:implicitly_animated_list/implicitly_animated_list.dart';
+// import '../atoms/dot_indicator.dart';
 
-class DirectMessageList extends StatefulWidget {
-  const DirectMessageList(
-      {required this.directMessages,
-      this.onSelected,
-      this.filterClient,
-      super.key});
-  final DirectMessagesInterface directMessages;
+// class DirectMessageList extends StatefulWidget {
+//   const DirectMessageList(
+//       {required this.directMessages,
+//       this.onSelected,
+//       this.filterClient,
+//       super.key});
+//   final DirectMessagesInterface directMessages;
 
-  final Client? filterClient;
+//   final Client? filterClient;
 
-  @override
-  State<DirectMessageList> createState() => _DirectMessageListState();
-  final Function(Room room)? onSelected;
-}
+//   @override
+//   State<DirectMessageList> createState() => _DirectMessageListState();
+//   final Function(Room room)? onSelected;
+// }
 
-class _DirectMessageListState extends State<DirectMessageList> {
-  int numDMs = 0;
-  Room? selectedRoom;
-  late List<StreamSubscription> subscriptions;
-  late List<Room> rooms;
+// class _DirectMessageListState extends State<DirectMessageList> {
+//   int numDMs = 0;
+//   Room? selectedRoom;
+//   late List<StreamSubscription> subscriptions;
+//   late List<Room> rooms;
 
-  Client? filterClient;
+//   Client? filterClient;
 
-  @override
-  void initState() {
-    filterClient = widget.filterClient;
-    subscriptions = [
-      widget.directMessages.onRoomsListUpdated.listen(onListUpdated),
-      widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated),
-      EventBus.setFilterClient.stream.listen(setFilterClient),
-    ];
+//   @override
+//   void initState() {
+//     filterClient = widget.filterClient;
+//     subscriptions = [
+//       widget.directMessages.onRoomsListUpdated.listen(onListUpdated),
+//       widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated),
+//       EventBus.setFilterClient.stream.listen(setFilterClient),
+//     ];
 
-    updateRoomsList();
+//     updateRoomsList();
 
-    super.initState();
-  }
+//     super.initState();
+//   }
 
-  void setFilterClient(Client? event) {
-    setState(() {
-      filterClient = event;
-      updateRoomsList();
-    });
-  }
+//   void setFilterClient(Client? event) {
+//     setState(() {
+//       filterClient = event;
+//       updateRoomsList();
+//     });
+//   }
 
-  @override
-  void dispose() {
-    for (var element in subscriptions) {
-      element.cancel();
-    }
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     for (var element in subscriptions) {
+//       element.cancel();
+//     }
+//     super.dispose();
+//   }
 
-  void onListUpdated(void event) {
-    setState(() {
-      updateRoomsList();
-    });
-  }
+//   void onListUpdated(void event) {
+//     setState(() {
+//       updateRoomsList();
+//     });
+//   }
 
-  void sortRooms() {
-    mergeSort(rooms, compare: (a, b) {
-      return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
-    });
-  }
+//   void sortRooms() {
+//     mergeSort(rooms, compare: (a, b) {
+//       return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
+//     });
+//   }
 
-  void updateRoomsList() {
-    rooms = List.from(widget.directMessages.directMessageRooms);
+//   void updateRoomsList() {
+//     rooms = List.from(widget.directMessages.directMessageRooms);
 
-    if (filterClient != null) {
-      rooms.removeWhere((i) => i.client != filterClient);
-    }
+//     if (filterClient != null) {
+//       rooms.removeWhere((i) => i.client != filterClient);
+//     }
 
-    sortRooms();
-  }
+//     sortRooms();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ImplicitlyAnimatedList(
-      itemData: rooms,
-      initialAnimation: false,
-      padding: EdgeInsets.zero,
-      itemBuilder: (context, room) {
-        final component = room.client.getComponent<DirectMessagesComponent>();
-        final id = component?.getDirectMessagePartnerId(room);
-        if (id == null) {
-          return Container();
-        }
+//   @override
+//   Widget build(BuildContext context) {
+//     return ImplicitlyAnimatedList(
+//       itemData: rooms,
+//       initialAnimation: false,
+//       padding: EdgeInsets.zero,
+//       shrinkWrap: true,
+//       itemBuilder: (context, room) {
+//         final component = room.client.getComponent<DirectMessagesComponent>();
+//         final id = component?.getDirectMessagePartnerId(room);
+//         if (id == null) {
+//           return Container();
+//         }
 
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(4, 1, 0, 1),
-          child: SizedBox(
-            height: 55,
-            child: Row(
-              children: [
-                Expanded(
-                  child: AdaptiveContextMenu(
-                    items: RoomTextButton.createRoomContextMenuItems(room),
-                    child: UserPanel(
-                      userId: id,
-                      key: ValueKey("home-screen-direct-message-entry-${id}"),
-                      client: room.client,
-                      contextRoom: room,
-                      isDirectMessage: true,
-                      onTap: () => setState(() {
-                        selectedRoom = room;
-                        widget.onSelected?.call(room);
-                      }),
-                    ),
-                  ),
-                ),
-                room.displayNotificationCount > 0
-                    ? const Padding(
-                        padding: EdgeInsets.all(2.0),
-                        child: DotIndicator(),
-                      )
-                    : Container()
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
+//         return Padding(
+//           padding: const EdgeInsets.fromLTRB(4, 1, 0, 1),
+//           child: SizedBox(
+//             height: 55,
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: UserPanel(
+//                     userId: id,
+//                     key: ValueKey("home-screen-direct-message-entry-${id}"),
+//                     client: room.client,
+//                     contextRoom: room,
+//                     isDirectMessage: true,
+//                     onTap: () => setState(() {
+//                       selectedRoom = room;
+//                       widget.onSelected?.call(room);
+//                     }),
+//                   ),
+//                 ),
+//                 room.displayNotificationCount > 0
+//                     ? const Padding(
+//                         padding: EdgeInsets.all(2.0),
+//                         child: DotIndicator(),
+//                       )
+//                     : Container()
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }

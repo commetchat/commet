@@ -35,7 +35,8 @@ class _SideNavigationBarDirectMessagesState
     rooms = widget.directMessages.highlightedRoomsList;
     subscriptions = [
       EventBus.setFilterClient.stream.listen(setFilterClient),
-      widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated),
+      widget.directMessages.directMessageRooms.onListUpdated
+          .listen(onListUpdated),
     ];
   }
 

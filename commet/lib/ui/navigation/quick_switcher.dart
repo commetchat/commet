@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ class QuickSwitcherSearchItemRoom implements QuickSwitcherSearchItem {
         ? room.getMemberOrFallback(room.lastMessage!.senderId)
         : null;
 
-    return RoomPanel(
+    return RoomPanelView(
       displayName: room.displayName,
       color: room.defaultColor,
       onTap: () => onTap(context),
@@ -185,7 +185,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     .sorted((a, b) =>
                         b.lastEventTimestamp.compareTo(a.lastEventTimestamp))
                     .sublist(0, 4))
-                  RoomPanel(
+                  RoomPanelView(
                     onTap: () {
                       EventBus.doOpenRoom(room.identifier,
                           clientId: room.client.identifier);

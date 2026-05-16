@@ -29,6 +29,9 @@ import 'package:commet/ui/pages/main/main_page_view_mobile.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/image/lod_image.dart';
+import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_list_combiner.dart';
+import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -63,11 +66,17 @@ class MainPageState extends State<MainPage> {
 
   MainPageSubView _currentView = MainPageSubView.home;
 
+  late INotifyingList<Room> favoriteRooms;
+
+  late INotifyingList<Room> directMessages;
+
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
   StreamSubscription? onCallStartedSubscription;
   StreamSubscription? onClientRemovedSubscription;
   StreamSubscription? onClientAddedSubscription;
+
+  StreamController onFilterClientChanged = StreamController.broadcast();
 
   MainPageSubView get currentView => _currentView;
 
@@ -116,6 +125,25 @@ class MainPageState extends State<MainPage> {
         }
       }
     }
+
+    var allFavoriteRooms = NotifyingListCombiner(
+        clientManager.clients.map((i) => i.favoriteRooms).toList());
+
+    favoriteRooms = NotifyingListFilter(allFavoriteRooms, where: (item) {
+      if (filterClient == null) return true;
+      return item.client == filterClient;
+    }, onFilterParamsChanged: [onFilterClientChanged.stream]);
+
+    directMessages = NotifyingListFilter(
+        clientManager.directMessages.directMessageRooms, where: (item) {
+      if (item.isFavorite) return false;
+
+      if (filterClient == null) return true;
+      return item.client == filterClient;
+    }, onFilterParamsChanged: [
+      onFilterClientChanged.stream,
+      allFavoriteRooms.onListUpdated
+    ]);
 
     ServicesBinding.instance.keyboard.addHandler(_onKeyPressed);
 
@@ -203,6 +231,7 @@ class MainPageState extends State<MainPage> {
           !clientManager.clients.contains(filterClient)) {
         filterClient = null;
         EventBus.setFilterClient.add(null);
+        onFilterClientChanged.add(null);
       }
     });
   }
@@ -293,6 +322,8 @@ class MainPageState extends State<MainPage> {
         }
       }
     });
+
+    onFilterClientChanged.add(null);
   }
 
   void callRoom(Room room) {

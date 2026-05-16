@@ -59,10 +59,11 @@ class ClientManager {
 
   List<Space> get spaces => _spaces;
 
-  final List<Client> _clientsList = List.empty(growable: true);
+  final NotifyingList<Client> _clientsList =
+      NotifyingList.empty(growable: true);
   final Map<Client, List<StreamSubscription>> _clientSubscriptions = {};
 
-  List<Client> get clients => _clientsList;
+  NotifyingList<Client> get clients => _clientsList;
 
   late StreamController<void> onSync = StreamController.broadcast();
 
