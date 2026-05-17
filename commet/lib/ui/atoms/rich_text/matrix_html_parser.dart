@@ -579,11 +579,16 @@ class RoomMentionsHtmlExtension extends HtmlExtension {
       data,
       builder: (matchedText, theme) {
         return WidgetSpan(
-            child: MentionWidget(
-                displayName: matchedText,
-                showAvatar: false,
-                placeholderColor:
-                    ColorScheme.of(context.buildContext!).primary));
+            child: Transform.translate(
+                offset: Offset(0, 2),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                  child: MentionWidget(
+                      displayName: matchedText,
+                      showAvatar: false,
+                      placeholderColor:
+                          ColorScheme.of(context.buildContext!).primary),
+                )));
       },
     ));
   }
