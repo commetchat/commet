@@ -28,6 +28,7 @@ class ImportantRoomsList extends StatelessWidget {
         children: [
           NotifyingListBuilder(
             shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
             list: state.favoriteRooms,
             builder: (context, {required child, required list}) {
               if (list.isNotEmpty) {
@@ -64,6 +65,7 @@ class ImportantRoomsList extends StatelessWidget {
           NotifyingListBuilder(
             shrinkWrap: true,
             list: state.directMessages,
+            physics: NeverScrollableScrollPhysics(),
             sortFunction: (p0, p1) {
               return p1.lastEventTimestamp.compareTo(p0.lastEventTimestamp);
             },

@@ -271,9 +271,12 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               ),
               if (children.isNotEmpty ||
                   widget.space.permissions.canEditChildren)
-                tiamat.Panel(
-                  mode: TileType.surfaceContainerLow,
-                  child: buildChildrenList(),
+                Material(
+                  color: Colors.transparent,
+                  child: tiamat.Panel(
+                    mode: TileType.surfaceContainerLow,
+                    child: buildChildrenList(),
+                  ),
                 ),
               if (previews.isNotEmpty) buildPreviewList(),
             ],

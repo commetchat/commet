@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class NotifyingListMapped<T, R> implements INotifyingList<T> {

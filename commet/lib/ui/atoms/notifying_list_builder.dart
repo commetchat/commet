@@ -12,6 +12,7 @@ class NotifyingListBuilder<T> extends StatefulWidget {
       this.shrinkWrap = false,
       this.implicitlyAnimated = true,
       this.sortFunction,
+      this.physics,
       super.key});
 
   final INotifyingList<T> list;
@@ -20,6 +21,7 @@ class NotifyingListBuilder<T> extends StatefulWidget {
   final Widget Function(BuildContext context, T value) itemBuilder;
   final bool shrinkWrap;
   final bool implicitlyAnimated;
+  final ScrollPhysics? physics;
   final int Function(T, T)? sortFunction;
 
   @override
@@ -64,11 +66,15 @@ class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
         ? ImplicitlyAnimatedList(
             shrinkWrap: widget.shrinkWrap,
             itemData: items,
+            physics: widget.physics,
+            padding: EdgeInsets.zero,
             initialAnimation: false,
             itemBuilder: widget.itemBuilder)
         : ListView.builder(
             shrinkWrap: widget.shrinkWrap,
             itemCount: items.length,
+            physics: widget.physics,
+            padding: EdgeInsets.zero,
             itemBuilder: (context, index) {
               var item = items[index];
 

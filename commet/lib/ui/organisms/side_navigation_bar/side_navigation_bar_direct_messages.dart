@@ -80,7 +80,7 @@ class _SideNavigationBarDirectMessagesState
         itemBuilder: (context, data) {
           // return tiamat.Text.labelLow(data.displayName);
           return Padding(
-            padding: EdgeInsetsGeometry.fromLTRB(0, 1, 0, 1),
+            padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
             child: SpaceIcon(
               displayName: data.displayName,
               placeholderColor: data.defaultColor,
