@@ -68,15 +68,15 @@ class _RoomPanelState extends State<RoomPanel> {
     String? eventSender = widget.room.lastMessage?.senderId;
 
     if (eventSender != null) {
-      if (isDm) {
-        if (eventSender == widget.room.client.self!.identifier) {
-          eventSender = "You";
-        } else {
-          eventSender = null;
-        }
+      if (eventSender == widget.room.client.self!.identifier) {
+        eventSender = "You";
       } else {
-        var member = widget.room.getMemberOrFallback(eventSender);
-        eventSender = member.displayName;
+        if (isDm) {
+          eventSender = null;
+        } else {
+          var member = widget.room.getMemberOrFallback(eventSender);
+          eventSender = member.displayName;
+        }
       }
     }
 
