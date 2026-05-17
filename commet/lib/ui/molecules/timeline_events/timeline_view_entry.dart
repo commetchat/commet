@@ -25,7 +25,9 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.d
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/context_menu.dart';
+import 'package:tiamat/atoms/text.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewEntry extends StatefulWidget {
@@ -40,6 +42,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.singleEvent = false,
       this.isThreadTimeline = false,
       this.previewMedia = false,
+      this.lastReadEventId,
       this.highlightedEventId,
       this.canCollapse = false,
       super.key});
@@ -48,11 +51,12 @@ class TimelineViewEntry extends StatefulWidget {
   final Function(String eventId)? onEventHovered;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
-  final Function(String eventId)? jumpToEvent;
+  final Function(String eventId, {bool highlight})? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;
   final bool canCollapse;
   final String? highlightedEventId;
+  final String? lastReadEventId;
   final bool previewMedia;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
@@ -105,11 +109,16 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   late DateTime time;
   bool showDateSeperator = false;
+  bool showUnreadMarker = false;
 
   ThreadsComponent? threads;
   PollComponent? polls;
 
   List<String> readReceipts = [];
+
+  String get labelTimelineNewMessagesMarker => Intl.message("New messages",
+      desc: "Text that is shown below the last read message",
+      name: "labelTimelineNewMessagesMarker");
 
   @override
   void initState() {
@@ -179,6 +188,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     }
 
     showDateSeperator = shouldEventShowDate(eventIndex);
+    showUnreadMarker = shouldEventShowUnreadMarker(eventIndex);
     highlighted = event.eventId == widget.highlightedEventId;
   }
 
@@ -259,6 +269,29 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         2) return true;
 
     return false;
+  }
+
+  bool shouldEventShowUnreadMarker(int index) {
+    final events = widget.timeline.events;
+
+    bool isHidden(event) =>
+        eventToDisplayType(event, polls: polls) ==
+        TimelineEventWidgetDisplayType.hidden;
+
+    if (index == 0 || events.take(index).every(isHidden)) return false;
+
+    final lastReadIndex =
+        events.indexWhere((e) => e.eventId == widget.lastReadEventId);
+
+    if (lastReadIndex == -1) {
+      return false;
+    }
+
+    //if (lastReadIndex > index) return false;
+    if (lastReadIndex == index + 1) return true;
+    if (!isHidden(events[lastReadIndex])) return false;
+
+    return events.getRange(lastReadIndex, index).every(isHidden);
   }
 
   @override
@@ -523,7 +556,44 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
+    if (showUnreadMarker)
+      result = Column(children: [
+        buildNewMessagesMarker(),
+        result,
+      ]);
+
     return result;
+  }
+
+  Row buildNewMessagesMarker() {
+    var color = ColorScheme.of(context).primaryContainer;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+            child: Divider(
+          color: color,
+          thickness: 2.0,
+        )),
+        DecoratedBox(
+          decoration: BoxDecoration(
+              color: color, borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+            child: tiamat.Text(
+              labelTimelineNewMessagesMarker,
+              color: ColorScheme.of(context).onPrimaryContainer,
+              type: TextType.labelLow,
+            ),
+          ),
+        ),
+        Expanded(
+            child: Divider(
+          color: color,
+          thickness: 2.0,
+        )),
+      ],
+    );
   }
 
   Widget? buildEvent() {
@@ -545,7 +615,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           detailed: widget.showDetailed || selected,
           onReadReceiptsTapped: onReadReceiptsTapped,
           readReceipts: readReceipts,
-          overrideShowSender: widget.singleEvent || showDateSeperator,
+          overrideShowSender:
+              widget.singleEvent || showDateSeperator || showUnreadMarker,
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);

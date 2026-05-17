@@ -82,6 +82,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   bool isLoadingHistory = false;
 
   MessageEffectComponent? effects;
+  String? lastReadEventId;
 
   @override
   void initState() {
@@ -102,11 +103,24 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       }
     }
 
-    isLoadingFuture = false;
-    isLoadingHistory = false;
+    String? targetEventId = timeline.room.lastRead; // timeline.contextEventId;
 
     this.timeline = timeline;
-    recentItemsCount = timeline.events.length;
+    var index = timeline.events.indexWhere((i) => i.eventId == targetEventId);
+
+    if (index > 0) {
+      lastReadEventId = targetEventId;
+
+      isLoadingFuture = false;
+      isLoadingHistory = false;
+
+      recentItemsCount = index;
+    } else {
+      if (timeline.events.length > 1) {
+        recentItemsCount = 1;
+      }
+    }
+
     var receipts = timeline.room.getComponent<ReadReceiptComponent>();
     subscriptions = [
       timeline.onEventAdded.stream.listen(onEventAdded),
@@ -238,16 +252,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onAfterFirstFrame(_) {
-    if (timeline.events.isNotEmpty) {
-      widget.markAsRead?.call(timeline.events.first);
-    }
-
     if (controller.hasClients) {
       double extent = controller.position.minScrollExtent;
+
+      if (controller.position.viewportDimension < -extent) {
+        extent = -controller.position.viewportDimension / 2;
+      }
+
       controller = ScrollController(initialScrollOffset: extent);
       scrollViewKey = GlobalKey();
       controller.addListener(onScroll);
-      widget.onAttachedToBottom?.call();
       setState(() {
         firstFrame = false;
       });
@@ -399,6 +413,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           ),
                         );
                       })),
+                    // The slivers are split into recent and history events and
+                    // are rendered separately. This prevents the timeline from
+                    // jumping around and allows jumping to specific indices
+                    // with more reliability.
                     SliverList(
                       key: recentItemsKey,
                       // Recent Items
@@ -410,7 +428,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                               recentItemsCount - sliverIndex - 1;
                           numBuilds += 1;
 
-                          var key = eventKeys[timelineIndex];
+                          var key;
+
+                          key = eventKeys[timelineIndex];
+
                           assert(
                               key.$2 == timeline.events[timelineIndex].eventId);
 
@@ -430,6 +451,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
                                 highlightedEventId: highlightedEventId,
+                                lastReadEventId: lastReadEventId,
                                 previewMedia:
                                     widget.timeline.room.shouldPreviewMedia,
                                 jumpToEvent: jumpToEvent,
@@ -460,7 +482,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           // ignore: avoid_print
                           var timelineIndex = recentItemsCount + sliverIndex;
 
-                          var key = eventKeys[timelineIndex];
+                          var key;
+
+                          key = eventKeys[timelineIndex];
+
                           assert(
                               key.$2 == timeline.events[timelineIndex].eventId);
 
@@ -482,6 +507,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 highlightedEventId: highlightedEventId,
                                 previewMedia:
                                     widget.timeline.room.shouldPreviewMedia,
+                                lastReadEventId: lastReadEventId,
                                 jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
@@ -548,8 +574,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     );
   }
 
-  void jumpToEvent(String eventId) async {
-    if (highlightedEventState?.mounted == true) {
+  void jumpToEvent(String eventId, {bool highlight = true}) async {
+    if (highlight && highlightedEventState?.mounted == true) {
       highlightedEventState!.setHighlighted(false);
       highlightedEventState = null;
     }
@@ -578,7 +604,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       var key = eventKeys[index].$1;
       final state = key.currentState;
 
-      if (state is TimelineViewEntryState) {
+      if (highlight && state is TimelineViewEntryState) {
         state.setHighlighted(true);
         highlightedEventState = state;
       }
@@ -609,9 +635,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     setState(() {
       recentItemsCount = index;
-      highlightedEventId = timeline.events[index].eventId;
-      highlightedEventOffstageIndex = index;
-      highlightedEventOffstageKey = GlobalKey();
+      if (highlight) {
+        highlightedEventId = timeline.events[index].eventId;
+        highlightedEventOffstageIndex = index;
+        highlightedEventOffstageKey = GlobalKey();
+      }
       loading = false;
     });
   }
@@ -635,7 +663,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     var index = timeline.events.indexWhere((i) => i.eventId == event);
 
     if (index == -1) {
-      print("Could not find the event in the timeline view");
+      Log.w("Could not find the event in the timeline view");
     }
 
     if (state is TimelineEventViewWidget) {
