@@ -1,7 +1,5 @@
 import 'package:commet/diagnostic/benchmark_values.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -22,9 +20,11 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.readReceipts,
       this.onAvatarTapped,
       this.edited = false,
+      this.isMentioningSelf = false,
       this.avatarSize = 32,
       this.avatarBuilder,
-      this.showSender = true});
+      this.showSender = true,
+      this.onDoubleTapMessage});
   final String senderName;
   final Color senderColor;
   final ImageProvider? senderAvatar;
@@ -38,9 +38,11 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? readReceipts;
   final bool showSender;
   final bool edited;
+  final bool isMentioningSelf;
   final String? timestamp;
   final Function()? onAvatarTapped;
   final Widget Function(Widget child)? avatarBuilder;
+  final Function()? onDoubleTapMessage;
 
   final double avatarSize;
 
@@ -51,8 +53,12 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineMessageBodyBuilt += 1;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 8, 2),
+
+    const double mentionHighlightSize = 3;
+    double leftPadding = isMentioningSelf ? 16 - mentionHighlightSize : 16;
+
+    Widget result = Padding(
+      padding: EdgeInsets.fromLTRB(leftPadding, 2, 8, 2),
       child: Column(
         children: [
           if (inResponseTo != null) inResponseTo!,
@@ -81,23 +87,26 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (formattedContent != null)
-                                  RepaintBoundary(child: formattedContent!),
-                                if (edited)
-                                  tiamat.Text.labelLow(messageEditedMarker),
-                                if (attachments != null) attachments!,
-                                if (sticker != null) sticker!,
-                                if (urlPreviews != null) urlPreviews!,
-                                if (reactions != null)
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                                    child: reactions!,
-                                  ),
-                              ],
+                            child: GestureDetector(
+                              onDoubleTap: onDoubleTapMessage,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (formattedContent != null)
+                                    RepaintBoundary(child: formattedContent!),
+                                  if (edited)
+                                    tiamat.Text.labelLow(messageEditedMarker),
+                                  if (attachments != null) attachments!,
+                                  if (sticker != null) sticker!,
+                                  if (urlPreviews != null) urlPreviews!,
+                                  if (reactions != null)
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                      child: reactions!,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -116,6 +125,23 @@ class TimelineEventLayoutMessage extends StatelessWidget {
         ],
       ),
     );
+
+    if (isMentioningSelf)
+      result = Container(
+        decoration: BoxDecoration(
+            border: Border(
+                left: BorderSide(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    width: mentionHighlightSize)),
+            color:
+                Theme.of(context).colorScheme.tertiaryContainer.withAlpha(30)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: result,
+        ),
+      );
+
+    return result;
   }
 
   Widget name() {
