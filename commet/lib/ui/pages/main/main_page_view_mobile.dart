@@ -62,7 +62,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     });
 
     EventBus.openRoom.stream.listen((_) {
-panelsKey.currentState?.reveal(RevealSide.main);
+      panelsKey.currentState?.reveal(RevealSide.main);
     });
 
     super.initState();
