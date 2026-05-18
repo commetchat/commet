@@ -475,7 +475,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> setBio(String bio) async {
     Map<String, String> content = textToContent(bio, client);
-    
+
     if (content['formatted_body'] != null && content['body'] != null) {
       await setField(msc4440BioKey, {
         'm.text': [
