@@ -547,7 +547,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     return result;
   }
 
-  Row buildNewMessagesMarker() {
+  Widget buildNewMessagesMarker() {
     var color = ColorScheme.of(context).primaryContainer;
     return Padding(
       padding: EdgeInsets.fromLTRB(10, 3, 10, 3),
