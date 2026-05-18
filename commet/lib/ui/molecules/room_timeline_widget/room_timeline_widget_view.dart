@@ -543,6 +543,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   key: overlayKey,
                   showMessageMenu: Layout.desktop,
                   jumpToLatest: animateAndSnapToBottom,
+                  onScrolled: (event) {
+                    controller.jumpTo(controller.offset - event.scrollDelta.dy);
+                  },
                   link: selectedEventLayerLink),
               if (highlightedEventOffstageIndex != null &&
                   highlightedEventOffstageKey != null)
