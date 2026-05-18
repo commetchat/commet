@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/timeline.dart';
@@ -109,7 +110,15 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     var index = timeline.events.indexWhere((i) => i.eventId == targetEventId);
 
     if (index > 0) {
-      lastReadEventId = targetEventId;
+      // Find the next message after the latest read event
+      for (int i = index; i >= 1; i--) {
+        var eventType =
+            TimelineViewEntryState.eventToDisplayType(timeline.events[i - 1]);
+
+        if (eventType == TimelineEventWidgetDisplayType.message) {
+          lastReadEventId = timeline.events[i - 1].eventId;
+        }
+      }
 
       isLoadingFuture = false;
       isLoadingHistory = false;
@@ -652,9 +661,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onReadReceiptUpdated(String event) {
-    var key = eventKeys.firstWhere(
+    var key = eventKeys.firstWhereOrNull(
       (element) => element.$2 == event,
     );
+
+    if (key == null) return;
 
     assert(event == key.$2);
 

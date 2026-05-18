@@ -272,26 +272,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   }
 
   bool shouldEventShowUnreadMarker(int index) {
-    final events = widget.timeline.events;
-
-    bool isHidden(event) =>
-        eventToDisplayType(event, polls: polls) ==
-        TimelineEventWidgetDisplayType.hidden;
-
-    if (index == 0 || events.take(index).every(isHidden)) return false;
-
-    final lastReadIndex =
-        events.indexWhere((e) => e.eventId == widget.lastReadEventId);
-
-    if (lastReadIndex == -1) {
-      return false;
-    }
-
-    //if (lastReadIndex > index) return false;
-    if (lastReadIndex == index + 1) return true;
-    if (!isHidden(events[lastReadIndex])) return false;
-
-    return events.getRange(lastReadIndex, index).every(isHidden);
+    return eventId == widget.lastReadEventId;
   }
 
   @override
@@ -550,49 +531,54 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
-    if (showDateSeperator) {
-      result = Column(
-        children: [TimelineEventDateTimeMarker(time: time), result],
-      );
-    }
-
-    if (showUnreadMarker)
+    if (showUnreadMarker) {
       result = Column(children: [
         buildNewMessagesMarker(),
         result,
       ]);
+    } else {
+      if (showDateSeperator) {
+        result = Column(
+          children: [TimelineEventDateTimeMarker(time: time), result],
+        );
+      }
+    }
 
     return result;
   }
 
   Row buildNewMessagesMarker() {
     var color = ColorScheme.of(context).primaryContainer;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-            child: Divider(
-          color: color,
-          thickness: 2.0,
-        )),
-        DecoratedBox(
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-            child: tiamat.Text(
-              labelTimelineNewMessagesMarker,
-              color: ColorScheme.of(context).onPrimaryContainer,
-              type: TextType.labelLow,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 3, 10, 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+              child: Divider(
+            color: color,
+            thickness: 1.0,
+          )),
+          DecoratedBox(
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+              child: tiamat.Text(
+                labelTimelineNewMessagesMarker,
+                color: ColorScheme.of(context).primaryContainer,
+                type: TextType.labelLow,
+              ),
             ),
           ),
-        ),
-        Expanded(
-            child: Divider(
-          color: color,
-          thickness: 2.0,
-        )),
-      ],
+          Expanded(
+              child: Divider(
+            color: color,
+            thickness: 1.0,
+          )),
+        ],
+      ),
     );
   }
 
