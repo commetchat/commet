@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
@@ -111,19 +112,22 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index > 0) {
       // Find the next message after the latest read event
+
+      int? viewIndex = null;
       for (int i = index; i >= 1; i--) {
         var eventType =
             TimelineViewEntryState.eventToDisplayType(timeline.events[i - 1]);
 
         if (eventType == TimelineEventWidgetDisplayType.message) {
           lastReadEventId = timeline.events[i - 1].eventId;
+          viewIndex = i - 1;
         }
       }
 
       isLoadingFuture = false;
       isLoadingHistory = false;
 
-      recentItemsCount = index;
+      recentItemsCount = max(1, viewIndex ?? index);
     } else {
       if (timeline.events.length > 1) {
         recentItemsCount = 1;
