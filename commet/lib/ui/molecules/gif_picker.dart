@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -51,6 +52,13 @@ class _GifPickerState extends State<GifPicker> {
   @override
   void initState() {
     _textController.addListener(onTextChanged);
+
+    if (Layout.desktop) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.focus?.requestFocus();
+      });
+    }
+
     super.initState();
   }
 
