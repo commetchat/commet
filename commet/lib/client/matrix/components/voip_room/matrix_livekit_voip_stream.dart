@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,4 +87,10 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   bool get isMuted => publication.track?.muted ?? false;
+  
+  @override
+  // TODO: implement stats
+  String get stats => JsonEncoder.withIndent("  ").convert({
+    "encryption type": publication.encryptionType.toString(),
+  }); 
 }

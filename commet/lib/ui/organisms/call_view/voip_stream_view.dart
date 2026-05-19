@@ -95,7 +95,30 @@ class _VoipStreamViewState extends State<VoipStreamView>
                     size: 20,
                     onPressed: widget.onFullscreen,
                   ),
-                )
+                ),
+
+              Align(
+                alignment: AlignmentGeometry.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ColorScheme.of(context).surfaceContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          tiamat.Text(widget.stream.stats),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
             ],
           );
         });

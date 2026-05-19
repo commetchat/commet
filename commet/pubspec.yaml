@@ -145,6 +145,11 @@ dependency_overrides:
       ref: webview-patch
       path: ./packages/desktop_webview_window
 
+  flutter_webrtc:
+    git:
+      url: https://github.com/commetchat/flutter-webrtc.git
+      ref: hkdf
+
 dev_dependencies: 
   drift_dev: ^2.28.0
   build_runner: ^2.4.11

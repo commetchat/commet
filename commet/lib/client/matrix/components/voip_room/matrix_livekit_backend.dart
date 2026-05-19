@@ -142,9 +142,11 @@ class MatrixLivekitBackend {
     final jwt = data["jwt"];
     lk.E2EEOptions? e2eeOptions;
 
-    var provider =
-        await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom);
+    MatrixLivekitEncryptionKeyProvider? provider;
+
     if (room.isE2EE) {
+    provider =
+        await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom);
       e2eeOptions = lk.E2EEOptions(keyProvider: provider);
     }
 
@@ -152,8 +154,6 @@ class MatrixLivekitBackend {
         adaptiveStream: true, dynacast: true, encryption: e2eeOptions);
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
-
-    provider.lkRoom = lkRoom;
 
     await lkRoom.prepareConnection(sfuUrl, jwt);
     final stateKey =
@@ -188,6 +188,6 @@ class MatrixLivekitBackend {
         audioCaptureOptions: lk.AudioCaptureOptions(deviceId: device));
 
     livekitRoom = lkRoom;
-    return MatrixLivekitVoipSession(room, lkRoom);
+    return MatrixLivekitVoipSession(room, lkRoom, keyProvider: provider);
   }
 }

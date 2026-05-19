@@ -149,4 +149,8 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   bool get isMuted => stream.audioMuted;
+  
+  @override
+  // TODO: implement stats
+  String get stats => session.stats.toString();
 }

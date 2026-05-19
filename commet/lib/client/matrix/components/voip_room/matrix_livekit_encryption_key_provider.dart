@@ -1,19 +1,24 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:livekit_client/livekit_client.dart' hide KeyProvider;
 import 'package:webrtc_interface/src/frame_cryptor.dart';
 
 import 'package:matrix/matrix.dart' as mx;
-
+import 'package:matrix/src/utils/crypto/crypto.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as rtc;
 
 class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
   mx.Room room;
-  Room? lkRoom;
-
   BaseKeyProvider _keyProvider;
+
+  int indexCounter = 0;
+
+  String? localParticipant;
 
   MatrixLivekitEncryptionKeyProvider(this._keyProvider, this.room) {
     room.client.onToDeviceEvent.stream.listen(onToDeviceEvent);
@@ -97,6 +102,70 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
   @override
   Uint8List? get sharedKey => _keyProvider.sharedKey;
+
+  void init(String localParticipantId) {
+    localParticipant = localParticipantId;
+    createNewKey();
+  }
+
+  void createNewKey() {
+    var index = indexCounter % options.keyRingSize;
+    indexCounter++;
+
+    var bytes = secureRandomBytes(16);
+
+    setRawKey(bytes, participantId: localParticipant!, keyIndex: index);
+
+    sendKeyToParticipants(bytes, localParticipant!, index);
+  }
+
+  Future<void> sendKeyToParticipants(
+      Uint8List bytes, String participantId, int keyIndex) async {
+    final state = room.states[MatrixVoipRoomComponent.callMemberStateEvent];
+    if (state == null) {
+      return;
+    }
+
+    for (var event in state.values) {
+      if (event.content.isEmpty) continue;
+
+      var device = event.content.tryGet<String>("device_id");
+
+      if (device == null) continue;
+
+      if(event.senderId == room.client.userID && device == room.client.deviceID) {
+        Log.i("Dont need to send key to ourself");
+        continue;
+      }
+
+      final deviceKey =
+          room.client.userDeviceKeys[event.senderId]?.deviceKeys[device];
+
+      
+
+      var content = {
+        "keys": {
+          "index": keyIndex,
+          "key": base64Encode(bytes),
+        },
+        "member": {
+          "claimed_device_id": room.client.deviceID!
+        },
+        "room_id": room.id,
+        "sent_ts": DateTime.now().millisecondsSinceEpoch,
+        "session": {
+          "application": "m.call",
+          "call_id": "",
+          "scope": "m.room",
+        }
+      };
+
+      Log.i("Sending keys: $content to ${deviceKey!.userId}");
+
+      room.client.sendToDeviceEncrypted(
+          [deviceKey], "io.element.call.encryption_keys", content);
+    }
+  }
 
   void onToDeviceEvent(mx.ToDeviceEvent event) {
     Log.i(
