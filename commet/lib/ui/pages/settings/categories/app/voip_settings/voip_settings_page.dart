@@ -128,7 +128,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
     super.initState();
     sub = preferences.onSettingChanged.listen((event) => setState(() {}));
 
-    webrtc.navigator.mediaDevices.enumerateDevices().then((v) => setState(() {
+    WebrtcDefaultDevices.getDevices().then((v) => setState(() {
           Log.i(v);
           devices = v;
 

@@ -192,7 +192,8 @@ class MatrixLivekitBackend {
     var device = await WebrtcDefaultDevices.getDefaultMicrophoneId();
 
     print("Using default device: ${device}");
-    await lkRoom.localParticipant?.setMicrophoneEnabled(true,
+
+    lkRoom.localParticipant?.setMicrophoneEnabled(true,
         audioCaptureOptions: lk.AudioCaptureOptions(deviceId: device));
 
     livekitRoom = lkRoom;
