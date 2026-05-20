@@ -345,6 +345,10 @@ class Preferences {
       "suppress_notification_when_room_focused",
       defaultValue: true);
 
+  BoolPreference experimentEnableE2eeElementCall = BoolPreference(
+      "experiment_enabled_e2ee_element_call",
+      defaultValue: false);
+
   DoublePreference notificationsVolume =
       DoublePreference("notifications_volume", defaultValue: 90.0);
 

@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -82,7 +83,10 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-          child: joinCallView(),
+          child: widget.voip.room.isE2EE &&
+                  preferences.experimentEnableE2eeElementCall.value == false
+              ? e2eeUnsupportedView()
+              : joinCallView(),
         ),
         Align(
           alignment: AlignmentGeometry.bottomLeft,
@@ -149,12 +153,6 @@ class _VoipRoomViewState extends State<VoipRoomView> {
               );
             }).toList()),
           )),
-        if (widget.voip.room.isE2EE)
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: tiamat.Text.error(
-                "End-to-end encrypted calls are still under development, and may contain bugs or security issues. Use at your own risk."),
-          ),
         if (participants.isEmpty)
           Expanded(
             child: Padding(
