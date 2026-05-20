@@ -50,7 +50,7 @@ class MatrixLivekitVoipSession implements VoipSession {
       _onVolumeChanged.add(());
     });
 
-    keyProvider?.init(livekitRoom.localParticipant!.identity);
+    keyProvider?.init(livekitRoom.localParticipant!.identity, livekitRoom);
 
     startHeartbeat();
   }
@@ -197,6 +197,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   @override
   Future<void> hangUpCall() async {
     Log.i("Hanging up call");
+
+    keyProvider?.dispose();
 
     await Future.wait([
       clearRoomCallState(),

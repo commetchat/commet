@@ -10,8 +10,7 @@ class WebrtcDefaultDevices {
 
     await initDummyConnection();
 
-    var devices = (await getDevices())
-        .where((i) => i.kind == "audioinput");
+    var devices = (await getDevices()).where((i) => i.kind == "audioinput");
 
     Map<String, dynamic> constraints = {
       'echoCancellation': true,
@@ -58,8 +57,7 @@ class WebrtcDefaultDevices {
   static Future<String?> getDefaultMicrophoneId() async {
     if (PlatformUtils.isAndroid || PlatformUtils.isWeb) return null;
 
-    var devices = (await getDevices())
-        .where((i) => i.kind == "audioinput");
+    var devices = (await getDevices()).where((i) => i.kind == "audioinput");
 
     if (preferences.voipDefaultAudioInput.value == null) return null;
 
@@ -70,8 +68,7 @@ class WebrtcDefaultDevices {
   }
 
   static Future<void> selectInputDevice() async {
-    var devices = (await getDevices())
-        .where((i) => i.kind == "audioinput");
+    var devices = (await getDevices()).where((i) => i.kind == "audioinput");
 
     if (preferences.voipDefaultAudioInput.value != null) {
       var pickedDevice = devices.firstWhereOrNull(
@@ -91,8 +88,7 @@ class WebrtcDefaultDevices {
   static Future<void> selectOutputDevice() async {
     if (preferences.voipDefaultAudioOutput.value == null) return;
 
-    var devices = (await getDevices())
-        .where((i) => i.kind == "audiooutput");
+    var devices = (await getDevices()).where((i) => i.kind == "audiooutput");
 
     var device = devices.firstWhereOrNull(
         (i) => i.label == preferences.voipDefaultAudioOutput.value);
