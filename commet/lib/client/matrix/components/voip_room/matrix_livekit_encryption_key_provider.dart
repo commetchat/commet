@@ -18,7 +18,6 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
   mx.Room room;
   BaseKeyProvider _keyProvider;
 
-  
   late lk.Room lkRoom;
   int indexCounter = 0;
 
@@ -149,7 +148,8 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
     }
 
     setRawKey(bytes, participantId: localParticipant!, keyIndex: index);
-    lkRoom.e2eeManager?.setKeyIndex(index, participantIdentity: localParticipant!);
+    lkRoom.e2eeManager
+        ?.setKeyIndex(index, participantIdentity: localParticipant!);
   }
 
   Future<void> sendKeyToParticipants(Uint8List bytes, int keyIndex) async {
@@ -197,7 +197,7 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
       }
     }
 
-    if(sendToDevices.isNotEmpty) {
+    if (sendToDevices.isNotEmpty) {
       room.client.sendToDeviceEncrypted(
           sendToDevices, "io.element.call.encryption_keys", content);
     }
@@ -238,7 +238,6 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
     if (roomUpdate.timeline?.events == null) return;
 
     bool membershipsChanged = false;
-
 
     for (var state in roomUpdate.timeline!.events!) {
       if (state.type != MatrixVoipRoomComponent.callMemberStateEvent) continue;

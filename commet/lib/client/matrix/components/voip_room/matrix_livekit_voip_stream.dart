@@ -98,6 +98,7 @@ class MatrixLivekitVoipStream implements VoipStream {
   @override
   // TODO: implement stats
   String get stats => JsonEncoder.withIndent("  ").convert({
+        "is encrypted": publication.participant.isEncrypted,
         "encryption type": publication.encryptionType.toString(),
       });
 
