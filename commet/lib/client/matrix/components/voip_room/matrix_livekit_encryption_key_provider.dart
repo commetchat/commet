@@ -133,7 +133,8 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
       if (device == null) continue;
 
-      if(event.senderId == room.client.userID && device == room.client.deviceID) {
+      if (event.senderId == room.client.userID &&
+          device == room.client.deviceID) {
         Log.i("Dont need to send key to ourself");
         continue;
       }
@@ -141,16 +142,12 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
       final deviceKey =
           room.client.userDeviceKeys[event.senderId]?.deviceKeys[device];
 
-      
-
       var content = {
         "keys": {
           "index": keyIndex,
           "key": base64Encode(bytes),
         },
-        "member": {
-          "claimed_device_id": room.client.deviceID!
-        },
+        "member": {"claimed_device_id": room.client.deviceID!},
         "room_id": room.id,
         "sent_ts": DateTime.now().millisecondsSinceEpoch,
         "session": {
