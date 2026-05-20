@@ -51,19 +51,19 @@ class MatrixBackgroundClient implements Client {
   int? get maxFileSize => 0;
 
   @override
-  Stream<int> get onPeerAdded => Stream.empty();
+  Stream<Peer> get onPeerAdded => Stream.empty();
 
   @override
-  Stream<int> get onRoomAdded => Stream.empty();
+  Stream<Room> get onRoomAdded => Stream.empty();
 
   @override
-  Stream<int> get onRoomRemoved => Stream.empty();
+  Stream<Room> get onRoomRemoved => Stream.empty();
 
   @override
-  Stream<int> get onSpaceAdded => Stream.empty();
+  Stream<Space> get onSpaceAdded => Stream.empty();
 
   @override
-  Stream<int> get onSpaceRemoved => Stream.empty();
+  Stream<Space> get onSpaceRemoved => Stream.empty();
 
   @override
   Stream<void> get onSync => Stream.empty();
@@ -84,7 +84,7 @@ class MatrixBackgroundClient implements Client {
   @override
   Future<void> init(bool loadingFromCache,
       {bool isBackgroundService = false}) async {
-    final db = await getMatrixDatabase(databaseId);
+    final db = await getMatrixDatabase(databaseId, onDatabaseIsolate: false);
     if (db is MatrixSdkDriftDatabase) {
       database = db;
     }

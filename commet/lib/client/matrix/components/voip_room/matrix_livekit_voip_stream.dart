@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:livekit_client/livekit_client.dart';
 
 class MatrixLivekitVoipStream implements VoipStream {
@@ -17,10 +19,13 @@ class MatrixLivekitVoipStream implements VoipStream {
   Stream<void> get onStreamChanged => _onChanged.stream;
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
-    if (publication.track is AudioTrack) {
-      visualizer = createVisualizer(publication.track as AudioTrack,
+    if (publication.track case AudioTrack t) {
+      visualizer = createVisualizer(t,
           options:
               AudioVisualizerOptions(barCount: 1, smoothTransition: false));
+
+      var volume = preferences.getVoipUserVolume(userId);
+      Helper.setVolume(volume, t.mediaStreamTrack);
 
       var _listener = visualizer!.createListener();
       _listener.on<AudioVisualizerEvent>((e) {
@@ -61,7 +66,9 @@ class MatrixLivekitVoipStream implements VoipStream {
   }
 
   @override
-  VoipStreamDirection get direction => VoipStreamDirection.incoming;
+  VoipStreamDirection get direction => publication is LocalTrackPublication
+      ? VoipStreamDirection.outgoing
+      : VoipStreamDirection.incoming;
 
   @override
   String get label => "label";
@@ -87,10 +94,21 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   bool get isMuted => publication.track?.muted ?? false;
-  
+
   @override
   // TODO: implement stats
   String get stats => JsonEncoder.withIndent("  ").convert({
-    "encryption type": publication.encryptionType.toString(),
-  }); 
+        "encryption type": publication.encryptionType.toString(),
+      });
+
+  @override
+  Future<void> setVolume(double volume) async {
+    preferences.setVoipUserVolume(userId, volume);
+    if (publication.track case AudioTrack track) {
+      Helper.setVolume(volume, track.mediaStreamTrack);
+    }
+  }
+
+  @override
+  double get volume => preferences.getVoipUserVolume(userId);
 }

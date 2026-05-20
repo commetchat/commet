@@ -5,6 +5,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
@@ -25,21 +26,25 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixHtmlParser {
-  static Widget parse(String text, MatrixClient client, Room? room) {
+  static Widget parse(String text, MatrixClient client, Room? room,
+      {bool mentionsRoom = true}) {
     return MatrixHtmlState(
       text,
       client,
       room,
+      mentionsRoom: mentionsRoom,
       key: GlobalKey(),
     );
   }
 }
 
 class MatrixHtmlState extends StatefulWidget {
-  const MatrixHtmlState(this.text, this.client, this.room, {super.key});
+  const MatrixHtmlState(this.text, this.client, this.room,
+      {this.mentionsRoom = true, super.key});
   final String text;
   final MatrixClient client;
   final Room? room;
+  final bool mentionsRoom;
 
   @override
   State<MatrixHtmlState> createState() => _MatrixHtmlStateState();
@@ -52,6 +57,8 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LineBreakHtmlExtension _lineBreak = LineBreakHtmlExtension();
   static final ColorHtmlExtension _color = ColorHtmlExtension();
+  static final RoomMentionsHtmlExtension _roomMentions =
+      RoomMentionsHtmlExtension();
   static const Set<String> allowedHtmlTags = {
     'body',
     'html',
@@ -127,6 +134,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         _lineBreak,
         imageExtension,
         _color,
+        if (widget.mentionsRoom) _roomMentions,
       ],
       style: {
         "body": Style(
@@ -553,6 +561,40 @@ class ColorHtmlExtension extends HtmlExtension {
   bool matches(ExtensionContext context) {
     return context.attributes.containsKey("data-mx-color") ||
         context.attributes.containsKey("color");
+  }
+
+  @override
+  Set<String> get supportedTags => {};
+}
+
+class RoomMentionsHtmlExtension extends HtmlExtension {
+  RoomMentionsHtmlExtension();
+
+  @override
+  InlineSpan build(ExtensionContext context) {
+    var data = (context.node as dom.Text).data;
+    return TextSpan(
+        children: TextUtils.formatMatches(
+      MatrixRoom.roomMentionRegex.allMatches(data),
+      data,
+      builder: (matchedText, theme) {
+        return WidgetSpan(
+            child: MentionWidget(
+                displayName: matchedText,
+                showAvatar: false,
+                placeholderColor:
+                    ColorScheme.of(context.buildContext!).primary));
+      },
+    ));
+  }
+
+  @override
+  bool matches(ExtensionContext context) {
+    if (context.node case dom.Text text) {
+      return MatrixRoom.roomMentionRegex.hasMatch(text.data);
+    }
+
+    return false;
   }
 
   @override

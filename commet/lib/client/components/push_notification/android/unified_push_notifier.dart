@@ -95,7 +95,7 @@ class UnifiedPushNotifier implements Notifier {
       if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
         if (preferences.developerMode.value) {
           // ignore {"prio": "high"} notifications
-          if (message.length == 1 && message.containsKey("prio")) {
+          if (message.length == 2 && message.containsKey("prio")) {
             return;
           }
 
@@ -169,5 +169,17 @@ class UnifiedPushNotifier implements Notifier {
   @override
   Future<void> clearNotifications(Room room) {
     return notifier.clearNotifications(room);
+  }
+
+  @override
+  Future<void> disableBadges() {
+    // TODO: implement disableBadges
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> enableBadges() {
+    // TODO: implement enableBadges
+    throw UnimplementedError();
   }
 }

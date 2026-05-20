@@ -1,3 +1,4 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -18,14 +19,21 @@ class NotificationModifierSuppressOtherActiveDevice
       return content;
     }
 
-    if (clientManager == null) {
-      Log.w(
-          "Suppressing notifications for background client is not currently supported");
-      return content;
-    }
+    List<Client> clients = List.empty();
 
-    var clients = clientManager!.clients
-        .where((element) => element.hasRoom(content.roomId));
+    if (clientManager == null) {
+      if (content.room != null) {
+        clients = [content.room!.client];
+      } else {
+        Log.w(
+            "Suppressing notifications for background client is not currently supported");
+        return content;
+      }
+    } else {
+      clients = clientManager!.clients
+          .where((element) => element.hasRoom(content.roomId))
+          .toList();
+    }
 
     for (var client in clients) {
       List<Device>? devices;

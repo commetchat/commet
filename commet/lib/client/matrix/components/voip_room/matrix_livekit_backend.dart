@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_se
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:livekit_client/livekit_client.dart' as lk;
 import 'package:matrix/matrix.dart';
@@ -145,13 +146,20 @@ class MatrixLivekitBackend {
     MatrixLivekitEncryptionKeyProvider? provider;
 
     if (room.isE2EE) {
-    provider =
-        await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom);
+      provider =
+          await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom);
       e2eeOptions = lk.E2EEOptions(keyProvider: provider);
     }
 
     final roomOptions = lk.RoomOptions(
-        adaptiveStream: true, dynacast: true, encryption: e2eeOptions);
+        adaptiveStream: true,
+        dynacast: true,
+        e2eeOptions: e2eeOptions,
+        defaultAudioPublishOptions: lk.AudioPublishOptions(
+          encoding: lk.AudioEncoding(
+              maxBitrate:
+                  (preferences.streamAudioBitrate.value * 1000).toInt()),
+        ));
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
 

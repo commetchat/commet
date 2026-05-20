@@ -233,6 +233,14 @@ class Preferences {
     return HotKey.fromJson(jsonDecode(item));
   }
 
+  Future<void> setVoipUserVolume(String userId, double volume) async {
+    _preferences!.setDouble("call_user_volume:${userId}", volume);
+  }
+
+  double getVoipUserVolume(String userId) {
+    return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
+  }
+
   BoolPreference shouldFollowSystemTheme =
       BoolPreference("should_follow_system_theme", defaultValue: false);
 
@@ -244,6 +252,9 @@ class Preferences {
 
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
+
+  BoolPreference showStateEvents =
+      BoolPreference("show_state_events", defaultValue: true);
 
   BoolPreference debugTranslations =
       BoolPreference("enable_translations_debug", defaultValue: false);
@@ -295,6 +306,9 @@ class Preferences {
       "silence_notifications_when_other_device_active",
       defaultValue: true);
 
+  BoolPreference showNotificationBadgesInTaskbar =
+      BoolPreference("show_notification_badges_in_taskbar", defaultValue: true);
+
   BoolPreference disableTextCursorManagement =
       BoolPreference("disable_text_cursor_management", defaultValue: false);
 
@@ -337,6 +351,9 @@ class Preferences {
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
 
+  DoublePreference streamAudioBitrate =
+      DoublePreference("stream_audio_kbps", defaultValue: 96);
+
   DoublePreference streamFramerate =
       DoublePreference("screenshare_fps", defaultValue: 60);
 
@@ -363,6 +380,9 @@ class Preferences {
       defaultValue: "stun:turn.matrix.org");
 
   StringPreference theme = StringPreference("app_theme", defaultValue: "dark");
+
+  NullableStringPreference lastOpenedVersion =
+      NullableStringPreference("last_run_version", defaultValue: null);
 
   NullableBoolPreference unifiedPushEnabled =
       NullableBoolPreference("unified_push_enabled", defaultValue: null);

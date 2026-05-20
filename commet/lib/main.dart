@@ -142,11 +142,7 @@ void main(List<String> args) async {
     print('${format.format(record.time)} ${record.level} : ${record.message}');
   });
 
-  if (BuildConfig.RELEASE) {
-    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
-  } else {
-    appMain();
-  }
+  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
 }
 
 void appMain() async {
@@ -384,6 +380,7 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   StreamSubscription? _onClientRemovedSubscription;
   StreamSubscription? _onClientAddedSubscription;
+  late bool isInitiallyLoggedIn;
 
   @override
   void initState() {
@@ -399,6 +396,8 @@ class _AppViewState extends State<AppView> {
         widget.clientManager.onClientAdded.stream.listen((_) {
       setState(() {});
     });
+
+    isInitiallyLoggedIn = widget.clientManager.isLoggedIn();
   }
 
   @override
@@ -415,6 +414,7 @@ class _AppViewState extends State<AppView> {
             widget.clientManager,
             initialClientId: widget.initialClientId,
             initialRoom: widget.initialRoom,
+            wasLoggedInAtStartup: isInitiallyLoggedIn,
           )
         : LoginPage(onSuccess: (_) {
             setState(() {});

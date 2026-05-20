@@ -66,13 +66,13 @@ class ClientManager {
 
   late StreamController<void> onSync = StreamController.broadcast();
 
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd;
 
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove;
 
-  Stream<int> get onSpaceAdded => _spaces.onAdd;
+  Stream<Space> get onSpaceAdded => _spaces.onAdd;
 
-  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+  Stream<Space> get onSpaceRemoved => _spaces.onRemove;
 
   late StreamController<int> onClientAdded = StreamController.broadcast();
 
@@ -108,22 +108,22 @@ class ClientManager {
 
       _clientsList.add(client);
 
-      for (int i = 0; i < client.rooms.length; i++) {
-        _onClientAddedRoom(client, i);
+      for (final e in client.rooms) {
+        _onClientAddedRoom(client, e);
       }
 
-      for (int i = 0; i < client.spaces.length; i++) {
-        _addSpace(client, i);
+      for (final e in client.spaces) {
+        _addSpace(client, e);
       }
 
       _clientSubscriptions[client] = [
         client.onSync.listen((_) => _synced()),
-        client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),
+        client.onRoomAdded.listen((room) => _onClientAddedRoom(client, room)),
         client.onRoomRemoved
-            .listen((index) => _onClientRemovedRoom(client, index)),
-        client.onSpaceAdded.listen((index) => _addSpace(client, index)),
+            .listen((room) => _onClientRemovedRoom(client, room)),
+        client.onSpaceAdded.listen((space) => _addSpace(client, space)),
         client.onSpaceRemoved
-            .listen((index) => _onClientRemovedSpace(client, index)),
+            .listen((space) => _onClientRemovedSpace(client, space)),
         client.connectionStatusChanged.stream
             .listen((event) => _onClientConnectionStatusChanged(client, event)),
       ];
@@ -146,25 +146,22 @@ class ClientManager {
     }
   }
 
-  void _onClientAddedRoom(Client client, int index) {
-    rooms.add(client.rooms[index]);
+  void _onClientAddedRoom(Client client, Room room) {
+    rooms.add(room);
   }
 
-  void _onClientRemovedRoom(Client client, int index) {
-    var room = client.rooms[index];
+  void _onClientRemovedRoom(Client client, Room room) {
     _rooms.remove(room);
   }
 
-  void _onClientRemovedSpace(Client client, int index) {
-    var space = client.spaces[index];
+  void _onClientRemovedSpace(Client client, Space space) {
     _spaces.remove(space);
   }
 
-  void _addSpace(Client client, int index) {
-    var space = client.spaces[index];
+  void _addSpace(Client client, Space space) {
     space.onUpdate.listen((_) => spaceUpdated(space));
     space.onChildRoomUpdated.listen((_) => spaceChildUpdated(space));
-    spaces.add(client.spaces[index]);
+    spaces.add(space);
   }
 
   void spaceUpdated(Space space) {

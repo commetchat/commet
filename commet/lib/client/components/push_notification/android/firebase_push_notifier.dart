@@ -46,7 +46,7 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
     if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
       if (preferences.developerMode.value) {
         // ignore {"prio": "high"} notifications
-        if (data.length == 1 && data.containsKey("prio")) {
+        if (data.length == 2 && data.containsKey("prio")) {
           return;
         }
 
@@ -132,5 +132,17 @@ class FirebasePushNotifier implements Notifier {
   @override
   Future<void> clearNotifications(Room room) {
     return notifier.clearNotifications(room);
+  }
+
+  @override
+  Future<void> disableBadges() {
+    // TODO: implement disableBadges
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> enableBadges() {
+    // TODO: implement enableBadges
+    throw UnimplementedError();
   }
 }

@@ -26,4 +26,8 @@ abstract class VoipStream {
   bool get isMuted;
 
   double? get aspectRatio;
+
+  double get volume;
+
+  Future<void> setVolume(double volume);
 }

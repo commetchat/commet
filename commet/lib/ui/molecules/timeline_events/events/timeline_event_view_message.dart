@@ -1,5 +1,6 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -40,6 +41,7 @@ class TimelineEventViewMessage extends StatefulWidget {
       this.jumpToEvent,
       this.readReceipts = const [],
       this.onReadReceiptsTapped,
+      this.onDoubleTapMessage,
       this.detailed = false,
       this.previewMedia = false,
       required this.initialIndex});
@@ -56,6 +58,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   final bool isThreadTimeline;
   final bool previewMedia;
   final Function()? onReadReceiptsTapped;
+  final Function()? onDoubleTapMessage;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -67,6 +70,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   late String senderName;
   late String senderId;
   late Color senderColor;
+
+  late bool mentionsRoom;
+  late List<String> mentions;
 
   String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
       desc: "Placeholde text for when a message fails to decrypt",
@@ -92,6 +98,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   ThreadsComponent? threadComponent;
   bool isHeadOfThread = false;
+
+  bool isGif = false;
+  bool isFavoriteGif = false;
 
   int index = 0;
 
@@ -131,6 +140,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       formattedContent: formattedContent,
       timestamp: timestampToString(sentTime),
       edited: edited,
+      isMentioningSelf: mentionsRoom ||
+          mentions.contains(widget.timeline!.client.self!.identifier),
+      onDoubleTapMessage: widget.onDoubleTapMessage,
       avatarBuilder: (child) {
         var room = widget.room ?? widget.timeline?.room;
 
@@ -163,6 +175,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               sticker!,
               stickerName: body,
               previewMedia: widget.previewMedia,
+              isFavoriteGif: isFavoriteGif,
+              markAsFavorite: markGifAsFavorite,
             )
           : null,
       inResponseTo: isInResponse && widget.timeline != null
@@ -220,6 +234,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   void loadStateFromEvent(TimelineEvent event) {
+    mentionsRoom = event.mentionsRoom;
+    mentions = event.mentions;
     showSender = shouldShowSender(index);
     var room = widget.room ?? widget.timeline?.room;
 
@@ -232,6 +248,14 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     senderColor = sender.defaultColor;
 
     sentTime = event.originServerTs;
+
+    var gifs = (widget.room ?? widget.timeline?.room)
+        ?.client
+        .getComponent<GifComponent>();
+
+    isGif = gifs?.isGif(event) == true;
+
+    isFavoriteGif = gifs?.isFavoriteGif(event) == true;
 
     if (widget.timeline != null) {
       if (event is TimelineEventFeatureReactions) {
@@ -377,5 +401,31 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
         1) return true;
 
     return thisEvent.senderId != prevEvent.senderId;
+  }
+
+  markGifAsFavorite(bool favorite) async {
+    print(
+      "Marking gif as favorite: $favorite",
+    );
+
+    var gif = (widget.room ?? widget.timeline?.room)
+        ?.client
+        .getComponent<GifComponent>();
+
+    var event = widget.timeline!.events[index];
+    var isGif = gif?.isGif(event) == true;
+    if (!isGif) {
+      return;
+    }
+
+    setState(() {
+      isFavoriteGif = favorite;
+    });
+
+    if (favorite) {
+      await gif!.setFavoriteFromEvent(event);
+    } else {
+      await gif!.removeFavoriteFromEvent(event);
+    }
   }
 }

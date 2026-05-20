@@ -34,6 +34,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encry
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_membership.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_message.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_pinned_messages.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_power_levels.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_redaction.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_sticker.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_unknown.dart';
@@ -41,6 +42,7 @@ import 'package:commet/client/member.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/build_config.dart';
@@ -49,6 +51,8 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
+import 'package:html/dom.dart' as html_dom;
+import 'package:html/parser.dart' as html_parser;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
@@ -110,6 +114,9 @@ class MatrixRoom extends Room {
 
   @override
   TimelineEvent? lastEvent;
+
+  @override
+  TimelineEvent? lastMessage;
 
   @override
   Iterable<String> get memberIds =>
@@ -223,6 +230,10 @@ class MatrixRoom extends Room {
 
     if (latest != null) {
       lastEvent = convertEvent(latest);
+
+      if (latest.type == matrix.EventTypes.Message) {
+        lastMessage = lastEvent;
+      }
     }
 
     updateAvatar();
@@ -283,6 +294,18 @@ class MatrixRoom extends Room {
       } else if (event.originServerTs.isAfter(lastEvent!.originServerTs)) {
         lastEvent = event;
         _onUpdate.add(null);
+      }
+
+      if (event is TimelineEventMessage ||
+          event is TimelineEventSticker ||
+          event is TimelineEventEmote) {
+        if (lastMessage == null) {
+          lastMessage = event;
+          _onUpdate.add(null);
+        } else if (event.originServerTs.isAfter(lastMessage!.originServerTs)) {
+          lastMessage = event;
+          _onUpdate.add(null);
+        }
       }
     }
   }
@@ -473,6 +496,23 @@ class MatrixRoom extends Room {
         event['formatted_body'] = html;
       }
 
+      var document = html_parser.parse(html);
+
+      var mentionsList = _findEventMentions(document);
+
+      var mentions = {};
+
+      if (mentionsList.contains("@room")) {
+        mentions["room"] = true;
+        mentionsList.remove("@room");
+      }
+
+      if (mentionsList.isNotEmpty) {
+        mentions["user_ids"] = mentionsList.toList();
+      }
+
+      event["m.mentions"] = mentions;
+
       var id = await _matrixRoom.sendEvent(event,
           inReplyTo: replyingTo,
           editEventId: replaceEvent?.eventId,
@@ -517,6 +557,8 @@ class MatrixRoom extends Room {
           MatrixTimelineEventEncrypted(event, client: c),
         matrix.EventTypes.RoomCreate =>
           MatrixTimelineEventCreateRoom(event, client: c),
+        matrix.EventTypes.RoomPowerLevels =>
+          MatrixTimelineEventPowerLevels(event, client: c),
         matrix.EventTypes.Reaction =>
           MatrixTimelineEventAddReaction(event, client: c),
         matrix.EventTypes.RoomMember =>
@@ -701,10 +743,31 @@ class MatrixRoom extends Room {
 
     var ids = roles.keys;
 
-    var result =
-        ids.map((e) => (getMemberOrFallback(e), MatrixRole(roles[e]))).toList();
+    List<(Member, MatrixRole)> result = List.empty(growable: true);
 
-    result.removeWhere((element) => element.$2.rank == 0);
+    var creationEvent = _matrixRoom.states[matrix.EventTypes.RoomCreate]?[""];
+    var creator = creationEvent?.senderId;
+    var roomVersion = int.tryParse(_matrixRoom.roomVersion ?? "1");
+
+    if (roomVersion != null && roomVersion >= 12) {
+      if (_matrixRoom.roomVersion != null && creator != null) {
+        var additionalCreators =
+            creationEvent?.content.tryGetList<String>("additional_creators");
+
+        for (var id in [
+          creator,
+          if (additionalCreators != null) ...additionalCreators
+        ]) {
+          result.add((getMemberOrFallback(id), MatrixRole(150)));
+        }
+      }
+    }
+
+    result.addAll(ids
+        .map((e) => (getMemberOrFallback(e), MatrixRole(roles[e])))
+        .where((element) => element.$2.rank != 0));
+
+    result;
 
     result.sort((a, b) => b.$2.rank.compareTo(a.$2.rank));
 
@@ -863,6 +926,9 @@ class MatrixRoom extends Room {
   }
 
   @override
+  String get lastRead => _matrixRoom.fullyRead;
+
+  @override
   RoomVisibility get visibility {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
@@ -910,5 +976,53 @@ class MatrixRoom extends Room {
 
     await _matrixRoom.client
         .setRoomStateWithKey(_matrixRoom.id, state.type, "", state.content);
+  }
+
+  Set<String> _findEventMentions(html_dom.Document document) {
+    var result = Set<String>();
+
+    result.addAll(_findChildMentions(document.nodes));
+
+    return result;
+  }
+
+  static var roomMentionRegex = RegExp(r'(?<!\w)@room(?!\w)');
+
+  Set<String> _findChildMentions(html_dom.NodeList children) {
+    var result = Set<String>();
+
+    for (var child in children) {
+      if (child case html_dom.Element element) {
+        if (element.localName == "pre" || element.localName == "code") continue;
+
+        if (element.localName == "a") {
+          var url = child.attributes["href"];
+          if (url != null) {
+            var parsed = Uri.tryParse(url);
+            try {
+              if (parsed?.authority == "matrix.to") {
+                var id = parsed!.fragment.substring(1);
+                var userId = Uri.decodeQueryComponent(id);
+
+                if (userId.startsWith("@") && userId.isValidMatrixId) {
+                  result.add(userId);
+                }
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
+      if (child case html_dom.Text text) {
+        var data = text.data;
+        if (roomMentionRegex.hasMatch(data)) {
+          result.add("@room");
+        }
+      }
+
+      result.addAll(_findChildMentions(child.nodes));
+    }
+
+    return result;
   }
 }

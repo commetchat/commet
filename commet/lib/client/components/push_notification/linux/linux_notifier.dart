@@ -132,9 +132,11 @@ class LinuxNotifier implements Notifier {
   }
 
   void updateBadgeCount() {
-    var counts = NotificationUtils.getNotificationCounts();
-    var count = counts.$2;
-    service.update(countVisible: count > 0, count: count);
+    if (preferences.showNotificationBadgesInTaskbar.value == true) {
+      var counts = NotificationUtils.getNotificationCounts();
+      var count = counts.$2;
+      service.update(countVisible: count > 0, count: count);
+    }
   }
 
   @override
@@ -297,4 +299,14 @@ class LinuxNotifier implements Notifier {
 
   @override
   Future<void> clearNotifications(Room room) async {}
+
+  @override
+  Future<void> disableBadges() async {
+    service.update(countVisible: false, count: 0);
+  }
+
+  @override
+  Future<void> enableBadges() async {
+    updateBadgeCount();
+  }
 }

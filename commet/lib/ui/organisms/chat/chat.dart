@@ -98,7 +98,7 @@ class ChatState extends State<Chat> {
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
 
-    gifs = room.getComponent<GifComponent>();
+    gifs = room.client.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
     threadsComponent = room.client.getComponent<ThreadsComponent>();
     receipts = room.getComponent<ReadReceiptComponent>();
@@ -118,7 +118,7 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> loadTimeline() async {
-    var t = await room.getTimeline();
+    var t = await room.getTimeline(contextEventId: room.lastRead);
     setState(() {
       _timeline = t;
     });
@@ -126,7 +126,9 @@ class ChatState extends State<Chat> {
 
   Future<void> loadThreadTimeline() async {
     Timeline? timeline = room.timeline;
-    timeline ??= await room.getTimeline();
+    timeline ??= room.lastRead.isNotEmpty
+        ? await room.getTimeline(contextEventId: room.lastRead)
+        : await room.getTimeline();
 
     var threadTimeline = await threadsComponent!.getThreadTimeline(
         roomTimeline: timeline, threadRootEventId: widget.threadId!);
@@ -326,6 +328,7 @@ class ChatState extends State<Chat> {
 
   Future<void> sendGif(GifSearchResult gif) async {
     await gifs?.sendGif(
+        room,
         gif,
         interactionType == EventInteractionType.reply
             ? interactingEvent
@@ -406,5 +409,14 @@ class ChatState extends State<Chat> {
         }
       }
     }
+  }
+
+  Future<void> sendFavoriteGif(FavoriteGif gif) async {
+    await room.client.getComponent<GifComponent>()?.sendFavoriteGif(
+        room,
+        gif,
+        interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null);
   }
 }

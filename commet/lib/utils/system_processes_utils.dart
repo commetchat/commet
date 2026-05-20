@@ -33,7 +33,6 @@ class SystemProcessesUtils {
       var split = line.trim().split(" ");
       if (split.isEmpty) continue;
 
-      print(split);
       var pid = int.parse(split[0]);
       var command = split[1];
 
