@@ -67,12 +67,12 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetStatus": "Aseta Status",
+    "promptProfileSetStatus": "Aseta tila",
     "@promptProfileSetStatus": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearStatus": "Poista Status",
+    "promptProfileClearStatus": "Poista tila",
     "@promptProfileClearStatus": {
         "type": "text",
         "placeholders": {}
@@ -164,6 +164,91 @@
     "labelSpaceRoomsList": "Huoneet",
     "@labelSpaceRoomsList": {
         "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "Avoimet huoneet",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "Julkinen tila",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "Yksityinen tila",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Rajoitettu tila",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSpace": "Lisää tila",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Tuleva puhelu {callingUserName}lta!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "promptAttachmentProcessingSendOriginal": "Lähetä alkuperäinen",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Varoitus: Tämä kuva sisältää sijaintitietoja",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Julkinen",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityRestricted": "Rajoitettu",
+    "@labelVisibilityRestricted": {
+        "description": "Short label for room visibility restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Luo huone!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "Jaa kuvia ja videoita kavereille tai yhteisölle!",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Yksityisviestit",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Yksityisviestit",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
         "type": "text",
         "placeholders": {}
     }
