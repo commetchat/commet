@@ -132,8 +132,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
   Future<void> loadSignalPack(Uri uri) async {
     var client = SignalStickerClient(
-        host: preferences.proxyUrl.value,
-        rootPath: "/proxy/signal");
+        host: preferences.proxyUrl.value, rootPath: "/proxy/signal");
 
     var packInfo = client.getPackFromUri(uri);
     var pack = await client.getPack(packInfo!);
