@@ -11,6 +11,7 @@ class SidebarCallIconView extends StatelessWidget {
       this.color,
       this.onTap,
       this.audioLevel = 0,
+      this.isMuted = false,
       required this.width,
       super.key});
   final double width;
@@ -19,6 +20,7 @@ class SidebarCallIconView extends StatelessWidget {
   final ImageProvider? avatar;
   final VoipState state;
   final double audioLevel;
+  final bool isMuted;
   final Function()? onTap;
   @override
   Widget build(BuildContext context) {
@@ -66,8 +68,9 @@ class SidebarCallIconView extends StatelessWidget {
 
   Color getBorderColor(BuildContext context) {
     if (state == VoipState.connected) {
+      final level = isMuted ? 0.0 : audioLevel;
       return Color.lerp(Theme.of(context).primaryColor,
-          Theme.of(context).colorScheme.primary, audioLevel)!;
+          Theme.of(context).colorScheme.primary, level)!;
     }
 
     return Theme.of(context).primaryColor;
