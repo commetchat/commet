@@ -291,9 +291,6 @@ class MatrixLivekitVoipSession implements VoipSession {
       ),
     ));
 
-    print("Available codecs");
-    livekitRoom.engine.enabledPublishCodecs?.forEach((i) => print(i.mime));
-
     await livekitRoom.localParticipant?.publishVideoTrack(track,
         publishOptions: lk.VideoPublishOptions(
           simulcast: preferences.doSimulcast.value,

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';

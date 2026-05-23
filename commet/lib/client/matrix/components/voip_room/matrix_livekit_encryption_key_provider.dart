@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:livekit_client/livekit_client.dart' hide KeyProvider;
 import 'package:webrtc_interface/src/frame_cryptor.dart';
