@@ -20,6 +20,8 @@ class WidgetDebugView extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyActions: false,
+          automaticallyImplyLeading: false,
           bottom: TabBar(
             tabs: [
               Tab(
