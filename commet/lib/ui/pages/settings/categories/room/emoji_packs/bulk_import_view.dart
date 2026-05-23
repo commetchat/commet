@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
+import 'package:signal_sticker_api/signal_sticker_api.dart';
 import 'package:tiamat/atoms/panel.dart';
 
 import 'package:path/path.dart' as p;
@@ -131,7 +131,9 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   }
 
   Future<void> loadSignalPack(Uri uri) async {
-    dynamic client = null;
+    var client = SignalStickerClient(
+        host: preferences.proxyUrl.value,
+        rootPath: "/proxy/signal");
 
     var packInfo = client.getPackFromUri(uri);
     var pack = await client.getPack(packInfo!);

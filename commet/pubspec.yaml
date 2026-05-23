@@ -74,6 +74,10 @@ dependencies:
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
       ref: upstream-v6.1.1+patch.1
 
+  signal_sticker_api: 
+    git: 
+      url: https://github.com/commetchat/signal-sticker-api.git
+      ref: 2d864d0f907d698f260e63f44b3aacc400f089ac
   starfield: 
     git: https://github.com/lagmachine-com/starfield.git
   sqlite3_flutter_libs: ^0.5.23

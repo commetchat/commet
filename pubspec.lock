@@ -1777,6 +1777,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  signal_sticker_api:
+    dependency: transitive
+    description:
+      path: "."
+      ref: "2d864d0f907d698f260e63f44b3aacc400f089ac"
+      resolved-ref: "2d864d0f907d698f260e63f44b3aacc400f089ac"
+      url: "https://github.com/commetchat/signal-sticker-api.git"
+    source: git
+    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
