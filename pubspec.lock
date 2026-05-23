@@ -1142,12 +1142,13 @@ packages:
     source: hosted
     version: "2.0.1"
   livekit_client:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: livekit_client
-      sha256: "23a71bf6c94f83c0d1146c7ced8b863a5f8fe57c5e3007ea5f1b2881066b4126"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: hkdf
+      resolved-ref: "24275388ab5ee638da0a29bc50f8431e512ec75d"
+      url: "https://github.com/commetchat/livekit-client-sdk-flutter.git"
+    source: git
     version: "2.7.0"
   logger:
     dependency: transitive
