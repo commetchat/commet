@@ -32,7 +32,6 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
       children: [
         LayoutBuilder(
           builder: (context, constraints) {
@@ -41,6 +40,7 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
                 widget.stream,
                 widget.session,
                 canFullscreen: false,
+                onFullscreen: () {Navigator.of(context).pop();},
               ),
               onHover: (event) {
                 final width = constraints.maxWidth;
