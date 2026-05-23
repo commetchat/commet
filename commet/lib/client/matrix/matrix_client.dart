@@ -163,15 +163,12 @@ class MatrixClient extends Client {
     ClientManager manager, {
     bool isBackgroundService = false,
   }) async {
-
-
     await _checkSystem(manager);
 
     await Diagnostics.general.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
       List<Future> futures = List.empty(growable: true);
-
 
       if (clients != null) {
         for (var clientName in clients) {
