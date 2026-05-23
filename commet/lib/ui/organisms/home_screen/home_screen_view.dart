@@ -1,16 +1,13 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/invitation/invitation.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:commet/ui/molecules/invitation_display.dart';
-import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class HomeScreenView extends StatelessWidget {
   final ClientManager clientManager;
@@ -168,11 +165,6 @@ class HomeScreenView extends StatelessWidget {
                 );
               },
             ),
-            tiamat.CircleButton(
-              radius: BuildConfig.MOBILE ? 24 : 16,
-              icon: Icons.add,
-              onPressed: () => addRoomDialog(context),
-            ),
           ],
         ));
   }
@@ -195,10 +187,5 @@ class HomeScreenView extends StatelessWidget {
             );
           },
         ));
-  }
-
-  void addRoomDialog(BuildContext context) {
-    GetOrCreateRoom.show(null, context,
-        pickExisting: false, showAllRoomTypes: true);
   }
 }
