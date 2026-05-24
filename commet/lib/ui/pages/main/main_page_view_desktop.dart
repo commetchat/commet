@@ -12,6 +12,7 @@ import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
@@ -135,6 +136,7 @@ class MainPageViewDesktop extends StatelessWidget {
               },
             ),
           const BackgroundTaskViewContainer(),
+          const OverlayWindowsSurface(),
         ],
       ),
     );

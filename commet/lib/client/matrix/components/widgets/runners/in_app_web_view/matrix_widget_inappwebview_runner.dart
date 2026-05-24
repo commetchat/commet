@@ -33,8 +33,6 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
 
   late InAppWebViewController controller;
 
-  InAppWebViewKeepAlive keepAlive;
-
   UserWidgetInfo info;
 
   @override
@@ -46,7 +44,6 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
       required this.widgetId,
       required this.info,
       required BuildContext context,
-      required this.keepAlive,
       required this.client}) {
     var tx = MatrixInAppWebViewWidgetTransceiver(webViewController);
 
@@ -61,7 +58,6 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   @override
   void dispose() {
     Log.w("Disposing widget runner!");
-    controller.platform.disposeKeepAlive(keepAlive);
     controller.dispose(isKeepAlive: false);
   }
 }
@@ -73,8 +69,6 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
       this.userScript,
       this.room,
       this.component,
-      required this.keepAlive,
-      this.initialize = false,
       required this.info,
       this.onRunnerCreated,
       this.initialRunner,
@@ -85,8 +79,6 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
   final MatrixRoom? room;
   final MatrixWidgetComponent? component;
   final UserWidgetInfo info;
-  final bool initialize;
-  final InAppWebViewKeepAlive keepAlive;
   final MatrixUserWidgetInAppWebviewRunner? initialRunner;
   final void Function(MatrixUserWidgetInAppWebviewRunner)? onRunnerCreated;
 
@@ -94,8 +86,8 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       child: InAppWebView(
-        keepAlive: keepAlive,
-        initialUrlRequest: initialize ? URLRequest(url: WebUri(url!)) : null,
+        initialSettings: InAppWebViewSettings(transparentBackground: true),
+        initialUrlRequest: URLRequest(url: WebUri(url!)),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
         },
@@ -111,13 +103,11 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
             }
           }
 
-          if (!initialize) return;
           var runner = MatrixUserWidgetInAppWebviewRunner(
               webViewController: controller,
               info: info,
               room: room,
               context: context,
-              keepAlive: keepAlive,
               widgetId: widgetId!,
               client: room!.client as MatrixClient);
 

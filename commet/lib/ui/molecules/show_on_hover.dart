@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:flutter/material.dart';
 
 class ShowOnHover extends StatefulWidget {
@@ -8,6 +9,8 @@ class ShowOnHover extends StatefulWidget {
 
   final Widget background;
   final Widget child;
+
+  static bool get useTouchControls => Layout.mobile || PlatformUtils.isAndroid;
 
   @override
   State<ShowOnHover> createState() => _ShowOnHoverState();
@@ -46,7 +49,7 @@ class _ShowOnHoverState extends State<ShowOnHover> {
           GestureDetector(
             child: widget.background,
             onTap: () {
-              if (Layout.mobile) {
+              if (ShowOnHover.useTouchControls) {
                 hideTimer?.cancel();
 
                 setState(() {

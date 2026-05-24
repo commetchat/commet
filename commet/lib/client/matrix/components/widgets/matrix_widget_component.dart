@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
-import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_in_app_web_view_page.dart';
+import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_inappwebview_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/matrix_widget_desktop_runner.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -14,10 +14,9 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/widget_debug_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixUserWidgetInfo implements UserWidgetInfo {
@@ -103,7 +102,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
   }
 
   @override
-  Future<void> openWidget(UserWidgetInfo widget, Room room) async {
+  Future<void> openWidget(
+      UserWidgetInfo widget, Room room, BuildContext context) async {
     var info = widget as MatrixUserWidgetInfo;
     var url = Uri.encodeFull(info.url);
 
@@ -161,20 +161,27 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
       Log.i("Final user script: $finalScript");
 
-      var keepAlive = InAppWebViewKeepAlive();
+      var builtWidget = MatrixWidgetInappwebviewRunnerWidget(
+        url: url,
+        info: info,
+        widgetId: widget.id,
+        userScript: finalScript,
+        room: room as MatrixRoom,
+        component: this,
+      );
 
-      NavigationUtils.navigateTo(
-          navigator.currentContext!,
-          MatrixWidgetInappwebviewPage(
-              keepAlive: keepAlive,
-              info: info,
-              creationParms: MatrixWidgetInAppWebviewCreationParms(
-                url: url,
-                userScript: finalScript,
-                widgetId: widget.id,
-                room: room as MatrixRoom,
-                component: this,
-              )));
+      OverlayWindowsManager.of(context)
+          .addWindow(OverlayWindow(widget: builtWidget, title: "Widget"));
+
+      return;
+
+      // var overlay = Overlay.of(context);
+
+      // overlay.insert(OverlayEntry(
+      //   builder: (context) {
+
+      //   },
+      // ));
     }
   }
 }

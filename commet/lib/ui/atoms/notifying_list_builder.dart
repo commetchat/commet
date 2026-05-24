@@ -11,7 +11,8 @@ class NotifyingListBuilder<T> extends StatefulWidget {
   final Widget? Function(BuildContext context, T value) builder;
 
   @override
-  State<NotifyingListBuilder<T>> createState() => _NotifyingListBuilderState<T>();
+  State<NotifyingListBuilder<T>> createState() =>
+      _NotifyingListBuilderState<T>();
 }
 
 class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {

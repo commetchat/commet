@@ -9,6 +9,7 @@ import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
@@ -117,24 +118,29 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           }
         },
         child: Foundation(
-            child: OverlappingPanels(
-          key: panelsKey,
-          onSideChange: (side) {
-            if (side != RevealSide.main) {
-              FocusManager.instance.primaryFocus?.unfocus();
-            }
+            child: Stack(
+          children: [
+            OverlappingPanels(
+              key: panelsKey,
+              onSideChange: (side) {
+                if (side != RevealSide.main) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }
 
-            setState(() {
-              shouldMainIgnoreInput = side != RevealSide.main;
-            });
-          },
-          left: navigation(context),
-          main: Foundation(
-              child: IgnorePointer(
-            ignoring: shouldMainIgnoreInput,
-            child: Container(key: mainPanelKey, child: mainPanel()),
-          )),
-          right: rightPanel(context),
+                setState(() {
+                  shouldMainIgnoreInput = side != RevealSide.main;
+                });
+              },
+              left: navigation(context),
+              main: Foundation(
+                  child: IgnorePointer(
+                ignoring: shouldMainIgnoreInput,
+                child: Container(key: mainPanelKey, child: mainPanel()),
+              )),
+              right: rightPanel(context),
+            ),
+            const OverlayWindowsSurface(),
+          ],
         )));
   }
 

@@ -48,7 +48,8 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                           var client = widget.room.client;
                           var widgetComponent =
                               client.getComponent<WidgetComponent>();
-                          widgetComponent!.openWidget(data, widget.room);
+                          widgetComponent!
+                              .openWidget(data, widget.room, context);
                         },
                       ),
                     ),

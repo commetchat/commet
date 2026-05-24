@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:flutter/widgets.dart';
 
 abstract class UserWidgetInfo {
   String get name;
@@ -59,5 +60,6 @@ abstract class WidgetRunner<T, R> {
 abstract class WidgetComponent<T extends Client> implements Component<T> {
   List<UserWidgetInfo> getWidgets(Room room);
 
-  Future<void> openWidget(UserWidgetInfo widget, Room room);
+  Future<void> openWidget(
+      UserWidgetInfo widget, Room room, BuildContext context);
 }
