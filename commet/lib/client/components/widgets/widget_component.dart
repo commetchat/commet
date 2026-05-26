@@ -38,7 +38,7 @@ enum WidgetMessageDirection {
 }
 
 abstract class WidgetMessageTransport {
-  void send(Map<String, dynamic> msg);
+  Future<Map<String, dynamic>> send(Map<String, dynamic> msg);
 
   NotifyingList<(WidgetMessageDirection, Map<String, dynamic>)> get messageLogs;
 

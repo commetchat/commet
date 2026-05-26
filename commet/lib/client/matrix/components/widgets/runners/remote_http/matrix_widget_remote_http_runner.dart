@@ -87,15 +87,6 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     await Future.delayed(Duration(seconds: 2));
 
     Log.i("Client connected!");
-
-    messageTransport.send(
-        eventHandler.generateToWidgetEvent(action: "capabilities", data: {}));
-
-    messageTransport.send(eventHandler
-        .generateToWidgetEvent(action: "notify_capabilities", data: {
-      "requested": ["io.element.requires_client"],
-      "approved": ["io.element.requires_client"]
-    }));
   }
 
   void showConnectionInfo(String secret, String hostName, BuildContext context) async {

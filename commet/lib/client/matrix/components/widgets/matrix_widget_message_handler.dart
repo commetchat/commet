@@ -1,6 +1,7 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixWidgetMessage {
@@ -156,8 +157,28 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
       ]
     });
 
+    
+
     runner.messageTransport.send(response);
+
+    sendInitialCapabilitiesRequest();
   }
+  
+
+  Future<void> sendInitialCapabilitiesRequest() async {
+    Log.i("Sending initial capabilities request");
+    var response = await runner.messageTransport
+        .send(runner.eventHandler
+            .generateToWidgetEvent(action: "capabilities", data: {}));
+
+    Log.i("Received response to initial capabilities!");
+    Log.i(response);
+    var capabilities = response.tryGetMap<String, dynamic>("response")?.tryGetList<String>("capabilities");
+    if(capabilities != null) {
+      runner.capabilities.requestCapabilities(capabilities);
+    }
+  }
+
 
   int requestNum = 0;
 

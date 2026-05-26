@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:commet/client/client.dart';
@@ -83,17 +84,6 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     WidgetComponent.currentSessions.add(runner);
 
     runner.onClosed.listen((_) => WidgetComponent.currentSessions.remove(runner));
-
-    Future.delayed(Duration(seconds: 2)).then((_) {
-      runner.messageTransport.send(runner.eventHandler
-          .generateToWidgetEvent(action: "capabilities", data: {}));
-
-      // I can't explain why this is platform specific
-      if (PlatformUtils.isAndroid || PlatformUtils.isWindows) {
-        (runner.capabilities as MatrixWidgetCapabilitiesManager)
-            .notifyCapabilities(["io.element.requires_client"]);
-      }
-    });
   }
 
   @override
@@ -134,7 +124,11 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       "\$matrix_user_id": room.client.self!.identifier,
       "\$matrix_room_id": room.identifier,
       "\$matrix_display_name": room.client.self!.displayName,
+      "\$org.matrix.msc3819.matrix_device_id": (room.client as MatrixClient).matrixClient.deviceID!,
+      "\$org.matrix.msc4039.matrix_base_url": (room.client as MatrixClient).matrixClient.baseUri.toString()
     };
+    
+    Log.i("Replacements: ${jsonEncode(replacements)}");
 
     for (var pair in replacements.entries) {
       url = url.replaceAll(pair.key, pair.value);
