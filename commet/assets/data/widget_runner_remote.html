@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+    <!-- <link rel="stylesheet" href="./style.css"> -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+    <iframe id="widget-frame" allow="fullscreen" style="width: 100vw; height: 100dvh; border: none; overflow: hidden;"
+        src="$IFRAME_URL"></iframe>
+    <!-- <script src="index.js"></script> -->
+
+    <script>
+
+//${WIDGETS_COMMON_SCRIPT}
+
+        const childWindow = document.getElementById('widget-frame').contentWindow;
+
+        let target = `$IFRAME_URL`;
+
+        let targetUrl = new URL(target);
+
+        
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log(urlParams);
+        
+        let secret = urlParams.get("token");
+
+        console.log(targetUrl);
+
+        console.log("Target: ", target);
+
+        console.log(secret);
+
+        window.addEventListener("message", (message) => {
+
+            if (message.source !== childWindow) {
+                return; // Skip message in this event listener
+            }
+
+            let converted = encodeArrayBuffers(message.data);
+            console.log("Received message: ", converted);
+
+            fetch(`/transceiver/send?token=${secret}`, {
+                method: "POST",
+                body: JSON.stringify(converted)
+            });
+
+        })
+
+
+        async function pollResponses() {
+            while(true) {
+                console.log("Polling for response");
+                var response = await fetch(`/transceiver/receive?token=${secret}`, {
+                    method: "GET",
+                });
+
+                if(response.status == 200) {
+                    var data = await response.json();
+                    
+                    var converted = await decodeArrayBuffers(data);
+                    console.log("Received response: ", converted)
+                    console.log("Sending to: ", targetUrl.origin);
+                    childWindow.postMessage(converted, targetUrl.origin);
+                }
+
+                if(response.status == 403) {
+                    await delay(5000)
+                }
+            }
+        }
+
+        pollResponses()
+
+    </script>
+</body>
+
+</html>

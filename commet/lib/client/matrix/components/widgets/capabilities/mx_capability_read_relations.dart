@@ -104,4 +104,8 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     });
     return response;
   }
+  
+  @override
+  void dispose() {
+  }
 }

@@ -8,6 +8,8 @@ abstract class MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message);
 
   bool canHandleRequest(MatrixWidgetMessage message);
+
+  void dispose();
 }
 
 extension MatrixWidgetCapabilitiesExtension on MatrixWidgetCapability {

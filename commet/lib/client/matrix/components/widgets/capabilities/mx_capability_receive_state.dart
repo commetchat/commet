@@ -124,4 +124,9 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
       "room_id": i.roomId!,
     }));
   }
+  
+  @override
+  void dispose() {
+    sub?.cancel();
+  }
 }

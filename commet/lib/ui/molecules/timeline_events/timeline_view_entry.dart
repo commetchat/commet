@@ -294,7 +294,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           if (menu.addReactionAction != null)
             ContextMenuItem(
               text: "Add Reaction",
-              customBuilder: (context, onClick) => Padding(
+              customBuilder: (context, onClick, {closeMenu}) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

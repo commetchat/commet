@@ -42,4 +42,8 @@ class MatrixCapabilityTurnServers implements MatrixWidgetCapability {
 
     return message.createResponseError(message: "Unimplemented");
   }
+  
+  @override
+  void dispose() {
+  }
 }

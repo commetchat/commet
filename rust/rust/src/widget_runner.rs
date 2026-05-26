@@ -193,10 +193,12 @@ pub fn run() {
     }
 
     let widget_runner_script = include_str!("../../../commet/assets/data/widgets_ipc.js");
+    let common =  include_str!("../../../commet/assets/data/widgets_common.js");
     let ipc_function_script = include_str!("../javascript/call_ipc.js");
 
     let mut final_script = widget_runner_script.to_string();
     final_script = final_script.replace("//${SEND_IPC_CODE}", ipc_function_script);
+    final_script = final_script.replace("//${WIDGETS_COMMON}", common);
 
     info!("Initializing with script: {}", final_script);
 

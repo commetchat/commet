@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:commet/client/components/widgets/widget_component.dart';
-import 'package:commet/client/matrix/components/widgets/matrix_inappwebview_widget_transceiver.dart';
+import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_inappwebview_widget_transceiver.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
@@ -38,6 +40,11 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   @override
   NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
 
+  StreamController _onClosed = StreamController.broadcast();
+
+  @override
+  Stream<void> get onClosed => _onClosed.stream;
+
   MatrixUserWidgetInAppWebviewRunner(
       {required InAppWebViewController webViewController,
       required this.room,
@@ -59,6 +66,7 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   void dispose() {
     Log.w("Disposing widget runner!");
     controller.dispose(isKeepAlive: false);
+    _onClosed.add(());
   }
 }
 

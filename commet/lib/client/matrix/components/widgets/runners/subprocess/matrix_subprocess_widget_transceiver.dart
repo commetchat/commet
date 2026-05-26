@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
 
-class MatrixIoWidgetTransceiver implements WidgetTransceiver {
+class MatrixSubprocessWidgetTransceiver implements WidgetTransceiver {
   List<int> messageBuffer = List.empty(growable: true);
 
   late int seperator;
@@ -14,7 +14,7 @@ class MatrixIoWidgetTransceiver implements WidgetTransceiver {
 
   StreamController<Uint8List> _messageController = StreamController.broadcast();
 
-  MatrixIoWidgetTransceiver({required this.process}) {
+  MatrixSubprocessWidgetTransceiver({required this.process}) {
     seperator = "\n".codeUnits.first;
 
     process.stdout.listen((d) {

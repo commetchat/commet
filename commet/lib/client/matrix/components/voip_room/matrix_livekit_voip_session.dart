@@ -297,7 +297,7 @@ class MatrixLivekitVoipSession implements VoipSession {
           videoCodec: preferences.streamCodec.value,
         ));
 
-    await track
+    track
         .setDegradationPreference(lk.DegradationPreference.maintainFramerate);
 
     _stateChanged.add(());

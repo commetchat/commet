@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
@@ -12,9 +14,11 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
   String eventType;
   String? eventKey;
 
+  StreamSubscription? sub;
+
   MatrixCapabilityReceiveToDeviceEvent(
       {required this.runner, required this.eventType, this.eventKey}) {
-    runner.client.matrixClient.onToDeviceEvent.stream.listen(onToDeviceMessage);
+    sub = runner.client.matrixClient.onToDeviceEvent.stream.listen(onToDeviceMessage);
   }
 
   static String name = "org.matrix.msc3819.receive.to_device";
@@ -55,5 +59,10 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
       "encrypted": event.encryptedContent != null,
       "content": event.content
     }));
+  }
+  
+  @override
+  void dispose() {
+    sub?.cancel();
   }
 }

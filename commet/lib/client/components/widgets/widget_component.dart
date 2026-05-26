@@ -10,12 +10,20 @@ abstract class UserWidgetInfo {
   String get name;
 }
 
+enum WidgetHostType {
+  embedded,
+  childProcess,
+  remoteHttpClient,
+}
+
 abstract class WidgetCapabilityManager<T> {
   Future<List<String>> requestCapabilities(List<String> capabilities);
 
   NotifyingList<String> get grantedCapabilityNames;
 
   void handleEvent(T event);
+
+  void dispose();
 }
 
 abstract class WidgetTransceiver {
@@ -54,12 +62,18 @@ abstract class WidgetRunner<T, R> {
 
   NotifyingList<LogEntry> get logs;
 
+  Stream<void> get onClosed;
+
   void dispose();
 }
 
 abstract class WidgetComponent<T extends Client> implements Component<T> {
   List<UserWidgetInfo> getWidgets(Room room);
 
+  List<WidgetHostType> supportedHostTypes();
+
+  static NotifyingList<WidgetRunner> currentSessions = NotifyingList.empty(growable: true);
+
   Future<void> openWidget(
-      UserWidgetInfo widget, Room room, BuildContext context);
+      UserWidgetInfo widget, Room room, BuildContext context, WidgetHostType type);
 }

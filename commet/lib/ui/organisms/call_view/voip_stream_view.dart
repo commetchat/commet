@@ -114,7 +114,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
       if (stream.direction == VoipStreamDirection.incoming) ...[
         tiamat.ContextMenuItem(
           text: "User",
-          customBuilder: (context, onClicked) {
+          customBuilder: (context, onClicked, {closeMenu}) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               child: Row(
@@ -136,7 +136,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
         ),
         tiamat.ContextMenuItem(
           text: "Volume",
-          customBuilder: (context, onClicked) {
+          customBuilder: (context, onClicked, {closeMenu}) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
               child: StreamVolumeSlider(stream),

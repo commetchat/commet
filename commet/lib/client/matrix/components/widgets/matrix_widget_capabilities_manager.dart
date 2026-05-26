@@ -232,4 +232,14 @@ class MatrixWidgetCapabilitiesManager
     return event.createResponseError(
         message: "Unhandled widget request ${event.action}\n${event.data}");
   }
+  
+  @override
+  void dispose() {
+    for(var capability in grantedCapabilities.values) {
+      capability.dispose();
+    }
+
+    grantedCapabilities.clear();
+    grantedCapabilityNames.clear();
+  }
 }

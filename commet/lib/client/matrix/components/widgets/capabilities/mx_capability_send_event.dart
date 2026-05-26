@@ -64,4 +64,8 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
       "event_id": id!,
     });
   }
+  
+  @override
+  void dispose() {
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -44,12 +45,26 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                       child: tiamat.TextButton(
                         data.name,
                         icon: Icons.widgets,
-                        onTap: () {
+                        onTap: () async {
                           var client = widget.room.client;
                           var widgetComponent =
                               client.getComponent<WidgetComponent>();
-                          widgetComponent!
-                              .openWidget(data, widget.room, context);
+
+                          var supportedTypes =
+                              widgetComponent!.supportedHostTypes();
+
+                          var picked = await AdaptiveDialog.pickOne(
+                            context,
+                            items: supportedTypes,
+                            itemBuilder: (context, item, callback) {
+                              return tiamat.TextButton(item.toString(), onTap: callback,);
+                            },
+                          );
+
+                          if (picked != null) {
+                            widgetComponent.openWidget(
+                                data, widget.room, context, picked);
+                          }
                         },
                       ),
                     ),

@@ -77,4 +77,8 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
 
     return message.createResponseObject();
   }
+  
+  @override
+  void dispose() {
+  }
 }
