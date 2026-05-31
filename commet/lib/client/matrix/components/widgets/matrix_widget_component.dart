@@ -201,7 +201,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         room: room as MatrixRoom,
         component: this);
 
-    var window = OverlayWindow(widget: builtWidget, title: info.name, onClose: onExitController.stream);
+    var window = OverlayWindow(
+        widget: builtWidget,
+        title: info.name,
+        onClose: onExitController.stream);
 
     OverlayWindowsManager.of(context).addWindow(window);
   }

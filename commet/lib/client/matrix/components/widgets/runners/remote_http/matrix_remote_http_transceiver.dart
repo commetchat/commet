@@ -97,8 +97,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
     text = text.replaceAll("\$AUTH_SECRET", secret.toString());
 
-    text =
-        text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
+    text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
 
     Log.i("Returning: $text");
 

@@ -68,11 +68,9 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   @override
   void dispose() {
     Log.w("Disposing widget runner!");
-    try{
+    try {
       controller.dispose(isKeepAlive: false);
-    } catch(_) {
-
-    }
+    } catch (_) {}
     onExitController.add(null);
     _onClosed.add(());
   }
@@ -99,11 +97,12 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
   final StreamController onExitController;
 
   @override
-  State<MatrixWidgetInappwebviewRunnerWidget> createState() => _MatrixWidgetInappwebviewRunnerWidgetState();
+  State<MatrixWidgetInappwebviewRunnerWidget> createState() =>
+      _MatrixWidgetInappwebviewRunnerWidgetState();
 }
 
-class _MatrixWidgetInappwebviewRunnerWidgetState extends State<MatrixWidgetInappwebviewRunnerWidget> {
-
+class _MatrixWidgetInappwebviewRunnerWidgetState
+    extends State<MatrixWidgetInappwebviewRunnerWidget> {
   MatrixUserWidgetInAppWebviewRunner? runner;
 
   @override
@@ -116,10 +115,9 @@ class _MatrixWidgetInappwebviewRunnerWidgetState extends State<MatrixWidgetInapp
           Log.i("InAppWebView] $consoleMessage");
         },
         onWebViewCreated: (controller) {
-
           Log.i("On web view created");
           Log.i("User script: ${widget.userScript}");
-          
+
           if (widget.userScript != null) {
             // For some reason this is unreliable on Windows, so we inject it later manually
             if (PlatformUtils.isAndroid) {
