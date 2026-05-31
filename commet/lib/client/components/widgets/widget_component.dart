@@ -14,6 +14,7 @@ enum WidgetHostType {
   embedded,
   childProcess,
   remoteHttpClient,
+  externalBrowser,
 }
 
 abstract class WidgetCapabilityManager<T> {

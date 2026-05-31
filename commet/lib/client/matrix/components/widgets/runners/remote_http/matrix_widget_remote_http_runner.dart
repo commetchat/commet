@@ -13,9 +13,12 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/rng.dart';
+import 'package:commet/utils/system_processes_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
+import 'package:path/path.dart' as p;
 class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   @override
   MatrixRoom? room;
@@ -28,6 +31,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
 
   late HttpServer server;
 
+  Process? externalBrowserProcess;
 
   @override
   NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
@@ -56,6 +60,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     required HttpServer server,
     required BuildContext context,
     required String hostName,
+    required bool launchBrowser,
   }) {
     this.server = server;
     final String secret = RandomUtils.getRandomString(50); // "secret_password";
@@ -65,6 +70,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
         widgetUrl: url,
         hostIp: hostName,
         server: server,
+        useHttps: launchBrowser ? false : true,
         onClientConnected: handleInitialConnection);
 
     messageTransport = MatrixWidgetTransport(tx);
@@ -73,15 +79,54 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     capabilities =
         MatrixWidgetCapabilitiesManager(runner: this, context: context);
 
-    showConnectionInfo(secret, hostName, context);
+    if (launchBrowser) {
+      var url = Uri(
+          scheme: "http",
+          host: hostName,
+          port: server.port,
+          queryParameters: {"token": secret});
+
+      Log.i("Launching browser with url: $url");
+
+
+      launchExternalBrowser(url);
+    } else {
+      showConnectionInfo(secret, hostName, context);
+    }
+  }
+
+  void launchExternalBrowser(Uri url) async {
+    
+
+    var tempDir = await getTemporaryDirectory();
+    var temp = p.join(tempDir.path, "chat.commet.app", "widget_runner");
+
+    Log.i("Launching chrome with temp location: $temp");
+
+    SystemProcessesUtils.spawnSubprocess("google-chrome", [
+      '--app=${url.toString()}',
+      '--no-first-run',
+      '--no-default-browser-check',
+      '--disable-background-networking',
+      '--disable-component-update',
+      '--user-data-dir=${temp}'
+    ]).then((process) {
+      externalBrowserProcess = process;
+    
+      process.exitCode.then((code) {
+        Log.i("Browser process terminated with code: $code");
+    
+        dispose();
+      });
+    });
   }
 
   @override
   void dispose() {
     server.close(force: true);
     _onClosed.add(null);
+    externalBrowserProcess?.kill(ProcessSignal.sigsegv);
   }
-
 
   void handleInitialConnection() async {
     await Future.delayed(Duration(seconds: 2));
@@ -89,7 +134,8 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     Log.i("Client connected!");
   }
 
-  void showConnectionInfo(String secret, String hostName, BuildContext context) async {
+  void showConnectionInfo(
+      String secret, String hostName, BuildContext context) async {
     Log.i("Current IP: $hostName");
 
     var url = Uri(
@@ -100,8 +146,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
 
     Log.i("Url: ${url.toString()}");
 
-
-        AdaptiveDialog.show(
+    AdaptiveDialog.show(
       context,
       builder: (context) {
         return SizedBox(
@@ -111,19 +156,18 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
               data: url.toString(),
               errorCorrectLevel: QrErrorCorrectLevel.H,
               decoration: const PrettyQrDecoration(
-                image: const PrettyQrDecorationImage(
-                  scale: 0.20,
-                  padding: EdgeInsetsGeometry.all(40),
-                  filterQuality: FilterQuality.medium,
-                  image: AssetImage('assets/images/app_icon/app_icon_transparent_cropped.png'),
-                ),
-                quietZone: PrettyQrQuietZone.standard,
-                shape: PrettyQrSmoothSymbol(color: Colors.white),
-                background: Colors.black
-              ),
+                  image: const PrettyQrDecorationImage(
+                    scale: 0.20,
+                    padding: EdgeInsetsGeometry.all(40),
+                    filterQuality: FilterQuality.medium,
+                    image: AssetImage(
+                        'assets/images/app_icon/app_icon_transparent_cropped.png'),
+                  ),
+                  quietZone: PrettyQrQuietZone.standard,
+                  shape: PrettyQrSmoothSymbol(color: Colors.white),
+                  background: Colors.black),
             ));
       },
     );
   }
-
 }

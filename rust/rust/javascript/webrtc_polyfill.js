@@ -727,8 +727,20 @@
         }
     }
 
+    class RTCRtpSenderPolyfill {
+        constructor() {
+
+        }
+
+        get prototype() {
+            alert("RTCRtpSender is not supported on this platform");
+        }
+    }
+
     window.toWebView = new ToWebview()
     window.RTCPeerConnection = RTCPeerConnectionPolyfill;
     window.RTCSessionDescription = RTCSessionDescriptionPolyfill;
     window.RTCIceCandidate = PolyfillRTCIceCandidate;
+    window.RTCRtpSender = new RTCRtpSenderPolyfill();
+    window.RTCRtpScriptTransform = RTCRtpScriptTransformPolyfill
 })();

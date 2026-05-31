@@ -16,12 +16,18 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
   late String secret;
   late String widgetUrl;
+  bool useHttps;
   String hostIp;
 
   Function()? onClientConnected;
 
   MatrixRemoteHttpWidgetTransceiver(
-      {required this.server, required this.hostIp, required this.secret, required this.widgetUrl, this.onClientConnected}) {
+      {required this.server,
+      required this.hostIp,
+      required this.secret,
+      required this.widgetUrl,
+      this.onClientConnected,
+      required this.useHttps}) {
     server.listen(onRequest);
   }
 
@@ -37,6 +43,9 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     Log.i("Received request: ${event.requestedUri}");
     final path = event.requestedUri.path;
     Log.i("path: $path");
+
+    Log.i("Received request from: ${event.connectionInfo?.remoteAddress} ${event.connectionInfo?.remotePort}");
+
 
     if (path == "/favicon.png") {
       return handleIconRequest(event);
@@ -64,7 +73,8 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
     editedUrl = editedUrl.replace(queryParameters: {
       ...editedUrl.queryParameters,
-      "parentUrl": "https://" + hostIp + ":${server.port}",
+      "parentUrl":
+          useHttps ? "https://" : "http://" + hostIp + ":${server.port}",
     });
 
     Log.i("Handling favicon");
@@ -98,7 +108,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
       ..add(bytes)
       ..close();
 
-      onClientConnected?.call();
+    onClientConnected?.call();
   }
 
   void handleIconRequest(HttpRequest request) async {
@@ -132,9 +142,9 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
     controller.add(Utf8Encoder().convert(content));
 
-      request.response
-        ..statusCode = 200
-        ..close();
+    request.response
+      ..statusCode = 200
+      ..close();
   }
 
   void handleSlowPoll(HttpRequest request) async {

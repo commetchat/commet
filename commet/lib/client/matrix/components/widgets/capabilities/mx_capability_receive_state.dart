@@ -20,6 +20,10 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
   MatrixCapabilityReceiveStateEvent(
       {required this.runner, required this.eventType, this.eventKey}) {
     sub = runner.client.matrixClient.onRoomState.stream.listen(onEvent);
+
+    Log.i("Created Receive State Event Capability");
+
+    updateState();
   }
 
   static String name = "org.matrix.msc2762.receive.state_event";
@@ -72,32 +76,36 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
 
     var finalEvents = events.nonNulls;
 
-    return message.createResponseObject(response: {
-      "events": finalEvents.map((i) {
-        if (i is Event) {
-          return {
-            "content": i.content,
-            "sender": i.senderId,
-            "state_key": i.stateKey!,
-            "type": i.type,
-            "event_id": i.eventId,
-            if (i.unsigned != null) "unsigned": i.unsigned,
-            "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-            "room_id": runner.room!.identifier
-          };
-        } else if (i is User) {
-          return {
-            "content": i.content,
-            "sender": i.senderId,
-            "state_key": i.stateKey!,
-            "type": i.type,
-            "room_id": runner.room!.identifier
-          };
-        } else {
-          throw UnimplementedError();
-        }
-      }).toList()
-    });
+    return message
+        .createResponseObject(response: {"events": convertEvents(finalEvents)});
+  }
+
+  List<Map<dynamic, dynamic>> convertEvents(
+      Iterable<StrippedStateEvent> events) {
+    return events.map((i) {
+      if (i is Event) {
+        return {
+          "content": i.content,
+          "sender": i.senderId,
+          "state_key": i.stateKey!,
+          "type": i.type,
+          "event_id": i.eventId,
+          if (i.unsigned != null) "unsigned": i.unsigned,
+          "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
+          "room_id": runner.room!.identifier
+        };
+      } else if (i is User) {
+        return {
+          "content": i.content,
+          "sender": i.senderId,
+          "state_key": i.stateKey!,
+          "type": i.type,
+          "room_id": runner.room!.identifier
+        };
+      } else {
+        throw UnimplementedError();
+      }
+    }).toList();
   }
 
   void onEvent(({String roomId, StrippedStateEvent state}) event) {
@@ -124,9 +132,30 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
       "room_id": i.roomId!,
     }));
   }
-  
+
   @override
   void dispose() {
     sub?.cancel();
+  }
+
+  void updateState() {
+    Log.i("Sending initial state: $eventType");
+    var events = eventKey == null
+        ? runner.room!.matrixRoom.states[eventType]?.entries
+            .map((i) => i.value)
+            .toList()
+        : [runner.room!.matrixRoom.states[eventType]?[eventKey]];
+
+    if (events == null || events.nonNulls.isEmpty == true) {
+      runner.messageTransport.send(runner.eventHandler
+          .generateToWidgetEvent(action: "update_state", data: {"state": []}));
+
+      return;
+    }
+
+    
+    runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+        action: "update_state",
+        data: {"state": convertEvents(events.nonNulls)}));
   }
 }

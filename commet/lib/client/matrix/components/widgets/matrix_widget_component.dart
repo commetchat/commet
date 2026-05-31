@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
-import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_inappwebview_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/subprocess/matrix_widget_desktop_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/remote_http/self_signed_https_server.dart';
@@ -16,12 +15,11 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
+import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-
 class MatrixUserWidgetInfo implements UserWidgetInfo {
   late String _name;
 
@@ -83,7 +81,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     WidgetComponent.currentSessions.add(runner);
 
-    runner.onClosed.listen((_) => WidgetComponent.currentSessions.remove(runner));
+    runner.onClosed
+        .listen((_) => WidgetComponent.currentSessions.remove(runner));
   }
 
   @override
@@ -103,7 +102,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     if (PlatformUtils.isLinux) {
       return const [
         WidgetHostType.childProcess,
-        WidgetHostType.remoteHttpClient
+        WidgetHostType.remoteHttpClient,
+        WidgetHostType.externalBrowser,
       ];
     }
 
@@ -120,14 +120,18 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     var info = widget as MatrixUserWidgetInfo;
     var url = Uri.encodeFull(info.url);
 
+    var colorScheme = JsonEncoder().convert(ColorScheme.of(context).toJson());
     var replacements = {
       "\$matrix_user_id": room.client.self!.identifier,
       "\$matrix_room_id": room.identifier,
       "\$matrix_display_name": room.client.self!.displayName,
-      "\$org.matrix.msc3819.matrix_device_id": (room.client as MatrixClient).matrixClient.deviceID!,
-      "\$org.matrix.msc4039.matrix_base_url": (room.client as MatrixClient).matrixClient.baseUri.toString()
+      "\$org.matrix.msc3819.matrix_device_id":
+          (room.client as MatrixClient).matrixClient.deviceID!,
+      "\$org.matrix.msc4039.matrix_base_url":
+          (room.client as MatrixClient).matrixClient.baseUri.toString(),
+      "\$chat.commet.color_scheme": Uri.encodeComponent(colorScheme),
     };
-    
+
     Log.i("Replacements: ${jsonEncode(replacements)}");
 
     for (var pair in replacements.entries) {
@@ -141,7 +145,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         host: uri.host,
         port: uri.port,
         path: uri.path,
-        fragment: uri.fragment,
+        fragment: uri.fragment.isEmpty ? null : uri.fragment,
         queryParameters: {
           ...uri.queryParameters,
           "parentUrl": "commet://widget",
@@ -149,6 +153,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         });
 
     url = uri.toString();
+
+    Log.i("Launching Widget: $url");
 
     switch (type) {
       case WidgetHostType.embedded:
@@ -159,6 +165,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         return;
       case WidgetHostType.remoteHttpClient:
         await createRemoteHttpWidgetRunner(url, room, widget);
+        return;
+      case WidgetHostType.externalBrowser:
+        await createRemoteHttpWidgetRunner(url, room, widget,
+            launchBrowser: true);
         return;
     }
   }
@@ -213,13 +223,19 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
   }
 
   Future<void> createRemoteHttpWidgetRunner(
-      String url, Room room, MatrixUserWidgetInfo widget) async {
-
+      String url, Room room, MatrixUserWidgetInfo widget,
+      {bool launchBrowser = false}) async {
     final info = NetworkInfo();
 
-    final ip = await info.getWifiIP();
+    var ip = await info.getWifiIP();
 
-    var server = await spawnSelfSignedHttpsServer(ip!);
+    HttpServer? server;
+    if (launchBrowser) {
+      ip = "localhost";
+      server = await HttpServer.bind(InternetAddress.anyIPv4, 4185);
+    } else {
+      server = await spawnSelfSignedHttpsServer(ip!);
+    }
 
     Log.i("Hosted server: ${ip}");
 
@@ -229,9 +245,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         client: client,
         url: url,
         server: server,
-        context: navigator.currentContext!, hostName: ip);
+        launchBrowser: launchBrowser,
+        context: navigator.currentContext!,
+        hostName: ip);
 
     registerRunner(runner);
   }
-
 }

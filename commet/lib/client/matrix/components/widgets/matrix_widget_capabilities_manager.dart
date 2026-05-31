@@ -1,7 +1,10 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_always_on_screen.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_delayed_events.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_download_file.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_get_media_config.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_oidc.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_read_relations.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_receive_event.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_receive_state.dart';
@@ -9,6 +12,8 @@ import 'package:commet/client/matrix/components/widgets/capabilities/mx_capabili
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_event.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_state.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_to_device.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_sticky_events.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_timeline.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_turn_servers.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
@@ -47,7 +52,8 @@ class MatrixWidgetCapabilitiesManager
     // It is safe to allow this by default, as the implementation will only return events
     // for which the corresponding capability has already been granted
     MatrixCapabilityReadEventRelations.name,
-    MatrixCapabilityGetMediaConfig.name
+    MatrixCapabilityGetMediaConfig.name,
+    MatrixCapabilityOIDC.name,
   ];
 
   @override
@@ -133,7 +139,14 @@ class MatrixWidgetCapabilitiesManager
       MatrixCapabilityReceiveToDeviceEvent.entry,
       MatrixCapabilityTurnServers.entry,
       MatrixCapabilityGetMediaConfig.entry,
+      MatrixCapabilityOIDC.entry,
       MatrixCapabilityReadEventRelations.entry,
+      MatrixCapabilityTimeline.entry,
+      MatrixCapabilitySendDelayedEvent.entry,
+      MatrixCapabilityUpdateDelayedEvent.entry,
+      MatrixCapabilitySendStickyEvent.entry,
+      MatrixCapabilityReceiveStickyEvent.entry,
+      MatrixCapabilityAlwaysOnScreen.entry,
     ]);
 
     for (var name in capabilities) {
@@ -161,6 +174,17 @@ class MatrixWidgetCapabilitiesManager
     for (var g in rejectedCapabilities) {
       Log.i(g);
     }
+
+    var unknown = capabilities.where((i) => grantedCapabilities.containsKey(i) == false && rejectedCapabilities.contains(i) == false);
+
+    Log.w("Unhandled Capabilities");
+    for(var g in unknown) {
+      Log.i(g);
+    }
+
+    granted.addAll(unknown);
+
+
 
     return granted;
   }
