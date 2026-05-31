@@ -142,11 +142,11 @@ class MatrixWidgetCapabilitiesManager
       MatrixCapabilityOIDC.entry,
       MatrixCapabilityReadEventRelations.entry,
       MatrixCapabilityTimeline.entry,
-      MatrixCapabilitySendDelayedEvent.entry,
-      MatrixCapabilityUpdateDelayedEvent.entry,
-      MatrixCapabilitySendStickyEvent.entry,
-      MatrixCapabilityReceiveStickyEvent.entry,
       MatrixCapabilityAlwaysOnScreen.entry,
+      // MatrixCapabilitySendDelayedEvent.entry,
+      // MatrixCapabilityUpdateDelayedEvent.entry,
+      // MatrixCapabilitySendStickyEvent.entry,
+      // MatrixCapabilityReceiveStickyEvent.entry,
     ]);
 
     for (var name in capabilities) {
