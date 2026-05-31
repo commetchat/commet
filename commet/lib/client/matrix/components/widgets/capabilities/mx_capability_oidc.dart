@@ -53,6 +53,8 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
 
     var confirmed = await currentConfirmationRequest!;
 
+    currentConfirmationRequest = null;
+
     if (confirmed == true) {
       var room = runner.room!;
 
