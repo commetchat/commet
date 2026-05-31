@@ -25,7 +25,6 @@ class SystemProcessesUtils {
   }
 
   static Future<Process> spawnSubprocess(String name, List<String> args) async {
-
     Log.i("Spawning subprocess: ${name} ${args}");
 
     if (BuildConfig.IS_FLATPAK) {

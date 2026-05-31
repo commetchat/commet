@@ -68,8 +68,7 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
     return message.createResponseObject(
         response: {"room_id": runner.room!.identifier, "event_id": result});
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }

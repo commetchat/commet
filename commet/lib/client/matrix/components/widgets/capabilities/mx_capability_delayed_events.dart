@@ -3,7 +3,6 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_capabiliti
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 
-
 class MatrixCapabilitySendDelayedEvent implements MatrixWidgetCapability {
   @override
   MatrixWidgetRunner runner;
@@ -12,10 +11,8 @@ class MatrixCapabilitySendDelayedEvent implements MatrixWidgetCapability {
 
   static const String name = "org.matrix.msc4157.send.delayed_event";
 
-  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) =>
-          MatrixCapabilitySendDelayedEvent( runner: runner));
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(name,
+      (runner, type, key) => MatrixCapabilitySendDelayedEvent(runner: runner));
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -34,12 +31,10 @@ class MatrixCapabilitySendDelayedEvent implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     throw UnimplementedError();
   }
-  
-  @override
-  void dispose() {
-  }
-}
 
+  @override
+  void dispose() {}
+}
 
 class MatrixCapabilityUpdateDelayedEvent implements MatrixWidgetCapability {
   @override
@@ -52,7 +47,7 @@ class MatrixCapabilityUpdateDelayedEvent implements MatrixWidgetCapability {
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
       name,
       (runner, type, key) =>
-          MatrixCapabilityUpdateDelayedEvent( runner: runner));
+          MatrixCapabilityUpdateDelayedEvent(runner: runner));
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -71,8 +66,7 @@ class MatrixCapabilityUpdateDelayedEvent implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     throw UnimplementedError();
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }

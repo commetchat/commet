@@ -57,7 +57,10 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                             context,
                             items: supportedTypes,
                             itemBuilder: (context, item, callback) {
-                              return tiamat.TextButton(item.toString(), onTap: callback,);
+                              return tiamat.TextButton(
+                                item.toString(),
+                                onTap: callback,
+                              );
                             },
                           );
 

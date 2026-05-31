@@ -109,8 +109,8 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
         (WidgetMessageDirection.outgoing, Map<String, dynamic>.from(encoded)));
 
     transceiver.send(Utf8Encoder().convert(jsonEncode(encoded)));
-    
-    if(completer != null) {
+
+    if (completer != null) {
       var data = await completer.future;
       Log.i("Received response data: $data");
 

@@ -55,6 +55,9 @@ abstract class WidgetEventHandler {
 
 abstract class WidgetRunner<T, R> {
   String get widgetId;
+
+  UserWidgetInfo get info;
+
   WidgetCapabilityManager get capabilities;
   WidgetEventHandler get eventHandler;
   WidgetMessageTransport get messageTransport;
@@ -73,8 +76,9 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
 
   List<WidgetHostType> supportedHostTypes();
 
-  static NotifyingList<WidgetRunner> currentSessions = NotifyingList.empty(growable: true);
+  static NotifyingList<WidgetRunner> currentSessions =
+      NotifyingList.empty(growable: true);
 
-  Future<void> openWidget(
-      UserWidgetInfo widget, Room room, BuildContext context, WidgetHostType type);
+  Future<void> openWidget(UserWidgetInfo widget, Room room,
+      BuildContext context, WidgetHostType type);
 }

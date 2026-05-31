@@ -19,6 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
 import 'package:path/path.dart' as p;
+
 class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   @override
   MatrixRoom? room;
@@ -32,6 +33,9 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   late HttpServer server;
 
   Process? externalBrowserProcess;
+
+  @override
+  UserWidgetInfo info;
 
   @override
   NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
@@ -61,6 +65,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     required BuildContext context,
     required String hostName,
     required bool launchBrowser,
+    required this.info,
   }) {
     this.server = server;
     final String secret = RandomUtils.getRandomString(50); // "secret_password";
@@ -69,6 +74,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
         secret: secret,
         widgetUrl: url,
         hostIp: hostName,
+        info: info,
         server: server,
         useHttps: launchBrowser ? false : true,
         onClientConnected: handleInitialConnection);
@@ -88,7 +94,6 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
 
       Log.i("Launching browser with url: $url");
 
-
       launchExternalBrowser(url);
     } else {
       showConnectionInfo(secret, hostName, context);
@@ -96,8 +101,6 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   }
 
   void launchExternalBrowser(Uri url) async {
-    
-
     var tempDir = await getTemporaryDirectory();
     var temp = p.join(tempDir.path, "chat.commet.app", "widget_runner");
 
@@ -112,10 +115,10 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
       '--user-data-dir=${temp}'
     ]).then((process) {
       externalBrowserProcess = process;
-    
+
       process.exitCode.then((code) {
         Log.i("Browser process terminated with code: $code");
-    
+
         dispose();
       });
     });

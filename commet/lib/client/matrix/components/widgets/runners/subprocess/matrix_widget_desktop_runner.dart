@@ -43,11 +43,15 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
   @override
   Stream<void> get onClosed => _onClosed.stream;
 
+  @override
+  UserWidgetInfo info;
+
   MatrixUserWidgetSubprocessRunner(
       {required Process process,
       required this.room,
       required this.widgetId,
       required BuildContext context,
+      required this.info,
       required this.client}) {
     var tx = MatrixSubprocessWidgetTransceiver(process: process);
     this.process = process;
@@ -61,13 +65,11 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
     process.stderr.map((i) => Utf8Decoder().convert(i)).listen((i) =>
         i.split("\n").forEach((i) => logs.add(LogEntry(LogType.info, i))));
 
-
     process.exitCode.then((i) {
       Log.i("Subprocess exited with code: $i");
       dispose();
     });
   }
-
 
   @override
   void dispose() {

@@ -247,7 +247,6 @@ class MainPageViewDesktop extends StatelessWidget {
               ),
             )),
           ),
-
           UserPanelSettings(
             height: height,
           ),

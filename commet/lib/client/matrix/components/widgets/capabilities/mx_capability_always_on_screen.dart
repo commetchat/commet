@@ -3,7 +3,6 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_capabiliti
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 
-
 class MatrixCapabilityAlwaysOnScreen implements MatrixWidgetCapability {
   @override
   MatrixWidgetRunner runner;
@@ -12,10 +11,8 @@ class MatrixCapabilityAlwaysOnScreen implements MatrixWidgetCapability {
 
   static const String name = "m.always_on_screen";
 
-  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) =>
-          MatrixCapabilityAlwaysOnScreen( runner: runner));
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(name,
+      (runner, type, key) => MatrixCapabilityAlwaysOnScreen(runner: runner));
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -34,8 +31,7 @@ class MatrixCapabilityAlwaysOnScreen implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     throw UnimplementedError();
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }

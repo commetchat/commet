@@ -3,7 +3,6 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_capabiliti
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 
-
 class MatrixCapabilityTimeline implements MatrixWidgetCapability {
   @override
   MatrixWidgetRunner runner;
@@ -36,8 +35,7 @@ class MatrixCapabilityTimeline implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     throw UnimplementedError();
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }

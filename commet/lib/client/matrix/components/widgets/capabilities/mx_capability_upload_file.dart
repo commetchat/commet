@@ -45,8 +45,7 @@ class MatrixCapabilityUploadFile implements MatrixWidgetCapability {
   bool canHandleRequest(MatrixWidgetMessage message) {
     return message.action == "org.matrix.msc4039.upload_file";
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }

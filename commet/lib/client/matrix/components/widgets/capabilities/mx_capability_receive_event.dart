@@ -120,7 +120,7 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
 
     return true;
   }
-  
+
   @override
   void dispose() {
     sub?.cancel();

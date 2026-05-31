@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
   HttpServer server;
 
+  UserWidgetInfo info;
   StreamController<Uint8List> controller = StreamController();
 
   Queue<Uint8List> responseQueue = Queue();
@@ -26,6 +27,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
       required this.hostIp,
       required this.secret,
       required this.widgetUrl,
+      required this.info,
       this.onClientConnected,
       required this.useHttps}) {
     server.listen(onRequest);
@@ -44,8 +46,8 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     final path = event.requestedUri.path;
     Log.i("path: $path");
 
-    Log.i("Received request from: ${event.connectionInfo?.remoteAddress} ${event.connectionInfo?.remotePort}");
-
+    Log.i(
+        "Received request from: ${event.connectionInfo?.remoteAddress} ${event.connectionInfo?.remotePort}");
 
     if (path == "/favicon.png") {
       return handleIconRequest(event);
@@ -87,6 +89,9 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
         .buffer
         .asUint8List();
     var scriptText = Utf8Decoder().convert(scriptBytes);
+
+    text =
+        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", editedUrl.toString());
 

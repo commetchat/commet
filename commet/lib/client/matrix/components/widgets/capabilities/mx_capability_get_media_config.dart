@@ -43,8 +43,7 @@ class MatrixCapabilityGetMediaConfig implements MatrixWidgetCapability {
 
     return message.action == name;
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }

@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+
 class MatrixUserWidgetInfo implements UserWidgetInfo {
   late String _name;
 
@@ -217,6 +218,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         room: room as MatrixRoom,
         context: navigator.currentContext!,
         widgetId: widget.id,
+        info: widget,
         client: room.client as MatrixClient);
 
     registerRunner(runner);
@@ -244,6 +246,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         widgetId: widget.id,
         client: client,
         url: url,
+        info: widget,
         server: server,
         launchBrowser: launchBrowser,
         context: navigator.currentContext!,

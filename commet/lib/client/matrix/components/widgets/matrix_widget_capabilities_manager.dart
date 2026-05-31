@@ -175,16 +175,16 @@ class MatrixWidgetCapabilitiesManager
       Log.i(g);
     }
 
-    var unknown = capabilities.where((i) => grantedCapabilities.containsKey(i) == false && rejectedCapabilities.contains(i) == false);
+    var unknown = capabilities.where((i) =>
+        grantedCapabilities.containsKey(i) == false &&
+        rejectedCapabilities.contains(i) == false);
 
     Log.w("Unhandled Capabilities");
-    for(var g in unknown) {
+    for (var g in unknown) {
       Log.i(g);
     }
 
     granted.addAll(unknown);
-
-
 
     return granted;
   }
@@ -256,10 +256,10 @@ class MatrixWidgetCapabilitiesManager
     return event.createResponseError(
         message: "Unhandled widget request ${event.action}\n${event.data}");
   }
-  
+
   @override
   void dispose() {
-    for(var capability in grantedCapabilities.values) {
+    for (var capability in grantedCapabilities.values) {
       capability.dispose();
     }
 

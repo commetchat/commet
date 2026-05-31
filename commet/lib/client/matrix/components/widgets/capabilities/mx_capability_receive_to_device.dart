@@ -18,7 +18,8 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
 
   MatrixCapabilityReceiveToDeviceEvent(
       {required this.runner, required this.eventType, this.eventKey}) {
-    sub = runner.client.matrixClient.onToDeviceEvent.stream.listen(onToDeviceMessage);
+    sub = runner.client.matrixClient.onToDeviceEvent.stream
+        .listen(onToDeviceMessage);
   }
 
   static String name = "org.matrix.msc3819.receive.to_device";
@@ -60,7 +61,7 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
       "content": event.content
     }));
   }
-  
+
   @override
   void dispose() {
     sub?.cancel();

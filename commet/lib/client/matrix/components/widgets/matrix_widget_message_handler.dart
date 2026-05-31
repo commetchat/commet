@@ -157,28 +157,25 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
       ]
     });
 
-    
-
     runner.messageTransport.send(response);
 
     sendInitialCapabilitiesRequest();
   }
-  
 
   Future<void> sendInitialCapabilitiesRequest() async {
     Log.i("Sending initial capabilities request");
-    var response = await runner.messageTransport
-        .send(runner.eventHandler
-            .generateToWidgetEvent(action: "capabilities", data: {}));
+    var response = await runner.messageTransport.send(runner.eventHandler
+        .generateToWidgetEvent(action: "capabilities", data: {}));
 
     Log.i("Received response to initial capabilities!");
     Log.i(response);
-    var capabilities = response.tryGetMap<String, dynamic>("response")?.tryGetList<String>("capabilities");
-    if(capabilities != null) {
+    var capabilities = response
+        .tryGetMap<String, dynamic>("response")
+        ?.tryGetList<String>("capabilities");
+    if (capabilities != null) {
       runner.capabilities.requestCapabilities(capabilities);
     }
   }
-
 
   int requestNum = 0;
 

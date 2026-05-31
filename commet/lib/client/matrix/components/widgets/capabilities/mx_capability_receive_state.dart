@@ -153,7 +153,6 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
       return;
     }
 
-    
     runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
         action: "update_state",
         data: {"state": convertEvents(events.nonNulls)}));

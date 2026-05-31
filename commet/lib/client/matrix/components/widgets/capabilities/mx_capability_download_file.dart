@@ -65,8 +65,7 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
   bool canHandleRequest(MatrixWidgetMessage message) {
     return message.action == "org.matrix.msc4039.download_file";
   }
-  
+
   @override
-  void dispose() {
-  }
+  void dispose() {}
 }
