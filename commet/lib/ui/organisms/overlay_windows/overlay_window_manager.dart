@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 class OverlayWindow {
   Widget widget;
   String title;
+  Stream onClose;
 
-  OverlayWindow({required this.widget, required this.title});
+  OverlayWindow(
+      {required this.widget, required this.title, required this.onClose});
 }
 
 class OverlayWindowsData extends InheritedWidget {
@@ -46,7 +48,23 @@ class OverlayWindowsManagerState extends State<OverlayWindowsManager> {
   void addWindow(OverlayWindow window) {
     setState(() {
       windows.add(window);
+
+      window.onClose.listen((_) {
+        if (mounted) {
+          removeWindow(window);
+        }
+      });
     });
+  }
+
+  void removeWindow(OverlayWindow window) {
+    setState(() {
+      windows.remove(window);
+    });
+  }
+
+  void windowClosed(OverlayWindow window) {
+    removeWindow(window);
   }
 
   @override
@@ -65,6 +83,9 @@ class OverlayWindowsSurface extends StatelessWidget {
       for (var i in data.windows)
         OverlayWindowWidget(
           window: i,
+          onClose: () {
+            OverlayWindowsManager.of(context).windowClosed(i);
+          },
         ),
     ]);
   }

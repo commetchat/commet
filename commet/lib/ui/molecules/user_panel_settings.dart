@@ -71,7 +71,7 @@ class _UserPanelSettingsState extends State<UserPanelSettings> {
                                         width: 300,
                                         height: 30,
                                         child: tiamat.TextButton(
-                                          i.widgetId,
+                                          i.info.name,
                                           onTap: onClicked,
                                         )),
                                     tiamat.IconButton(

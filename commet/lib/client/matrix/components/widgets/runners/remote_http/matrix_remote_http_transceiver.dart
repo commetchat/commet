@@ -76,7 +76,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     editedUrl = editedUrl.replace(queryParameters: {
       ...editedUrl.queryParameters,
       "parentUrl":
-          useHttps ? "https://" : "http://" + hostIp + ":${server.port}",
+          (useHttps ? "https://" : "http://") + hostIp + ":${server.port}",
     });
 
     Log.i("Handling favicon");
@@ -98,7 +98,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     text = text.replaceAll("\$AUTH_SECRET", secret.toString());
 
     text =
-        text.replaceAll("//\${WIDGETS_COMMON_SCRIPT}", scriptText.toString());
+        text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
 
     Log.i("Returning: $text");
 

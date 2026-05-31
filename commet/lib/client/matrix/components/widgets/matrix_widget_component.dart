@@ -183,26 +183,27 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     var callIpc =
         await rootBundle.loadString('assets/data/call_ipc_android.js');
 
-    var finalScript = userScript.replaceAll("//\${SEND_IPC_CODE}", callIpc);
-    finalScript =
-        userScript.replaceAll("//\${WIDGETS_COMMON_SCRIPT}", common.toString());
+    userScript = userScript.replaceAll("//\${SEND_IPC_CODE}", callIpc);
 
-    Log.i("Final user script: $finalScript");
+    userScript =
+        userScript.replaceAll("//\${WIDGETS_COMMON}", common.toString());
+
+    Log.i("Final user script: $userScript");
+
+    StreamController onExitController = StreamController();
 
     var builtWidget = MatrixWidgetInappwebviewRunnerWidget(
-      url: url,
-      info: info,
-      widgetId: widget.id,
-      userScript: finalScript,
-      room: room as MatrixRoom,
-      component: this,
-      onRunnerCreated: (p0) {
-        registerRunner(p0);
-      },
-    );
+        url: url,
+        info: info,
+        widgetId: widget.id,
+        userScript: userScript,
+        onExitController: onExitController,
+        room: room as MatrixRoom,
+        component: this);
 
-    OverlayWindowsManager.of(context)
-        .addWindow(OverlayWindow(widget: builtWidget, title: "Widget"));
+    var window = OverlayWindow(widget: builtWidget, title: info.name, onClose: onExitController.stream);
+
+    OverlayWindowsManager.of(context).addWindow(window);
   }
 
   Future<void> spawnChildProcess(

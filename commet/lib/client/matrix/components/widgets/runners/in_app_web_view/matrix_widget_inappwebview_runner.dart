@@ -37,6 +37,8 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
 
   UserWidgetInfo info;
 
+  final StreamController onExitController;
+
   @override
   NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
 
@@ -50,6 +52,7 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
       required this.room,
       required this.widgetId,
       required this.info,
+      required this.onExitController,
       required BuildContext context,
       required this.client}) {
     var tx = MatrixInAppWebViewWidgetTransceiver(webViewController);
@@ -65,12 +68,17 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   @override
   void dispose() {
     Log.w("Disposing widget runner!");
-    controller.dispose(isKeepAlive: false);
+    try{
+      controller.dispose(isKeepAlive: false);
+    } catch(_) {
+
+    }
+    onExitController.add(null);
     _onClosed.add(());
   }
 }
 
-class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
+class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
   const MatrixWidgetInappwebviewRunnerWidget(
       {this.url,
       this.widgetId,
@@ -78,8 +86,8 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
       this.room,
       this.component,
       required this.info,
-      this.onRunnerCreated,
       this.initialRunner,
+      required this.onExitController,
       super.key});
   final String? userScript;
   final String? url;
@@ -88,45 +96,64 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatelessWidget {
   final MatrixWidgetComponent? component;
   final UserWidgetInfo info;
   final MatrixUserWidgetInAppWebviewRunner? initialRunner;
-  final void Function(MatrixUserWidgetInAppWebviewRunner)? onRunnerCreated;
+  final StreamController onExitController;
+
+  @override
+  State<MatrixWidgetInappwebviewRunnerWidget> createState() => _MatrixWidgetInappwebviewRunnerWidgetState();
+}
+
+class _MatrixWidgetInappwebviewRunnerWidgetState extends State<MatrixWidgetInappwebviewRunnerWidget> {
+
+  MatrixUserWidgetInAppWebviewRunner? runner;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: InAppWebView(
         initialSettings: InAppWebViewSettings(transparentBackground: true),
-        initialUrlRequest: URLRequest(url: WebUri(url!)),
+        initialUrlRequest: URLRequest(url: WebUri(widget.url!)),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
         },
         onWebViewCreated: (controller) {
-          if (userScript != null) {
+
+          Log.i("On web view created");
+          Log.i("User script: ${widget.userScript}");
+          
+          if (widget.userScript != null) {
             // For some reason this is unreliable on Windows, so we inject it later manually
             if (PlatformUtils.isAndroid) {
               controller.addUserScript(
                   userScript: UserScript(
-                      source: userScript!,
+                      source: widget.userScript!,
                       injectionTime:
                           UserScriptInjectionTime.AT_DOCUMENT_START));
             }
           }
 
-          var runner = MatrixUserWidgetInAppWebviewRunner(
+          runner = MatrixUserWidgetInAppWebviewRunner(
               webViewController: controller,
-              info: info,
-              room: room,
+              info: widget.info,
+              room: widget.room,
               context: context,
-              widgetId: widgetId!,
-              client: room!.client as MatrixClient);
+              widgetId: widget.widgetId!,
+              onExitController: widget.onExitController,
+              client: widget.room!.client as MatrixClient);
 
           if (PlatformUtils.isWindows) {
-            controller.evaluateJavascript(source: userScript!);
+            controller.evaluateJavascript(source: widget.userScript!);
           }
 
-          component!.registerRunner(runner);
-          onRunnerCreated?.call(runner);
+          widget.component!.registerRunner(runner!);
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    Log.i("Matrix InappWebViewWidget disposed");
+    runner!.dispose();
+    super.dispose();
   }
 }

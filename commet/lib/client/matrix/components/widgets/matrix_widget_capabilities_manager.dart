@@ -1,7 +1,6 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_always_on_screen.dart';
-import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_delayed_events.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_download_file.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_get_media_config.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_oidc.dart';
@@ -12,7 +11,6 @@ import 'package:commet/client/matrix/components/widgets/capabilities/mx_capabili
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_event.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_state.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_to_device.dart';
-import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_sticky_events.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_timeline.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_turn_servers.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';

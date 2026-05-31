@@ -48,7 +48,7 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
     if (currentConfirmationRequest == null) {
       currentConfirmationRequest = currentConfirmationRequest =
           AdaptiveDialog.confirmation(navigator.currentContext!,
-              title: "Allow ${runner.widgetId} to verify your user id");
+              title: "Allow ${runner.info.name} to verify your user id");
     }
 
     var confirmed = await currentConfirmationRequest!;

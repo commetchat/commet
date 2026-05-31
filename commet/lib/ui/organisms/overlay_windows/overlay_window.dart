@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:commet/debug/log.dart';
-import 'package:commet/ui/atoms/floating_tile.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/show_on_hover.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
@@ -9,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class OverlayWindowWidget extends StatefulWidget {
-  const OverlayWindowWidget({required this.window, super.key});
+  const OverlayWindowWidget({required this.window, this.onClose, super.key});
   final OverlayWindow window;
+  final Function()? onClose;
 
   @override
   State<OverlayWindowWidget> createState() => _OverlayWindowState();
@@ -23,11 +23,11 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
   Rect rect = Rect.fromLTWH(50, 50, 300, 200);
 
   Offset _positionedOffset = Offset(0, 0);
-  Size _currentSize = Size(200, 200);
 
   Offset offset = Offset(0, 0);
 
   Offset get targetOffset => fullScreen ? Offset(0, 0) : _positionedOffset;
+
   Size get targetSize {
     if (fullScreen) {
       final padding = MediaQuery.of(context).padding;
@@ -39,13 +39,16 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
 
     return Size(300, 200);
   }
-
+  
+  late Size _currentSize;
   bool fullScreen = false;
 
   @override
   void initState() {
     var ticker = createTicker(onTick);
     ticker.start();
+
+    _currentSize = targetSize;
 
     super.initState();
   }
@@ -106,7 +109,7 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                     blurRadius: 10)
               ],
               borderRadius: BorderRadius.circular(8),
-              color: ColorScheme.of(context).surfaceContainerLowest,
+              color: ColorScheme.of(context).surfaceContainer,
             ),
             child: buildWithWindowSize(
               Column(
@@ -137,7 +140,7 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                             SizedBox(
                                 height: 30,
                                 width: 30,
-                                child: tiamat.IconButton(icon: Icons.close)),
+                                child: tiamat.IconButton(icon: Icons.close, onPressed: widget.onClose,)),
                           ],
                         )
                       ],
@@ -209,7 +212,7 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                   _positionedOffset = _positionedOffset + details.delta;
                 });
               },
-              child: buildWithWindowSize(Placeholder()),
+              child: buildWithWindowSize(Opacity(opacity: 0, child: Placeholder())),
             )
         ],
       ),
