@@ -39,7 +39,7 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
 
     return Size(300, 200);
   }
-  
+
   late Size _currentSize;
   bool fullScreen = false;
 
@@ -140,7 +140,10 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                             SizedBox(
                                 height: 30,
                                 width: 30,
-                                child: tiamat.IconButton(icon: Icons.close, onPressed: widget.onClose,)),
+                                child: tiamat.IconButton(
+                                  icon: Icons.close,
+                                  onPressed: widget.onClose,
+                                )),
                           ],
                         )
                       ],
@@ -212,7 +215,8 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                   _positionedOffset = _positionedOffset + details.delta;
                 });
               },
-              child: buildWithWindowSize(Opacity(opacity: 0, child: Placeholder())),
+              child: buildWithWindowSize(
+                  Opacity(opacity: 0, child: Placeholder())),
             )
         ],
       ),
