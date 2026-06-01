@@ -78,22 +78,18 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
 
 class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
   const MatrixWidgetInappwebviewRunnerWidget(
-      {this.url,
-      this.widgetId,
-      this.initialPageData,
-      this.room,
-      this.component,
+      {required this.widgetId,
+      required this.initialPageData,
+      required this.room,
+      required this.component,
       required this.info,
-      this.initialRunner,
       required this.onExitController,
       super.key});
-  final String? initialPageData;
-  final String? url;
-  final String? widgetId;
-  final MatrixRoom? room;
-  final MatrixWidgetComponent? component;
+  final String initialPageData;
+  final String widgetId;
+  final MatrixRoom room;
+  final MatrixWidgetComponent?component;
   final UserWidgetInfo info;
-  final MatrixUserWidgetInAppWebviewRunner? initialRunner;
   final StreamController onExitController;
 
   @override
@@ -111,7 +107,8 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
       child: InAppWebView(
         initialSettings: InAppWebViewSettings(transparentBackground: true),
         initialData: InAppWebViewInitialData(
-            data: widget.initialPageData!, baseUrl: WebUri("commet://widget")),
+            data: widget.initialPageData!,
+            baseUrl: WebUri("http://localhost/widget")),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
 

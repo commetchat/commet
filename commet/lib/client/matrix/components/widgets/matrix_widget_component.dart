@@ -159,6 +159,22 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     switch (type) {
       case WidgetHostType.embedded:
+        uri = Uri.parse(url);
+
+        uri = Uri(
+            scheme: uri.scheme,
+            host: uri.host,
+            port: uri.port,
+            path: uri.path,
+            fragment: uri.fragment.isEmpty ? null : uri.fragment,
+            queryParameters: {
+              ...uri.queryParameters,
+              "parentUrl": "http://localhost/widget",
+              "widgetId": info.id,
+            });
+
+        url = uri.toString();
+
         await createEmbeddedWidget(url, info, widget, room, context);
         return;
       case WidgetHostType.childProcess:
