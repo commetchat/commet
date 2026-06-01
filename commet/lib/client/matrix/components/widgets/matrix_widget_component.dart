@@ -176,27 +176,35 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
   Future<void> createEmbeddedWidget(String url, MatrixUserWidgetInfo info,
       MatrixUserWidgetInfo widget, Room room, BuildContext context) async {
-    var userScript = await rootBundle.loadString('assets/data/widgets_ipc.js');
+    var bytes =
+        (await rootBundle.load("assets/data/widget_runner_embedded.html"))
+            .buffer
+            .asUint8List();
 
-    var common = await rootBundle.loadString('assets/data/widgets_common.js');
+    var text = Utf8Decoder().convert(bytes);
 
-    var callIpc =
-        await rootBundle.loadString('assets/data/call_ipc_android.js');
+    var scriptBytes = (await rootBundle.load("assets/data/widgets_common.js"))
+        .buffer
+        .asUint8List();
+    var scriptText = Utf8Decoder().convert(scriptBytes);
 
-    userScript = userScript.replaceAll("//\${SEND_IPC_CODE}", callIpc);
+    text =
+        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
 
-    userScript =
-        userScript.replaceAll("//\${WIDGETS_COMMON}", common.toString());
+    text = text.replaceAll("\$IFRAME_URL", url.toString());
 
-    Log.i("Final user script: $userScript");
+    text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
 
     StreamController onExitController = StreamController();
+
+    Log.i("Initial Page:");
+    Log.i(text);
 
     var builtWidget = MatrixWidgetInappwebviewRunnerWidget(
         url: url,
         info: info,
         widgetId: widget.id,
-        userScript: userScript,
+        initialPageData: text,
         onExitController: onExitController,
         room: room as MatrixRoom,
         component: this);

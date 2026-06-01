@@ -80,14 +80,14 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
   const MatrixWidgetInappwebviewRunnerWidget(
       {this.url,
       this.widgetId,
-      this.userScript,
+      this.initialPageData,
       this.room,
       this.component,
       required this.info,
       this.initialRunner,
       required this.onExitController,
       super.key});
-  final String? userScript;
+  final String? initialPageData;
   final String? url;
   final String? widgetId;
   final MatrixRoom? room;
@@ -110,24 +110,15 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
     return SizedBox(
       child: InAppWebView(
         initialSettings: InAppWebViewSettings(transparentBackground: true),
-        initialUrlRequest: URLRequest(url: WebUri(widget.url!)),
+        initialData: InAppWebViewInitialData(
+            data: widget.initialPageData!, baseUrl: WebUri("commet://widget")),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
+
+          runner?.logs.add(LogEntry(LogType.info, consoleMessage.message));
         },
         onWebViewCreated: (controller) {
           Log.i("On web view created");
-          Log.i("User script: ${widget.userScript}");
-
-          if (widget.userScript != null) {
-            // For some reason this is unreliable on Windows, so we inject it later manually
-            if (PlatformUtils.isAndroid) {
-              controller.addUserScript(
-                  userScript: UserScript(
-                      source: widget.userScript!,
-                      injectionTime:
-                          UserScriptInjectionTime.AT_DOCUMENT_START));
-            }
-          }
 
           runner = MatrixUserWidgetInAppWebviewRunner(
               webViewController: controller,
@@ -137,10 +128,6 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
               widgetId: widget.widgetId!,
               onExitController: widget.onExitController,
               client: widget.room!.client as MatrixClient);
-
-          if (PlatformUtils.isWindows) {
-            controller.evaluateJavascript(source: widget.userScript!);
-          }
 
           widget.component!.registerRunner(runner!);
         },
