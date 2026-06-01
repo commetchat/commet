@@ -217,7 +217,6 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     Log.i(text);
 
     var builtWidget = MatrixWidgetInappwebviewRunnerWidget(
-        url: url,
         info: info,
         widgetId: widget.id,
         initialPageData: text,
