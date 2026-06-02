@@ -107,7 +107,7 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
       child: InAppWebView(
         initialSettings: InAppWebViewSettings(transparentBackground: true),
         initialData: InAppWebViewInitialData(
-            data: widget.initialPageData!,
+            data: widget.initialPageData,
             baseUrl: WebUri("http://localhost/widget")),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
