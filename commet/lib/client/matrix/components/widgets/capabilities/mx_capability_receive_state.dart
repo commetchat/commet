@@ -131,6 +131,8 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
       "event_id": i.eventId,
       "room_id": i.roomId!,
     }));
+
+    updateState();
   }
 
   @override
