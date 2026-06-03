@@ -8,7 +8,6 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +87,7 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
   final String initialPageData;
   final String widgetId;
   final MatrixRoom room;
-  final MatrixWidgetComponent?component;
+  final MatrixWidgetComponent? component;
   final UserWidgetInfo info;
   final StreamController onExitController;
 
@@ -122,9 +121,9 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
               info: widget.info,
               room: widget.room,
               context: context,
-              widgetId: widget.widgetId!,
+              widgetId: widget.widgetId,
               onExitController: widget.onExitController,
-              client: widget.room!.client as MatrixClient);
+              client: widget.room.client as MatrixClient);
 
           widget.component!.registerRunner(runner!);
         },

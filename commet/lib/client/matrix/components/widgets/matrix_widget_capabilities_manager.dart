@@ -1,6 +1,5 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
-import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_always_on_screen.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_download_file.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_get_media_config.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_oidc.dart';
@@ -16,13 +15,13 @@ import 'package:commet/client/matrix/components/widgets/capabilities/mx_capabili
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_permission_groups.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_permissions_view.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:matrix/matrix.dart' as matrix;
 
 typedef MatrixWidgetCapability MatrixCapabilityConstructor(
@@ -51,35 +50,67 @@ class MatrixWidgetCapabilitiesManager
     // for which the corresponding capability has already been granted
     MatrixCapabilityReadEventRelations.name,
     MatrixCapabilityGetMediaConfig.name,
+
+    // Usages of this capability present their own permission prompt, so its fine to allow by default
     MatrixCapabilityOIDC.name,
   ];
 
   @override
   Future<List<String>> requestCapabilities(List<String> capabilities) async {
-    var items = Set<String>.from(capabilities);
+    var needsPermission = List<String>.from(capabilities, growable: true);
 
-    var picked = await AdaptiveDialog.pickMultiple(navigator.currentContext!,
-        title: "Widget Permissions",
-        items: items.toList(),
-        selected: items.toList(),
-        itemBuilder: (context, i) => tiamat.Text.label(i));
-
-    if (picked == null) return [];
+    List<String> allowed = List.empty(growable: true);
 
     for (var defaultcapability in defaultCapabilities) {
-      if (picked.contains(defaultcapability) == false) {
-        picked.add(defaultcapability);
+      Log.i(
+        "Allowing capability by default: $defaultcapability",
+      );
+
+      allowed.add(defaultcapability);
+      needsPermission.remove(defaultcapability);
+    }
+
+    for (var capability in needsPermission.toList()) {
+      if (canCreateCapability(capability) == false) {
+        needsPermission.remove(capability);
+
+        runner.logs.add(LogEntry(LogType.error,
+            "Cannot handle capability: $capability, rejecting by default"));
+
+        Log.w("Cannot handle capability: $capability, rejecting by default");
+        if (rejectedCapabilities.contains(capability) == false) {
+          rejectedCapabilities.add(capability);
+        }
+      }
+    }
+
+    if (needsPermission.isNotEmpty) {
+      var groups =
+          MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
+
+      var picked = await AdaptiveDialog.show<List<String>>(
+        context,
+        title: "Widget Permissions",
+        builder: (context) => MatrixWidgetPermissionsView(
+            runner: runner,
+            groupedPermissions: groups.$1,
+            ungrouped: groups.$2),
+      );
+
+      if (picked != null) {
+        Log.i("User allowed permissions: ${picked}");
+        allowed.addAll(picked);
       }
     }
 
     for (var i in capabilities) {
-      if (picked.contains(i) == false &&
+      if (allowed.contains(i) == false &&
           rejectedCapabilities.contains(i) == false) {
         rejectedCapabilities.add(i);
       }
     }
 
-    var granted = grantCapabilities(picked);
+    var granted = grantCapabilities(allowed);
 
     notifyCapabilities(capabilities);
 
@@ -89,6 +120,7 @@ class MatrixWidgetCapabilitiesManager
   void notifyCapabilities(List<String> requested) {
     List<String> approved =
         List.from(grantedCapabilities.keys.toList(), growable: true);
+
     if (approved.contains("io.element.requires_client") == false) {
       approved.add("io.element.requires_client");
     }
@@ -98,62 +130,53 @@ class MatrixWidgetCapabilitiesManager
         data: {"requested": requested, "approved": approved}));
   }
 
-  (String, String?, String?) parseCapability(String name) {
-    var split = name.split((":"));
-    var parsedName = split.first;
+  static Map<String,
+          MatrixWidgetCapability Function(MatrixWidgetRunner, String?, String?)>
+      capabilityBuilders = Map.fromEntries([
+    MatrixCapabilityReceiveEvent.entry,
+    MatrixCapabilitySendEvent.entry,
+    MatrixCapabilityUploadFile.entry,
+    MatrixCapabilityDownloadFile.entry,
+    MatrixCapabilitySendStateEvent.entry,
+    MatrixCapabilityReceiveStateEvent.entry,
+    MatrixCapabilitySendToDeviceEvent.entry,
+    MatrixCapabilityReceiveToDeviceEvent.entry,
+    MatrixCapabilityTurnServers.entry,
+    MatrixCapabilityGetMediaConfig.entry,
+    MatrixCapabilityOIDC.entry,
+    MatrixCapabilityReadEventRelations.entry,
+    MatrixCapabilityTimeline.entry,
+    // MatrixCapabilityAlwaysOnScreen.entry,
+    // MatrixCapabilitySendDelayedEvent.entry,
+    // MatrixCapabilityUpdateDelayedEvent.entry,
+    // MatrixCapabilitySendStickyEvent.entry,
+    // MatrixCapabilityReceiveStickyEvent.entry,
+  ]);
 
-    String? eventType;
-    String? eventKey;
+  static bool canCreateCapability(String capability) {
+    var parsed = MatrixWidgetCapabilityString.parse(capability);
 
-    var splitRemainder = split.sublist(1).join(":");
-
-    var eventTypeSplit = splitRemainder.split("#");
-
-    eventType = eventTypeSplit.first;
-
-    if (eventType.endsWith("#")) {
-      eventKey = "";
+    if (capabilityBuilders.containsKey(parsed.capability)) {
+      return true;
     }
 
-    if (eventTypeSplit.length >= 2) {
-      eventKey = eventTypeSplit.sublist(1).join("#");
-    }
-
-    return (parsedName, eventType, eventKey);
+    return false;
   }
 
   List<String> grantCapabilities(List<String> capabilities) {
     Log.i("Granting capabilities: $capabilities");
     List<String> granted = List.empty(growable: true);
 
-    var builders = Map.fromEntries([
-      MatrixCapabilityReceiveEvent.entry,
-      MatrixCapabilitySendEvent.entry,
-      MatrixCapabilityUploadFile.entry,
-      MatrixCapabilityDownloadFile.entry,
-      MatrixCapabilitySendStateEvent.entry,
-      MatrixCapabilityReceiveStateEvent.entry,
-      MatrixCapabilitySendToDeviceEvent.entry,
-      MatrixCapabilityReceiveToDeviceEvent.entry,
-      MatrixCapabilityTurnServers.entry,
-      MatrixCapabilityGetMediaConfig.entry,
-      MatrixCapabilityOIDC.entry,
-      MatrixCapabilityReadEventRelations.entry,
-      MatrixCapabilityTimeline.entry,
-      MatrixCapabilityAlwaysOnScreen.entry,
-      // MatrixCapabilitySendDelayedEvent.entry,
-      // MatrixCapabilityUpdateDelayedEvent.entry,
-      // MatrixCapabilitySendStickyEvent.entry,
-      // MatrixCapabilityReceiveStickyEvent.entry,
-    ]);
+    var builders = capabilityBuilders;
 
     for (var name in capabilities) {
       if (grantedCapabilities.containsKey(name)) continue;
 
-      var (capability, eventType, eventKey) = parseCapability(name);
+      var parsed = MatrixWidgetCapabilityString.parse(name);
 
-      if (builders.containsKey(capability)) {
-        var created = builders[capability]!(runner, eventType, eventKey);
+      if (builders.containsKey(parsed.capability)) {
+        var created = builders[parsed.capability]!(
+            runner, parsed.eventType, parsed.eventKey);
         grantedCapabilities[name] = created;
         granted.add(name);
 

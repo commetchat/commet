@@ -181,7 +181,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         await spawnChildProcess(url, room, widget);
         return;
       case WidgetHostType.remoteHttpClient:
-        await createRemoteHttpWidgetRunner(url, room, widget);
+        await createRemoteHttpWidgetRunner(url, room, widget,
+            useInsecureHttp: false);
         return;
       case WidgetHostType.externalBrowser:
         await createRemoteHttpWidgetRunner(url, room, widget,
@@ -253,7 +254,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
   Future<void> createRemoteHttpWidgetRunner(
       String url, Room room, MatrixUserWidgetInfo widget,
-      {bool launchBrowser = false}) async {
+      {bool launchBrowser = false, bool useInsecureHttp = false}) async {
     final info = NetworkInfo();
 
     var ip = await info.getWifiIP();
@@ -263,7 +264,11 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       ip = "localhost";
       server = await HttpServer.bind(InternetAddress.anyIPv4, 4185);
     } else {
-      server = await spawnSelfSignedHttpsServer(ip!);
+      if (useInsecureHttp) {
+        server = await HttpServer.bind(InternetAddress.anyIPv4, 4185);
+      } else {
+        server = await spawnSelfSignedHttpsServer(ip!);
+      }
     }
 
     Log.i("Hosted server: ${ip}");
@@ -277,7 +282,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         server: server,
         launchBrowser: launchBrowser,
         context: navigator.currentContext!,
-        hostName: ip);
+        useInsecureHttp: useInsecureHttp,
+        hostName: ip!);
 
     registerRunner(runner);
   }

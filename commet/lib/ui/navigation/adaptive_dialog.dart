@@ -179,6 +179,7 @@ class AdaptiveDialog {
       String title = "Confirmation",
       String confirmationText = "Yes",
       String cancelText = "No",
+      Widget Function(BuildContext)? customBuilder,
       bool dangerous = false}) {
     return show<bool?>(context, builder: (context) {
       return SizedBox(
@@ -204,6 +205,7 @@ class AdaptiveDialog {
                   data: prompt,
                 ),
               ),
+              if (customBuilder != null) customBuilder(context),
               SizedBox(
                 height: 40,
                 child: tiamat.Button(

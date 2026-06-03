@@ -1,4 +1,3 @@
-import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window.dart';
 import 'package:flutter/material.dart';
 

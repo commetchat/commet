@@ -56,6 +56,8 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   @override
   Stream<void> get onClosed => _onClosed.stream;
 
+  bool useInsecureHttp;
+
   MatrixUserWidgetRemoteHttpRunner({
     required this.room,
     required String url,
@@ -66,6 +68,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     required String hostName,
     required bool launchBrowser,
     required this.info,
+    required this.useInsecureHttp,
   }) {
     this.server = server;
     final String secret = RandomUtils.getRandomString(50); // "secret_password";
@@ -142,7 +145,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     Log.i("Current IP: $hostName");
 
     var url = Uri(
-        scheme: "https",
+        scheme: useInsecureHttp ? "http" : "https",
         host: hostName,
         port: server.port,
         queryParameters: {"token": secret});

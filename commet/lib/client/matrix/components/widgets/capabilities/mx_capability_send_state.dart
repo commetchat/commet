@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
@@ -47,6 +53,25 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var key = message.data.tryGet<String>("state_key");
     var content = message.data.tryGetMap<String, dynamic>("content");
+
+    if (eventType == "m.room.power_levels") {
+      if (await AdaptiveDialog.confirmation(
+            navigator.currentContext!,
+            prompt:
+                "'${runner.info.name}' wants to change the room power levels:",
+            customBuilder: (p0) {
+              return SizedBox(
+                child: Codeblock(
+                  text: JsonEncoder.withIndent("  ").convert(content),
+                  language: "json",
+                ),
+              );
+            },
+          ) !=
+          true) {
+        throw Exception("Request denied");
+      }
+    }
 
     if (content == null)
       return message.createResponseError(message: "Invalid message");
