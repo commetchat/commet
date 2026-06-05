@@ -18,7 +18,7 @@ mixin MatrixTimelineEventRelated on MatrixTimelineEvent
 
     if (result != null) return result;
 
-    var reply = event.inReplyToEventId();
+    var reply = event.inReplyToEventId(includingFallback: false);
     if (reply != null) return EventRelationshipType.reply;
 
     return null;
