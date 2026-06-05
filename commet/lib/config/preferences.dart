@@ -254,6 +254,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference showStateEvents =
+      BoolPreference("show_state_events", defaultValue: true);
+
   BoolPreference debugTranslations =
       BoolPreference("enable_translations_debug", defaultValue: false);
 
@@ -378,6 +381,9 @@ class Preferences {
       defaultValue: "stun:turn.matrix.org");
 
   StringPreference theme = StringPreference("app_theme", defaultValue: "dark");
+
+  NullableStringPreference lastOpenedVersion =
+      NullableStringPreference("last_run_version", defaultValue: null);
 
   NullableBoolPreference unifiedPushEnabled =
       NullableBoolPreference("unified_push_enabled", defaultValue: null);

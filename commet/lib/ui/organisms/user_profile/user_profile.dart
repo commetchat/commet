@@ -258,12 +258,13 @@ class _UserProfileState extends State<UserProfile> {
         profile!.identifier == component.getDirectMessagePartnerId(element));
 
     if (existingRooms.isNotEmpty == true) {
-      EventBus.openRoom
-          .add((existingRooms.first.identifier, widget.client.identifier));
+      EventBus.doOpenRoom(existingRooms.first.identifier,
+          clientId: widget.client.identifier);
     } else {
       var room = await component.createDirectMessage(profile!.identifier);
       if (room != null) {
-        EventBus.openRoom.add((room.identifier, widget.client.identifier));
+        EventBus.doOpenRoom(room.identifier,
+            clientId: widget.client.identifier);
       }
     }
 

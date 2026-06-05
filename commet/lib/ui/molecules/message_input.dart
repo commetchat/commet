@@ -264,7 +264,12 @@ class MessageInputState extends State<MessageInput> {
 
     setState(() {
       autoFillResults = result;
-      autoFillSelection = null;
+
+      if (Layout.desktop && result?.isNotEmpty == true) {
+        autoFillSelection = 0;
+      } else {
+        autoFillSelection = null;
+      }
       updateAutofillScroll();
     });
   }

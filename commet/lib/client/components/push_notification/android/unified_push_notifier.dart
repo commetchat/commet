@@ -95,7 +95,7 @@ class UnifiedPushNotifier implements Notifier {
       if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
         if (preferences.developerMode.value) {
           // ignore {"prio": "high"} notifications
-          if (message.length == 1 && message.containsKey("prio")) {
+          if (message.length == 2 && message.containsKey("prio")) {
             return;
           }
 

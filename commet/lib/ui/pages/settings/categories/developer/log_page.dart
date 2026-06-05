@@ -154,6 +154,11 @@ class _LogPageState extends State<LogPage> {
           prevIndex = i;
           spans.add(TextSpan(text: sub, style: style));
           style = entry.value;
+          style = style.copyWith(
+              color: style.color != null
+                  ? tiamat.Text.adjustColor(context, style.color!,
+                      maxLightnessOnLight: 0.5, saturationMultiplier: 0.7)
+                  : null);
           break;
         }
       }

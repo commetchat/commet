@@ -94,4 +94,28 @@ class MatrixInvitationComponent
 
     return finalResult;
   }
+
+  @override
+  bool get allowInvitations {
+    var mx = client.getMatrixClient();
+    var data = mx.accountData["m.invite_permission_config"];
+
+    return data?.content["default_action"] == "block" ? false : true;
+  }
+
+  @override
+  Future<void> setInvitationsAllowed(bool allowed) async {
+    var mx = client.getMatrixClient();
+
+    Map<String, Object?> content = allowed
+        ? {}
+        : {
+            "default_action": "block",
+          };
+
+    await mx.setAccountData(mx.userID!, "m.invite_permission_config", content);
+
+    mx.accountData["m.invite_permission_config"] =
+        matrix.BasicEvent(type: "m.invite_permission_config", content: content);
+  }
 }

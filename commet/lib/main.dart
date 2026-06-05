@@ -135,11 +135,7 @@ void main(List<String> args) async {
     return;
   }
 
-  if (BuildConfig.RELEASE) {
-    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
-  } else {
-    appMain();
-  }
+  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
 }
 
 void appMain() async {
@@ -255,7 +251,7 @@ Future<void> startGui() async {
       Log.i("Received intent: ${initialIntent}");
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.doOpenRoom(uri.roomId, clientId: uri.clientId);
       }
     });
 
@@ -377,6 +373,7 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   StreamSubscription? _onClientRemovedSubscription;
   StreamSubscription? _onClientAddedSubscription;
+  late bool isInitiallyLoggedIn;
 
   @override
   void initState() {
@@ -392,6 +389,8 @@ class _AppViewState extends State<AppView> {
         widget.clientManager.onClientAdded.stream.listen((_) {
       setState(() {});
     });
+
+    isInitiallyLoggedIn = widget.clientManager.isLoggedIn();
   }
 
   @override
@@ -408,6 +407,7 @@ class _AppViewState extends State<AppView> {
             widget.clientManager,
             initialClientId: widget.initialClientId,
             initialRoom: widget.initialRoom,
+            wasLoggedInAtStartup: isInitiallyLoggedIn,
           )
         : LoginPage(onSuccess: (_) {
             setState(() {});

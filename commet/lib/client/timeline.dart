@@ -64,7 +64,7 @@ abstract class Timeline {
   final Map<String, TimelineEvent> _eventsDict = {};
   late StreamController<int> onEventAdded =
       StreamController.broadcast(sync: true);
-  late StreamController<int> onChange = StreamController.broadcast(sync: true);
+  late StreamController<int> onChange = StreamController.broadcast(sync: false);
   late StreamController<int> onRemove = StreamController.broadcast(sync: true);
   late Client client;
   late Room room;

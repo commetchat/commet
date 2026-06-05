@@ -46,7 +46,7 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
     if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
       if (preferences.developerMode.value) {
         // ignore {"prio": "high"} notifications
-        if (data.length == 1 && data.containsKey("prio")) {
+        if (data.length == 2 && data.containsKey("prio")) {
           return;
         }
 

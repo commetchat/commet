@@ -9,6 +9,8 @@ import 'package:commet/client/matrix_background/matrix_background_direct_message
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
@@ -51,19 +53,19 @@ class MatrixBackgroundClient implements Client {
   int? get maxFileSize => 0;
 
   @override
-  Stream<int> get onPeerAdded => Stream.empty();
+  Stream<Peer> get onPeerAdded => Stream.empty();
 
   @override
-  Stream<int> get onRoomAdded => Stream.empty();
+  Stream<Room> get onRoomAdded => Stream.empty();
 
   @override
-  Stream<int> get onRoomRemoved => Stream.empty();
+  Stream<Room> get onRoomRemoved => Stream.empty();
 
   @override
-  Stream<int> get onSpaceAdded => Stream.empty();
+  Stream<Space> get onSpaceAdded => Stream.empty();
 
   @override
-  Stream<int> get onSpaceRemoved => Stream.empty();
+  Stream<Space> get onSpaceRemoved => Stream.empty();
 
   @override
   Stream<void> get onSync => Stream.empty();
@@ -72,7 +74,7 @@ class MatrixBackgroundClient implements Client {
   List<Peer> get peers => [];
 
   @override
-  List<Room> get rooms => [];
+  NotifyingList<Room> get rooms => NotifyingList.empty();
 
   String? deviceId;
 
@@ -84,7 +86,7 @@ class MatrixBackgroundClient implements Client {
   @override
   Future<void> init(bool loadingFromCache,
       {bool isBackgroundService = false}) async {
-    final db = await getMatrixDatabase(databaseId);
+    final db = await getMatrixDatabase(databaseId, onDatabaseIsolate: false);
     if (db is MatrixSdkDriftDatabase) {
       database = db;
     }
@@ -265,4 +267,8 @@ class MatrixBackgroundClient implements Client {
     // TODO: implement joinRoomFromPreview
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement favoriteRooms
+  NotifyingListFilter<Room> get favoriteRooms => throw UnimplementedError();
 }
