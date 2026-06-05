@@ -4,11 +4,11 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
-import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
@@ -52,11 +52,16 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     EventBus.openThread.stream.listen((event) {
       panelsKey.currentState?.reveal(RevealSide.right);
     });
+
     EventBus.closeThread.stream.listen((event) {
       panelsKey.currentState?.reveal(RevealSide.main);
     });
 
     EventBus.focusTimeline.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.main);
+    });
+
+    EventBus.openRoom.stream.listen((_) {
       panelsKey.currentState?.reveal(RevealSide.main);
     });
 
@@ -322,14 +327,16 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       );
     }
 
-    return Tile(
-        child: HomeScreen(
-      clientManager: widget.state.clientManager,
-      filterClient: widget.state.filterClient,
-      onBurgerMenuTap: () {
-        panelsKey.currentState?.reveal(RevealSide.left);
-      },
-    ));
+    return Material(
+      child: Tile(
+          child: HomeScreen(
+        clientManager: widget.state.clientManager,
+        filterClient: widget.state.filterClient,
+        onBurgerMenuTap: () {
+          panelsKey.currentState?.reveal(RevealSide.left);
+        },
+      )),
+    );
   }
 
   Widget userList() {
@@ -373,36 +380,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:
-                          tiamat.Text.labelLow(directMessagesListHeaderMobile),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-                      child: tiamat.IconButton(
-                          size: 18,
-                          icon: Icons.add,
-                          onPressed: widget.state.searchUserToDm),
-                    ),
-                  ],
-                ),
                 Flexible(
-                  child: DirectMessageList(
-                    filterClient: widget.state.filterClient,
-                    directMessages: widget.state.clientManager.directMessages,
-                    onSelected: (room) {
-                      setState(() {
-                        selectRoom(
-                          room,
-                        );
-                      });
-                    },
-                  ),
+                  child: ImportantRoomsList(
+                      state: widget.state,
+                      directMessagesListHeaderDesktop:
+                          directMessagesListHeaderMobile),
                 ),
               ],
             ),

@@ -5,10 +5,29 @@ import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
+class RoomOpenArgs {
+  String roomId;
+  String? clientId;
+  bool bypassSpecialRoomTypes;
+  bool openInSpace;
+
+  RoomOpenArgs(this.roomId, this.clientId,
+      {this.bypassSpecialRoomTypes = false, this.openInSpace = true});
+}
+
 class EventBus {
   /// First string is room id, Second string is client id
-  static StreamController<(String, String?)> openRoom =
-      StreamController<(String, String?)>.broadcast();
+  static StreamController<RoomOpenArgs> openRoom =
+      StreamController<RoomOpenArgs>.broadcast();
+
+  static void doOpenRoom(String roomId,
+      {String? clientId,
+      bool bypassSpecialRoomType = false,
+      bool openInSpace = true}) {
+    openRoom.add(RoomOpenArgs(roomId, clientId,
+        bypassSpecialRoomTypes: bypassSpecialRoomType,
+        openInSpace: openInSpace));
+  }
 
   /// First string is user id, Second string is client id, third string is context room
   static StreamController<(String, String, String?)> openUserProfile =

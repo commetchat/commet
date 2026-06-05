@@ -7,6 +7,8 @@ import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -111,7 +113,7 @@ abstract class Client {
   List<Room> get singleRooms;
 
   /// Gets list of all rooms
-  List<Room> get rooms;
+  NotifyingList<Room> get rooms;
 
   /// Gets list of all spaces
   List<Space> get spaces;
@@ -136,6 +138,8 @@ abstract class Client {
 
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
+
+  NotifyingListFilter<Room> get favoriteRooms;
 
   StoredStreamController<ClientConnectionStatusUpdate>
       get connectionStatusChanged;

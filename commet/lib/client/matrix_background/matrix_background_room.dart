@@ -476,4 +476,14 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement setVisibility
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement isFavorite
+  bool get isFavorite => false;
+
+  @override
+  Future<void> setAsFavorite(bool favorite) {
+    // TODO: implement setAsFavorite
+    throw UnimplementedError();
+  }
 }

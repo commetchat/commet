@@ -103,27 +103,10 @@ class HomeScreenView extends StatelessWidget {
           initialAnimation: false,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, room) {
-            return RoomPanel(
-              displayName: room.displayName,
-              avatar: room.avatar,
-              color: room.defaultColor,
-              body: room.lastMessage?.plainTextBody,
-              recentEventSender: room.lastMessage != null
-                  ? room
-                      .getMemberOrFallback(room.lastMessage!.senderId)
-                      .displayName
-                  : null,
-              recentEventSenderColor: room.lastMessage != null
-                  ? room.getColorOfUser(room.lastMessage!.senderId)
-                  : null,
-              onTap: () => onRoomClicked?.call(room),
-              showUserAvatar: clientManager.rooms
-                      .where((element) => element.identifier == room.identifier)
-                      .length >
-                  1,
-              userAvatar: room.client.self!.avatar,
-              userDisplayName: room.client.self!.displayName,
-              userColor: room.client.self!.defaultColor,
+            return Padding(
+              padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
+              child: RoomPanel(
+                  key: ValueKey("recent-activity-room_${room.localId}"), room),
             );
           },
         ));
@@ -143,28 +126,10 @@ class HomeScreenView extends StatelessWidget {
               shrinkWrap: true,
               itemData: rooms!,
               itemBuilder: (context, room) {
-                return RoomPanel(
-                  displayName: room.displayName,
-                  avatar: room.avatar,
-                  color: room.defaultColor,
-                  body: room.lastMessage?.plainTextBody,
-                  recentEventSender: room.lastMessage != null
-                      ? room
-                          .getMemberOrFallback(room.lastMessage!.senderId)
-                          .displayName
-                      : null,
-                  recentEventSenderColor: room.lastMessage != null
-                      ? room.getColorOfUser(room.lastMessage!.senderId)
-                      : null,
-                  onTap: () => onRoomClicked?.call(room),
-                  showUserAvatar: clientManager.rooms
-                          .where((element) =>
-                              element.identifier == room.identifier)
-                          .length >
-                      1,
-                  userAvatar: room.client.self!.avatar,
-                  userDisplayName: room.client.self!.displayName,
-                  userColor: room.client.self!.defaultColor,
+                return Padding(
+                  padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
+                  child: RoomPanel(room,
+                      key: ValueKey("homescreen-room_${room.localId}")),
                 );
               },
             ),

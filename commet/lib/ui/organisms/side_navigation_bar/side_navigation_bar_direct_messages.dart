@@ -35,7 +35,8 @@ class _SideNavigationBarDirectMessagesState
     rooms = widget.directMessages.highlightedRoomsList;
     subscriptions = [
       EventBus.setFilterClient.stream.listen(setFilterClient),
-      widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated),
+      widget.directMessages.highlightedRoomsList.onListUpdated
+          .listen(onListUpdated),
     ];
   }
 
@@ -78,14 +79,17 @@ class _SideNavigationBarDirectMessagesState
         padding: const EdgeInsets.all(0),
         itemBuilder: (context, data) {
           // return tiamat.Text.labelLow(data.displayName);
-          return SpaceIcon(
-            displayName: data.displayName,
-            placeholderColor: data.defaultColor,
-            spaceId: data.identifier,
-            avatar: data.avatar,
-            width: 70,
-            highlightedNotificationCount: data.notificationCount,
-            onTap: () => widget.onRoomTapped?.call(data),
+          return Padding(
+            padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
+            child: SpaceIcon(
+              displayName: data.displayName,
+              placeholderColor: data.defaultColor,
+              spaceId: data.identifier,
+              avatar: data.avatar,
+              width: 70,
+              highlightedNotificationCount: data.notificationCount,
+              onTap: () => widget.onRoomTapped?.call(data),
+            ),
           );
         },
       ),

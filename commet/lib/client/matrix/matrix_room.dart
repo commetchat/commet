@@ -1025,4 +1025,12 @@ class MatrixRoom extends Room {
 
     return result;
   }
+
+  @override
+  bool get isFavorite => matrixRoom.isFavourite;
+
+  @override
+  Future<void> setAsFavorite(bool favorite) {
+    return matrixRoom.setFavourite(favorite);
+  }
 }

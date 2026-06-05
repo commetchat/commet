@@ -93,6 +93,10 @@ abstract class Room {
 
   bool get isSpecialRoomType;
 
+  Future<void> setAsFavorite(bool favorite);
+
+  bool get isFavorite;
+
   IconData get icon {
     var dm = client.getComponent<DirectMessagesComponent>();
     if (dm?.isRoomDirectMessage(this) == true) {

@@ -23,6 +23,7 @@ import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
@@ -81,6 +82,20 @@ class MatrixClient extends Client {
 
     self = ErrorProfile();
 
+    favoriteRooms = NotifyingListFilter(
+      _rooms,
+      where: (item) {
+        return (item as MatrixRoom).matrixRoom.isFavourite;
+      },
+      onFilterParamsChanged: [
+        _matrixClient.onSync.stream.where((sync) {
+          return sync.rooms?.join?.values.any((i) =>
+                  i.accountData?.any((i) => i.type == "m.tag") == true) ==
+              true;
+        })
+      ],
+    );
+
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
     componentsInternal = ComponentRegistry.getMatrixComponents(this);
   }
@@ -127,13 +142,16 @@ class MatrixClient extends Client {
   List<Peer> get peers => _peers;
 
   @override
-  List<Room> get rooms => _rooms;
+  NotifyingList<Room> get rooms => _rooms;
 
   @override
   List<Room> get singleRooms => throw UnimplementedError();
 
   @override
   List<Space> get spaces => _spaces;
+
+  @override
+  late NotifyingListFilter<Room> favoriteRooms;
 
   @override
   StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =

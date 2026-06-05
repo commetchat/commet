@@ -84,7 +84,9 @@ class WindowsNotifier implements Notifier {
         var roomId = args['room_id'];
         if (roomId == null) return;
 
-        EventBus.openRoom.add((roomId, null));
+        final clientId = args['client_id'];
+
+        EventBus.doOpenRoom(roomId, clientId: clientId);
         windowManager.show();
         break;
       case 'accept_call':

@@ -1,7 +1,19 @@
 import 'dart:async';
 import 'dart:math';
 
-class NotifyingList<T> implements List<T> {
+abstract interface class INotifyingList<T> implements List<T> {
+  Stream<T> get onAdd;
+
+  Stream<T> get onRemove;
+
+  Stream get onListUpdated;
+
+  Stream<T> get onItemUpdated;
+
+  void unsubscribe();
+}
+
+class NotifyingList<T> implements INotifyingList<T> {
   List<T> _internalList;
 
   late StreamController<T> _onAdd = StreamController.broadcast();
@@ -73,6 +85,12 @@ class NotifyingList<T> implements List<T> {
 
   factory NotifyingList.empty({bool growable = false, bool sync = true}) {
     List<T> internalList = List.empty(growable: growable);
+    return NotifyingList._internal(internalList, sync);
+  }
+
+  factory NotifyingList.from(Iterable<dynamic> elements,
+      {bool growable = false, bool sync = true}) {
+    List<T> internalList = List.from(elements, growable: growable);
     return NotifyingList._internal(internalList, sync);
   }
 
@@ -389,5 +407,10 @@ class NotifyingList<T> implements List<T> {
   @override
   Iterable<R> whereType<R>() {
     return _internalList.whereType<R>();
+  }
+
+  @override
+  void unsubscribe() {
+    // TODO: implement dispose
   }
 }
