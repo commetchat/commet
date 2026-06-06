@@ -96,7 +96,6 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
     bytes = Utf8Encoder().convert(text);
 
-
     request.response
       ..headers.contentType = new ContentType("text", "html")
       ..headers.contentLength = bytes.length
@@ -158,7 +157,6 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
       return;
     }
-
 
     request.response
       ..headers.contentType = new ContentType("text", "json")

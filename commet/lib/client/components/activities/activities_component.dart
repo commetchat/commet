@@ -11,7 +11,11 @@ class RoomActivitySession {
   String? knownName;
   String get name => knownName ?? application;
 
-  RoomActivitySession({required this.participants, required this.application, this.thirdparty = true, String? appName}) {
+  RoomActivitySession(
+      {required this.participants,
+      required this.application,
+      this.thirdparty = true,
+      String? appName}) {
     this.knownName = appName;
   }
 }

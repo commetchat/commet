@@ -250,9 +250,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   Widget buildActivity(RoomActivitySession activity) {
     return AdaptiveContextMenu(
       items: [
-        tiamat.ContextMenuItem(text: "Clear Memberships", onPressed: () {
-          activities!.clearMemberships(activity);
-        },),
+        tiamat.ContextMenuItem(
+          text: "Clear Memberships",
+          onPressed: () {
+            activities!.clearMemberships(activity);
+          },
+        ),
       ],
       child: Container(
         decoration: BoxDecoration(
