@@ -131,6 +131,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       "\$org.matrix.msc4039.matrix_base_url":
           (room.client as MatrixClient).matrixClient.baseUri.toString(),
       "\$chat.commet.color_scheme": Uri.encodeComponent(colorScheme),
+      "\$org.matrix.msc2873.client_theme":
+          Theme.of(context).brightness == Brightness.light ? "light" : "dark",
     };
 
     Log.i("Replacements: ${jsonEncode(replacements)}");

@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/components/widgets/capabilities/mx_capabili
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_event.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_state.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_send_to_device.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_theme.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_timeline.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_turn_servers.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';
@@ -50,6 +51,8 @@ class MatrixWidgetCapabilitiesManager
     // for which the corresponding capability has already been granted
     MatrixCapabilityReadEventRelations.name,
     MatrixCapabilityGetMediaConfig.name,
+
+    MatrixCapabilityTheme.name,
 
     // Usages of this capability present their own permission prompt, so its fine to allow by default
     MatrixCapabilityOIDC.name,
@@ -146,6 +149,7 @@ class MatrixWidgetCapabilitiesManager
     MatrixCapabilityOIDC.entry,
     MatrixCapabilityReadEventRelations.entry,
     MatrixCapabilityTimeline.entry,
+    MatrixCapabilityTheme.entry,
     // MatrixCapabilityAlwaysOnScreen.entry,
     // MatrixCapabilitySendDelayedEvent.entry,
     // MatrixCapabilityUpdateDelayedEvent.entry,

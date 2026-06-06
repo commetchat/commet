@@ -26,6 +26,8 @@ class ThemeChanger extends StatefulWidget {
   @override
   ThemeChangerState createState() => ThemeChangerState();
 
+  static StreamController<ThemeData> onThemeChanged = StreamController.broadcast();
+
   static void setTheme(BuildContext context, ThemeData theme) {
     var state = context.findAncestorStateOfType<ThemeChangerState>()
         as ThemeChangerState;
@@ -87,6 +89,8 @@ class ThemeChangerState extends State<ThemeChanger>
   }
 
   void setTheme(ThemeData theme) {
+
+    ThemeChanger.onThemeChanged.add(theme);
     setState(() {
       this.theme = theme;
     });
