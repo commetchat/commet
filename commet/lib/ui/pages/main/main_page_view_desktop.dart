@@ -8,9 +8,10 @@ import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
-import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/molecules/user_panel_settings.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
@@ -19,7 +20,6 @@ import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
-import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -135,6 +135,7 @@ class MainPageViewDesktop extends StatelessWidget {
               },
             ),
           const BackgroundTaskViewContainer(),
+          const OverlayWindowsSurface(),
         ],
       ),
     );
@@ -246,21 +247,9 @@ class MainPageViewDesktop extends StatelessWidget {
               ),
             )),
           ),
-          Row(
-            children: [
-              SizedBox(
-                  width: height,
-                  height: height,
-                  child: tiamat.IconButton(
-                    icon: Icons.settings,
-                    size: height / 4,
-                    onPressed: () {
-                      NavigationUtils.navigateTo(
-                          context, const AppSettingsPage());
-                    },
-                  ))
-            ],
-          )
+          UserPanelSettings(
+            height: height,
+          ),
         ],
       )),
     );

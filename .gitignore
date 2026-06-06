@@ -13,6 +13,7 @@ widgets/calendar/android/local.properties
 .vscode/settings.json
 .idea/
 /build
+/target
 commet/.livekit/
 commet/web/e2ee.worker.dart.js.map
 commet/web/e2ee.worker.dart.js.deps

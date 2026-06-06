@@ -1,3 +1,5 @@
+import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -390,21 +392,17 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         icon: Icons.gavel,
       ),
     ]);
-    bool isVoipRoom =
-        widget.room.getState(matrix.EventTypes.RoomCreate)?.content['type'] ==
-            "org.matrix.msc3417.call";
-    if (isVoipRoom) {
-      permissions.addAll([
-        MatrixRoomPermissionEntry(
-          key: "org.matrix.msc3401.call.member",
-          keyParent: "events",
-          title: labelMatrixPermissionsJoinCallTitle,
-          description: labelMatrixPermissionsJoinCallDescription,
-          icon: Icons.call,
-          powerLevel: 0,
-        ),
-      ]);
-    }
+
+    permissions.addAll([
+      MatrixRoomPermissionEntry(
+        key: "org.matrix.msc3401.call.member",
+        keyParent: "events",
+        title: labelMatrixPermissionsJoinCallTitle,
+        description: labelMatrixPermissionsJoinCallDescription,
+        icon: Icons.call,
+        powerLevel: 0,
+      ),
+    ]);
 
     if (isCalendarRoom) {
       permissions.addAll([
@@ -417,6 +415,30 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
           powerLevel: 0,
         ),
       ]);
+    }
+
+    if (preferences.developerMode.value == true) {
+      var powerLevels = widget.room.states["m.room.power_levels"]?[""];
+      if (powerLevels != null) {
+        var events = powerLevels.content.tryGetMap<String, dynamic>("events");
+        if (events != null) {
+          for (var entry in events.entries) {
+            if (permissions.any(
+                (i) => i.keyParent == "events" && i.key == entry.key)) continue;
+
+            permissions.add(MatrixRoomPermissionEntry(
+                key: entry.key,
+                title: entry.key,
+                keyParent: "events",
+                description:
+                    "Allow the user to send events of type '${entry.key}'",
+                icon: Icons.question_mark_rounded,
+                powerLevel: entry.value));
+          }
+        }
+      }
+
+      Log.i("Power Levels: ${powerLevels!.content}");
     }
   }
 

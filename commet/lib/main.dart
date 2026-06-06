@@ -16,7 +16,10 @@ import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
+import 'package:commet/rust/api/simple.dart';
+import 'package:commet/rust/frb_generated.dart';
 import 'package:commet/single_instance.dart';
+import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -204,6 +207,10 @@ Future<void> initNecessary() async {
   await preferences.init();
   await initDatabaseServer();
 
+  await RustLib.init();
+
+  Log.i(greet(name: "test"));
+
   fileCache = FileCache.getFileCacheInstance();
 
   await Future.wait([
@@ -326,37 +333,39 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomSafeArea(
-      child: FocusNodeMonitor(
-        child: TextScaleChanger(
-          child: ThemeChanger(
-              shouldFollowSystemTheme: () =>
-                  preferences.shouldFollowSystemTheme.value,
-              getDarkTheme: () {
-                return preferences.resolveTheme(
-                    overrideBrightness: Brightness.dark);
-              },
-              getLightTheme: () {
-                return preferences.resolveTheme(
-                    overrideBrightness: Brightness.light);
-              },
-              initialTheme: initialTheme ?? ThemeDark.theme,
-              materialAppBuilder: (context, theme) {
-                return MaterialApp(
-                  title: 'Commet',
-                  theme: theme,
-                  debugShowCheckedModeBanner: false,
-                  navigatorKey: navigator,
-                  builder: (context, child) => Provider<ClientManager>(
-                    create: (context) => clientManager,
-                    child: child,
-                  ),
-                  home: AppView(
-                    clientManager: clientManager,
-                    initialClientId: initialClientId,
-                    initialRoom: initialRoom,
-                  ),
-                );
-              }),
+      child: OverlayWindowsManager(
+        child: FocusNodeMonitor(
+          child: TextScaleChanger(
+            child: ThemeChanger(
+                shouldFollowSystemTheme: () =>
+                    preferences.shouldFollowSystemTheme.value,
+                getDarkTheme: () {
+                  return preferences.resolveTheme(
+                      overrideBrightness: Brightness.dark);
+                },
+                getLightTheme: () {
+                  return preferences.resolveTheme(
+                      overrideBrightness: Brightness.light);
+                },
+                initialTheme: initialTheme ?? ThemeDark.theme,
+                materialAppBuilder: (context, theme) {
+                  return MaterialApp(
+                    title: 'Commet',
+                    theme: theme,
+                    debugShowCheckedModeBanner: false,
+                    navigatorKey: navigator,
+                    builder: (context, child) => Provider<ClientManager>(
+                      create: (context) => clientManager,
+                      child: child,
+                    ),
+                    home: AppView(
+                      clientManager: clientManager,
+                      initialClientId: initialClientId,
+                      initialRoom: initialRoom,
+                    ),
+                  );
+                }),
+          ),
         ),
       ),
     );

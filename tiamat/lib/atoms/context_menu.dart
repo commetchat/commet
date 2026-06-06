@@ -166,12 +166,22 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: widget.items
-            .map((e) => e.build(context, () {
+            .map(
+              (e) => e.build(
+                context,
+                () {
                   e.onPressed?.call();
                   _controller
                       .animateTo(0)
                       .then((value) => widget.close?.call());
-                }))
+                },
+                closeMenu: () {
+                  _controller
+                      .animateTo(0)
+                      .then((value) => widget.close?.call());
+                },
+              ),
+            )
             .toList(),
       ),
     );
@@ -288,16 +298,17 @@ class ContextMenuItem {
   final Function? onPressed;
   final IconData? icon;
   final Color? color;
-  final Widget Function(BuildContext context, Function() onClicked)?
-      customBuilder;
+  final Widget Function(BuildContext context, Function() onClicked,
+      {Function()? closeMenu})? customBuilder;
 
-  Widget build(BuildContext context, Function() onClicked) {
+  Widget build(BuildContext context, Function() onClicked,
+      {Function()? closeMenu}) {
     var c = color ?? Theme.of(context).colorScheme.onSurface;
 
     if (customBuilder != null) {
       return Material(
           color: Colors.transparent,
-          child: customBuilder!.call(context, onClicked));
+          child: customBuilder!.call(context, onClicked, closeMenu: closeMenu));
     }
 
     return Material(
