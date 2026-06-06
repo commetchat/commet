@@ -116,6 +116,8 @@ abstract class Timeline {
     _eventsDict[events[index].eventId] = events[index];
   }
 
+  String getDisplayId(TimelineEvent event);
+
   bool canDeleteEvent(TimelineEvent event);
 
   void deleteEvent(TimelineEvent event);

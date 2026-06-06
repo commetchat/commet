@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:mime/mime.dart' as mime;
 
 abstract class Attachment {
-  late String name;
+  late String? name;
 }
 
 abstract class ProcessedAttachment {}
@@ -59,7 +59,7 @@ class PendingFileAttachment {
 
 class FileAttachment implements Attachment {
   @override
-  String name;
+  String? name;
   int? fileSize;
   String? mimeType;
   FileProvider file;
@@ -94,10 +94,13 @@ class VideoAttachment extends FileAttachment {
   double get aspectRatio =>
       (width != null && height != null) ? (width! / height!) : 1;
 
+  final Uri? streamUrl;
+
   VideoAttachment(super.file,
-      {required super.name,
+      {super.name,
       required super.mimeType,
       this.thumbnail,
+      this.streamUrl,
       this.width,
       this.height,
       this.duration,
