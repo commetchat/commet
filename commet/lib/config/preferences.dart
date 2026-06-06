@@ -7,6 +7,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences/bool_preference.dart';
 import 'package:commet/config/preferences/double_preference.dart';
 import 'package:commet/config/preferences/preference.dart';
+import 'package:commet/config/preferences/string_list_preference.dart';
 import 'package:commet/config/preferences/string_preference.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
@@ -253,6 +254,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference showStateEvents =
+      BoolPreference("show_state_events", defaultValue: true);
+
   BoolPreference debugTranslations =
       BoolPreference("enable_translations_debug", defaultValue: false);
 
@@ -342,6 +346,10 @@ class Preferences {
       "suppress_notification_when_room_focused",
       defaultValue: true);
 
+  BoolPreference experimentEnableE2eeElementCall = BoolPreference(
+      "experiment_enabled_e2ee_element_call",
+      defaultValue: false);
+
   DoublePreference notificationsVolume =
       DoublePreference("notifications_volume", defaultValue: 90.0);
 
@@ -410,4 +418,7 @@ class Preferences {
 
   NullableStringPreference lastDownloadLocation =
       NullableStringPreference("last_download_location", defaultValue: null);
+
+  StringListPreference allowedRemoteVideoHosts =
+      StringListPreference("allowed_remote_video_hosts", defaultValue: []);
 }

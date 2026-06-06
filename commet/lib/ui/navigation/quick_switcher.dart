@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -57,24 +57,24 @@ class QuickSwitcherSearchItemRoom implements QuickSwitcherSearchItem {
 
   @override
   Widget build(BuildContext context) {
-    var sender = room.lastEvent != null
-        ? room.getMemberOrFallback(room.lastEvent!.senderId)
+    var sender = room.lastMessage != null
+        ? room.getMemberOrFallback(room.lastMessage!.senderId)
         : null;
 
-    return RoomPanel(
+    return RoomPanelView(
       displayName: room.displayName,
       color: room.defaultColor,
       onTap: () => onTap(context),
       avatar: room.avatar,
       recentEventSender: sender?.displayName,
       recentEventSenderColor: sender?.defaultColor,
-      body: room.lastEvent?.plainTextBody,
+      body: room.lastMessage?.plainTextBody,
     );
   }
 
   @override
   void onTap(BuildContext context) {
-    EventBus.openRoom.add((room.identifier, room.client.identifier));
+    EventBus.doOpenRoom(room.identifier, clientId: room.client.identifier);
 
     Navigator.of(context).pop();
   }
@@ -160,8 +160,8 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        EventBus.openRoom
-                            .add((room.identifier, room.client.identifier));
+                        EventBus.doOpenRoom(room.identifier,
+                            clientId: room.client.identifier);
 
                         Navigator.of(context).pop();
                       },
@@ -185,27 +185,27 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     .sorted((a, b) =>
                         b.lastEventTimestamp.compareTo(a.lastEventTimestamp))
                     .sublist(0, 4))
-                  RoomPanel(
+                  RoomPanelView(
                     onTap: () {
-                      EventBus.openRoom
-                          .add((room.identifier, room.client.identifier));
+                      EventBus.doOpenRoom(room.identifier,
+                          clientId: room.client.identifier);
 
                       Navigator.of(context).pop();
                     },
                     displayName: room.displayName,
                     color: room.defaultColor,
                     avatar: room.avatar,
-                    recentEventSender: room.lastEvent != null
+                    recentEventSender: room.lastMessage != null
                         ? room
-                            .getMemberOrFallback(room.lastEvent!.senderId)
+                            .getMemberOrFallback(room.lastMessage!.senderId)
                             .displayName
                         : null,
-                    recentEventSenderColor: room.lastEvent != null
+                    recentEventSenderColor: room.lastMessage != null
                         ? room
-                            .getMemberOrFallback(room.lastEvent!.senderId)
+                            .getMemberOrFallback(room.lastMessage!.senderId)
                             .defaultColor
                         : null,
-                    body: room.lastEvent?.plainTextBody,
+                    body: room.lastMessage?.plainTextBody,
                   )
               ],
             ))

@@ -76,7 +76,7 @@ This repo currently has a monorepo structure, containing two flutter projects: C
 ### 2. Install Libraries
 Commet requires some additional libraries to be built 
 ```bash
-sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev
+sudo apt-get install -y cmake clang ninja-build rustup libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev libwebkit2gtk-4.1-dev keybinder-3.0
 ```
 
 ### 3. Fetch Dependencies

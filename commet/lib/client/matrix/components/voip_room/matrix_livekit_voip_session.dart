@@ -7,6 +7,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -25,9 +26,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   Timer? heartbeatTimer;
   String? heartbeatDelayId;
 
+  MatrixLivekitEncryptionKeyProvider? keyProvider;
+
   final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
-  MatrixLivekitVoipSession(this.room, this.livekitRoom) {
+  MatrixLivekitVoipSession(this.room, this.livekitRoom, {this.keyProvider}) {
     clientManager?.callManager.onClientSessionStarted(this);
     addInitialStreams();
 
@@ -46,6 +49,8 @@ class MatrixLivekitVoipSession implements VoipSession {
       if (state == VoipState.ended) timer.cancel();
       _onVolumeChanged.add(());
     });
+
+    keyProvider?.init(livekitRoom.localParticipant!.identity, livekitRoom);
 
     startHeartbeat();
   }
@@ -193,6 +198,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   Future<void> hangUpCall() async {
     Log.i("Hanging up call");
 
+    keyProvider?.dispose();
+
     await Future.wait([
       clearRoomCallState(),
       disconnectCall(),
@@ -283,9 +290,6 @@ class MatrixLivekitVoipSession implements VoipSession {
             maxFramerate: framerate.toInt(), maxBitrate: bitrate),
       ),
     ));
-
-    print("Available codecs");
-    livekitRoom.engine.enabledPublishCodecs?.forEach((i) => print(i.mime));
 
     await livekitRoom.localParticipant?.publishVideoTrack(track,
         publishOptions: lk.VideoPublishOptions(

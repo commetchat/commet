@@ -2,6 +2,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_overlay_button.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -17,10 +18,12 @@ class TimelineOverlay extends StatefulWidget {
       {required this.link,
       this.showMessageMenu = true,
       this.jumpToLatest,
+      this.onScrolled,
       super.key});
   final LayerLink link;
   final bool showMessageMenu;
   final Function()? jumpToLatest;
+  final Function(PointerScrollEvent)? onScrolled;
 
   @override
   State<TimelineOverlay> createState() => TimelineOverlayState();
@@ -61,11 +64,18 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                   showWhenUnlinked: false,
                   offset: Offset(-20, openDownwards == true ? -50 : 0),
                   link: widget.link,
-                  child: MouseRegion(
-                      child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: buildTooltipMenu(child: buildPrimaryMenu(context)),
-                  )))),
+                  child: Listener(
+                    onPointerSignal: (event) {
+                      if (event is PointerScrollEvent) {
+                        widget.onScrolled?.call(event);
+                      }
+                    },
+                    child: MouseRegion(
+                        child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: buildTooltipMenu(child: buildPrimaryMenu(context)),
+                    )),
+                  ))),
         Align(
           alignment: Alignment.bottomCenter,
           child: AnimatedSlide(

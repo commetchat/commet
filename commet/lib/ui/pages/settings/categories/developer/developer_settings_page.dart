@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
@@ -13,7 +14,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
@@ -142,7 +143,21 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 text: "Timeline Viewer",
                 onTap: () => NavigationUtils.navigateTo(
                     context, const BenchmarkTimelineViewer()),
-              )
+              ),
+              tiamat.Button(
+                  text: "Notification Badges Stress Test",
+                  onTap: () async {
+                    for (int i = 0; i < 10000; i++) {
+                      int v = i % 9;
+                      (NotificationManager.notifier as LinuxNotifier?)
+                          ?.service
+                          .update(count: v, countVisible: v != 0);
+
+                      await Future.delayed(Duration(milliseconds: 100));
+
+                      print("Notification Badge Stress Test: $i");
+                    }
+                  })
             ],
           ),
         ]);

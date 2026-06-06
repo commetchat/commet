@@ -246,10 +246,10 @@ packages:
     dependency: transitive
     description:
       name: connectivity_plus
-      sha256: b5e72753cf63becce2c61fd04dfe0f1c430cc5278b53a1342dc5ad839eab29ec
+      sha256: "33bae12a398f841c6cda09d1064212957265869104c478e5ad51e2fb26c3973c"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.5"
+    version: "7.0.0"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -338,6 +338,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  dart_jsonwebtoken:
+    dependency: transitive
+    description:
+      name: dart_jsonwebtoken
+      sha256: cb79ed79baa02b4f59a597bf365873cbd83f9bb15273d63f7803802d21717c7d
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   dart_style:
     dependency: transitive
     description:
@@ -350,10 +358,10 @@ packages:
     dependency: transitive
     description:
       name: dart_webrtc
-      sha256: "4ed7b9fa9924e5a81eb39271e2c2356739dd1039d60a13b86ba6c5f448625086"
+      sha256: "63a3ed6b958b5ba32d95ddba484c0dcf1cad4fd55eb551bb23c815b6f1e5d844"
       url: "https://pub.dev"
     source: hosted
-    version: "1.7.0"
+    version: "1.8.0"
   dbus:
     dependency: transitive
     description:
@@ -399,10 +407,10 @@ packages:
     dependency: transitive
     description:
       name: device_info_plus
-      sha256: "98f28b42168cc509abc92f88518882fd58061ea372d7999aecc424345c7bff6a"
+      sha256: "4df8babf73058181227e18b08e6ea3520cf5fc5d796888d33b7cb0f33f984b7c"
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.3.0"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -810,13 +818,14 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_webrtc:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: flutter_webrtc
-      sha256: "16ca9e30d428bae3dd32933e875c9f67c5843d1fa726c37cf1fc479eb9294549"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
+      path: "."
+      ref: hkdf
+      resolved-ref: "2d0dce5e11ad9d9a37c397095faa58b676ef8027"
+      url: "https://github.com/commetchat/flutter-webrtc.git"
+    source: git
+    version: "1.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1150,10 +1159,11 @@ packages:
   launcher_entry:
     dependency: transitive
     description:
-      name: launcher_entry
-      sha256: "87c403fce3f9beea51514a7c5859aac57c9af6b795433a29ee9caa7b5bba9ac1"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "0a8a1d13677b531fe271d0457bb79f9e4f55ba9b"
+      url: "https://github.com/commetchat/launcher_entry.git"
+    source: git
     version: "0.1.1"
   leak_tracker:
     dependency: transitive
@@ -1204,13 +1214,14 @@ packages:
     source: hosted
     version: "2.0.1"
   livekit_client:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: livekit_client
-      sha256: ddb4467d306be472898b2459c87768121aba030173b3664ef367f7f7f4c96897
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.5.3"
+      path: "."
+      ref: hkdf
+      resolved-ref: "24275388ab5ee638da0a29bc50f8431e512ec75d"
+      url: "https://github.com/commetchat/livekit-client-sdk-flutter.git"
+    source: git
+    version: "2.7.0"
   logger:
     dependency: transitive
     description:
@@ -1626,10 +1637,10 @@ packages:
     dependency: transitive
     description:
       name: protobuf
-      sha256: de9c9eb2c33f8e933a42932fe1dc504800ca45ebc3d673e6ed7f39754ee4053e
+      sha256: "75ec242d22e950bdcc79ee38dd520ce4ee0bc491d7fadc4ea47694604d22bf06"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.0"
+    version: "6.0.0"
   provider:
     dependency: transitive
     description:
@@ -1882,8 +1893,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: f3295318c27d420f195e00164f104ead9aaa6209
-      resolved-ref: f3295318c27d420f195e00164f104ead9aaa6209
+      ref: "2d864d0f907d698f260e63f44b3aacc400f089ac"
+      resolved-ref: "2d864d0f907d698f260e63f44b3aacc400f089ac"
       url: "https://github.com/commetchat/signal-sticker-api.git"
     source: git
     version: "1.0.0"
@@ -2289,10 +2300,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8
+      sha256: "1fef9e8e11e2991bb773070d4656b7bd5d850967a2456cfc83cf47925ba79489"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.2"
+    version: "4.5.3"
   vector_graphics:
     dependency: transitive
     description:
@@ -2409,10 +2420,10 @@ packages:
     dependency: transitive
     description:
       name: webrtc_interface
-      sha256: ad0e5786b2acd3be72a3219ef1dde9e1cac071cf4604c685f11b61d63cdd6eb3
+      sha256: c6f100eac5057d9a817a60473126f9828c796d42884d498af4f339c97b21014f
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.5.1"
   widgetbook:
     dependency: transitive
     description:

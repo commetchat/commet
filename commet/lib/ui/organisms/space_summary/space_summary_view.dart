@@ -9,6 +9,7 @@ import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/image/lod_image.dart';
@@ -270,9 +271,12 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               ),
               if (children.isNotEmpty ||
                   widget.space.permissions.canEditChildren)
-                tiamat.Panel(
-                  mode: TileType.surfaceContainerLow,
-                  child: buildChildrenList(),
+                Material(
+                  color: Colors.transparent,
+                  child: tiamat.Panel(
+                    mode: TileType.surfaceContainerLow,
+                    child: buildChildrenList(),
+                  ),
                 ),
               if (previews.isNotEmpty) buildPreviewList(),
             ],
@@ -381,7 +385,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 itemData: previews,
                 shrinkWrap: true,
                 itemBuilder: (context, preview) {
-                  return RoomPanel(
+                  return RoomPanelView(
                     displayName: preview.displayName,
                     avatar: preview.avatar,
                     primaryButtonLabel: CommonStrings.promptJoin,
@@ -553,25 +557,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
     if (item case SpaceChildRoom _) {
       final room = item.child;
-      result = RoomPanel(
-        displayName: room.displayName,
-        avatar: room.avatar,
-        color: room.defaultColor,
-        onTap: orderChanged
-            ? null
-            : widget.onRoomTap != null
-                ? () {
-                    widget.onRoomTap?.call(room);
-                  }
-                : null,
-        body: room.lastEvent?.plainTextBody,
-        recentEventSender: room.lastEvent != null
-            ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
-            : null,
-        recentEventSenderColor: room.lastEvent != null
-            ? room.getColorOfUser(room.lastEvent!.senderId)
-            : null,
-      );
+      result = RoomPanel(room);
     } else if (item case SpaceChildSpace _) {
       result = Padding(
         padding: const EdgeInsets.all(8.0),

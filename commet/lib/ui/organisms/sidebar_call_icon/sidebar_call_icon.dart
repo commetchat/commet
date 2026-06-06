@@ -81,10 +81,8 @@ class _SidebarCallIconEntryState extends State<SidebarCallIconEntry>
                   color: room?.defaultColor,
                   avatar: room?.avatar,
                   audioLevel: audioLevel.value,
-                  onTap: () => EventBus.openRoom.add((
-                        widget.session.roomId,
-                        widget.session.client.identifier
-                      )));
+                  onTap: () => EventBus.doOpenRoom(widget.session.roomId,
+                      clientId: widget.session.client.identifier));
             }),
       ),
     );

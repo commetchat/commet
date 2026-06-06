@@ -8,8 +8,9 @@ class WebrtcDefaultDevices {
   static Future<webrtc.MediaStream?> getDefaultMicrophone() async {
     if (PlatformUtils.isAndroid || PlatformUtils.isWeb) return null;
 
-    var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
-        .where((i) => i.kind == "audioinput");
+    await initDummyConnection();
+
+    var devices = (await getDevices()).where((i) => i.kind == "audioinput");
 
     Map<String, dynamic> constraints = {
       'echoCancellation': true,
@@ -38,11 +39,25 @@ class WebrtcDefaultDevices {
         .getUserMedia({"audio": constraints});
   }
 
+  static Future<List<webrtc.MediaDeviceInfo>> getDevices() async {
+    await initDummyConnection();
+
+    return webrtc.navigator.mediaDevices.enumerateDevices();
+  }
+
+  // See: https://github.com/flutter-webrtc/flutter-webrtc/issues/2018#issuecomment-4225654871
+  static bool _hasCreatedDummyConnection = false;
+  static Future<void> initDummyConnection() async {
+    if (!_hasCreatedDummyConnection) {
+      _hasCreatedDummyConnection = true;
+      final _ = await webrtc.createPeerConnection(Map());
+    }
+  }
+
   static Future<String?> getDefaultMicrophoneId() async {
     if (PlatformUtils.isAndroid || PlatformUtils.isWeb) return null;
 
-    var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
-        .where((i) => i.kind == "audioinput");
+    var devices = (await getDevices()).where((i) => i.kind == "audioinput");
 
     if (preferences.voipDefaultAudioInput.value == null) return null;
 
@@ -53,8 +68,7 @@ class WebrtcDefaultDevices {
   }
 
   static Future<void> selectInputDevice() async {
-    var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
-        .where((i) => i.kind == "audioinput");
+    var devices = (await getDevices()).where((i) => i.kind == "audioinput");
 
     if (preferences.voipDefaultAudioInput.value != null) {
       var pickedDevice = devices.firstWhereOrNull(
@@ -74,8 +88,7 @@ class WebrtcDefaultDevices {
   static Future<void> selectOutputDevice() async {
     if (preferences.voipDefaultAudioOutput.value == null) return;
 
-    var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
-        .where((i) => i.kind == "audiooutput");
+    var devices = (await getDevices()).where((i) => i.kind == "audiooutput");
 
     var device = devices.firstWhereOrNull(
         (i) => i.label == preferences.voipDefaultAudioOutput.value);

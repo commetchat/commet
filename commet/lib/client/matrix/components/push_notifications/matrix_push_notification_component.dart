@@ -23,8 +23,16 @@ class MatrixPushNotificationComponent
 
     var pushers = await matrixClient.getPushers();
 
+    var data = PusherData(
+      format: "event_id_only",
+      url: pushServer,
+      additionalProperties: extraData ?? {},
+    );
+
     if (pushers != null &&
-        pushers.any((element) => element.pushkey == pushKey)) {
+        pushers.any((element) =>
+            element.pushkey == pushKey &&
+            element.data.toJson() == data.toJson())) {
       return;
     }
 
@@ -32,11 +40,7 @@ class MatrixPushNotificationComponent
         appId: "chat.commet.commetapp.android",
         pushkey: pushKey,
         appDisplayName: BuildConfig.appName,
-        data: PusherData(
-          format: "event_id_only",
-          url: pushServer,
-          additionalProperties: extraData ?? {},
-        ),
+        data: data,
         deviceDisplayName: deviceName,
         kind: "http",
         lang: "en");
@@ -70,6 +74,11 @@ class MatrixPushNotificationComponent
     var key = await notifier?.getToken();
     var mxClient = client.getMatrixClient();
     var extraData = notifier?.extraRegistrationData();
+
+    extraData ??= {};
+
+    extraData["local_client_id"] = client.identifier;
+
     var name = mxClient.clientName;
 
     var uri = Uri.parse(preferences.pushGateway);

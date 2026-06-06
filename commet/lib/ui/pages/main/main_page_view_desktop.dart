@@ -7,12 +7,12 @@ import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
-import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_panel_settings.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
+import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
@@ -391,37 +391,11 @@ class MainPageViewDesktop extends StatelessWidget {
       return ScaledSafeArea(
         top: true,
         bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow(
-                    directMessagesListHeaderDesktop,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.IconButton(
-                    icon: Icons.add,
-                    onPressed: () {
-                      state.searchUserToDm();
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Flexible(
-              child: DirectMessageList(
-                filterClient: state.filterClient,
-                directMessages: state.clientManager.directMessages,
-                onSelected: (room) => state.selectRoom(room),
-              ),
-            ),
-          ],
+        child: SizedBox(
+          height: double.infinity,
+          child: ImportantRoomsList(
+              state: state,
+              directMessagesListHeaderDesktop: directMessagesListHeaderDesktop),
         ),
       );
     } else {

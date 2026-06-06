@@ -47,6 +47,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
@@ -137,6 +138,12 @@ void main(List<String> args) async {
   if (runWebViewTitleBarWidget(args)) {
     return;
   }
+
+  final format = DateFormat('HH:mm:ss');
+
+  Logger.root.onRecord.listen((record) {
+    print('${format.format(record.time)} ${record.level} : ${record.message}');
+  });
 
   runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
 }
@@ -258,7 +265,7 @@ Future<void> startGui() async {
       Log.i("Received intent: ${initialIntent}");
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.doOpenRoom(uri.roomId, clientId: uri.clientId);
       }
     });
 

@@ -2,13 +2,27 @@ import 'dart:async';
 
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/widgets.dart';
+import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 
 class NotifyingListBuilder<T> extends StatefulWidget {
   const NotifyingListBuilder(
-      {required this.list, required this.builder, super.key});
+      {required this.list,
+      this.builder,
+      required this.itemBuilder,
+      this.shrinkWrap = false,
+      this.implicitlyAnimated = true,
+      this.sortFunction,
+      this.physics,
+      super.key});
 
-  final NotifyingList<T> list;
-  final Widget? Function(BuildContext context, T value) builder;
+  final INotifyingList<T> list;
+  final Widget Function(BuildContext context,
+      {required List<T> list, required Widget child})? builder;
+  final Widget Function(BuildContext context, T value) itemBuilder;
+  final bool shrinkWrap;
+  final bool implicitlyAnimated;
+  final ScrollPhysics? physics;
+  final int Function(T, T)? sortFunction;
 
   @override
   State<NotifyingListBuilder<T>> createState() =>
@@ -18,6 +32,8 @@ class NotifyingListBuilder<T> extends StatefulWidget {
 class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
   late List<StreamSubscription> subs;
 
+  late List<T> items;
+
   @override
   void initState() {
     subs = [
@@ -26,6 +42,14 @@ class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
       widget.list.onRemove.listen(onRemove),
       widget.list.onListUpdated.listen(onListUpdated),
     ];
+
+    items = widget.list;
+
+    if (widget.sortFunction != null) {
+      items = widget.list.toList();
+      items.sort(widget.sortFunction);
+    }
+
     super.initState();
   }
 
@@ -38,23 +62,47 @@ class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: widget.list.length,
-      itemBuilder: (context, index) {
-        var item = widget.list[index];
+    var result = widget.implicitlyAnimated
+        ? ImplicitlyAnimatedList(
+            shrinkWrap: widget.shrinkWrap,
+            itemData: items,
+            physics: widget.physics,
+            padding: EdgeInsets.zero,
+            initialAnimation: false,
+            itemBuilder: widget.itemBuilder)
+        : ListView.builder(
+            shrinkWrap: widget.shrinkWrap,
+            itemCount: items.length,
+            physics: widget.physics,
+            padding: EdgeInsets.zero,
+            itemBuilder: (context, index) {
+              var item = items[index];
 
-        return widget.builder(context, item);
-      },
-    );
+              return widget.itemBuilder(context, item);
+            },
+          );
+
+    if (widget.builder != null) {
+      return widget.builder!(context, list: items, child: result);
+    }
+
+    return result;
   }
 
-  void onAdd(int event) {}
+  void onAdd(T event) {}
 
-  void onItemUpdated(int event) {}
+  void onItemUpdated(T event) {}
 
-  void onRemove(int event) {}
+  void onRemove(T event) {}
 
   void onListUpdated(event) {
-    setState(() {});
+    setState(() {
+      items = widget.list;
+
+      if (widget.sortFunction != null) {
+        items = widget.list.toList();
+        items.sort(widget.sortFunction);
+      }
+    });
   }
 }

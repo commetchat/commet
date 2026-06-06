@@ -14,3 +14,7 @@ widgets/calendar/android/local.properties
 .idea/
 /build
 /target
+commet/.livekit/
+commet/web/e2ee.worker.dart.js.map
+commet/web/e2ee.worker.dart.js.deps
+commet/web/e2ee.worker.dart.js

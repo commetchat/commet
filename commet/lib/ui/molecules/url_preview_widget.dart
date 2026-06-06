@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/ui/atoms/lightbox.dart';
+import 'package:commet/ui/atoms/message_attachment.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -54,17 +56,31 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
                   children: [
                     ConstrainedBox(
                       constraints:
-                          const BoxConstraints.tightFor(height: 70, width: 500),
+                          const BoxConstraints(maxWidth: 300, maxHeight: 240),
                       child: widget.data == null
                           ? buildLoadingDisplay()
-                          : Row(
+                          : Column(
                               mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                if (widget.data!.image != null) image(),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                body(context)
+                                Align(
+                                    alignment: Alignment.topLeft,
+                                    child: body(context)),
+                                if (hasBody)
+                                  const SizedBox(
+                                    width: 10,
+                                    height: 10,
+                                  ),
+                                if (widget.data!.image != null &&
+                                    widget.data?.video == null)
+                                  Flexible(child: image()),
+                                if (widget.data!.video != null)
+                                  MessageAttachment(
+                                    previewMedia: true,
+                                    widget.data!.video!,
+                                    constrainSize: false,
+                                  )
                               ],
                             ),
                     )
@@ -81,52 +97,55 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
     return Shimmer(
       child: ShimmerLoading(
         isLoading: true,
-        child: Row(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxHeight: 70, maxWidth: 100),
-                    child: Container(
-                      color: color,
-                    ))),
-            const SizedBox(
-              width: 10,
-            ),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 14,
-                    width: titleWidth,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4), color: color),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Container(
-                    height: 10,
-                    width: bodyWidth1,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4), color: color),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Container(
-                    height: 10,
-                    width: bodyWidth2,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4), color: color),
-                  ),
-                ],
-              ),
-            )
-          ],
+        child: SizedBox(
+          height: 300,
+          child: Row(
+            children: [
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 14,
+                      width: titleWidth,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4), color: color),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      height: 10,
+                      width: bodyWidth1,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4), color: color),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      height: 10,
+                      width: bodyWidth2,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4), color: color),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                                maxHeight: 180, maxWidth: 300),
+                            child: Container(
+                              color: color,
+                            ))),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -135,48 +154,57 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
   Widget image() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
-      child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 70, maxWidth: 100),
-          child: Image(
-            image: widget.data!.image!,
-            filterQuality: FilterQuality.medium,
-          )),
+      child: InkWell(
+        onTap: widget.data?.type != UrlDestinationType.video
+            ? () {
+                Lightbox.show(context, image: widget.data!.image);
+              }
+            : null,
+        child: Image(
+          image: widget.data!.image!,
+          filterQuality: FilterQuality.medium,
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 
+  bool get hasBody =>
+      widget.data?.siteName != null ||
+      widget.data?.title != null ||
+      widget.data?.description != null;
+
   Widget body(BuildContext context) {
-    return Flexible(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.data!.siteName != null)
-            tiamat.Text.labelLow(
-              widget.data!.siteName!,
-              maxLines: 1,
-              overflow: TextOverflow.fade,
-            ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.data!.title != null)
-                tiamat.Text.labelEmphasised(
-                  widget.data!.title!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              if (widget.data!.description != null)
-                tiamat.Text.tiny(
-                  widget.data!.description!,
-                  maxLines: 2,
-                  color: Theme.of(context).colorScheme.secondary,
-                  overflow: TextOverflow.ellipsis,
-                )
-            ],
-          )
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.data!.siteName != null)
+          tiamat.Text.labelLow(
+            widget.data!.siteName!,
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+          ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.data!.title != null)
+              tiamat.Text.labelEmphasised(
+                widget.data!.title!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            if (widget.data!.description != null)
+              tiamat.Text.tiny(
+                widget.data!.description!,
+                maxLines: 2,
+                color: Theme.of(context).colorScheme.secondary,
+                overflow: TextOverflow.ellipsis,
+              )
+          ],
+        )
+      ],
     );
   }
 }

@@ -20,12 +20,14 @@ class VideoPlayer extends StatefulWidget {
       super.key,
       this.canGoFullscreen = false,
       this.onFullscreen,
+      this.streamUrl,
       this.decodeFirstFrame = false,
       this.controller,
       this.doThumbnail = true,
       this.showProgressBar = true});
   final FileProvider videoFile;
   final ImageProvider? thumbnail;
+  final Uri? streamUrl;
   final bool showProgressBar;
   final bool canGoFullscreen;
   final bool doThumbnail;
@@ -327,6 +329,7 @@ class VideoPlayerState extends State<VideoPlayer> {
       controller: controller,
       videoFile: widget.videoFile,
       decodeFirstFrame: widget.decodeFirstFrame,
+      streamUrl: widget.streamUrl,
     );
   }
 }
