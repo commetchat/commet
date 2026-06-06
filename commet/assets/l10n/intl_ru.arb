@@ -1095,7 +1095,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPageFileTooLargeTitle": "Превышен лимит размера файла",
+    "labelChatPageFileTooLargeTitle": "Слишком большой файл",
     "@labelChatPageFileTooLargeTitle": {
         "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
         "type": "text",
@@ -1155,7 +1155,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPageFileTooLarge": "Этот файл слишком большой. Его не выйдет загрузить!",
+    "labelChatPageFileTooLarge": "Этот файл слишком большой!",
     "@labelChatPageFileTooLarge": {
         "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
         "type": "text",
@@ -1791,13 +1791,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileShareTimezone": "Отображать час. пояс",
+    "promptProfileShareTimezone": "Поделиться часовым поясом",
     "@promptProfileShareTimezone": {
         "description": "Prompt the user to add their current timezone to their user profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearTimezone": "Скрыть час. пояс",
+    "promptProfileClearTimezone": "Сбросить часовой пояс",
     "@promptProfileClearTimezone": {
         "description": "Prompt to remove the shared timezone from a users profile",
         "type": "text",
