@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
@@ -77,39 +78,41 @@ class RoomTextButton extends StatefulWidget {
 
 class _RoomTextButtonState extends State<RoomTextButton> {
   late List<StreamSubscription> subs;
-  VoipRoomComponent? voipRoom;
   CalendarRoom? calendarRoom;
-  List<String>? voipRoomParticipants;
+  ActivitiesComponent? activities;
+  List<RoomActivitySession>? activitySessions;
   List<MatrixCalendarEventState>? calendarEvents;
 
   @override
   void initState() {
-    voipRoom = widget.room.getComponent<VoipRoomComponent>();
     calendarRoom = widget.room.getComponent<CalendarRoom>();
+    activities = widget.room.getComponent<ActivitiesComponent>();
 
     subs = [
       widget.room.onUpdate.listen(onRoomUpdate),
-      if (voipRoom != null)
-        voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
       if (calendarRoom != null)
         calendarRoom!.onEventsChanged.listen(onCalendarEventsChanged),
+      if (activities != null)
+        activities!.onSessionsChanged.listen(onSessionsChanged),
     ];
 
-    if (voipRoom != null) {
-      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+    if (activities != null) {
+      activitySessions = activities?.getSessions();
     }
 
     if (calendarRoom?.calendar != null) {
       onCalendarEventsChanged(());
     }
 
-    if (voipRoomParticipants?.isNotEmpty == true) {
-      for (var participant in voipRoomParticipants!) {
-        widget.room.fetchMember(participant).then((_) {
-          if (mounted) {
-            setState(() {});
-          }
-        });
+    if (activitySessions?.isNotEmpty == true) {
+      for (var activity in activitySessions!) {
+        for (var participant in activity.participants) {
+          widget.room.fetchMember(participant).then((_) {
+            if (mounted) {
+              setState(() {});
+            }
+          });
+        }
       }
     }
 
@@ -183,12 +186,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     }
     var customBuilder = null;
 
-    if (voipRoomParticipants?.isNotEmpty == true) {
-      customBuilder = buildCallParticipants;
-    }
-
     if (calendarEvents?.isNotEmpty == true) {
       customBuilder = buildEvents;
+    }
+
+    if (activitySessions?.isNotEmpty == true) {
+      customBuilder = buildActivities;
     }
 
     Widget result = SizedBox(
@@ -225,7 +228,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     return result;
   }
 
-  Widget buildCallParticipants(Widget child, BuildContext context) {
+  Widget buildActivities(Widget child, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -233,13 +236,56 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 0, 0, 4),
           child: Column(
+            spacing: 8,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var participant in voipRoomParticipants!)
-                buildCallMember(participant),
+              for (var activity in activitySessions!) buildActivity(activity),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildActivity(RoomActivitySession activity) {
+    return AdaptiveContextMenu(
+      items: [
+        tiamat.ContextMenuItem(
+          text: "Clear Memberships",
+          onPressed: () {
+            activities!.clearMemberships(activity);
+          },
+        ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+            color: ColorScheme.of(context).surfaceTint.withAlpha(10),
+            borderRadius: BorderRadius.circular(8)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (activity.thirdparty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 4, 0, 0),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: activity.icon.build(context)),
+                    tiamat.Text.labelLow(activity.name),
+                  ],
+                ),
+              ),
+            tiamat.Seperator(
+              padding: 4,
+            ),
+            for (var participant in activity.participants)
+              buildCallMember(participant),
+          ],
+        ),
+      ),
     );
   }
 
@@ -275,10 +321,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   Widget buildCallMember(String identifier) {
     var color = Theme.of(context).colorScheme.secondary;
 
-    final member = voipRoom?.room.getMemberOrFallback(identifier);
-    if (member == null) {
-      return Placeholder();
-    }
+    final member = widget.room.getMemberOrFallback(identifier);
 
     return SizedBox(
       height: height,
@@ -309,9 +352,9 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  void onVoipParticipantsChanged(void event) {
+  void onSessionsChanged(void event) {
     setState(() {
-      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+      activitySessions = activities?.getSessions();
     });
   }
 }

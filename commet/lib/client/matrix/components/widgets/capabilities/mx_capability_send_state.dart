@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:commet/client/matrix/components/room_activities/matrix_activities_component.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -29,6 +31,8 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
+
+  List<(String, String?)> widgetSetCallMemberships = List.empty(growable: true);
 
   @override
   String toString() {
@@ -76,6 +80,13 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
     if (content == null)
       return message.createResponseError(message: "Invalid message");
 
+    if (eventType == MatrixActivitiesComponent.callMemberStateEvent) {
+      if (content.isNotEmpty == true) {
+        Log.i("Widget set call membership state: ${key}");
+        widgetSetCallMemberships.add((eventType, key));
+      }
+    }
+
     var result = await runner.room!.matrixRoom.client
         .setRoomStateWithKey(runner.room!.identifier, eventType, key!, content);
 
@@ -95,5 +106,34 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        cleanUpCallMemberships();
+      },
+    );
+  }
+
+  Future<void> cleanUpCallMemberships() async {
+    Log.d("Cleaning up widget's call membership state");
+    for (var entry in widgetSetCallMemberships) {
+      var type = entry.$1;
+      var key = entry.$2;
+
+      Log.d(("Type: ${type}, key: ${key}"));
+      if (key != null) {
+        var currentState = runner.room!.matrixRoom.states[type];
+
+        if (currentState == null) continue;
+
+        var current = currentState[key];
+        if (current == null) return;
+
+        if (current.content.isNotEmpty) {
+          await runner.client.matrixClient
+              .setRoomStateWithKey(runner.room!.identifier, type, key, {});
+        }
+      }
+    }
+  }
 }

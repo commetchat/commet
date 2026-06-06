@@ -3,11 +3,16 @@ import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/image_or_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class UserWidgetInfo {
   String get name;
+
+  String get type;
+
+  ImageOrIcon get icon;
 }
 
 enum WidgetHostType {
