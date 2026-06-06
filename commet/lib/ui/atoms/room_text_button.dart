@@ -266,9 +266,21 @@ class _RoomTextButtonState extends State<RoomTextButton> {
           children: [
             if (activity.thirdparty)
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 0, 0),
-                child: tiamat.Text.labelLow(activity.name),
+                padding: const EdgeInsets.fromLTRB(10, 4, 0, 0),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: activity.icon.build(context)),
+                    tiamat.Text.labelLow(activity.name),
+                  ],
+                ),
               ),
+            tiamat.Seperator(
+              padding: 4,
+            ),
             for (var participant in activity.participants)
               buildCallMember(participant),
           ],

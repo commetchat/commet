@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/components/widgets/runners/subprocess/matri
 import 'package:commet/client/matrix/components/widgets/runners/remote_http/self_signed_https_server.dart';
 import 'package:commet/client/matrix/components/widgets/runners/remote_http/matrix_widget_remote_http_runner.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/platform_utils.dart';
@@ -16,6 +17,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/utils/color_utils.dart';
+import 'package:commet/utils/image_or_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
@@ -29,6 +31,7 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
     required String name,
     required this.url,
     required this.type,
+    required this.icon,
   }) {
     _name = name;
   }
@@ -42,6 +45,9 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
   String type;
 
   String id;
+
+  @override
+  ImageOrIcon icon;
 }
 
 abstract class MatrixWidgetRunner
@@ -66,13 +72,36 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       String? url = s.value.content.tryGet("url");
       String? type = s.value.content.tryGet("type");
       String? name = s.value.content.tryGet("name");
+      String? avatarUrl = s.value.content.tryGet("avatar_url");
 
       if (url == null || type == null || name == null) continue;
 
+      var icon = ImageOrIcon(icon: Icons.widgets);
+
+      if (avatarUrl != null) {
+        var uri = Uri.tryParse(avatarUrl);
+        if (uri?.scheme == "mxc") {
+          icon.image = MatrixMxcImage(uri!, client.matrixClient);
+        }
+      }
+
+      // https://github.com/element-hq/element-web/blob/cd8a1012c82be10178fb134ef8a791eef217b4c9/apps/web/src/components/views/avatars/WidgetAvatar.tsx#L26
+      if (type.contains("jitsi")) {
+        icon.icon = Icons.video_call;
+      } else if (type.contains("meeting") || type.contains("calendar")) {
+        icon.icon = Icons.calendar_month;
+      } else if (type.contains("doc") ||
+          type.contains("pad") ||
+          type.contains("calc")) {
+        icon.icon = Icons.edit_document;
+      } else if (type.contains("clock")) {
+        icon.icon = Icons.timer;
+      }
+
       url = Uri.encodeFull(url);
 
-      result
-          .add(MatrixUserWidgetInfo(id: id, name: name, url: url, type: type));
+      result.add(MatrixUserWidgetInfo(
+          id: id, name: name, url: url, type: type, icon: icon));
     }
 
     return result;

@@ -7,6 +7,8 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/image_or_icon.dart';
+import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
 import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 
@@ -68,6 +70,8 @@ class MatrixActivitiesComponent
 
         bool thirdparty = true;
 
+        var icon = widget?.icon ?? ImageOrIcon(icon: Icons.question_mark);
+
         if (application == "m.call") {
           thirdparty = false;
         }
@@ -76,6 +80,7 @@ class MatrixActivitiesComponent
             participants: Set(),
             application: application,
             appName: name,
+            icon: icon,
             thirdparty: thirdparty);
         activities.add(activity);
       }

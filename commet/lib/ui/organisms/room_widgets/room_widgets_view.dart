@@ -44,7 +44,8 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                       height: 40,
                       child: tiamat.TextButton(
                         data.name,
-                        icon: Icons.widgets,
+                        icon: data.icon.icon,
+                        avatar: data.icon.image,
                         onTap: () async {
                           var client = widget.room.client;
                           var widgetComponent =
