@@ -992,6 +992,11 @@ class MessageInputState extends State<MessageInput> {
           preferredDirection: AxisDirection.up,
           controller: emojiTooltipController,
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+          onDismiss: () {
+            if (Layout.desktop) {
+              textFocus.requestFocus();
+            }
+          },
           content: ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(8),
             child: Material(
