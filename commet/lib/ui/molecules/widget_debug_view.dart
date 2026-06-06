@@ -62,7 +62,7 @@ class _WidgetCapabilitiesDebugViewState
   Widget build(BuildContext context) {
     return NotifyingListBuilder(
       list: widget.runner.capabilities.grantedCapabilityNames,
-      builder: (context, value) {
+      itemBuilder: (context, value) {
         return Padding(
             padding: EdgeInsetsGeometry.fromLTRB(0, 8, 0, 0),
             child: tiamat.Text.labelLow(value));
@@ -89,7 +89,7 @@ class _WidgetMessageDebugViewState extends State<WidgetMessageDebugView> {
   Widget build(BuildContext context) {
     return NotifyingListBuilder(
       list: widget.runner.messageTransport.messageLogs,
-      builder: (context, item) {
+      itemBuilder: (context, item) {
         var data = item.$2.tryGetMap<String, dynamic>("data");
         var type =
             data?.tryGet<String>("type") ?? data?.tryGet<String>("event_type");

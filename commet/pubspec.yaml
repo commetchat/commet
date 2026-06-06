@@ -127,7 +127,6 @@ dependencies:
   rust_lib_commet:
     path: ../rust/rust_builder
   flutter_rust_bridge: 2.11.1
-  launcher_entry: ^0.1.1
   flutter_inappwebview: ^6.1.5
   network_info_plus: ^7.0.0
   pretty_qr_code: ^3.6.0
@@ -135,8 +134,11 @@ dependencies:
   
   launcher_entry:
     git: https://github.com/commetchat/launcher_entry.git
+
+
 dependency_overrides:
   analyzer: ^7.3.0
+  pointycastle: ^4.0.0
 
   ## For inline-reply 
   flutter_local_notifications_linux: 
