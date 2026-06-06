@@ -21,6 +21,7 @@ import 'package:commet/client/matrix/components/message_effects/matrix_message_e
 import 'package:commet/client/matrix/components/polls/matrix_poll_component.dart';
 import 'package:commet/client/matrix/components/profile/matrix_profile_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
+import 'package:commet/client/matrix/components/room_activities/matrix_activities_component.dart';
 import 'package:commet/client/matrix/components/space_banner/matrix_space_banner_component.dart';
 import 'package:commet/client/matrix/components/space_color_scheme/matrix_space_color_scheme_component.dart';
 import 'package:commet/client/matrix/components/user_color/matrix_user_color_component.dart';
@@ -84,6 +85,7 @@ class ComponentRegistry {
       if (MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
         MatrixPhotoAlbumRoomComponent(client, room),
       MatrixCalendarRoomComponent(client, room),
+      MatrixActivitiesComponent(client, room),
     ];
   }
 

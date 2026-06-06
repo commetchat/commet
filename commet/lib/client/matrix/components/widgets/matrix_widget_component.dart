@@ -38,6 +38,7 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
 
   String url;
 
+  @override
   String type;
 
   String id;

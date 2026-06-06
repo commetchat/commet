@@ -44,7 +44,11 @@ class MatrixWidgetCapabilitiesManager
   final BuildContext context;
 
   MatrixWidgetCapabilitiesManager(
-      {required this.runner, required this.context});
+      {required this.runner, required this.context}) {
+    runner.onClosed.listen((_) {
+      dispose();
+    });
+  }
 
   static const List<String> defaultCapabilities = const [
     // It is safe to allow this by default, as the implementation will only return events

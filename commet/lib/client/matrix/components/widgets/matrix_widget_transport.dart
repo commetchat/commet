@@ -101,7 +101,6 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
     if (msg["api"] == "toWidget" && msg["requestId"] is String) {
       completer = Completer();
       var requstId = msg["requestId"] as String;
-      Log.i("Storing completer for response: ${requstId}");
       _responseCompleters[requstId] = completer;
     }
 

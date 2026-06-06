@@ -8,6 +8,8 @@ import 'package:flutter/widgets.dart';
 
 abstract class UserWidgetInfo {
   String get name;
+
+  String get type;
 }
 
 enum WidgetHostType {

@@ -42,12 +42,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
   }
 
   void onRequest(HttpRequest event) {
-    Log.i("Received request: ${event.requestedUri}");
     final path = event.requestedUri.path;
-    Log.i("path: $path");
-
-    Log.i(
-        "Received request from: ${event.connectionInfo?.remoteAddress} ${event.connectionInfo?.remotePort}");
 
     if (path == "/favicon.png") {
       return handleIconRequest(event);
@@ -99,11 +94,8 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
     text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
 
-    Log.i("Returning: $text");
-
     bytes = Utf8Encoder().convert(text);
 
-    Log.i("Bytes: ${bytes.buffer.asUint8List().length} bytes");
 
     request.response
       ..headers.contentType = new ContentType("text", "html")
@@ -116,13 +108,10 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
   }
 
   void handleIconRequest(HttpRequest request) async {
-    Log.i("Handling favicon");
     var bytes =
         (await rootBundle.load("assets/images/app_icon/app_icon_rounded.png"))
             .buffer
             .asUint8List();
-
-    Log.i("Bytes: ${bytes.buffer.asUint8List().length} bytes");
 
     request.response
       ..headers.contentType = new ContentType("image", "png")
@@ -142,7 +131,6 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     if (request.method != "POST") return;
 
     String content = await utf8.decoder.bind(request).join();
-    Log.i(content);
 
     controller.add(Utf8Encoder().convert(content));
 
@@ -164,7 +152,6 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     }
 
     if (response == null) {
-      Log.i("No responses to send...");
       request.response
         ..statusCode = 204
         ..close();
@@ -172,7 +159,6 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
       return;
     }
 
-    Log.i("Returning response!");
 
     request.response
       ..headers.contentType = new ContentType("text", "json")
