@@ -1760,7 +1760,7 @@
             "user": {}
         }
     },
-    "promptProfileChangeBanner": "Сменить  баннер",
+    "promptProfileChangeBanner": "Сменить баннер",
     "@promptProfileChangeBanner": {
         "description": "Prompt to change the banner on the user's profile",
         "type": "text",
