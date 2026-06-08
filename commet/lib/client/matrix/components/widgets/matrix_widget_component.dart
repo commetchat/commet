@@ -20,11 +20,16 @@ import 'package:commet/utils/color_utils.dart';
 import 'package:commet/utils/image_or_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:matrix/matrix.dart' show StrippedStateEvent;
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
 class MatrixUserWidgetInfo implements UserWidgetInfo {
   late String _name;
+
+  StrippedStateEvent event;
+
+  String roomId;
 
   MatrixUserWidgetInfo({
     required this.id,
@@ -32,6 +37,8 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
     required this.url,
     required this.type,
     required this.icon,
+    required this.roomId,
+    required this.event,
   }) {
     _name = name;
   }
@@ -39,6 +46,7 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
   @override
   String get name => _name;
 
+  @override
   String url;
 
   @override
@@ -48,6 +56,12 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
 
   @override
   ImageOrIcon icon;
+
+  @override
+  String get namespace => "${roomId}_${id}_${event.senderId}_${url}";
+
+  @override
+  String get senderId => event.senderId;
 }
 
 abstract class MatrixWidgetRunner
@@ -101,7 +115,13 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       url = Uri.encodeFull(url);
 
       result.add(MatrixUserWidgetInfo(
-          id: id, name: name, url: url, type: type, icon: icon));
+          id: id,
+          name: name,
+          url: url,
+          type: type,
+          roomId: room.identifier,
+          event: s.value,
+          icon: icon));
     }
 
     return result;

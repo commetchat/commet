@@ -12,6 +12,12 @@ abstract class UserWidgetInfo {
 
   String get type;
 
+  String get namespace;
+
+  String get senderId;
+
+  String get url;
+
   ImageOrIcon get icon;
 }
 

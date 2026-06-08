@@ -242,6 +242,108 @@ class Preferences {
     return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
   }
 
+  String _acceptedCapabilitiesKey(String clientId, String widgetNamespace) =>
+      "accepted_widget_capabilities:${clientId}:${widgetNamespace}";
+
+  String _rejectedCapabilitiesKey(String clientId, String widgetNamespace) =>
+      "rejected_widget_capabilities:${clientId}:${widgetNamespace}";
+
+  String _widgetAllowedKey(String clientId, String widgetNamespace) =>
+      "allowed_widget:${clientId}:${widgetNamespace}";
+
+  Future<void> setWidgetAllowed(
+      String clientId, String widgetNamespace, bool allowed) async {
+    await _preferences?.setBool(
+        _widgetAllowedKey(clientId, widgetNamespace), allowed);
+  }
+
+  bool getWidgetAllowed(String clientId, String widgetNamespace) {
+    return _preferences
+            ?.getBool(_widgetAllowedKey(clientId, widgetNamespace)) ??
+        false;
+  }
+
+  Future<void> allowWidgetCapabilityPermissions(String clientId,
+      String widgetNamespace, List<String> capabilities) async {
+    var currentAccepted = _preferences?.getStringList(
+            _acceptedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    var currentRejected = _preferences?.getStringList(
+            _rejectedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    currentAccepted = List.from(currentAccepted, growable: true);
+
+    currentRejected = List.from(currentRejected, growable: true);
+
+    for (var capability in capabilities) {
+      currentRejected.remove(capability);
+
+      if (currentAccepted.contains(capability) == false) {
+        currentAccepted.add(capability);
+      }
+    }
+
+    _preferences?.setStringList(
+        _acceptedCapabilitiesKey(clientId, widgetNamespace), currentAccepted);
+    _preferences?.setStringList(
+        _rejectedCapabilitiesKey(clientId, widgetNamespace), currentRejected);
+  }
+
+  Future<void> rejectWidgetCapabilityPermissions(String clientId,
+      String widgetNamespace, List<String> capabilities) async {
+    var currentAccepted = _preferences?.getStringList(
+            _acceptedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    var currentRejected = _preferences?.getStringList(
+            _rejectedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    currentAccepted = List.from(currentAccepted, growable: true);
+
+    currentRejected = List.from(currentRejected, growable: true);
+
+    for (var capability in capabilities) {
+      currentAccepted.remove(capability);
+
+      if (currentRejected.contains(capability) == false) {
+        currentRejected.add(capability);
+      }
+    }
+
+    _preferences?.setStringList(
+        _acceptedCapabilitiesKey(clientId, widgetNamespace), currentAccepted);
+    _preferences?.setStringList(
+        _rejectedCapabilitiesKey(clientId, widgetNamespace), currentRejected);
+  }
+
+  Future<List<String>> getAcceptedWidgetCapabilities(
+      String clientId, String widgetNamespace) async {
+    return _preferences?.getStringList(
+            _acceptedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+  }
+
+  Future<List<String>> getRejectedWidgetCapabilities(
+      String clientId, String widgetNamespace) async {
+    return _preferences?.getStringList(
+            _rejectedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+  }
+
+  Future<void> clearWidgetSettings(
+      String clientId, String widgetNamespace) async {
+    await _preferences
+        ?.remove(_acceptedCapabilitiesKey(clientId, widgetNamespace));
+
+    await _preferences
+        ?.remove(_rejectedCapabilitiesKey(clientId, widgetNamespace));
+
+    await _preferences?.remove(_widgetAllowedKey(clientId, widgetNamespace));
+  }
+
   BoolPreference shouldFollowSystemTheme =
       BoolPreference("should_follow_system_theme", defaultValue: false);
 

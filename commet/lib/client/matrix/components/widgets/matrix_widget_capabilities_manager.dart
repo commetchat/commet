@@ -19,6 +19,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/client/matrix/components/widgets/matrix_widget_permission_groups.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_permissions_view.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,20 @@ class MatrixWidgetCapabilitiesManager
 
     List<String> allowed = List.empty(growable: true);
 
+    var rejected = await preferences.getRejectedWidgetCapabilities(
+        runner.client.identifier, runner.info.namespace);
+    var accepted = await preferences.getAcceptedWidgetCapabilities(
+        runner.client.identifier, runner.info.namespace);
+
+    for (var c in rejected) {
+      needsPermission.remove(c);
+    }
+
+    for (var c in accepted) {
+      needsPermission.remove(c);
+      allowed.add(c);
+    }
+
     for (var defaultcapability in defaultCapabilities) {
       Log.i(
         "Allowing capability by default: $defaultcapability",
@@ -95,7 +110,7 @@ class MatrixWidgetCapabilitiesManager
       var groups =
           MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
 
-      var picked = await AdaptiveDialog.show<List<String>>(
+      var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
         context,
         title: "Widget Permissions",
         builder: (context) => MatrixWidgetPermissionsView(
@@ -106,7 +121,18 @@ class MatrixWidgetCapabilitiesManager
 
       if (picked != null) {
         Log.i("User allowed permissions: ${picked}");
-        allowed.addAll(picked);
+        allowed.addAll(picked.value);
+        var rejected = needsPermission
+            .where((i) => picked.value.contains(i) == false)
+            .toList();
+
+        if (picked.remember) {
+          preferences.allowWidgetCapabilityPermissions(
+              runner.client.identifier, runner.info.namespace, picked.value);
+
+          preferences.rejectWidgetCapabilityPermissions(
+              runner.client.identifier, runner.info.namespace, rejected);
+        }
       }
     }
 
