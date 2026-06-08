@@ -2,6 +2,7 @@ import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widg
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 
@@ -31,7 +32,7 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
     return false;
   }
 
-  Future<bool?>? currentConfirmationRequest;
+  Future<DialogResult<bool>?>? currentConfirmationRequest;
 
   @override
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
@@ -44,18 +45,62 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
     throw UnimplementedError();
   }
 
+  static const autoAcceptConfirmationKey =
+      "chat.commet.internal.get_openid_auto_accept";
   Future<void> promptUserConfirmation(String requestId) async {
-    if (currentConfirmationRequest == null) {
-      currentConfirmationRequest = currentConfirmationRequest =
-          AdaptiveDialog.confirmation(navigator.currentContext!,
-              title: "Allow ${runner.info.name} to verify your user id");
+    var capabilities = await preferences.getAcceptedWidgetCapabilities(
+        runner.client.identifier, runner.info.namespace);
+
+    var rejected = await preferences.getRejectedWidgetCapabilities(
+        runner.client.identifier, runner.info.namespace);
+
+    bool? result;
+
+    if (capabilities.contains(autoAcceptConfirmationKey)) {
+      result = true;
+
+      Log.i(
+          "Widget OIDC previous permission prompt was accepted, accepting by default");
     }
 
-    var confirmed = await currentConfirmationRequest!;
+    if (rejected.contains(autoAcceptConfirmationKey)) {
+      result = false;
+      Log.i(
+          "Widget OIDC previous permission prompt was rejected, rejecting by default");
+    }
 
-    currentConfirmationRequest = null;
+    if (result == null) {
+      if (currentConfirmationRequest == null) {
+        currentConfirmationRequest = currentConfirmationRequest =
+            AdaptiveDialog.confirmationWithOptions(navigator.currentContext!,
+                showRememberChoice: true,
+                defaultRememberSetting: true,
+                title: "Allow ${runner.info.name} to verify your user id");
+      }
 
-    if (confirmed == true) {
+      var promptResult = await currentConfirmationRequest!;
+
+      if (promptResult?.remember == true) {
+        if (promptResult?.value == true) {
+          preferences.allowWidgetCapabilityPermissions(runner.client.identifier,
+              runner.info.namespace, [autoAcceptConfirmationKey]);
+        }
+
+        if (promptResult?.value == false) {
+          preferences.rejectWidgetCapabilityPermissions(
+              runner.client.identifier,
+              runner.info.namespace,
+              [autoAcceptConfirmationKey]);
+        }
+      }
+
+      if (promptResult?.value == true) {
+        result = true;
+        currentConfirmationRequest = null;
+      }
+    }
+
+    if (result == true) {
       var room = runner.room!;
 
       final token = await room.matrixRoom.client
@@ -76,7 +121,7 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
 
     runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
         action: "openid_credentials",
-        data: {"state": "bloked", "original_request_id": requestId}));
+        data: {"state": "blocked", "original_request_id": requestId}));
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_permission_groups.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -23,6 +24,7 @@ class MatrixWidgetPermissionsView extends StatefulWidget {
 class _MatrixWidgetPermissionsViewState
     extends State<MatrixWidgetPermissionsView> {
   Map<String, bool> enabledPermissions = {};
+  bool rememberChoice = true;
 
   @override
   void initState() {
@@ -67,6 +69,23 @@ class _MatrixWidgetPermissionsViewState
               SizedBox(
                 height: 10,
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    tiamat.Text.labelLow("Remember choices: "),
+                    tiamat.Switch(
+                      state: rememberChoice,
+                      onChanged: (value) {
+                        setState(() {
+                          rememberChoice = value;
+                        });
+                      },
+                    )
+                  ],
+                ),
+              ),
               if (enabledPermissions.values.any((i) => i == false))
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -76,10 +95,12 @@ class _MatrixWidgetPermissionsViewState
               tiamat.Button(
                 text: "Submit",
                 onTap: () {
-                  Navigator.of(context).pop(enabledPermissions.entries
-                      .where((i) => i.value == true)
-                      .map((i) => i.key)
-                      .toList());
+                  Navigator.of(context).pop(DialogResult(
+                      enabledPermissions.entries
+                          .where((i) => i.value == true)
+                          .map((i) => i.key)
+                          .toList(),
+                      remember: rememberChoice));
                 },
               ),
             ],

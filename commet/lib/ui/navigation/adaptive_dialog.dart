@@ -11,6 +11,13 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
+class DialogResult<T> {
+  T value;
+  bool remember;
+
+  DialogResult(this.value, {this.remember = false});
+}
+
 class AdaptiveDialog {
   static Future<T?> pickOne<T extends Object?>(
     BuildContext context, {
@@ -180,54 +187,45 @@ class AdaptiveDialog {
       String confirmationText = "Yes",
       String cancelText = "No",
       Widget Function(BuildContext)? customBuilder,
-      bool dangerous = false}) {
-    return show<bool?>(context, builder: (context) {
-      return SizedBox(
-        width: Layout.desktop ? 500 : null,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                child: Markdown(
-                  shrinkWrap: true,
-                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-                      .copyWith(
-                          codeblockPadding: EdgeInsets.all(8),
-                          code: TextTheme.of(context).bodySmall!.copyWith(
-                              fontFamily: "Code",
-                              backgroundColor: ColorScheme.of(context)
-                                  .surfaceContainerLowest)),
-                  data: prompt,
-                ),
-              ),
-              if (customBuilder != null) customBuilder(context),
-              SizedBox(
-                height: 40,
-                child: tiamat.Button(
-                  type: dangerous ? ButtonType.danger : ButtonType.primary,
-                  text: confirmationText == "Yes"
-                      ? CommonStrings.promptYes
-                      : confirmationText,
-                  onTap: () => Navigator.pop(context, true),
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              tiamat.Button.secondary(
-                text: cancelText == "No" ? CommonStrings.promptNo : cancelText,
-                onTap: () => Navigator.pop(context, false),
-              )
-            ],
-          ),
-        ),
+      bool dangerous = false}) async {
+    var value = await show<DialogResult<bool>?>(context, builder: (context) {
+      return ConfirmationDialogWidget(
+        prompt: prompt,
+        title: title,
+        confirmationText: confirmationText,
+        cancelText: cancelText,
+        customBuilder: customBuilder,
+        dangerous: dangerous,
       );
     }, title: title == "Confirmation" ? labelDialogConfirmation : title);
+
+    return value?.value;
+  }
+
+  static Future<DialogResult<bool>?> confirmationWithOptions(
+      BuildContext context,
+      {String prompt = "Are you sure?",
+      String title = "Confirmation",
+      String confirmationText = "Yes",
+      String cancelText = "No",
+      Widget Function(BuildContext)? customBuilder,
+      bool showRememberChoice = false,
+      bool defaultRememberSetting = false,
+      bool dangerous = false}) {
+    var value = show<DialogResult<bool>?>(context, builder: (context) {
+      return ConfirmationDialogWidget(
+        prompt: prompt,
+        title: title,
+        confirmationText: confirmationText,
+        cancelText: cancelText,
+        customBuilder: customBuilder,
+        showRememberChoice: showRememberChoice,
+        defaultRememberSetting: defaultRememberSetting,
+        dangerous: dangerous,
+      );
+    }, title: title == "Confirmation" ? labelDialogConfirmation : title);
+
+    return value;
   }
 
   static Future<String?> textPrompt(BuildContext context,
@@ -274,6 +272,115 @@ class AdaptiveDialog {
         ),
       );
     }, title: title);
+  }
+}
+
+class ConfirmationDialogWidget extends StatefulWidget {
+  final String prompt;
+  final String title;
+  final String confirmationText;
+  final String cancelText;
+  final Widget Function(BuildContext)? customBuilder;
+  final bool showRememberChoice;
+  final bool defaultRememberSetting;
+  final bool dangerous;
+
+  const ConfirmationDialogWidget({
+    super.key,
+    this.prompt = "Are you sure?",
+    this.title = "Confirmation",
+    this.confirmationText = "Yes",
+    this.cancelText = "No",
+    this.customBuilder,
+    this.showRememberChoice = false,
+    this.defaultRememberSetting = false,
+    this.dangerous = false,
+  });
+
+  @override
+  State<ConfirmationDialogWidget> createState() =>
+      _ConfirmationDialogWidgetState();
+}
+
+class _ConfirmationDialogWidgetState extends State<ConfirmationDialogWidget> {
+  bool rememberChoice = false;
+
+  @override
+  void initState() {
+    rememberChoice = widget.defaultRememberSetting;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: Layout.desktop ? 500 : null,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: Markdown(
+                shrinkWrap: true,
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                    .copyWith(
+                        codeblockPadding: EdgeInsets.all(8),
+                        code: TextTheme.of(context).bodySmall!.copyWith(
+                            fontFamily: "Code",
+                            backgroundColor: ColorScheme.of(context)
+                                .surfaceContainerLowest)),
+                data: widget.prompt,
+              ),
+            ),
+            if (widget.customBuilder != null) widget.customBuilder!(context),
+            if (widget.showRememberChoice)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    tiamat.Text.labelLow("Remember choice: "),
+                    tiamat.Switch(
+                      state: rememberChoice,
+                      onChanged: (value) {
+                        setState(() {
+                          rememberChoice = value;
+                        });
+                      },
+                    ),
+                  ],
+                )),
+              ),
+            SizedBox(
+              height: 40,
+              child: tiamat.Button(
+                type: widget.dangerous ? ButtonType.danger : ButtonType.primary,
+                text: widget.confirmationText == "Yes"
+                    ? CommonStrings.promptYes
+                    : widget.confirmationText,
+                onTap: () => Navigator.pop(
+                    context, DialogResult(true, remember: rememberChoice)),
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            tiamat.Button.secondary(
+              text: widget.cancelText == "No"
+                  ? CommonStrings.promptNo
+                  : widget.cancelText,
+              onTap: () => Navigator.pop(
+                  context, DialogResult(false, remember: rememberChoice)),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
