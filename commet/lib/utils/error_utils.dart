@@ -3,14 +3,14 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/widgets.dart';
 
 class ErrorUtils {
-  static Future<void> tryRun(
-      BuildContext context, Future<void> function(), {Future<void> Function()? onError }) async {
+  static Future<void> tryRun(BuildContext context, Future<void> function(),
+      {Future<void> Function()? onError}) async {
     try {
       await function();
     } catch (e, s) {
       Log.onError(e, s);
       AdaptiveDialog.showError(context, e, s);
-      if(onError != null) {
+      if (onError != null) {
         await onError();
       }
     }

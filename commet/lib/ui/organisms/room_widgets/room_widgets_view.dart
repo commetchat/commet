@@ -2,7 +2,6 @@ import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
