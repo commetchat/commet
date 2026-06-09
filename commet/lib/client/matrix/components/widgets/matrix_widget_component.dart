@@ -17,6 +17,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/utils/color_utils.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/image_or_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -137,6 +138,27 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
   }
 
   @override
+  WidgetHostType get defaultHostType {
+    if (PlatformUtils.isWindows) {
+      return WidgetHostType.embedded;
+    }
+
+    if (PlatformUtils.isAndroid) {
+      return WidgetHostType.embedded;
+    }
+
+    if (PlatformUtils.isLinux) {
+      return WidgetHostType.externalBrowser;
+    }
+
+    if (PlatformUtils.isWeb) {
+      return WidgetHostType.embedded;
+    }
+
+    return WidgetHostType.embedded;
+  }
+
+  @override
   List<WidgetHostType> supportedHostTypes() {
     if (PlatformUtils.isWindows) {
       return const [
@@ -152,7 +174,6 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     if (PlatformUtils.isLinux) {
       return const [
-        WidgetHostType.childProcess,
         WidgetHostType.remoteHttpClient,
         WidgetHostType.externalBrowser,
       ];
@@ -166,81 +187,86 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
   }
 
   @override
-  Future<void> openWidget(UserWidgetInfo widget, Room room,
-      BuildContext context, WidgetHostType type) async {
-    var info = widget as MatrixUserWidgetInfo;
-    var url = Uri.encodeFull(info.url);
+  Future<void> openWidget(
+      UserWidgetInfo widget, Room room, BuildContext context,
+      {WidgetHostType? type}) async {
+    ErrorUtils.tryRun(context, () async {
+      var info = widget as MatrixUserWidgetInfo;
+      var url = Uri.encodeFull(info.url);
 
-    var colorScheme = JsonEncoder().convert(ColorScheme.of(context).toJson());
-    var replacements = {
-      "\$matrix_user_id": room.client.self!.identifier,
-      "\$matrix_room_id": room.identifier,
-      "\$matrix_display_name": room.client.self!.displayName,
-      "\$org.matrix.msc3819.matrix_device_id":
-          (room.client as MatrixClient).matrixClient.deviceID!,
-      "\$org.matrix.msc4039.matrix_base_url":
-          (room.client as MatrixClient).matrixClient.baseUri.toString(),
-      "\$chat.commet.color_scheme": Uri.encodeComponent(colorScheme),
-      "\$org.matrix.msc2873.client_theme":
-          Theme.of(context).brightness == Brightness.light ? "light" : "dark",
-    };
+      var colorScheme = JsonEncoder().convert(ColorScheme.of(context).toJson());
+      var replacements = {
+        "\$matrix_user_id": room.client.self!.identifier,
+        "\$matrix_room_id": room.identifier,
+        "\$matrix_display_name": room.client.self!.displayName,
+        "\$org.matrix.msc3819.matrix_device_id":
+            (room.client as MatrixClient).matrixClient.deviceID!,
+        "\$org.matrix.msc4039.matrix_base_url":
+            (room.client as MatrixClient).matrixClient.baseUri.toString(),
+        "\$chat.commet.color_scheme": Uri.encodeComponent(colorScheme),
+        "\$org.matrix.msc2873.client_theme":
+            Theme.of(context).brightness == Brightness.light ? "light" : "dark",
+      };
 
-    Log.i("Replacements: ${jsonEncode(replacements)}");
+      Log.i("Replacements: ${jsonEncode(replacements)}");
 
-    for (var pair in replacements.entries) {
-      url = url.replaceAll(pair.key, pair.value);
-    }
+      for (var pair in replacements.entries) {
+        url = url.replaceAll(pair.key, pair.value);
+      }
 
-    var uri = Uri.parse(url);
+      var uri = Uri.parse(url);
 
-    uri = Uri(
-        scheme: uri.scheme,
-        host: uri.host,
-        port: uri.port,
-        path: uri.path,
-        fragment: uri.fragment.isEmpty ? null : uri.fragment,
-        queryParameters: {
-          ...uri.queryParameters,
-          "parentUrl": "commet://widget",
-          "widgetId": info.id,
-        });
+      uri = Uri(
+          scheme: uri.scheme,
+          host: uri.host,
+          port: uri.port,
+          path: uri.path,
+          fragment: uri.fragment.isEmpty ? null : uri.fragment,
+          queryParameters: {
+            ...uri.queryParameters,
+            "parentUrl": "commet://widget",
+            "widgetId": info.id,
+          });
 
-    url = uri.toString();
+      url = uri.toString();
 
-    Log.i("Launching Widget: $url");
+      Log.i("Launching Widget: $url");
 
-    switch (type) {
-      case WidgetHostType.embedded:
-        uri = Uri.parse(url);
+      var runnerType = type ?? defaultHostType;
 
-        uri = Uri(
-            scheme: uri.scheme,
-            host: uri.host,
-            port: uri.port,
-            path: uri.path,
-            fragment: uri.fragment.isEmpty ? null : uri.fragment,
-            queryParameters: {
-              ...uri.queryParameters,
-              "parentUrl": "http://localhost/widget",
-              "widgetId": info.id,
-            });
+      switch (runnerType) {
+        case WidgetHostType.embedded:
+          uri = Uri.parse(url);
 
-        url = uri.toString();
+          uri = Uri(
+              scheme: uri.scheme,
+              host: uri.host,
+              port: uri.port,
+              path: uri.path,
+              fragment: uri.fragment.isEmpty ? null : uri.fragment,
+              queryParameters: {
+                ...uri.queryParameters,
+                "parentUrl": "http://localhost/widget",
+                "widgetId": info.id,
+              });
 
-        await createEmbeddedWidget(url, info, widget, room, context);
-        return;
-      case WidgetHostType.childProcess:
-        await spawnChildProcess(url, room, widget);
-        return;
-      case WidgetHostType.remoteHttpClient:
-        await createRemoteHttpWidgetRunner(url, room, widget,
-            useInsecureHttp: false);
-        return;
-      case WidgetHostType.externalBrowser:
-        await createRemoteHttpWidgetRunner(url, room, widget,
-            launchBrowser: true);
-        return;
-    }
+          url = uri.toString();
+
+          await createEmbeddedWidget(url, info, widget, room, context);
+          return;
+        case WidgetHostType.childProcess:
+          await spawnChildProcess(url, room, widget);
+          return;
+        case WidgetHostType.remoteHttpClient:
+          await createRemoteHttpWidgetRunner(url, room, widget,
+              useInsecureHttp: false, allowRemoteConnection: true);
+          return;
+        case WidgetHostType.externalBrowser:
+          await createRemoteHttpWidgetRunner(url, room, widget,
+              launchBrowser: true, useInsecureHttp: true, allowRemoteConnection: false);
+          return;
+      }
+    });
   }
 
   Future<void> createEmbeddedWidget(String url, MatrixUserWidgetInfo info,
@@ -306,7 +332,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
   Future<void> createRemoteHttpWidgetRunner(
       String url, Room room, MatrixUserWidgetInfo widget,
-      {bool launchBrowser = false, bool useInsecureHttp = false}) async {
+      {bool launchBrowser = false, bool useInsecureHttp = false, bool allowRemoteConnection = false}) async {
     final info = NetworkInfo();
 
     var ip = await info.getWifiIP();
@@ -314,10 +340,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     HttpServer? server;
     if (launchBrowser) {
       ip = "localhost";
-      server = await HttpServer.bind(InternetAddress.anyIPv4, 4185);
+      server = await spawnServerWithOpenPort();
     } else {
       if (useInsecureHttp) {
-        server = await HttpServer.bind(InternetAddress.anyIPv4, 4185);
+        server = await spawnServerWithOpenPort();
       } else {
         server = await spawnSelfSignedHttpsServer(ip!);
       }
@@ -332,6 +358,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         url: url,
         info: widget,
         server: server,
+        allowRemoteConnection: allowRemoteConnection,
         launchBrowser: launchBrowser,
         context: navigator.currentContext!,
         useInsecureHttp: useInsecureHttp,

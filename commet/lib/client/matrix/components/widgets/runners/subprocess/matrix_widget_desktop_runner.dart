@@ -72,7 +72,7 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     process.kill();
     _onClosed.add(null);
   }

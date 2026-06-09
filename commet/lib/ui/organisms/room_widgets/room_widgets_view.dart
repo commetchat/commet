@@ -17,6 +17,7 @@ class RoomWidgetsView extends StatefulWidget {
 
 class _RoomWidgetsViewState extends State<RoomWidgetsView> {
   late List<UserWidgetInfo> widgets;
+  late List<WidgetHostType> additionalHostTypes;
 
   @override
   void initState() {
@@ -24,7 +25,30 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
     var widgetComponent = client.getComponent<WidgetComponent>();
     widgets = widgetComponent!.getWidgets(widget.room);
 
+    additionalHostTypes = widgetComponent
+        .supportedHostTypes()
+        .where((i) => i != widgetComponent.defaultHostType)
+        .toList();
+
     super.initState();
+  }
+
+  String hostTypeToLabel(WidgetHostType type) {
+    return switch (type) {
+      WidgetHostType.embedded => "Open embedded",
+      WidgetHostType.childProcess => "Open in new window",
+      WidgetHostType.remoteHttpClient => "Open on another device",
+      WidgetHostType.externalBrowser => "Open in browser",
+    };
+  }
+
+  IconData hostTypeToIcon(WidgetHostType type) {
+    return switch (type) {
+      WidgetHostType.embedded => Icons.widgets_rounded,
+      WidgetHostType.childProcess => Icons.open_in_new,
+      WidgetHostType.remoteHttpClient => Icons.qr_code_rounded,
+      WidgetHostType.externalBrowser => Icons.open_in_browser,
+    };
   }
 
   @override
@@ -46,9 +70,18 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                       height: 40,
                       child: AdaptiveContextMenu(
                         items: [
+                          for (var i in additionalHostTypes)
+                            tiamat.ContextMenuItem(
+                              text: hostTypeToLabel(i),
+                              icon: hostTypeToIcon(i),
+                              onPressed: () {
+                                WidgetComponent.runWidget(widget.room, context, data, type: i);
+                              },
+                            ),
                           tiamat.ContextMenuItem(
                             text: "Clear Permissions",
-                            icon: Icons.clear,
+                            icon: Icons.delete,
+                            color: ColorScheme.of(context).error,
                             onPressed: () {
                               preferences.clearWidgetSettings(
                                   widget.room.client.identifier,
@@ -61,53 +94,7 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                           icon: data.icon.icon,
                           avatar: data.icon.image,
                           onTap: () async {
-                            var client = widget.room.client;
-                            var widgetComponent =
-                                client.getComponent<WidgetComponent>();
-
-                            if (!preferences.getWidgetAllowed(
-                                widget.room.client.identifier,
-                                data.namespace)) {
-                              var confirmed =
-                                  await AdaptiveDialog.confirmationWithOptions(
-                                      context,
-                                      title: "Widget",
-                                      showRememberChoice: true,
-                                      defaultRememberSetting: true,
-                                      prompt:
-                                          """Open `${Uri.parse(data.url).authority}`?\n\n'**${data.name}**' was added by `${data.senderId}`""",
-                                      confirmationText: "Open Widget");
-
-                              if (confirmed?.value != true) {
-                                return;
-                              }
-
-                              if (confirmed?.remember == true) {
-                                preferences.setWidgetAllowed(
-                                    widget.room.client.identifier,
-                                    data.namespace,
-                                    true);
-                              }
-                            }
-
-                            var supportedTypes =
-                                widgetComponent!.supportedHostTypes();
-
-                            var picked = await AdaptiveDialog.pickOne(
-                              context,
-                              items: supportedTypes,
-                              itemBuilder: (context, item, callback) {
-                                return tiamat.TextButton(
-                                  item.toString(),
-                                  onTap: callback,
-                                );
-                              },
-                            );
-
-                            if (picked != null) {
-                              widgetComponent.openWidget(
-                                  data, widget.room, context, picked);
-                            }
+                            WidgetComponent.runWidget(widget.room, context, data);
                           },
                         ),
                       ),
@@ -121,4 +108,6 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
       ),
     );
   }
+
+
 }

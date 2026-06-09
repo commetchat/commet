@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/image_or_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/widgets.dart';
@@ -79,7 +81,7 @@ abstract class WidgetRunner<T, R> {
 
   Stream<void> get onClosed;
 
-  void dispose();
+  Future<void> dispose();
 }
 
 abstract class WidgetComponent<T extends Client> implements Component<T> {
@@ -87,9 +89,41 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
 
   List<WidgetHostType> supportedHostTypes();
 
+  WidgetHostType get defaultHostType;
+
   static NotifyingList<WidgetRunner> currentSessions =
       NotifyingList.empty(growable: true);
 
-  Future<void> openWidget(UserWidgetInfo widget, Room room,
-      BuildContext context, WidgetHostType type);
+  static void runWidget(Room room, BuildContext context, UserWidgetInfo data,
+      {WidgetHostType? type}) async {
+    var widgetComponent = room.client.getComponent<WidgetComponent>();
+
+    for (var session in WidgetComponent.currentSessions) {
+      await session.dispose();
+    }
+
+    if (!preferences.getWidgetAllowed(room.client.identifier, data.namespace)) {
+      var confirmed = await AdaptiveDialog.confirmationWithOptions(context,
+          title: "Widget",
+          showRememberChoice: true,
+          defaultRememberSetting: true,
+          prompt:
+              """Open `${Uri.parse(data.url).authority}`?\n\n'**${data.name}**' was added by `${data.senderId}`""",
+          confirmationText: "Open Widget");
+
+      if (confirmed?.value != true) {
+        return;
+      }
+
+      if (confirmed?.remember == true) {
+        preferences.setWidgetAllowed(
+            room.client.identifier, data.namespace, true);
+      }
+    }
+    widgetComponent?.openWidget(data, room, context, type: type);
+  }
+
+  Future<void> openWidget(
+      UserWidgetInfo widget, Room room, BuildContext context,
+      {WidgetHostType? type});
 }

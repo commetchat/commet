@@ -36,6 +36,18 @@ class SystemProcessesUtils {
     return Process.start(name, args);
   }
 
+  static Future<ProcessResult> runSubprocess(String name, List<String> args) async {
+    Log.i("Spawning subprocess: ${name} ${args}");
+
+    if (BuildConfig.IS_FLATPAK) {
+      var result =
+          await Process.run("flatpak-spawn", ["--host", name, ...args]);
+      return result;
+    }
+
+    return Process.run(name, args);
+  }
+
   static List<ProcessInfo> parseLinuxPS(String output) {
     // Skip first line
     var lines = output.trim().split("\n").sublist(1);

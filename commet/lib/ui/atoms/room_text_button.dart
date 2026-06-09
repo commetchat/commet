@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
+import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -258,32 +261,59 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         ),
       ],
       child: Container(
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
             color: ColorScheme.of(context).surfaceTint.withAlpha(10),
             borderRadius: BorderRadius.circular(8)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (activity.thirdparty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 4, 0, 0),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: activity.icon.build(context)),
-                    tiamat.Text.labelLow(activity.name),
-                  ],
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: activity.associatedWidget == null
+                ? null
+                : () async {
+                    bool isInActivity = WidgetComponent.currentSessions.any(
+                      (element) =>
+                          element.info.type ==
+                          activity.application && widget.room == element.room,
+                    );
+
+                    if (isInActivity == false) {
+                      var confirm = await AdaptiveDialog.confirmation(context,
+                          prompt:
+                              "Open **${activity.associatedWidget!.name}**?");
+                      if (confirm == true) {
+                        WidgetComponent.runWidget(
+                            widget.room, context, activity.associatedWidget!);
+                      }
+                    } else {
+                      Log.i("Already has a widget in for this session");
+                    }
+                  },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (activity.thirdparty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 4, 0, 4),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: activity.icon.build(context)),
+                        tiamat.Text.labelLow(activity.name),
+                      ],
+                    ),
+                  ),
+                tiamat.Seperator(
+                  padding: 2,
                 ),
-              ),
-            tiamat.Seperator(
-              padding: 4,
+                for (var participant in activity.participants)
+                  buildCallMember(participant),
+              ],
             ),
-            for (var participant in activity.participants)
-              buildCallMember(participant),
-          ],
+          ),
         ),
       ),
     );

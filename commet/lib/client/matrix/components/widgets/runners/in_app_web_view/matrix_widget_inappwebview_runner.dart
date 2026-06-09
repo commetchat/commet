@@ -65,7 +65,7 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     Log.w("Disposing widget runner!");
     try {
       controller.dispose(isKeepAlive: false);
@@ -132,7 +132,7 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     Log.i("Matrix InappWebViewWidget disposed");
     runner!.dispose();
     super.dispose();

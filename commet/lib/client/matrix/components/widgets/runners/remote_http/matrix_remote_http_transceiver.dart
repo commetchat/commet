@@ -18,6 +18,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
   late String secret;
   late String widgetUrl;
   bool useHttps;
+  bool allowRemoteConnection;
   String hostIp;
 
   Function()? onClientConnected;
@@ -29,6 +30,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
       required this.widgetUrl,
       required this.info,
       this.onClientConnected,
+      required this.allowRemoteConnection,
       required this.useHttps}) {
     server.listen(onRequest);
   }
@@ -43,6 +45,12 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
   void onRequest(HttpRequest event) {
     final path = event.requestedUri.path;
+
+    if (event.connectionInfo!.remoteAddress.isLoopback == false) {
+      if (allowRemoteConnection == false) {
+        return forbidden(event);
+      }
+    }
 
     if (path == "/favicon.png") {
       return handleIconRequest(event);
