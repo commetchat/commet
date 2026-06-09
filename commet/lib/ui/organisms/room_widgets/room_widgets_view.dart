@@ -75,7 +75,9 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                               text: hostTypeToLabel(i),
                               icon: hostTypeToIcon(i),
                               onPressed: () {
-                                WidgetComponent.runWidget(widget.room, context, data, type: i);
+                                WidgetComponent.runWidget(
+                                    widget.room, context, data,
+                                    type: i);
                               },
                             ),
                           tiamat.ContextMenuItem(
@@ -94,7 +96,8 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                           icon: data.icon.icon,
                           avatar: data.icon.image,
                           onTap: () async {
-                            WidgetComponent.runWidget(widget.room, context, data);
+                            WidgetComponent.runWidget(
+                                widget.room, context, data);
                           },
                         ),
                       ),
@@ -108,6 +111,4 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
       ),
     );
   }
-
-
 }

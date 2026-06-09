@@ -119,10 +119,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
 
         Log.i("Launching chrome with temp location: $temp");
 
-        var knownChromiumBrowsers = [
-          "chromium",
-          "google-chrome"
-        ];
+        var knownChromiumBrowsers = ["chromium", "google-chrome"];
 
         String? selectedBrowser;
         for (var s in knownChromiumBrowsers) {
@@ -220,9 +217,13 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
               padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
               child: SizedBox(
                 height: 30,
-                child: tiamat.TextButton("Copy Link", icon: Icons.copy, onTap: () {
-                  Clipboard.setData(ClipboardData(text: url.toString()));
-                },),
+                child: tiamat.TextButton(
+                  "Copy Link",
+                  icon: Icons.copy,
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: url.toString()));
+                  },
+                ),
               ),
             ),
           ],

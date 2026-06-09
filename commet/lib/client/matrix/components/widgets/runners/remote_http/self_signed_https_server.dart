@@ -33,20 +33,19 @@ Future<HttpServer> spawnServerWithOpenPort({SecurityContext? context}) async {
 
   int numPortsToTry = 20;
 
-  for(int i = 0; i < numPortsToTry; i++) {
+  for (int i = 0; i < numPortsToTry; i++) {
     int port = basePort + i;
 
     try {
-      if(context == null) {
+      if (context == null) {
         var server = await HttpServer.bind(InternetAddress.anyIPv4, port);
         return server;
       } else {
-        var server = await HttpServer.bindSecure(InternetAddress.anyIPv4, port, context);
+        var server =
+            await HttpServer.bindSecure(InternetAddress.anyIPv4, port, context);
         return server;
       }
-
-
-    } catch(_) {
+    } catch (_) {
       Log.i("Port ${port} was taken, trying a different one");
     }
   }

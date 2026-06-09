@@ -273,8 +273,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 : () async {
                     bool isInActivity = WidgetComponent.currentSessions.any(
                       (element) =>
-                          element.info.type ==
-                          activity.application && widget.room == element.room,
+                          element.info.type == activity.application &&
+                          widget.room == element.room,
                     );
 
                     if (isInActivity == false) {

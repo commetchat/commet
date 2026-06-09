@@ -22,7 +22,6 @@ class UserPanelSettings extends StatefulWidget {
 }
 
 class _UserPanelSettingsState extends State<UserPanelSettings> {
-
   StreamSubscription? sub;
 
   @override
@@ -33,7 +32,6 @@ class _UserPanelSettingsState extends State<UserPanelSettings> {
 
     super.initState();
   }
-
 
   @override
   void dispose() {

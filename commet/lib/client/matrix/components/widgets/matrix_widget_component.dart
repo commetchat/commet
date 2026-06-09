@@ -263,7 +263,9 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
           return;
         case WidgetHostType.externalBrowser:
           await createRemoteHttpWidgetRunner(url, room, widget,
-              launchBrowser: true, useInsecureHttp: true, allowRemoteConnection: false);
+              launchBrowser: true,
+              useInsecureHttp: true,
+              allowRemoteConnection: false);
           return;
       }
     });
@@ -332,7 +334,9 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
   Future<void> createRemoteHttpWidgetRunner(
       String url, Room room, MatrixUserWidgetInfo widget,
-      {bool launchBrowser = false, bool useInsecureHttp = false, bool allowRemoteConnection = false}) async {
+      {bool launchBrowser = false,
+      bool useInsecureHttp = false,
+      bool allowRemoteConnection = false}) async {
     final info = NetworkInfo();
 
     var ip = await info.getWifiIP();
