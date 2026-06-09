@@ -238,6 +238,17 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         case WidgetHostType.embedded:
           uri = Uri.parse(url);
 
+          HttpServer? server;
+
+          // On windows, we need to serve the initial embedded page
+          // from an actual http server, otherwise the browser wont
+          // recognise our 'localhost' as a secure context.
+          // All communication is still done through webview js handlers,
+          // and the server will be killed after the initial request.
+          if (PlatformUtils.isWindows) {
+            server = await spawnServerWithOpenPort();
+          }
+
           uri = Uri(
               scheme: uri.scheme,
               host: uri.host,
@@ -246,13 +257,16 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
               fragment: uri.fragment.isEmpty ? null : uri.fragment,
               queryParameters: {
                 ...uri.queryParameters,
-                "parentUrl": "http://localhost/widget",
+                "parentUrl": server == null
+                    ? "http://localhost/widget"
+                    : "http://localhost:${server.port}",
                 "widgetId": info.id,
               });
 
           url = uri.toString();
 
-          await createEmbeddedWidget(url, info, widget, room, context);
+          await createEmbeddedWidget(url, info, widget, room, context,
+              server: server);
           return;
         case WidgetHostType.childProcess:
           await spawnChildProcess(url, room, widget);
@@ -272,7 +286,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
   }
 
   Future<void> createEmbeddedWidget(String url, MatrixUserWidgetInfo info,
-      MatrixUserWidgetInfo widget, Room room, BuildContext context) async {
+      MatrixUserWidgetInfo widget, Room room, BuildContext context,
+      {HttpServer? server}) async {
     var bytes =
         (await rootBundle.load("assets/data/widget_runner_embedded.html"))
             .buffer
@@ -297,12 +312,34 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     Log.i("Initial Page:");
     Log.i(text);
 
+    server?.listen((request) async {
+      if (request.connectionInfo!.remoteAddress.isLoopback == false) {
+        request.response
+          ..statusCode = 403
+          ..close();
+        return;
+      }
+
+      var responseBytes = Utf8Encoder().convert(text);
+      Log.i("Handling request");
+      await request.response
+        ..headers.contentType = new ContentType("text", "html")
+        ..headers.contentLength = responseBytes.length
+        ..statusCode = 200
+        ..add(responseBytes)
+        ..close();
+
+      Log.i("Handled initial request, closing server");
+      server.close();
+    });
+
     var builtWidget = MatrixWidgetInappwebviewRunnerWidget(
         info: info,
         widgetId: widget.id,
         initialPageData: text,
         onExitController: onExitController,
         room: room as MatrixRoom,
+        server: server,
         component: this);
 
     var window = OverlayWindow(
@@ -340,6 +377,18 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     final info = NetworkInfo();
 
     var ip = await info.getWifiIP();
+
+    Log.i("Got IP: $ip");
+
+    if (ip == null) {
+      var interfaces = await NetworkInterface.list();
+      var interface = interfaces.firstOrNull;
+      var address = interface?.addresses.firstOrNull;
+
+      ip = address?.address;
+    }
+
+    Log.i("Got IP: $ip");
 
     HttpServer? server;
     if (launchBrowser) {

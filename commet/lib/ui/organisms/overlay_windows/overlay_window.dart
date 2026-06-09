@@ -4,6 +4,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/show_on_hover.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
+import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -26,12 +27,29 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
 
   Offset offset = Offset(0, 0);
 
-  Offset get targetOffset => fullScreen ? Offset(0, 0) : _positionedOffset;
+  Offset get targetOffset {
+    if (fullScreen) {
+      return Offset(0, 0);
+    }
+
+    final padding = MediaQuery.of(context).padding;
+    var size = MediaQuery.of(context).scale().size;
+
+    var margin = 50.0;
+    var max = Offset(size.width - padding.right - margin,
+        size.height - padding.bottom - margin);
+
+    _positionedOffset = Offset(
+        _positionedOffset.dx.clamp(-targetSize.width + margin, max.dx),
+        _positionedOffset.dy.clamp(-targetSize.height + margin, max.dy));
+
+    return _positionedOffset;
+  }
 
   Size get targetSize {
     if (fullScreen) {
       final padding = MediaQuery.of(context).padding;
-      var size = MediaQuery.of(context).size;
+      var size = MediaQuery.of(context).scale().size;
 
       return Size(size.width - padding.left - padding.right,
           size.height - padding.top - padding.bottom);
@@ -41,14 +59,16 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
   }
 
   late Size _currentSize;
-  bool fullScreen = false;
+  bool fullScreen = true;
 
   @override
   void initState() {
     var ticker = createTicker(onTick);
     ticker.start();
 
-    _currentSize = targetSize;
+    FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
+    Size size = view.physicalSize;
+    _currentSize = size;
 
     super.initState();
   }

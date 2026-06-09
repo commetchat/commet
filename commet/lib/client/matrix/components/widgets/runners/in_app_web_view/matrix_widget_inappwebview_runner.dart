@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_inappwebview_widget_transceiver.dart';
@@ -83,6 +84,7 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
       required this.component,
       required this.info,
       required this.onExitController,
+      this.server,
       super.key});
   final String initialPageData;
   final String widgetId;
@@ -90,6 +92,7 @@ class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
   final MatrixWidgetComponent? component;
   final UserWidgetInfo info;
   final StreamController onExitController;
+  final HttpServer? server;
 
   @override
   State<MatrixWidgetInappwebviewRunnerWidget> createState() =>
@@ -105,9 +108,15 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
     return SizedBox(
       child: InAppWebView(
         initialSettings: InAppWebViewSettings(transparentBackground: true),
-        initialData: InAppWebViewInitialData(
-            data: widget.initialPageData,
-            baseUrl: WebUri("http://localhost/widget")),
+        initialUrlRequest: widget.server == null
+            ? null
+            : URLRequest(
+                url: WebUri("http://localhost:${widget.server!.port}")),
+        initialData: widget.server != null
+            ? null
+            : InAppWebViewInitialData(
+                data: widget.initialPageData,
+                baseUrl: WebUri("http://localhost/widget")),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
 
