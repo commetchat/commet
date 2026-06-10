@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
@@ -20,13 +22,21 @@ class UserPanelSettings extends StatefulWidget {
 }
 
 class _UserPanelSettingsState extends State<UserPanelSettings> {
+  StreamSubscription? sub;
+
   @override
   void initState() {
-    WidgetComponent.currentSessions.onListUpdated.listen((_) {
+    sub = WidgetComponent.currentSessions.onListUpdated.listen((_) {
       setState(() {});
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override

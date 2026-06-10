@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/room_component.dart';
+import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/utils/image_or_icon.dart';
 
 class RoomActivitySession {
@@ -14,11 +15,14 @@ class RoomActivitySession {
   String? knownName;
   String get name => knownName ?? application;
 
+  UserWidgetInfo? associatedWidget;
+
   RoomActivitySession(
       {required this.participants,
       required this.application,
       this.thirdparty = true,
       required this.icon,
+      this.associatedWidget,
       String? appName}) {
     this.knownName = appName;
   }

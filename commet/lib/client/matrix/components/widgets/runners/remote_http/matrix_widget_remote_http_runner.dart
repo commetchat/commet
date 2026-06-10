@@ -10,14 +10,17 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:commet/utils/system_processes_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-
+import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:path/path.dart' as p;
 
 class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
@@ -58,6 +61,8 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
 
   bool useInsecureHttp;
 
+  bool allowRemoteConnection;
+
   MatrixUserWidgetRemoteHttpRunner({
     required this.room,
     required String url,
@@ -69,6 +74,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     required bool launchBrowser,
     required this.info,
     required this.useInsecureHttp,
+    required this.allowRemoteConnection,
   }) {
     this.server = server;
     final String secret = RandomUtils.getRandomString(50); // "secret_password";
@@ -79,7 +85,8 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
         hostIp: hostName,
         info: info,
         server: server,
-        useHttps: launchBrowser ? false : true,
+        allowRemoteConnection: allowRemoteConnection,
+        useHttps: useInsecureHttp == false,
         onClientConnected: handleInitialConnection);
 
     messageTransport = MatrixWidgetTransport(tx);
@@ -104,32 +111,60 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   }
 
   void launchExternalBrowser(Uri url) async {
-    var tempDir = await getTemporaryDirectory();
-    var temp = p.join(tempDir.path, "chat.commet.app", "widget_runner");
+    ErrorUtils.tryRun(
+      navigator.currentContext!,
+      () async {
+        var tempDir = await getTemporaryDirectory();
+        var temp = p.join(tempDir.path, "chat.commet.app", "widget_runner");
 
-    Log.i("Launching chrome with temp location: $temp");
+        Log.i("Launching chrome with temp location: $temp");
 
-    SystemProcessesUtils.spawnSubprocess("google-chrome", [
-      '--app=${url.toString()}',
-      '--no-first-run',
-      '--no-default-browser-check',
-      '--disable-background-networking',
-      '--disable-component-update',
-      '--user-data-dir=${temp}'
-    ]).then((process) {
-      externalBrowserProcess = process;
+        var knownChromiumBrowsers = ["chromium", "google-chrome"];
 
-      process.exitCode.then((code) {
-        Log.i("Browser process terminated with code: $code");
+        String? selectedBrowser;
+        for (var s in knownChromiumBrowsers) {
+          Log.i("Looking for browser: ${s}");
+          var result = await SystemProcessesUtils.runSubprocess("which", [s]);
 
+          if (result.exitCode == 0) {
+            selectedBrowser = s;
+            break;
+          }
+
+          Log.i("Which result: ${result.exitCode}");
+        }
+
+        if (selectedBrowser == null) {
+          throw Exception(
+              "Could not find any installed chromium browser to run widget");
+        }
+
+        SystemProcessesUtils.spawnSubprocess("google-chrome", [
+          '--app=${url.toString()}',
+          '--no-first-run',
+          '--no-default-browser-check',
+          '--disable-background-networking',
+          '--disable-component-update',
+          '--user-data-dir=${temp}'
+        ]).then((process) {
+          externalBrowserProcess = process;
+
+          process.exitCode.then((code) {
+            Log.i("Browser process terminated with code: $code");
+
+            dispose();
+          });
+        });
+      },
+      onError: () async {
         dispose();
-      });
-    });
+      },
+    );
   }
 
   @override
-  void dispose() {
-    server.close(force: true);
+  Future<void> dispose() async {
+    await server.close(force: true);
     _onClosed.add(null);
     externalBrowserProcess?.kill(ProcessSignal.sigsegv);
   }
@@ -155,24 +190,44 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     AdaptiveDialog.show(
       context,
       builder: (context) {
-        return SizedBox(
-            height: 300,
-            width: 300,
-            child: PrettyQrView.data(
-              data: url.toString(),
-              errorCorrectLevel: QrErrorCorrectLevel.H,
-              decoration: const PrettyQrDecoration(
-                  image: const PrettyQrDecorationImage(
-                    scale: 0.20,
-                    padding: EdgeInsetsGeometry.all(40),
-                    filterQuality: FilterQuality.medium,
-                    image: AssetImage(
-                        'assets/images/app_icon/app_icon_transparent_cropped.png'),
-                  ),
-                  quietZone: PrettyQrQuietZone.standard,
-                  shape: PrettyQrSmoothSymbol(color: Colors.white),
-                  background: Colors.black),
-            ));
+        return Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(8),
+              child: SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: PrettyQrView.data(
+                    data: url.toString(),
+                    errorCorrectLevel: QrErrorCorrectLevel.H,
+                    decoration: const PrettyQrDecoration(
+                        image: const PrettyQrDecorationImage(
+                          scale: 0.20,
+                          padding: EdgeInsetsGeometry.all(40),
+                          filterQuality: FilterQuality.medium,
+                          image: AssetImage(
+                              'assets/images/app_icon/app_icon_transparent_cropped.png'),
+                        ),
+                        quietZone: PrettyQrQuietZone.standard,
+                        shape: PrettyQrSmoothSymbol(color: Colors.white),
+                        background: Colors.black),
+                  )),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+              child: SizedBox(
+                height: 30,
+                child: tiamat.TextButton(
+                  "Copy Link",
+                  icon: Icons.copy,
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: url.toString()));
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
       },
     );
   }

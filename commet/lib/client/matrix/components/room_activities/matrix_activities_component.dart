@@ -81,6 +81,7 @@ class MatrixActivitiesComponent
             application: application,
             appName: name,
             icon: icon,
+            associatedWidget: widget,
             thirdparty: thirdparty);
         activities.add(activity);
       }

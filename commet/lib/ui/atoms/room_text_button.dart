@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
+import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -98,6 +101,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
     if (activities != null) {
       activitySessions = activities?.getSessions();
+      sortActivities();
     }
 
     if (calendarRoom?.calendar != null) {
@@ -117,6 +121,18 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     }
 
     super.initState();
+  }
+
+  void onSessionsChanged(void event) {
+    setState(() {
+      activitySessions = activities?.getSessions();
+      sortActivities();
+    });
+  }
+
+  void sortActivities() {
+    activitySessions?.sort(
+        (a, b) => (a.thirdparty ? 1 : 0).compareTo(b.thirdparty ? 1 : 0));
   }
 
   @override
@@ -229,6 +245,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   }
 
   Widget buildActivities(Widget child, BuildContext context) {
+    Iterable<RoomActivitySession> sessions = activitySessions!;
+
+    if (activitySessions!.any((i) => i.thirdparty == false)) {
+      sessions = activitySessions!.where((i) => i.thirdparty == false);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -239,7 +261,10 @@ class _RoomTextButtonState extends State<RoomTextButton> {
             spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var activity in activitySessions!) buildActivity(activity),
+              for (var activity in sessions)
+                buildActivity(
+                  activity,
+                ),
             ],
           ),
         ),
@@ -258,32 +283,43 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         ),
       ],
       child: Container(
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
             color: ColorScheme.of(context).surfaceTint.withAlpha(10),
             borderRadius: BorderRadius.circular(8)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (activity.thirdparty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 4, 0, 0),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: activity.icon.build(context)),
-                    tiamat.Text.labelLow(activity.name),
-                  ],
-                ),
-              ),
-            tiamat.Seperator(
-              padding: 4,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: activity.associatedWidget == null
+                ? null
+                : () => onWidgetTapped(activity),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (activity.thirdparty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 4, 0, 4),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: activity.icon.build(context)),
+                        tiamat.Text.labelLow(activity.name),
+                      ],
+                    ),
+                  ),
+                if (activity.thirdparty)
+                  tiamat.Seperator(
+                    padding: 2,
+                  ),
+                for (var participant in activity.participants)
+                  buildCallMember(participant,
+                      showActivityIcons: activity.thirdparty == false),
+              ],
             ),
-            for (var participant in activity.participants)
-              buildCallMember(participant),
-          ],
+          ),
         ),
       ),
     );
@@ -318,10 +354,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  Widget buildCallMember(String identifier) {
+  Widget buildCallMember(String identifier, {bool showActivityIcons = true}) {
     var color = Theme.of(context).colorScheme.secondary;
 
     final member = widget.room.getMemberOrFallback(identifier);
+
+    bool canShowActivityIcons = activitySessions != null && showActivityIcons;
 
     return SizedBox(
       height: height,
@@ -331,6 +369,36 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         avatar: member.avatar,
         avatarPlaceholderColor: member.defaultColor,
         avatarPlaceholderText: member.displayName,
+        footer: canShowActivityIcons
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: Row(
+                  children: [
+                    for (var i in activitySessions!.where((i) =>
+                        i.thirdparty == true &&
+                        i.participants.contains(identifier)))
+                      ClipRRect(
+                        borderRadius: BorderRadiusGeometry.circular(4),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: i.associatedWidget == null
+                                ? null
+                                : () => onWidgetTapped(i),
+                            child: SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: i.icon.build(context),
+                                )),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -352,9 +420,22 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  void onSessionsChanged(void event) {
-    setState(() {
-      activitySessions = activities?.getSessions();
-    });
+  Future<void> onWidgetTapped(RoomActivitySession activity) async {
+    bool isInActivity = WidgetComponent.currentSessions.any(
+      (element) =>
+          element.info.type == activity.application &&
+          widget.room == element.room,
+    );
+
+    if (isInActivity == false) {
+      var confirm = await AdaptiveDialog.confirmation(context,
+          prompt: "Open **${activity.associatedWidget!.name}**?");
+      if (confirm == true) {
+        WidgetComponent.runWidget(
+            widget.room, context, activity.associatedWidget!);
+      }
+    } else {
+      Log.i("Already has a widget in for this session");
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:basic_utils/basic_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter/services.dart';
 
 class CertificateData {
@@ -22,10 +23,34 @@ Future<HttpServer> spawnSelfSignedHttpsServer(String hostname) async {
     ..useCertificateChainBytes(certData.certBytes)
     ..usePrivateKeyBytes(certData.privateKeyBytes);
 
-  var server =
-      await HttpServer.bindSecure(InternetAddress.anyIPv4, 4185, context);
+  var server = await spawnServerWithOpenPort(context: context);
 
   return server;
+}
+
+Future<HttpServer> spawnServerWithOpenPort({SecurityContext? context}) async {
+  int basePort = 20408;
+
+  int numPortsToTry = 20;
+
+  for (int i = 0; i < numPortsToTry; i++) {
+    int port = basePort + i;
+
+    try {
+      if (context == null) {
+        var server = await HttpServer.bind(InternetAddress.anyIPv4, port);
+        return server;
+      } else {
+        var server =
+            await HttpServer.bindSecure(InternetAddress.anyIPv4, port, context);
+        return server;
+      }
+    } catch (_) {
+      Log.i("Port ${port} was taken, trying a different one");
+    }
+  }
+
+  throw Exception("Could not find any open port after $numPortsToTry attemps");
 }
 
 Future<CertificateData> generateSelfSignedCertificate(String host) async {
