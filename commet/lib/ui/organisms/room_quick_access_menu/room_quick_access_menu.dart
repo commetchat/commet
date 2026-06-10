@@ -5,6 +5,7 @@ import 'package:commet/client/components/event_search/event_search_component.dar
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
+import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
@@ -33,11 +34,12 @@ class RoomQuickAccessMenu {
     final bool canCall =
         calls != null && direct?.isRoomDirectMessage(room) == true;
 
-    final bool hasWidgets = room.client
-            .getComponent<WidgetComponent>()
-            ?.getWidgets(room)
-            .isNotEmpty ==
-        true;
+    final bool isVoipRoom = room.getComponent<VoipRoomComponent>() != null;
+
+    // Dont show widgets in Voip room. If the widget uses MatrixRTC,
+    // it seems to interfere with the ongoing call...
+    final bool hasWidgets = isVoipRoom == false &&
+        room.client.getComponent<WidgetComponent>() != null;
 
     actions = [
       if (invitation != null)
