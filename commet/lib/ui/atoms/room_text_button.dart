@@ -247,10 +247,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   Widget buildActivities(Widget child, BuildContext context) {
     Iterable<RoomActivitySession> sessions = activitySessions!;
 
-    bool showIcons = false;
     if (activitySessions!.any((i) => i.thirdparty == false)) {
       sessions = activitySessions!.where((i) => i.thirdparty == false);
-      showIcons = true;
     }
 
     return Column(
