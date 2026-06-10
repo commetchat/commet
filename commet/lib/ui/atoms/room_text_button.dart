@@ -55,7 +55,7 @@ class RoomTextButton extends StatefulWidget {
             text: "Open as Text Chat",
             icon: Icons.tag,
             onPressed: () => EventBus.doOpenRoom(room.identifier,
-                clientId: room.client.identifier)),
+                clientId: room.client.identifier, bypassSpecialRoomType: true)),
       if (voipRoom != null && preferences.developerMode.value)
         ContextMenuItem(
           text: "Clear Membership Status",
