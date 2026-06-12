@@ -31,7 +31,6 @@ class GenericRoomPreview implements RoomPreview {
 
   RoomType? type;
 
-  @override
   GenericRoomPreview(this.roomId,
       {this.avatar,
       required this.displayName,
