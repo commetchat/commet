@@ -207,9 +207,10 @@ Future<void> initNecessary() async {
   await preferences.init();
   await initDatabaseServer();
 
-  await RustLib.init();
+  if(PlatformUtils.isWindows || PlatformUtils.isLinux) {
+    await RustLib.init();
+  }
 
-  Log.i(greet(name: "test"));
 
   fileCache = FileCache.getFileCacheInstance();
 
