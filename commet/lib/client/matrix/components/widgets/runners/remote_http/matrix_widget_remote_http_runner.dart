@@ -9,6 +9,8 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_message_ha
 import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -139,14 +141,26 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
               "Could not find any installed chromium browser to run widget");
         }
 
-        SystemProcessesUtils.spawnSubprocess("google-chrome", [
+        var command = selectedBrowser;
+        var args = [
           '--app=${url.toString()}',
           '--no-first-run',
           '--no-default-browser-check',
           '--disable-background-networking',
           '--disable-component-update',
           '--user-data-dir=${temp}'
-        ]).then((process) {
+        ];
+
+        if(BuildConfig.IS_FLATPAK) {
+          if(PlatformUtils.isDisplayServer(DisplayServer.Wayland)) {
+            args = [
+              "--ozone-platform=wayland",
+              ...args
+            ];
+          }
+        }
+
+        SystemProcessesUtils.spawnSubprocess(command, args).then((process) {
           externalBrowserProcess = process;
 
           process.exitCode.then((code) {

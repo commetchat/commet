@@ -25,13 +25,25 @@ class SystemProcessesUtils {
   }
 
   static Future<Process> spawnSubprocess(String name, List<String> args) async {
-    Log.i("Spawning subprocess: ${name} ${args}");
-
     if (BuildConfig.IS_FLATPAK) {
+      if (PlatformUtils.isDisplayServer(DisplayServer.Wayland)) {
+        args = ["WAYLAND_DISPLAY=wayland-0", name, ...args];
+        name = "env";
+      }
+
+      if(PlatformUtils.isDisplayServer(DisplayServer.X11)) {
+        args = ["DISPLAY=:0", name, ...args];
+        name = "env";
+      }
+
+      Log.i("Spawning subprocess: ${name} ${args}");
       var result =
           await Process.start("flatpak-spawn", ["--host", name, ...args]);
+
       return result;
     }
+
+    Log.i("Spawning subprocess: ${name} ${args}");
 
     return Process.start(name, args);
   }
