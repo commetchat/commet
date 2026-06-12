@@ -16,7 +16,6 @@ import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
-import 'package:commet/rust/api/simple.dart';
 import 'package:commet/rust/frb_generated.dart';
 import 'package:commet/single_instance.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
