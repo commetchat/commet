@@ -38,6 +38,7 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
       WidgetHostType.childProcess => "Open in new window",
       WidgetHostType.remoteHttpClient => "Open on another device",
       WidgetHostType.externalBrowser => "Open in browser",
+      WidgetHostType.androidActivity => "Open in new activity",
     };
   }
 
@@ -47,6 +48,7 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
       WidgetHostType.childProcess => Icons.open_in_new,
       WidgetHostType.remoteHttpClient => Icons.qr_code_rounded,
       WidgetHostType.externalBrowser => Icons.open_in_browser,
+      WidgetHostType.androidActivity => Icons.widgets_rounded,
     };
   }
 

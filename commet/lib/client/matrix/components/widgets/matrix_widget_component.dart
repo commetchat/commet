@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
+import 'package:commet/client/matrix/components/widgets/runners/android_activity/matrix_widget_android_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/in_app_web_view/matrix_widget_inappwebview_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/subprocess/matrix_widget_desktop_runner.dart';
 import 'package:commet/client/matrix/components/widgets/runners/remote_http/self_signed_https_server.dart';
@@ -12,6 +13,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -19,6 +21,7 @@ import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart'
 import 'package:commet/utils/color_utils.dart';
 import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/image_or_icon.dart';
+import 'package:dart_ipc/dart_ipc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:matrix/matrix.dart' show StrippedStateEvent;
@@ -144,7 +147,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     }
 
     if (PlatformUtils.isAndroid) {
-      return WidgetHostType.embedded;
+      return WidgetHostType.androidActivity;
     }
 
     if (PlatformUtils.isLinux) {
@@ -169,7 +172,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     }
 
     if (PlatformUtils.isAndroid) {
-      return const [WidgetHostType.embedded];
+      return const [WidgetHostType.androidActivity, WidgetHostType.embedded];
     }
 
     if (PlatformUtils.isLinux) {
@@ -281,8 +284,76 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
               useInsecureHttp: true,
               allowRemoteConnection: false);
           return;
+        case WidgetHostType.androidActivity:
+          uri = Uri(
+              scheme: uri.scheme,
+              host: uri.host,
+              port: uri.port,
+              path: uri.path,
+              fragment: uri.fragment.isEmpty ? null : uri.fragment,
+              queryParameters: {
+                ...uri.queryParameters,
+                "parentUrl": "http://localhost/widget",
+                "widgetId": info.id,
+              });
+
+          url = uri.toString();
+          createAndroidActivityWidget(url, widget, room, context);
+          return;
       }
     });
+  }
+
+  Future<void> createAndroidActivityWidget(String url,
+      MatrixUserWidgetInfo info, Room room, BuildContext context) async {
+    var receiveSocketPath = await AppConfig.getWidgetSocketPath();
+
+    var file = File(receiveSocketPath);
+
+    var bytes =
+        (await rootBundle.load("assets/data/widget_runner_android.html"))
+            .buffer
+            .asUint8List();
+
+    var text = Utf8Decoder().convert(bytes);
+
+    var scriptBytes = (await rootBundle.load("assets/data/widgets_common.js"))
+        .buffer
+        .asUint8List();
+    var scriptText = Utf8Decoder().convert(scriptBytes);
+
+    text =
+        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+
+    text = text.replaceAll("\$IFRAME_URL", url.toString());
+
+    text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
+
+    if (await file.exists()) {
+      await file.delete();
+    }
+
+    var server = await bind(receiveSocketPath);
+    Log.i("Server socket path: ${receiveSocketPath}");
+    Log.i("Opened socket: ${server}");
+
+    const platform = const MethodChannel('chat.commet.commetapp/utils');
+
+    await platform.invokeMethod<bool>("openWidgetWindow", {
+      "url": url,
+      "socket": receiveSocketPath,
+      "page": text,
+    });
+
+    var runner = MatrixWidgetAndroidRunner(
+        room: room as MatrixRoom,
+        widgetId: info.id,
+        client: room.client as MatrixClient,
+        info: info,
+        socket: server,
+        context: context);
+
+    registerRunner(runner);
   }
 
   Future<void> createEmbeddedWidget(String url, MatrixUserWidgetInfo info,

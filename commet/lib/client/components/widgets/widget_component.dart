@@ -28,6 +28,7 @@ enum WidgetHostType {
   childProcess,
   remoteHttpClient,
   externalBrowser,
+  androidActivity,
 }
 
 abstract class WidgetCapabilityManager<T> {
