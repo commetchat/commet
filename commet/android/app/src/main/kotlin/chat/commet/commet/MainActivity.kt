@@ -1,7 +1,9 @@
 package chat.commet.commetapp
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.NonNull
@@ -61,6 +63,24 @@ fun registerMethods(flutterEngine: FlutterEngine, activity: Activity) {
             }
             if(call.method == "isKeyboardOpen") {
                 result.success(isKeyboardOpen(activity));
+            }
+
+            if(call.method == "openWidgetWindow") {
+
+                val url = call.argument<String>("url");
+                val socketPath = call.argument<String>("socket");
+                val page = call.argument<String>("page");
+
+                val intent = Intent().apply {
+                    component = ComponentName(activity.applicationContext,  MatrixWidgetActivity::class.java)
+                    addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra("url", url)
+                    putExtra("socket", socketPath)
+                    putExtra("page", page)
+                }
+
+                activity.startActivity(intent)
+                result.success(null);
             }
         }
     }

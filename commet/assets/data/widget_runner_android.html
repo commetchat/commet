@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>$RUNNER_PAGE_TITLE</title>
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+    <iframe id="widget-frame" allow="fullscreen" style="width: 100vw; height: 100dvh; border: none; overflow: hidden;"
+        src="$IFRAME_URL"></iframe>
+    <script>
+
+//${WIDGETS_COMMON}
+
+        const childWindow = document.getElementById('widget-frame').contentWindow;
+
+        let target = `$IFRAME_URL`;
+
+        let targetUrl = new URL(target);
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        
+        console.log(targetUrl);
+        console.log("Target: ", target);
+
+        function sendIpc(msg) {
+            WidgetRunner.send(msg)
+        }
+
+        window.addEventListener("message", (message) => {
+
+            if (message.source !== childWindow) {
+                return; // Skip message in this event listener
+            }
+
+            let converted = encodeArrayBuffers(message.data);
+
+            sendIpc(JSON.stringify(converted))
+        })
+
+
+        window.onMessagePolyfill = (data) => {
+            var text = atob(data);
+            var message = JSON.parse(text);
+
+            decodeArrayBuffers(message).then((value) => {
+                childWindow.postMessage(value, targetUrl.origin);
+            });
+        }
+
+    </script>
+</body>
+</html>
