@@ -151,12 +151,9 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
           '--user-data-dir=${temp}'
         ];
 
-        if(BuildConfig.IS_FLATPAK) {
-          if(PlatformUtils.isDisplayServer(DisplayServer.Wayland)) {
-            args = [
-              "--ozone-platform=wayland",
-              ...args
-            ];
+        if (BuildConfig.IS_FLATPAK) {
+          if (PlatformUtils.isDisplayServer(DisplayServer.Wayland)) {
+            args = ["--ozone-platform=wayland", ...args];
           }
         }
 

@@ -31,7 +31,7 @@ class SystemProcessesUtils {
         name = "env";
       }
 
-      if(PlatformUtils.isDisplayServer(DisplayServer.X11)) {
+      if (PlatformUtils.isDisplayServer(DisplayServer.X11)) {
         args = ["DISPLAY=:0", name, ...args];
         name = "env";
       }
