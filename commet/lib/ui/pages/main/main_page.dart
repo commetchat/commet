@@ -248,7 +248,7 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       return MainPageViewMobile(this);
     } else {
       return MainPageViewDesktop(this);

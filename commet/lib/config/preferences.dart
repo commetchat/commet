@@ -423,7 +423,7 @@ class Preferences {
 
   BoolPreference autoFocusMessageTextBox = BoolPreference(
       "auto_focus_message_textbox",
-      defaultGetter: () => Layout.mobile ? false : true,
+      defaultGetter: () => PlatformUtils.isAndroid ? false : true,
       defaultValue: false);
 
   BoolPreference automaticallyOpenSpace =

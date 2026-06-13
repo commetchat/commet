@@ -51,11 +51,11 @@ class _EmojiPickerState extends State<EmojiPicker> {
 
   @override
   void initState() {
-    if (Layout.desktop) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.of(context).desktop) {
         widget.focus?.requestFocus();
-      });
-    }
+      }
+    });
 
     super.initState();
   }
@@ -231,7 +231,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: TextField(
                               focusNode: widget.focus,
-                              autofocus: Layout.desktop,
+                              autofocus: MediaQuery.of(context).desktop,
                               controller: textController,
                               onChanged: onSearchTextChanged,
                               decoration: InputDecoration(

@@ -86,7 +86,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
       markAsRead: markAsRead,
     );
 
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       result = SelectionArea(
         child: result,
         contextMenuBuilder: (context, selectableRegionState) {

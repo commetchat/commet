@@ -52,7 +52,7 @@ class UserProfile extends StatefulWidget {
     double padding = 8.0,
     double initialHeightMobile = 0.5,
   }) async {
-    if (Layout.desktop)
+    if (MediaQuery.of(context).desktop)
       return showGeneralDialog(
           context: context,
           pageBuilder: (context, animation, secondaryAnimation) {

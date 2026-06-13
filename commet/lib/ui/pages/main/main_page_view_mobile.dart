@@ -237,7 +237,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             caulkPadTop: true,
             caulkClipTopRight: true,
             caulkBorderTop: true,
-            caulkPadRight: Layout.mobile,
+            caulkPadRight: MediaQuery.of(context).mobile,
             child: ScaledSafeArea(
               bottom: true,
               top: false,
@@ -285,7 +285,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         key: ValueKey("room-chat-view-${widget.state.currentRoom!.localId}"),
         child: Column(
           children: [
-            if (Layout.mobile)
+            if (MediaQuery.of(context).mobile)
               Tile.low(
                 caulkClipBottomRight: true,
                 caulkClipBottomLeft: true,

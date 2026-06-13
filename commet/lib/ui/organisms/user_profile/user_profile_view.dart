@@ -557,7 +557,7 @@ class UserProfileViewState extends State<UserProfileView> {
                               SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisSpacing: 3,
                                   mainAxisSpacing: 3,
-                                  crossAxisCount: Layout.mobile ? 5 : 10),
+                                  crossAxisCount: MediaQuery.of(context).mobile ? 5 : 10),
                           children: [
                             for (int i = 0; i < 20; i++)
                               buildColorSchemeItem(

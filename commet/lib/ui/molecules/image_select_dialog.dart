@@ -97,7 +97,7 @@ class ImageSelectDialog extends StatelessWidget {
       ],
     );
 
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       buttons = Column(
         spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.stretch,
