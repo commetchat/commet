@@ -5,12 +5,18 @@ import android.app.Activity
 import android.net.LocalSocket
 import android.net.LocalSocketAddress
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
+import android.view.View.OVER_SCROLL_NEVER
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,8 +28,49 @@ import kotlinx.coroutines.withContext
 
 private const val TAG = "WidgetActivity"
 
-class WidgetWebViewClient : WebViewClient() {
+class WidgetWebViewClient : WebViewClient {
+    constructor(view: android.view.View, webView: WebView, density: Density) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
+            applySafeAreaInsetsToWebView(systemBars, webView, density)
+
+            val edgeToEdge = true;
+            if(edgeToEdge) {
+               v.setPadding(0, 0, 0, 0);
+            } else {
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            }
+            insets
+        }
+    }
+
+    private fun applySafeAreaInsetsToWebView(
+        insets: Insets,
+        webView: WebView?,
+        density: Density){
+        // Convert raw pixels to density independent pixels
+        val top = insets.top.toDp(density);
+        val right = insets.right.toDp(density);
+        val bottom = insets.bottom.toDp(density);
+        val left = insets.left.toDp(density);
+
+        val safeAreaJs = """
+            document.documentElement.style.setProperty('--safe-area-inset-top', '${top.value}px');
+            document.documentElement.style.setProperty('--safe-area-inset-right', '${right.value}px');
+            document.documentElement.style.setProperty('--safe-area-inset-bottom', '${bottom.value}px');
+            document.documentElement.style.setProperty('--safe-area-inset-left', '${left.value}px');
+            window.updateSafeAreas();
+            """
+
+        Log.d(TAG, "Injecting safe area variables!" + safeAreaJs)
+
+        // Inject the density independent pixels into the CSS variables as CSS pixels
+        webView?.evaluateJavascript(safeAreaJs, null)
+    }
+
+
+    private fun Int.toDp(density: Density): Dp = with(density) { this@toDp.toDp() }
 }
 
 class MatrixWidgetActivity : AppCompatActivity() {
@@ -48,28 +95,19 @@ class MatrixWidgetActivity : AppCompatActivity() {
         newSocket.connect(LocalSocketAddress(socketPath, LocalSocketAddress.Namespace.FILESYSTEM));
 
         socket = newSocket;
-
         readDataLoop(newSocket, webView, this);
 
         WindowCompat.setDecorFitsSystemWindows(window, true)
-
-        val edgeToEdge = true;
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            if(edgeToEdge) {
-                v.setPadding(0, 0, 0, 0);
-            } else {
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            }
-            insets
-        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView(page: String?): WebView {
         val webView: WebView = findViewById(R.id.webview);
-        webView.webViewClient = WidgetWebViewClient();
+        val view = findViewById<View>(R.id.main);
+        val density = Density(this)
+        webView.webViewClient = WidgetWebViewClient(view, webView, density);
+
+
 
         webView.settings.javaScriptEnabled = true;
         webView.settings.domStorageEnabled = true;
@@ -77,6 +115,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
         webView.clipToPadding = false
         webView.loadDataWithBaseURL("http://localhost/widget", page!!, "text/html", "UTF-8", null);
         webView.addJavascriptInterface(this, "WidgetRunner");
+        webView.overScrollMode = OVER_SCROLL_NEVER;
         return webView
     }
 
@@ -92,7 +131,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
                 if (read == -1) {
                     Log.d(TAG, "Socket Closed!!!");
                     withContext(Dispatchers.Main) {
-                        activity.finish();
+                        activity.finishAndRemoveTask();
                     }
                     return@launch;
                 }

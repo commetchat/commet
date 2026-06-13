@@ -326,6 +326,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
+    text = text.replaceAll("\$WIDGET_ID", info.id);
 
     text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
 
