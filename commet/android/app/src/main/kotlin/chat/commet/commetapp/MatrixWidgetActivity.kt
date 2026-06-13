@@ -6,6 +6,7 @@ import android.net.LocalSocket
 import android.net.LocalSocketAddress
 import android.os.Bundle
 import android.util.Log
+import android.view.View.OVER_SCROLL_NEVER
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -77,6 +78,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
         webView.clipToPadding = false
         webView.loadDataWithBaseURL("http://localhost/widget", page!!, "text/html", "UTF-8", null);
         webView.addJavascriptInterface(this, "WidgetRunner");
+        webView.overScrollMode = OVER_SCROLL_NEVER;
         return webView
     }
 
@@ -92,7 +94,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
                 if (read == -1) {
                     Log.d(TAG, "Socket Closed!!!");
                     withContext(Dispatchers.Main) {
-                        activity.finish();
+                        activity.finishAndRemoveTask();
                     }
                     return@launch;
                 }
