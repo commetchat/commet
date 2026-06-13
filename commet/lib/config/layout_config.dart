@@ -1,4 +1,3 @@
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -61,6 +60,10 @@ extension LayoutQueryData on MediaQueryData {
     }
 
     if (preferences.layoutOverride.value == "desktop") {
+      return LayoutType.desktop;
+    }
+
+    if (Layout._isWebDesktop()) {
       return LayoutType.desktop;
     }
 
