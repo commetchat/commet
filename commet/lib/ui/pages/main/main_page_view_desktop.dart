@@ -113,7 +113,7 @@ class MainPageViewDesktop extends StatelessWidget {
                       caulkPadTop: true,
                       caulkClipTopRight: true,
                       caulkBorderTop: true,
-                      caulkPadRight: Layout.mobile,
+                      caulkPadRight: MediaQuery.of(context).mobile,
                       child: ScaledSafeArea(
                         top: false,
                         child: SizedBox(

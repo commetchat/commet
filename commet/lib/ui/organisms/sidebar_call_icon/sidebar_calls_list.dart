@@ -100,7 +100,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
   }
 
   Widget buildOverlay(BuildContext context) {
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       return Container();
     }
 

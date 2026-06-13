@@ -62,7 +62,7 @@ class ThreadReplyFooter extends StatelessWidget {
                             placeholderText: senderName,
                             radius: 10,
                           ),
-                          if (Layout.desktop)
+                          if (MediaQuery.of(context).desktop)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                               child: tiamat.Text(

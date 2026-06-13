@@ -43,7 +43,7 @@ class SideNavigationBar extends StatefulWidget {
   State<SideNavigationBar> createState() => _SideNavigationBarState();
 
   static Widget tooltip(String text, Widget child, BuildContext context) {
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       return AspectRatio(
         aspectRatio: 1.0,
         child: child,

@@ -53,11 +53,11 @@ class _GifPickerState extends State<GifPicker> {
   void initState() {
     _textController.addListener(onTextChanged);
 
-    if (Layout.desktop) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.of(context).desktop) {
         widget.focus?.requestFocus();
-      });
-    }
+      }
+    });
 
     super.initState();
   }

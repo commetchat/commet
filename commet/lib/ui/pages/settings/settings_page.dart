@@ -31,7 +31,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget pickChatView(BuildContext context) {
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       return DesktopSettingsPage(
         settings: settings,
         buttons: buttons,
@@ -39,7 +39,7 @@ class SettingsPage extends StatelessWidget {
         onDonateButtonTapped: onDonateButtonTapped,
       );
     }
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       return MobileSettingsPage(
         settings: settings,
         buttons: buttons,

@@ -50,7 +50,7 @@ class ChatView extends StatelessWidget {
         fit: StackFit.expand,
         children: [timeline(), const ParticlePlayer()],
       )),
-      input(),
+      input(context),
     ]);
   }
 
@@ -89,7 +89,7 @@ class ChatView extends StatelessWidget {
     NotificationManager.clearNotifications(room);
   }
 
-  Widget input() {
+  Widget input(BuildContext context) {
     String? interactingEventBody = state.interactingEvent?.plainTextBody;
 
     if (state.interactingEvent case TimelineEventMessage m) {
@@ -123,8 +123,8 @@ class ChatView extends StatelessWidget {
         onTextUpdated: state.onInputTextUpdated,
         addAttachment: state.addAttachment,
         removeAttachment: state.removeAttachment,
-        size: Layout.mobile ? 40 : 35,
-        iconScale: Layout.mobile ? 0.6 : 0.5,
+        size: MediaQuery.of(context).mobile ? 40 : 35,
+        iconScale: MediaQuery.of(context).mobile ? 0.6 : 0.5,
         isProcessing: state.processing,
         enabled: state.room.permissions.canSendMessage,
         relatedEventBody: interactingEventBody,

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences/bool_preference.dart';
 import 'package:commet/config/preferences/double_preference.dart';
@@ -423,7 +422,7 @@ class Preferences {
 
   BoolPreference autoFocusMessageTextBox = BoolPreference(
       "auto_focus_message_textbox",
-      defaultGetter: () => Layout.mobile ? false : true,
+      defaultGetter: () => PlatformUtils.isAndroid ? false : true,
       defaultValue: false);
 
   BoolPreference automaticallyOpenSpace =

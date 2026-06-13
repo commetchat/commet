@@ -111,7 +111,7 @@ class MatrixWidgetCapabilitiesManager
           MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
 
       var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
-        context,
+        navigator.currentContext!,
         title: "Widget Permissions",
         builder: (context) => MatrixWidgetPermissionsView(
             runner: runner,

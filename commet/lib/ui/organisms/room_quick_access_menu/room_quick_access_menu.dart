@@ -19,7 +19,7 @@ class RoomQuickAccessMenu {
   final Room room;
   late final List<RoomQuickAccessMenuEntry> actions;
 
-  RoomQuickAccessMenu({required this.room}) {
+  RoomQuickAccessMenu({required this.room, required BuildContext context}) {
     final bool canSearch =
         room.client.getComponent<EventSearchComponent>() != null;
 
@@ -61,7 +61,8 @@ class RoomQuickAccessMenu {
             action: (context) =>
                 calls.startCall(room.identifier, CallType.voice),
             icon: Icons.call),
-      if (preferences.hideRoomSidePanel.value == false || Layout.mobile) ...[
+      if (preferences.hideRoomSidePanel.value == false ||
+          MediaQuery.of(context).mobile) ...[
         if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
           RoomQuickAccessMenuEntry(
               name: "Calendar",
@@ -83,7 +84,7 @@ class RoomQuickAccessMenu {
               action: (context) => EventBus.openWidgets.add(null),
               icon: Icons.widgets),
       ],
-      if (Layout.desktop)
+      if (MediaQuery.of(context).desktop)
         RoomQuickAccessMenuEntry(
             name: "Toggle Panel",
             action: (context) => EventBus.toggleRoomSidePanel.add(null),

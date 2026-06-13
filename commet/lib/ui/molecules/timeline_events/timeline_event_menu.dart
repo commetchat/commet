@@ -110,6 +110,7 @@ class TimelineEventMenu {
     this.setReplyingEvent,
     this.onActionFinished,
     this.isThreadTimeline = false,
+    required BuildContext context,
   }) {
     bool canEditEvent = false;
     bool canSaveAttachment = false;
@@ -236,7 +237,7 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
-      if (Layout.mobile) ...[
+      if (MediaQuery.of(context).mobile) ...[
         if (canFavoriteGif)
           TimelineEventMenuEntry(
             name: promptFavoriteGif,

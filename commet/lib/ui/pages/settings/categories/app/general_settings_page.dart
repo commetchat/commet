@@ -191,7 +191,7 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: labelMediaPreviewPublicRoomsToggle,
               description: labelMediaPreviewPublicRoomsToggleDescription,
             ),
-            if (Layout.mobile) ...[
+            if (MediaQuery.of(context).mobile) ...[
               Seperator(),
               BooleanPreferenceToggle(
                 preference: preferences.autoRotateImages,

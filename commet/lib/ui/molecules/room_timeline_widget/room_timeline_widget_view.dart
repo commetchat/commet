@@ -384,6 +384,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         var event = timeline.tryGetEvent(eventId)!;
         overlayState?.setMenu(TimelineEventMenu(
           timeline: timeline,
+          context: context,
           isThreadTimeline: widget.isThreadTimeline,
           event: event,
           setEditingEvent: (event) => widget.setEditingEvent?.call(event),
@@ -560,7 +561,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
               ),
               TimelineOverlay(
                   key: overlayKey,
-                  showMessageMenu: Layout.desktop,
+                  showMessageMenu: MediaQuery.of(context).desktop,
                   jumpToLatest: animateAndSnapToBottom,
                   onScrolled: (event) {
                     controller.jumpTo(controller.offset - event.scrollDelta.dy);

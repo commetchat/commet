@@ -389,14 +389,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       result = MouseRegion(
         onEnter: (_) => widget.onEventHovered?.call(eventId),
         child: result,
       );
     }
 
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       result = InkWell(
         onLongPress: () {
           var event = widget.timeline.tryGetEvent(eventId);
@@ -416,6 +416,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                       timeline: widget.timeline,
                       isThreadTimeline: widget.isThreadTimeline,
                       event: event,
+                      context: context,
                       setEditingEvent: widget.setEditingEvent,
                       setReplyingEvent: widget.setReplyingEvent,
                       onActionFinished: () => Navigator.of(context).pop(),
@@ -426,12 +427,13 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       var event = widget.timeline.tryGetEvent(eventId);
       if (event != null) {
         var menu = TimelineEventMenu(
             timeline: widget.timeline,
             event: event,
+            context: context,
             setEditingEvent: widget.setEditingEvent,
             setReplyingEvent: widget.setReplyingEvent);
         result = AdaptiveContextMenu(items: [

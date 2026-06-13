@@ -127,7 +127,7 @@ class _RoomHeaderState extends State<RoomHeader> {
       );
     }
     return HeaderView(
-        showBurger: Layout.mobile,
+        showBurger: MediaQuery.of(context).mobile,
         iconWidget: iconWidget,
         text: widget.room.displayName,
         iconPadding: iconPadding,

@@ -130,7 +130,7 @@ class AdaptiveDialog {
     double contentPadding = 8,
     double initialHeightMobile = 0.5,
   }) async {
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       return PopupDialog.show<T>(context,
           content: scrollable
               ? SingleChildScrollView(child: builder(context))
@@ -241,7 +241,7 @@ class AdaptiveDialog {
           TextEditingController(text: initialText);
 
       return SizedBox(
-        width: Layout.desktop ? 500 : null,
+        width: MediaQuery.of(context).desktop ? 500 : null,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
           child: Column(
@@ -314,7 +314,7 @@ class _ConfirmationDialogWidgetState extends State<ConfirmationDialogWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: Layout.desktop ? 500 : null,
+      width: MediaQuery.of(context).desktop ? 500 : null,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
         child: Column(
