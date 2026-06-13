@@ -106,9 +106,10 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
 
     var view = WidgetsBinding.instance.platformDispatcher.views.first;
     var size = view.physicalSize;
+    var position = widget.globalOffset * view.devicePixelRatio;
 
-    leftAlign = widget.globalOffset.dx > size.width / 2;
-    topAlign = widget.globalOffset.dy > size.height / 2;
+    leftAlign = position.dx > size.width / 2;
+    topAlign = position.dy > size.height / 2;
 
     super.initState();
   }
@@ -124,7 +125,7 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
     var view = WidgetsBinding.instance.platformDispatcher.views.first;
     var viewSize = view.physicalSize;
 
-    var scale = tiamat.getAppScale?.call() ?? 1.0;
+    var scale = (tiamat.getAppScale?.call() ?? 1.0)  * view.devicePixelRatio;
 
     if (calculatedOffset == null) {
       return Container(
