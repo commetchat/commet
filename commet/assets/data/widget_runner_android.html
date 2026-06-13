@@ -47,10 +47,7 @@
             const childWindow = iframe.contentWindow;
 
             window.addEventListener("message", (message) => {
-                console.log("RECEIVED MESSAGE!");
-                console.log(message);
                 if (message.source !== childWindow) {
-                    console.log("SKIPPING MESSAGE!");
                     return; // Skip message in this event listener
                 }
 
@@ -61,7 +58,6 @@
         }
 
         window.onMessagePolyfill = (data) => {
-            console.log("Received data: ", data)
             var text = atob(data);
             var message = JSON.parse(text);
 
@@ -69,7 +65,6 @@
             const childWindow = frame.contentWindow;
 
             decodeArrayBuffers(message).then((value) => {
-                console.log("Sending message: ", message);
                 childWindow.postMessage(value, targetUrl.origin);
             });
         }
