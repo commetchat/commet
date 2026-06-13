@@ -63,8 +63,8 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
       senderAvatar: senderAvatar,
       showSender: true,
       formattedContent: ConstrainedBox(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).desktop ? 500 : double.infinity),
+        constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).desktop ? 500 : double.infinity),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,

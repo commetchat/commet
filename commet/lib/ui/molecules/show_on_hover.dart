@@ -10,7 +10,8 @@ class ShowOnHover extends StatefulWidget {
   final Widget background;
   final Widget child;
 
-  static bool  useTouchControls(BuildContext context) => MediaQuery.of(context).mobile || PlatformUtils.isAndroid;
+  static bool useTouchControls(BuildContext context) =>
+      MediaQuery.of(context).mobile || PlatformUtils.isAndroid;
 
   @override
   State<ShowOnHover> createState() => _ShowOnHoverState();

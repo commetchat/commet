@@ -299,7 +299,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
     if (result != null) {
       if (widget.component is MatrixPhotoAlbumRoomComponent) {
         var menu = TimelineEventMenu(
-          context: context,
+            context: context,
             timeline: (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline,
             event: (item as MatrixPhoto).event);
 

@@ -61,7 +61,8 @@ class RoomQuickAccessMenu {
             action: (context) =>
                 calls.startCall(room.identifier, CallType.voice),
             icon: Icons.call),
-      if (preferences.hideRoomSidePanel.value == false || MediaQuery.of(context).mobile) ...[
+      if (preferences.hideRoomSidePanel.value == false ||
+          MediaQuery.of(context).mobile) ...[
         if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
           RoomQuickAccessMenuEntry(
               name: "Calendar",

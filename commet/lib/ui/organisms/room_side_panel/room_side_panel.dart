@@ -95,7 +95,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   Widget buildPanelContent(BuildContext context) {
     var s = state;
-    if(s == SidePanelState.nothing && MediaQuery.of(context).mobile) {
+    if (s == SidePanelState.nothing && MediaQuery.of(context).mobile) {
       s = SidePanelState.defaultView;
     }
 
