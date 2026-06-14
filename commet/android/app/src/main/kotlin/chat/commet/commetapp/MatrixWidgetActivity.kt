@@ -20,6 +20,7 @@ import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +28,9 @@ import kotlinx.coroutines.withContext
 
 
 private const val TAG = "WidgetActivity"
+
+
+private fun Int.toDp(density: Density): Dp = with(density) { this@toDp.toDp() }
 
 class WidgetWebViewClient : WebViewClient {
     constructor(view: android.view.View, webView: WebView, density: Density) {
@@ -70,7 +74,6 @@ class WidgetWebViewClient : WebViewClient {
     }
 
 
-    private fun Int.toDp(density: Density): Dp = with(density) { this@toDp.toDp() }
 }
 
 class MatrixWidgetActivity : AppCompatActivity() {
@@ -82,21 +85,48 @@ class MatrixWidgetActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         val intent = getIntent()
-        val url = intent.getStringExtra("url");
+
         val socketPath = intent.getStringExtra("socket");
-        val page = intent.getStringExtra("page");
-        Log.d(TAG, "URL: $url");
+        var page = intent.getStringExtra("page");
+
         Log.d(TAG, "Socket: $socket");
 
         setContentView(R.layout.activity_matrix_widget)
-        val webView: WebView = initWebView(page)
 
-        val newSocket = LocalSocket();
-        newSocket.connect(LocalSocketAddress(socketPath, LocalSocketAddress.Namespace.FILESYSTEM));
 
-        socket = newSocket;
-        readDataLoop(newSocket, webView, this);
+        val rootView = findViewById<View>(R.id.main);
 
+        rootView.doOnAttach {
+            val rootInsets = ViewCompat.getRootWindowInsets(rootView)
+
+            val insets =
+                rootInsets?.getInsets(WindowInsetsCompat.Type.systemBars())
+
+
+            val density = Density(this)
+
+            if(insets != null) {
+                val top = insets.top.toDp(density);
+                val right = insets.right.toDp(density);
+                val bottom = insets.bottom.toDp(density);
+                val left = insets.left.toDp(density);
+
+                val safeAreaStr = "${left.value}px,${top.value}px,${right.value}px,${bottom.value}px";
+                page = page!!.replace("%24chat.commet.safe_area", safeAreaStr);
+
+                Log.i(TAG, "Added safe area to page");
+            } else {
+                Log.e(TAG, "Failed to get initial widget insets");
+            }
+
+            val webView: WebView = initWebView(page)
+
+            val newSocket = LocalSocket();
+            newSocket.connect(LocalSocketAddress(socketPath, LocalSocketAddress.Namespace.FILESYSTEM));
+
+            socket = newSocket;
+            readDataLoop(newSocket, webView, this);
+        }
         WindowCompat.setDecorFitsSystemWindows(window, true)
     }
 
@@ -106,8 +136,6 @@ class MatrixWidgetActivity : AppCompatActivity() {
         val view = findViewById<View>(R.id.main);
         val density = Density(this)
         webView.webViewClient = WidgetWebViewClient(view, webView, density);
-
-
 
         webView.settings.javaScriptEnabled = true;
         webView.settings.domStorageEnabled = true;
