@@ -63,7 +63,7 @@ extension LayoutQueryData on MediaQueryData {
       return LayoutType.desktop;
     }
 
-    if (Layout._isWebDesktop()) {
+    if (PlatformUtils.isWeb && Layout._isWebDesktop()) {
       return LayoutType.desktop;
     }
 
