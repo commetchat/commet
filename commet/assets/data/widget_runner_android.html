@@ -19,7 +19,7 @@
 
 <body style="margin: 0px; overflow: hidden;">
 
-    <iframe id="widget-frame" allow="fullscreen"
+    <iframe id="widget-frame" allow="fullscreen" src="$IFRAME_URL"
         style="width: 100vw; height: 100dvh; border: none; overflow: hidden;"></iframe>
 
     <script>
@@ -40,10 +40,7 @@
             WidgetRunner.send(msg)
         }
 
-        function initFrame(url) {
-
-            iframe.contentDocument.location.href = newTarget;
-
+        function initFrame() {
             const childWindow = iframe.contentWindow;
 
             window.addEventListener("message", (message) => {
@@ -93,16 +90,8 @@
             console.log("--------------------------------")
             var safeAreaStr = `${padLeft},${padTop},${padRight},${padBottom}`;
 
-            if (iframe.contentDocument != null && iframe.contentDocument.location != null) {
-                if (iframe.contentDocument.location.href == "about:blank") {
-                    newTarget = target.replace("%24chat.commet.safe_area", safeAreaStr)
-                    initFrame(newTarget);
-                    return;
-                }
-            }
 
-            const frame = document.getElementById('widget-frame')
-            const childWindow = frame.contentWindow;
+            const childWindow = iframe.contentWindow;
 
             childWindow.postMessage({
                 "api": "toWidget",
@@ -113,9 +102,9 @@
                     "safeArea": safeAreaStr
                 },
             }, targetUrl.origin);
-
         }
 
+        initFrame();
     </script>
 </body>
 
