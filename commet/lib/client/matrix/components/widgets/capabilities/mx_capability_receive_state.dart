@@ -74,6 +74,11 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
       });
     }
 
+    var key = message.data.tryGet<String>("state_key");
+    if (key != null) {
+      events = events.where((i) => i?.stateKey == key).toList();
+    }
+
     var finalEvents = events.nonNulls;
 
     return message
