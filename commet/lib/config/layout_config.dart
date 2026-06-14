@@ -69,7 +69,7 @@ extension LayoutQueryData on MediaQueryData {
 
     if (PlatformUtils.isAndroid || PlatformUtils.isWeb) {
       final bool useMobileLayout =
-          (size.shortestSide * preferences.appScale.value) < 600;
+          (size.width * preferences.appScale.value) < 600;
       if (useMobileLayout) {
         return LayoutType.mobile;
       }
