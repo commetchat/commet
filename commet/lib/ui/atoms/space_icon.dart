@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:commet/client/space.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
-import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceIcon extends StatefulWidget {
   const SpaceIcon(
@@ -74,9 +74,11 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      SideNavigationBar.tooltip(
-          widget.displayName,
-          ImageButton(
+      tiamat.Tooltip(
+        text: widget.displayName,
+        child: AspectRatio(
+          aspectRatio: 1.0,
+          child: ImageButton(
             border: selected
                 ? Border.all(
                     color: ColorScheme.of(context).inverseSurface,
@@ -89,7 +91,8 @@ class _SpaceIconState extends State<SpaceIcon> {
             placeholderColor: widget.placeholderColor,
             placeholderText: widget.displayName,
           ),
-          context),
+        ),
+      ),
       if (widget.showUser) avatarOverlay(),
       if (widget.highlightedNotificationCount > 0) notificationOverlay(),
     ]);

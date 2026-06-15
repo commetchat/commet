@@ -20,7 +20,7 @@ Widget wbTooltip(BuildContext context) {
   );
 }
 
-class Tooltip extends StatelessWidget {
+class Tooltip extends StatefulWidget {
   const Tooltip(
       {required this.child,
       required this.text,
@@ -31,6 +31,13 @@ class Tooltip extends StatelessWidget {
   final AxisDirection preferredDirection;
 
   @override
+  State<Tooltip> createState() => _TooltipState();
+}
+
+class _TooltipState extends State<Tooltip> {
+  final controller = JustTheController();
+
+  @override
   Widget build(BuildContext context) {
     return JustTheTooltip(
         content: Theme(
@@ -38,17 +45,25 @@ class Tooltip extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: tiamat.Text(
-              text,
+              widget.text,
               type: tiamat.TextType.body,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
-        preferredDirection: preferredDirection,
+        triggerMode: TooltipTriggerMode.manual,
+        preferredDirection: widget.preferredDirection,
         offset: 5,
         tailLength: 5,
         tailBaseWidth: 5,
+        controller: controller,
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        child: child);
+        child: widget.child, 
+          // MouseRegion(
+          //   onEnter: (event) => controller.showTooltip(),
+          //   onExit: (event) => controller.hideTooltip(),
+          //   child: widget.child,
+          // )
+    );
   }
 }
