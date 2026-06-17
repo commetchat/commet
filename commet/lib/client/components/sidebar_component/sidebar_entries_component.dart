@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/debug/log.dart';
@@ -21,7 +22,7 @@ class SpaceSidebarEntry extends SidebarEntry {
 
 class SpaceGroupSidebarEntry extends SidebarEntry {
   String groupId;
-  List<Space> spaces;
+  List<SpaceSidebarEntry> spaces;
 
   SpaceGroupSidebarEntry(this.groupId, this.spaces, {required String order})
       : super(groupId, order);
@@ -33,7 +34,13 @@ class StringOrderGenerator {
   Stream get onChange => _onChangedController.stream;
 
   void setIndex(String id, int index) {
+    if (idToOrder.containsKey(id) == false) {
+      idToOrder[id] = RandomUtils.getRandomString(10);
+    }
+
     var numEntries = idToOrder.length;
+
+    index = index.clamp(0, numEntries - 1);
 
     Log.i("Setting entry: $id to index: $index");
 
@@ -57,6 +64,9 @@ class StringOrderGenerator {
     }
 
     idToOrder[id] = nthKey;
+
+    var resultSorted = idToOrder.values.sorted((a, b) => a.compareTo(b));
+    assert(resultSorted[index] == nthKey);
 
     _onChangedController.add(null);
   }
@@ -86,11 +96,21 @@ abstract class SidebarEntriesComponent<T extends Client>
 
   static StringOrderGenerator idToOrder = StringOrderGenerator();
 
+  static Map<String, StringOrderGenerator> folderOrders = {};
+
+  static StringOrderGenerator getFolderOrder(String folderId) {
+    if (folderOrders.containsKey(folderId) == false) {
+      folderOrders[folderId] = StringOrderGenerator();
+    }
+
+    return folderOrders[folderId]!;
+  }
+
   List<SidebarEntry> getEntries();
 
   String createFolder(Space space);
 
-  addToFolder(Space space, String folderId);
+  addToFolder(Space space, String folderId, int index);
 
   removeFromFolder(Space space, String folderId);
 }

@@ -1,16 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class ExpandingDropTarget<T extends Object> extends StatefulWidget {
   const ExpandingDropTarget(
       {this.position,
       this.min = 70,
-      this.max = 100,
+      this.max = 200,
+      this.height = 30,
       super.key,
       this.onAcceptWithDetails,
+      this.distanceBasedHeight = true,
       required this.onWillAcceptWithDetails});
   final Offset? position;
   final double min;
   final double max;
+  final double height;
+  final bool distanceBasedHeight;
   final void Function(Object)? onAcceptWithDetails;
   final bool Function(Object) onWillAcceptWithDetails;
   @override
@@ -61,8 +67,10 @@ class _ExpandingDropTargetState<T extends Object>
       dragPosition = widget.position;
 
       if (dragPosition != null) {
-        distance = remapRange((position.dy - dragPosition!.dy).abs(),
-            widget.min, widget.max, 1, 0);
+        var dist = min((position.dy - dragPosition!.dy).abs(),
+            ((position.dy + box!.size.height) - dragPosition!.dy).abs());
+
+        distance = remapRange(dist, widget.min, widget.max, 1, 0);
       } else {
         distance = null;
       }
@@ -94,7 +102,11 @@ class _ExpandingDropTargetState<T extends Object>
       },
       builder: (context, candidateData, rejectedData) => Container(
         key: key,
-        height: distance == null ? 0 : (distance! * distance! * 30),
+        height: widget.distanceBasedHeight
+            ? distance == null
+                ? 0
+                : (distance! * widget.height)
+            : widget.height,
         width: 50,
         child: Container(
           decoration: BoxDecoration(

@@ -122,6 +122,25 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
         v.addAll(entries);
         return v;
       });
+
+      Map<String, SpaceGroupSidebarEntry> mergedFolders = {};
+
+      List<SidebarEntry> finalEntries = List.empty(growable: true);
+
+      for (var item in items) {
+        if (item is SpaceGroupSidebarEntry) {
+          if (mergedFolders.containsKey(item.id)) {
+            mergedFolders[item.id]!.spaces.addAll(item.spaces);
+          } else {
+            mergedFolders[item.id] = item;
+          }
+        } else {
+          finalEntries.add(item);
+        }
+      }
+
+      finalEntries.addAll(mergedFolders.values);
+      items = finalEntries;
     }
 
     items.sort(

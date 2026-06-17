@@ -7,7 +7,6 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/molecules/expanding_drop_target.dart';
 import 'package:commet/ui/molecules/space_group_widget.dart';
-import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/utils/scaled_app.dart';
 
 import 'package:flutter/material.dart';
@@ -68,7 +67,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
     });
   }
 
-  Offset? dragPosition = Offset.zero;
+  Offset? dragPosition = null;
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +108,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
                               },
                               onAcceptWithDetails: (p0) {
                                 if (p0 is DragTargetDetails) {
-                                  if (p0.data case SidebarEntryDrag data) {
-                                    int i = index;
-                                    if (data.originalIndex < index) {
-                                      i -= 1;
-                                    }
-
-                                    handleSpaceOrderDropped(p0, i);
-                                  }
+                                  handleSpaceOrderDropped(p0, index);
                                 }
                               },
                               position: dragPosition,
@@ -151,6 +143,20 @@ class SpaceSelectorState extends State<SpaceSelector> {
     );
   }
 
+  int adjustIndex(int targetIndex, String id) {
+    int currentIndex = items.indexWhere(
+      (element) => element.id == id,
+    );
+
+    if (currentIndex == -1) return targetIndex;
+
+    if (targetIndex > currentIndex) {
+      return targetIndex - 1;
+    }
+
+    return targetIndex;
+  }
+
   void handleSpaceOrderDropped(Object p0, int index) {
     if (p0 is DragTargetDetails) {
       if (p0.data case SidebarEntryDrag data) {
@@ -162,7 +168,9 @@ class SpaceSelectorState extends State<SpaceSelector> {
           component.removeFromFolder(space, data.currentFolder!);
         }
 
-        SidebarEntriesComponent.idToOrder.setIndex(data.entry.id, index);
+        int i = adjustIndex(index, data.entry.id);
+
+        SidebarEntriesComponent.idToOrder.setIndex(data.entry.id, i);
       }
     }
   }
@@ -212,7 +220,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
           var space = (details.data.entry as SpaceSidebarEntry).space;
           var componentB =
               space.client.getComponent<SidebarEntriesComponent>()!;
-          componentB.addToFolder(space, folderId);
+          componentB.addToFolder(space, folderId, 1);
         }, builder: (context, candidateData, rejectedData) {
           return SizedBox(
             width: widget.width,
@@ -250,7 +258,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
             var space = (details.data.entry as SpaceSidebarEntry).space;
             var component =
                 space.client.getComponent<SidebarEntriesComponent>()!;
-            component.addToFolder(space, i.id);
+            component.addToFolder(space, i.id, 0);
           },
           builder: (BuildContext context, List<Object?> candidateData,
               List<dynamic> rejectedData) {
@@ -261,7 +269,10 @@ class SpaceSelectorState extends State<SpaceSelector> {
               onSelected: widget.onSelected,
               onDragStarted: onDragStarted,
               onDragUpdate: onDragUpdate,
+              dragPosition: dragPosition,
               onDragEnd: onDragEnd,
+              shouldShowAvatarForSpace: (space) =>
+                  widget.shouldShowAvatarForSpace?.call(space) ?? false,
             );
           });
     }

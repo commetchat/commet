@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:commet/client/components/sidebar_component/sidebar_entries_component.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/ui/molecules/expanding_drop_target.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:flutter/material.dart';
-
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceGroupWidget extends StatefulWidget {
   const SpaceGroupWidget(
@@ -17,15 +14,18 @@ class SpaceGroupWidget extends StatefulWidget {
       this.onDragCompleted,
       this.onDragStarted,
       this.onDragUpdate,
+      this.dragPosition,
+      this.shouldShowAvatarForSpace,
       super.key});
-  final List<Space> spaces;
+  final List<SpaceSidebarEntry> spaces;
   final double width;
   final String folderId;
-
+  final Offset? dragPosition;
   final VoidCallback? onDragStarted;
   final DragUpdateCallback? onDragUpdate;
   final DragEndCallback? onDragEnd;
   final VoidCallback? onDragCompleted;
+  final bool Function(Space space)? shouldShowAvatarForSpace;
 
   final void Function(Space space)? onSelected;
   @override
@@ -36,16 +36,50 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
   bool expanded = false;
 
   double get shrink => 9;
+
+  double get dragDropAreaSize => 20;
+
   double get expandedHeight =>
-      (widget.spaces.length + 1) * (widget.width - shrink) + shrink;
+      (widget.spaces.length + 1) * (widget.width - shrink) +
+      shrink +
+      (dragPosition == null ? 0 : widget.spaces.length * dragDropAreaSize);
 
   double get unexpandedHeight => widget.width;
+
+  Offset? dragPosition;
+
+  late List<SpaceSidebarEntry> entries;
 
   (int, int) indexToCoordinate(int index) {
     var row = (index / 2).toInt();
     var column = index % 2;
 
     return (row, column);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    updateEntries();
+  }
+
+  void updateEntries() {
+    print("Updating group entries");
+    entries = widget.spaces.toList();
+    entries.sort((a, b) => a.order.compareTo(b.order));
+
+    dragPosition = widget.dragPosition;
+  }
+
+  @override
+  void didUpdateWidget(covariant SpaceGroupWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    setState(() {
+      dragPosition = widget.dragPosition;
+      updateEntries();
+    });
   }
 
   Duration get animationDuration => Duration(milliseconds: 300);
@@ -83,7 +117,7 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                 child: AnimatedContainer(
                   alignment: AlignmentGeometry.topLeft,
                   decoration: BoxDecoration(
-                      color: ColorScheme.of(context).surfaceContainerLow,
+                      color: ColorScheme.of(context).surfaceContainerHigh,
                       borderRadius: radius),
                   height: expanded ? expandedHeight : unexpandedHeight,
                   clipBehavior: Clip.hardEdge,
@@ -108,7 +142,7 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                   ),
                 ),
               ),
-              for (int i = 0; i < widget.spaces.length; i++) buildChild(i),
+              for (int i = 0; i < entries.length; i++) buildChild(i),
               if (expanded == false)
                 LongPressDraggable<SidebarEntryDrag>(
                   data: SidebarEntryDrag(SidebarEntry(widget.folderId, ""), 0),
@@ -147,7 +181,7 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
     var coordinates = indexToCoordinate(i);
 
     var size = widget.width;
-    var space = widget.spaces[i];
+    var space = entries[i];
 
     var scale = 0.4;
     var left = (coordinates.$2 * size / 2) - (size / 4);
@@ -171,6 +205,9 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
       left = 0;
       scale = 0.999;
       top = (i + 1) * (size - shrink);
+      if (dragPosition != null) {
+        top += dragDropAreaSize * i;
+      }
     }
 
     return AnimatedPositioned(
@@ -188,36 +225,113 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
             onDragEnd: widget.onDragEnd,
             onDragUpdate: widget.onDragUpdate,
             onDragStarted: widget.onDragStarted,
-            data: SidebarEntryDrag(SpaceSidebarEntry(space, order: ""), i,
-                currentFolder: widget.folderId),
-            feedback: SizedBox(
-              width: widget.width,
-              height: widget.width,
-              child: SpaceSelectorState.buildSpaceIcon(
-                  displayName: space.displayName,
-                  width: widget.width,
-                  space: space,
-                  placeholderColor: space.color,
-                  showAvatarForSpace: false,
-                  avatar: space.avatar),
+            data: SidebarEntryDrag(space, i, currentFolder: widget.folderId),
+            feedback: Opacity(
+              opacity: 0.5,
+              child: SizedBox(
+                width: widget.width,
+                height: widget.width,
+                child: SpaceSelectorState.buildSpaceIcon(
+                    displayName: space.space.displayName,
+                    width: widget.width,
+                    space: space.space,
+                    placeholderColor: space.space.color,
+                    showAvatarForSpace: false,
+                    avatar: space.space.avatar),
+              ),
             ),
-            child: SizedBox(
-              width: size,
-              height: size,
-              child: SpaceSelectorState.buildSpaceIcon(
-                  displayName: space.displayName,
-                  width: widget.width,
-                  space: space,
-                  placeholderColor: space.color,
-                  notificationCount: space.notificationCount,
-                  onUpdate: space.onUpdate,
-                  highlightedNotificationCount:
-                      space.highlightedNotificationCount,
-                  onSelected: widget.onSelected,
-                  showAvatarForSpace: false,
-                  avatar: space.avatar),
+            childWhenDragging: Opacity(
+              opacity: 0.2,
+              child: SizedBox(
+                width: widget.width,
+                height: widget.width,
+                child: SpaceSelectorState.buildSpaceIcon(
+                    displayName: space.space.displayName,
+                    width: widget.width,
+                    space: space.space,
+                    placeholderColor: space.space.color,
+                    showAvatarForSpace: false,
+                    avatar: space.space.avatar),
+              ),
+            ),
+            child: Column(
+              children: [
+                if (dragPosition != null && expanded)
+                  SizedBox(
+                    height: dragDropAreaSize,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                      child: ExpandingDropTarget<SidebarEntryDrag>(
+                        height: dragDropAreaSize,
+                        distanceBasedHeight: false,
+                        onWillAcceptWithDetails: (p0) {
+                          if (p0 case SidebarEntryDrag data) {
+                            return data.entry is SpaceSidebarEntry;
+                          }
+
+                          return false;
+                        },
+                        onAcceptWithDetails: (p0) {
+                          if (p0 is DragTargetDetails) {
+                            if (p0.data case SidebarEntryDrag data) {
+                              if (data.entry case SpaceSidebarEntry space) {
+                                var component = space.space.client
+                                    .getComponent<SidebarEntriesComponent>();
+
+                                int index = adjustIndex(i, space.space.localId);
+
+                                print(
+                                    "Adding ${space.space.displayName} to folder at index: $i");
+                                component!.addToFolder(
+                                    space.space, widget.folderId, index);
+                              }
+                            }
+                          }
+
+                          //handleSpaceOrderDropped(p0, index);
+                        },
+                        position: dragPosition,
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  width: size,
+                  height: size,
+                  child: SpaceSelectorState.buildSpaceIcon(
+                      displayName: space.space.displayName,
+                      width: widget.width,
+                      space: space.space,
+                      placeholderColor: space.space.color,
+                      notificationCount: space.space.notificationCount,
+                      onUpdate: space.space.onUpdate,
+                      highlightedNotificationCount:
+                          space.space.highlightedNotificationCount,
+                      onSelected: widget.onSelected,
+                      userAvatar: space.space.client.self?.avatar,
+                      userColor: space.space.client.self?.defaultColor,
+                      userDisplayName: space.space.client.self?.displayName,
+                      showAvatarForSpace:
+                          widget.shouldShowAvatarForSpace?.call(space.space) ??
+                              false,
+                      avatar: space.space.avatar),
+                ),
+              ],
             ),
           ),
         ));
+  }
+
+  int adjustIndex(int targetIndex, String id) {
+    int currentIndex = entries.indexWhere(
+      (element) => element.id == id,
+    );
+
+    if (currentIndex == -1) return targetIndex;
+
+    if (targetIndex > currentIndex) {
+      return targetIndex - 1;
+    }
+
+    return targetIndex;
   }
 }
