@@ -142,7 +142,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       timestamp: timestampToString(sentTime),
       edited: edited,
       isMentioningSelf: mentionsRoom ||
-          mentions.contains(widget.timeline!.client.self!.identifier),
+          mentions.contains(room!.client.self!.identifier),
       onDoubleTapMessage: widget.onDoubleTapMessage,
       avatarBuilder: (child) {
         var room = widget.room ?? widget.timeline?.room;
