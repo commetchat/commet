@@ -522,4 +522,7 @@ class Preferences {
 
   StringListPreference allowedRemoteVideoHosts =
       StringListPreference("allowed_remote_video_hosts", defaultValue: []);
+
+  StringListPreference expandedSpaceGroups =
+      StringListPreference("expanded_space_groups", defaultValue: []);
 }

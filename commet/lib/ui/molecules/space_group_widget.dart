@@ -4,6 +4,8 @@ import 'package:commet/ui/molecules/expanding_drop_target.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:flutter/material.dart';
 
+import 'package:tiamat/tiamat.dart' as tiamat;
+
 class SpaceGroupWidget extends StatefulWidget {
   const SpaceGroupWidget(
       {required this.spaces,
@@ -15,16 +17,20 @@ class SpaceGroupWidget extends StatefulWidget {
       this.onDragStarted,
       this.onDragUpdate,
       this.dragPosition,
+      this.initiallyOpen = false,
+      this.onExpansionStateChanged,
       this.shouldShowAvatarForSpace,
       super.key});
   final List<SpaceSidebarEntry> spaces;
   final double width;
   final String folderId;
+  final bool initiallyOpen;
   final Offset? dragPosition;
   final VoidCallback? onDragStarted;
   final DragUpdateCallback? onDragUpdate;
   final DragEndCallback? onDragEnd;
   final VoidCallback? onDragCompleted;
+  final void Function(bool expanded)? onExpansionStateChanged;
   final bool Function(Space space)? shouldShowAvatarForSpace;
 
   final void Function(Space space)? onSelected;
@@ -33,7 +39,7 @@ class SpaceGroupWidget extends StatefulWidget {
 }
 
 class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
-  bool expanded = false;
+  late bool expanded;
 
   double get shrink => 9;
 
@@ -60,6 +66,7 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
   @override
   void initState() {
     super.initState();
+    expanded = widget.initiallyOpen;
 
     updateEntries();
   }
@@ -90,15 +97,15 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
     setState(() {
       expanded = !expanded;
     });
+
+    widget.onExpansionStateChanged?.call(expanded);
   }
 
   double height = 30;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() {
-        expanded = !expanded;
-      }),
+      onTap: toggleExpansion,
       child: AnimatedContainer(
         key: key,
         alignment: AlignmentGeometry.topLeft,
@@ -294,26 +301,30 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                       ),
                     ),
                   ),
-                SizedBox(
-                  width: size,
-                  height: size,
-                  child: SpaceSelectorState.buildSpaceIcon(
-                      displayName: space.space.displayName,
-                      width: widget.width,
-                      space: space.space,
-                      placeholderColor: space.space.color,
-                      notificationCount: space.space.notificationCount,
-                      onUpdate: space.space.onUpdate,
-                      highlightedNotificationCount:
-                          space.space.highlightedNotificationCount,
-                      onSelected: widget.onSelected,
-                      userAvatar: space.space.client.self?.avatar,
-                      userColor: space.space.client.self?.defaultColor,
-                      userDisplayName: space.space.client.self?.displayName,
-                      showAvatarForSpace:
-                          widget.shouldShowAvatarForSpace?.call(space.space) ??
-                              false,
-                      avatar: space.space.avatar),
+                tiamat.Tooltip(
+                  text: space.space.displayName,
+                  preferredDirection: AxisDirection.right,
+                  child: SizedBox(
+                    width: size,
+                    height: size,
+                    child: SpaceSelectorState.buildSpaceIcon(
+                        displayName: space.space.displayName,
+                        width: widget.width,
+                        space: space.space,
+                        placeholderColor: space.space.color,
+                        notificationCount: space.space.notificationCount,
+                        onUpdate: space.space.onUpdate,
+                        highlightedNotificationCount:
+                            space.space.highlightedNotificationCount,
+                        onSelected: widget.onSelected,
+                        userAvatar: space.space.client.self?.avatar,
+                        userColor: space.space.client.self?.defaultColor,
+                        userDisplayName: space.space.client.self?.displayName,
+                        showAvatarForSpace: widget.shouldShowAvatarForSpace
+                                ?.call(space.space) ??
+                            false,
+                        avatar: space.space.avatar),
+                  ),
                 ),
               ],
             ),

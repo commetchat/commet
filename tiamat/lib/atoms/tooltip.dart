@@ -58,12 +58,12 @@ class _TooltipState extends State<Tooltip> {
         tailBaseWidth: 5,
         controller: controller,
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        child: widget.child, 
-          // MouseRegion(
-          //   onEnter: (event) => controller.showTooltip(),
-          //   onExit: (event) => controller.hideTooltip(),
-          //   child: widget.child,
-          // )
+        child:
+         MouseRegion(
+           onEnter: (event) => controller.showTooltip(),
+           onExit: (event) => controller.hideTooltip(),
+           child: widget.child,
+         )
     );
   }
 }

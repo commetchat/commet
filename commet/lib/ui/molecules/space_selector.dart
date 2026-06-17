@@ -4,11 +4,13 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/sidebar_component/sidebar_entries_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/molecules/expanding_drop_target.dart';
 import 'package:commet/ui/molecules/space_group_widget.dart';
 import 'package:commet/utils/scaled_app.dart';
 
+import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import '../atoms/space_icon.dart';
@@ -222,24 +224,28 @@ class SpaceSelectorState extends State<SpaceSelector> {
               space.client.getComponent<SidebarEntriesComponent>()!;
           componentB.addToFolder(space, folderId, 1);
         }, builder: (context, candidateData, rejectedData) {
-          return SizedBox(
-            width: widget.width,
-            child: buildSpaceIcon(
-              space: i.space,
-              displayName: i.space.displayName,
-              onUpdate: i.space.onUpdate,
-              avatar: i.space.avatar,
-              notificationCount: i.space.displayNotificationCount,
-              highlightedNotificationCount:
-                  i.space.displayHighlightedNotificationCount,
-              showAvatarForSpace:
-                  widget.shouldShowAvatarForSpace?.call(i.space) ?? false,
-              userAvatar: i.space.client.self!.avatar,
-              userColor: i.space.client.self!.defaultColor,
-              userDisplayName: i.space.client.self!.displayName,
+          return tiamat.Tooltip(
+            text: i.space.displayName,
+            preferredDirection: AxisDirection.right,
+            child: SizedBox(
               width: widget.width,
-              onSelected: widget.onSelected,
-              placeholderColor: i.space.color,
+              child: buildSpaceIcon(
+                space: i.space,
+                displayName: i.space.displayName,
+                onUpdate: i.space.onUpdate,
+                avatar: i.space.avatar,
+                notificationCount: i.space.displayNotificationCount,
+                highlightedNotificationCount:
+                    i.space.displayHighlightedNotificationCount,
+                showAvatarForSpace:
+                    widget.shouldShowAvatarForSpace?.call(i.space) ?? false,
+                userAvatar: i.space.client.self!.avatar,
+                userColor: i.space.client.self!.defaultColor,
+                userDisplayName: i.space.client.self!.displayName,
+                width: widget.width,
+                onSelected: widget.onSelected,
+                placeholderColor: i.space.color,
+              ),
             ),
           );
         }),
@@ -266,6 +272,17 @@ class SpaceSelectorState extends State<SpaceSelector> {
               spaces: i.spaces,
               width: widget.width,
               folderId: i.groupId,
+              initiallyOpen:
+                  preferences.expandedSpaceGroups.value.contains(i.groupId),
+              onExpansionStateChanged: (expanded) {
+                if (expanded &&
+                    !preferences.expandedSpaceGroups.value
+                        .contains(i.groupId)) {
+                  preferences.expandedSpaceGroups.add(i.groupId);
+                } else {
+                  preferences.expandedSpaceGroups.remove(i.groupId);
+                }
+              },
               onSelected: widget.onSelected,
               onDragStarted: onDragStarted,
               onDragUpdate: onDragUpdate,
