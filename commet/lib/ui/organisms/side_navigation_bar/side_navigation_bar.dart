@@ -6,7 +6,10 @@ import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/sidebar_component/sidebar_entries_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/dot_indicator.dart';
+import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
+import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -83,6 +86,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
 
   Client? filterClient;
 
+  int notificationCount = 0;
+  int highlightedNotificationCount = 0;
+
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
@@ -105,14 +111,28 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       _clientManager.onClientRemoved.stream.listen((_) => onSpaceUpdate()),
       _clientManager.onDirectMessageRoomUpdated.stream
           .listen(onDirectMessageUpdated),
+      _clientManager.onRoomUpdated.stream.listen((_) => setState(() {
+            updateNotificationCounts();
+          })),
       EventBus.setFilterClient.stream.listen(setFilterClient),
       SidebarEntriesComponent.onOrderChanged.listen((_) => onSpaceUpdate()),
-      preferences.showRoomsInSidebar.onChanged.listen((_) => setState(() {})),
+      preferences.showRoomsInSidebar.onChanged.listen((_) => setState(() {
+            updateNotificationCounts();
+          })),
     ];
 
     getSpaces();
 
     super.initState();
+  }
+
+  void updateNotificationCounts() {
+    highlightedNotificationCount = 0;
+    notificationCount = 0;
+    for (var room in clientManager!.singleRooms(filterClient: filterClient)) {
+      notificationCount += room.displayNotificationCount;
+      highlightedNotificationCount += room.displayHighlightedNotificationCount;
+    }
   }
 
   void getSpaces() {
@@ -205,7 +225,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                         height: 4,
                       ),
                       SideNavigationBar.tooltip(
-                          "Rooms",
+                          HomeScreenView.labelHomeRoomsList,
                           Stack(
                             children: [
                               ImageButton(
@@ -215,6 +235,16 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                                   widget.onRoomsViewSelected?.call();
                                 },
                               ),
+                              if (notificationCount > 0)
+                                Align(
+                                    alignment: AlignmentGeometry.xy(-1.55, 0),
+                                    child: DotIndicator()),
+                              if (highlightedNotificationCount > 0)
+                                Align(
+                                  alignment: AlignmentGeometry.topRight,
+                                  child: NotificationBadge(
+                                      highlightedNotificationCount),
+                                )
                             ],
                           ),
                           context),

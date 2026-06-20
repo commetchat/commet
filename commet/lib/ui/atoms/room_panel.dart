@@ -108,6 +108,8 @@ class _RoomPanelState extends State<RoomPanel> {
             : null,
         body: widget.room.lastMessage?.plainTextBody,
         notificationCount: widget.room.notificationCount,
+        highlightNotificationCount:
+            widget.room.displayHighlightedNotificationCount,
       ),
     );
   }

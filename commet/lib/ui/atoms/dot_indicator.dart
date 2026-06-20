@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DotIndicator extends StatelessWidget {
-  const DotIndicator({super.key});
+  const DotIndicator({this.color, super.key});
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +11,7 @@ class DotIndicator extends StatelessWidget {
       height: 10,
       child: DecoratedBox(
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
+            color: color ?? Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(5)),
       ),
     );

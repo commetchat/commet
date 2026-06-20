@@ -42,7 +42,7 @@ class HomeScreenView extends StatelessWidget {
   String get labelHomeAlerts => Intl.message("Alerts",
       name: "labelHomeAlerts", desc: "Short label for header of alerts");
 
-  String get labelHomeRoomsList => Intl.message("Rooms",
+  static String get labelHomeRoomsList => Intl.message("Rooms",
       name: "labelHomeRoomsList", desc: "Short label for header of rooms list");
 
   String get labelHomeInvitations => Intl.message("Invitations",

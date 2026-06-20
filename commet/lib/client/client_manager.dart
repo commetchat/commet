@@ -84,6 +84,8 @@ class ClientManager {
   late StreamController<Space> onSpaceChildUpdated =
       StreamController.broadcast();
 
+  late StreamController<Room> onRoomUpdated = StreamController.broadcast();
+
   late StreamController<Room> onDirectMessageRoomUpdated =
       StreamController.broadcast();
 
@@ -149,6 +151,7 @@ class ClientManager {
 
   void _onClientAddedRoom(Client client, Room room) {
     rooms.add(room);
+    room.onUpdate.listen((_) => roomUpdated(room));
   }
 
   void _onClientRemovedRoom(Client client, Room room) {
@@ -171,6 +174,10 @@ class ClientManager {
 
   void spaceChildUpdated(Space space) {
     onSpaceChildUpdated.add(space);
+  }
+
+  void roomUpdated(Room room) {
+    onRoomUpdated.add(room);
   }
 
   void directMessageRoomUpdated(Room room) {

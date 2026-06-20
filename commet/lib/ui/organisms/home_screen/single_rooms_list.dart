@@ -3,6 +3,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/notifying_list_builder.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class SingleRoomsList extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: tiamat.Text.labelLow(
-                            "Rooms",
+                            HomeScreenView.labelHomeRoomsList,
                           ),
                         ),
                         Padding(
