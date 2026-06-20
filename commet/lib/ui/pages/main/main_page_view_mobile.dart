@@ -4,6 +4,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
+import 'package:commet/ui/molecules/current_session_panel.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
@@ -13,10 +14,8 @@ import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
-import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
-import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -214,12 +213,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                           widget.state.selectRoom(room);
                           panelsKey.currentState?.reveal(RevealSide.main);
                         },
-                        extraEntryBuilders: [
-                          (width) {
-                            return SidebarCallsList(
-                                widget.state.clientManager.callManager, width);
-                          }
-                        ],
                       ),
                     ),
                   ),
@@ -241,11 +234,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             child: ScaledSafeArea(
               bottom: true,
               top: false,
-              child: SizedBox(
-                height: 60,
-                child: MainPageViewDesktop.currentUserPanel(
-                    widget.state, context,
-                    height: 60, avatarRadius: 20),
+              child: CurrentSessionPanel(
+                currentUser: widget.state.currentUser,
               ),
             ),
           )

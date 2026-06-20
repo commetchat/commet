@@ -25,21 +25,23 @@ class _VoipRoomViewState extends State<VoipRoomView> {
   String? callServerUrl;
   late List<String> participants;
   bool joining = false;
-  StreamSubscription? sub;
+  late List<StreamSubscription> subs;
 
   @override
   void initState() {
     currentSession = widget.voip.currentSession;
     participants = widget.voip.getCurrentParticipants();
 
-    sub = widget.voip.onParticipantsChanged.listen((_) {
-      // when the participant list changes, the resolved focus may change
-      updateCallUrl();
+    subs = [
+      widget.voip.onParticipantsChanged.listen((_) {
+        // when the participant list changes, the resolved focus may change
+        updateCallUrl();
 
-      setState(() {
-        participants = widget.voip.getCurrentParticipants();
-      });
-    });
+        setState(() {
+          participants = widget.voip.getCurrentParticipants();
+        });
+      }),
+    ];
 
     updateCallUrl();
     super.initState();
@@ -56,7 +58,9 @@ class _VoipRoomViewState extends State<VoipRoomView> {
 
   @override
   void dispose() {
-    sub?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
@@ -65,10 +69,8 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     var color = Theme.of(context).colorScheme.surfaceContainer;
 
     if (currentSession == null) return unjoinedView(color);
+
     if (currentSession?.state == VoipState.ended) {
-      setState(() {
-        joining = false;
-      });
       return unjoinedView(color);
     }
 
@@ -186,12 +188,16 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       joining = true;
     });
 
+    // For better UI feedback if program stutters while joining
+    await Future.delayed(Duration(milliseconds: 100));
+
     try {
       final session = await widget.voip.joinCall();
 
       if (session != null) {
         setState(() {
           currentSession = session;
+          joining = false;
         });
       }
     } catch (e, s) {
