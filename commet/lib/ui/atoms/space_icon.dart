@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/space.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
-import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -74,22 +73,22 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      SideNavigationBar.tooltip(
-          widget.displayName,
-          ImageButton(
-            border: selected
-                ? Border.all(
-                    color: ColorScheme.of(context).inverseSurface,
-                    width: 3,
-                    strokeAlign: 0.5)
-                : null,
-            image: widget.avatar,
-            onTap: widget.onTap,
-            size: widget.width,
-            placeholderColor: widget.placeholderColor,
-            placeholderText: widget.displayName,
-          ),
-          context),
+      AspectRatio(
+        aspectRatio: 1.0,
+        child: ImageButton(
+          border: selected
+              ? Border.all(
+                  color: ColorScheme.of(context).inverseSurface,
+                  width: 3,
+                  strokeAlign: 0.5)
+              : null,
+          image: widget.avatar,
+          onTap: widget.onTap,
+          size: widget.width,
+          placeholderColor: widget.placeholderColor,
+          placeholderText: widget.displayName,
+        ),
+      ),
       if (widget.showUser) avatarOverlay(),
       if (widget.highlightedNotificationCount > 0) notificationOverlay(),
     ]);

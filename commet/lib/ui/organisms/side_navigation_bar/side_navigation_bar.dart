@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/components/sidebar_component/sidebar_entries_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
@@ -75,7 +76,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   String get promptAddSpace => Intl.message("Add Space",
       name: "promptAddSpace", desc: "Prompt to add a new space");
 
-  late List<Space> topLevelSpaces;
+  late List<SidebarEntry> items;
 
   Client? filterClient;
 
@@ -100,6 +101,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       _clientManager.onDirectMessageRoomUpdated.stream
           .listen(onDirectMessageUpdated),
       EventBus.setFilterClient.stream.listen(setFilterClient),
+      SidebarEntriesComponent.onOrderChanged.listen((_) => onSpaceUpdate()),
     ];
 
     getSpaces();
@@ -109,13 +111,41 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
 
   void getSpaces() {
     if (filterClient != null) {
-      topLevelSpaces = filterClient!.spaces.where((e) => e.isTopLevel).toList();
+      var entries =
+          filterClient!.getComponent<SidebarEntriesComponent>()!.getEntries();
+
+      items = entries;
     } else {
       _clientManager = Provider.of<ClientManager>(context, listen: false);
+      items = _clientManager.clients.fold(List.empty(growable: true), (v, c) {
+        var entries = c.getComponent<SidebarEntriesComponent>()!.getEntries();
+        v.addAll(entries);
+        return v;
+      });
 
-      topLevelSpaces =
-          _clientManager.spaces.where((e) => e.isTopLevel).toList();
+      Map<String, SpaceGroupSidebarEntry> mergedFolders = {};
+
+      List<SidebarEntry> finalEntries = List.empty(growable: true);
+
+      for (var item in items) {
+        if (item is SpaceGroupSidebarEntry) {
+          if (mergedFolders.containsKey(item.id)) {
+            mergedFolders[item.id]!.spaces.addAll(item.spaces);
+          } else {
+            mergedFolders[item.id] = item;
+          }
+        } else {
+          finalEntries.add(item);
+        }
+      }
+
+      finalEntries.addAll(mergedFolders.values);
+      items = finalEntries;
     }
+
+    items.sort(
+      (a, b) => a.order.compareTo(b.order),
+    );
   }
 
   void onSpaceUpdate() {
@@ -144,7 +174,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
           children: [
             Expanded(
               child: SpaceSelector(
-                topLevelSpaces,
+                items,
                 width: 70,
                 clearSelection: widget.clearSpaceSelection,
                 shouldShowAvatarForSpace: shouldShowAvatarForSpace,
@@ -186,6 +216,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                           ),
                           context),
                     ),
+                    SizedBox(
+                      height: MediaQuery.sizeOf(context).height / 2,
+                    )
                   ],
                 ),
                 onSelected: (space) {
