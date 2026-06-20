@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:commet/client/components/sidebar_component/sidebar_entries_component.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/molecules/expanding_drop_target.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +47,7 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
 
   double get shrink => 9;
 
-  double get dragDropAreaSize => 20;
+  double get dragDropAreaSize => 40;
 
   double get expandedHeight =>
       (widget.spaces.length + 1) * (widget.width - shrink) +
@@ -63,12 +67,41 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
     return (row, column);
   }
 
+  int notificationCount = 0;
+  int highlightNotificationCount = 0;
+
+  void updateNotificationCounts() {
+    notificationCount = 0;
+    highlightNotificationCount = 0;
+
+    for (var entry in entries) {
+      notificationCount += entry.space.notificationCount;
+      highlightNotificationCount += entry.space.highlightedNotificationCount;
+    }
+  }
+
+  StreamSubscription? sub;
+
   @override
   void initState() {
     super.initState();
     expanded = widget.initiallyOpen;
 
+    sub = clientManager?.onSpaceUpdated.stream.listen(onSpaceUpdated);
+
     updateEntries();
+  }
+
+  void onSpaceUpdated(Space event) {
+    setState(() {
+      updateNotificationCounts();
+    });
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   void updateEntries() {
@@ -77,6 +110,10 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
     entries.sort((a, b) => a.order.compareTo(b.order));
 
     dragPosition = widget.dragPosition;
+
+    setState(() {
+      updateNotificationCounts();
+    });
   }
 
   @override
@@ -92,7 +129,9 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
   Duration get animationDuration => Duration(milliseconds: 300);
   Curve get curve => Curves.easeInOut;
   GlobalKey key = GlobalKey();
-  BorderRadiusGeometry get radius => BorderRadiusGeometry.circular(8);
+
+  BorderRadiusGeometry get radius => BorderRadiusGeometry.circular(12);
+
   void toggleExpansion() {
     setState(() {
       expanded = !expanded;
@@ -176,7 +215,23 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                       ),
                     ),
                   ),
-                )
+                ),
+              Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: AnimatedScale(
+                      scale: (expanded || highlightNotificationCount == 0)
+                          ? 0.0
+                          : 1.0,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeOutExpo,
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: NotificationBadge(highlightNotificationCount)),
+                    ),
+                  )),
             ],
           ),
         ),
