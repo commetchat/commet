@@ -1,12 +1,6 @@
 import 'dart:async';
 
-import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
-import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
-import 'package:commet/ui/atoms/adaptive_context_menu.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
-import 'package:commet/ui/molecules/widget_debug_view.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
