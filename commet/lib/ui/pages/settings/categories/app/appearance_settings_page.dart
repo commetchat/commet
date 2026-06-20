@@ -75,7 +75,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           "Label for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
 
   String get labelShowRoomsInSidebarDescription => Intl.message(
-      "Add an entry to the sidebar which shows all rooms which are not contained in a space",
+      "Add an entry to the sidebar that shows all rooms which are not contained in a space",
       name: "labelShowRoomsInSidebarDescription",
       desc:
           "Description for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
