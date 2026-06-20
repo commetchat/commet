@@ -256,6 +256,10 @@ class SpaceSelectorState extends State<SpaceSelector> {
       return DragTarget<SidebarEntryDrag>(
           key: ValueKey("space-group-${i.groupId}"),
           onWillAcceptWithDetails: (details) {
+            if (preferences.expandedSpaceGroups.value.contains(i.groupId)) {
+              return false;
+            }
+
             Log.i("Folder will accept drag: $details");
             return details.data.entry is SpaceSidebarEntry;
           },
