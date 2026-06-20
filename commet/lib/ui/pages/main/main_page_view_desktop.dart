@@ -1,14 +1,11 @@
-import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
+import 'package:commet/ui/molecules/current_session_panel.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
-import 'package:commet/ui/molecules/user_panel_settings.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
@@ -16,13 +13,11 @@ import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
-import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
 
@@ -72,14 +67,6 @@ class MainPageViewDesktop extends StatelessWidget {
                                 bottom: false,
                                 child: SideNavigationBar(
                                   currentUser: state.currentUser,
-                                  extraEntryBuilders: [
-                                    (width) {
-                                      return SidebarCallsList(
-                                        state.clientManager.callManager,
-                                        width,
-                                      );
-                                    },
-                                  ],
                                   onSpaceSelected: (space) {
                                     state.selectSpace(space);
                                   },
@@ -116,10 +103,9 @@ class MainPageViewDesktop extends StatelessWidget {
                       caulkPadRight: MediaQuery.of(context).mobile,
                       child: ScaledSafeArea(
                         top: false,
-                        child: SizedBox(
-                            height: 55,
-                            child: currentUserPanel(state, context,
-                                height: 55, avatarRadius: 16)),
+                        child: CurrentSessionPanel(
+                          currentUser: state.currentUser,
+                        ),
                       ),
                     ),
                   ],
@@ -138,120 +124,6 @@ class MainPageViewDesktop extends StatelessWidget {
           const OverlayWindowsSurface(),
         ],
       ),
-    );
-  }
-
-  static Widget currentUserPanel(MainPageState state, BuildContext context,
-      {double height = 50, double avatarRadius = 12}) {
-    Profile? current = state.currentUser;
-
-    if (clientManager!.clients.length == 1) {
-      current = clientManager!.clients.first.self;
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: SizedBox(
-          child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Container(
-                child: AdaptiveContextMenu(
-              modal: true,
-              items: [
-                if (clientManager!.clients.length > 1)
-                  tiamat.ContextMenuItem(
-                      text: "Mix Accounts",
-                      onPressed: () {
-                        EventBus.setFilterClient.add(null);
-                        preferences.filterClient.set(null);
-                      }),
-                if (clientManager!.clients.length > 1)
-                  ...clientManager!.clients
-                      .map((i) => tiamat.ContextMenuItem(
-                          text: i.self!.identifier,
-                          onPressed: () {
-                            print("Setting filter client");
-                            EventBus.setFilterClient.add(i);
-                            preferences.filterClient.set(i.identifier);
-                          }))
-                      .toList()
-              ],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    if (current != null)
-                      tiamat.Avatar(
-                        radius: avatarRadius,
-                        image: current.avatar,
-                        placeholderColor: current.defaultColor,
-                        placeholderText: current.displayName,
-                      ),
-                    if (current != null)
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            tiamat.Text.name(
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                color: current.defaultColor,
-                                current.displayName),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => Clipboard.setData(
-                                    ClipboardData(text: current!.identifier)),
-                                child: Opacity(
-                                  opacity: 0.7,
-                                  child: Text(
-                                    maxLines: 1,
-                                    current.identifier,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                            fontFamily: "Code",
-                                            fontSize: 10,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    if (current == null)
-                      ...clientManager!.clients
-                          .where((i) => i.self != null)
-                          .map((i) => Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                                child: AspectRatio(
-                                  aspectRatio: 1.0,
-                                  child: tiamat.Avatar(
-                                    radius: avatarRadius,
-                                    placeholderColor: i.self!.defaultColor,
-                                    placeholderText: i.self!.displayName,
-                                    image: i.self!.avatar,
-                                  ),
-                                ),
-                              ))
-                  ],
-                ),
-              ),
-            )),
-          ),
-          UserPanelSettings(
-            height: height,
-          ),
-        ],
-      )),
     );
   }
 
