@@ -106,7 +106,13 @@ class HomeScreenView extends StatelessWidget {
             return Padding(
               padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
               child: RoomPanel(
-                  key: ValueKey("recent-activity-room_${room.localId}"), room),
+                  shouldShowAvatarForRoom: (room) =>
+                      clientManager.clients
+                          .where((i) => i.hasRoom(room.identifier))
+                          .length >
+                      1,
+                  key: ValueKey("recent-activity-room_${room.localId}"),
+                  room),
             );
           },
         ));
@@ -129,6 +135,11 @@ class HomeScreenView extends StatelessWidget {
                 return Padding(
                   padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
                   child: RoomPanel(room,
+                      shouldShowAvatarForRoom: (room) =>
+                          clientManager.clients
+                              .where((i) => i.hasRoom(room.identifier))
+                              .length >
+                          1,
                       key: ValueKey("homescreen-room_${room.localId}")),
                 );
               },

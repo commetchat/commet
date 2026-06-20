@@ -28,7 +28,7 @@ class ClientManager {
     callManager = CallManager(this);
   }
 
-  List<Room> get rooms => _rooms;
+  NotifyingList<Room> get rooms => _rooms;
 
   List<Room> singleRooms({Client? filterClient}) {
     var result = List<Room>.empty(growable: true);

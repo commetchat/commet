@@ -10,13 +10,16 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class RoomPanel extends StatefulWidget {
-  const RoomPanel(this.room, {this.onTap, super.key});
+  const RoomPanel(this.room,
+      {this.onTap, super.key, this.shouldShowAvatarForRoom});
 
   final Room room;
   final Function()? onTap;
 
   @override
   State<RoomPanel> createState() => _RoomPanelState();
+
+  final bool Function(Room room)? shouldShowAvatarForRoom;
 }
 
 class _RoomPanelState extends State<RoomPanel> {
@@ -91,6 +94,12 @@ class _RoomPanelState extends State<RoomPanel> {
                   clientId: widget.room.client.identifier);
             },
         color: widget.room.defaultColor,
+        showUserAvatar: widget.shouldShowAvatarForRoom == null
+            ? false
+            : widget.shouldShowAvatarForRoom!(widget.room),
+        userColor: widget.room.client.self?.defaultColor,
+        userDisplayName: widget.room.client.self?.displayName,
+        userAvatar: widget.room.client.self?.avatar,
         directMessagePartner: directMessagePartner,
         userPresence: presence,
         recentEventSender: eventSender,

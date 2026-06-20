@@ -5,6 +5,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/sidebar_component/sidebar_entries_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
@@ -26,6 +27,7 @@ class SideNavigationBar extends StatefulWidget {
       this.onSettingsSelected,
       this.onHomeSelected,
       this.extraEntryBuilders,
+      this.onRoomsViewSelected,
       this.clearSpaceSelection});
 
   static ValueKey settingsKey =
@@ -39,6 +41,7 @@ class SideNavigationBar extends StatefulWidget {
   final void Function(Room room)? onDirectMessageSelected;
   final void Function()? onHomeSelected;
   final void Function()? onSettingsSelected;
+  final void Function()? onRoomsViewSelected;
 
   @override
   State<SideNavigationBar> createState() => _SideNavigationBarState();
@@ -92,6 +95,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       });
     }
 
+    // showRoomsInSidebar = preferences.showRoomsInSidebar.v
+
     subs = [
       _clientManager.onSpaceChildUpdated.stream.listen((_) => onSpaceUpdate()),
       _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate()),
@@ -102,6 +107,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
           .listen(onDirectMessageUpdated),
       EventBus.setFilterClient.stream.listen(setFilterClient),
       SidebarEntriesComponent.onOrderChanged.listen((_) => onSpaceUpdate()),
+      preferences.showRoomsInSidebar.onChanged.listen((_) => setState(() {})),
     ];
 
     getSpaces();
@@ -194,6 +200,25 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                           ],
                         ),
                         context),
+                    if (preferences.showRoomsInSidebar.value) ...[
+                      SizedBox(
+                        height: 4,
+                      ),
+                      SideNavigationBar.tooltip(
+                          "Rooms",
+                          Stack(
+                            children: [
+                              ImageButton(
+                                size: 70,
+                                icon: Icons.tag,
+                                onTap: () {
+                                  widget.onRoomsViewSelected?.call();
+                                },
+                              ),
+                            ],
+                          ),
+                          context),
+                    ],
                     SideNavigationBarDirectMessages(
                       _clientManager.directMessages,
                       onRoomTapped: widget.onDirectMessageSelected,

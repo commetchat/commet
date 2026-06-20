@@ -56,6 +56,7 @@ class MainPage extends StatefulWidget {
 enum MainPageSubView {
   space,
   home,
+  rooms,
 }
 
 class MainPageState extends State<MainPage> {
@@ -67,6 +68,8 @@ class MainPageState extends State<MainPage> {
   MainPageSubView _currentView = MainPageSubView.home;
 
   late INotifyingList<Room> favoriteRooms;
+
+  late INotifyingList<Room> singleRooms;
 
   late INotifyingList<Room> directMessages;
 
@@ -143,6 +146,28 @@ class MainPageState extends State<MainPage> {
     }, onFilterParamsChanged: [
       onFilterClientChanged.stream,
       allFavoriteRooms.onListUpdated
+    ]);
+
+    singleRooms = NotifyingListFilter(clientManager.rooms, where: (item) {
+      if (filterClient != null) {
+        if (item.client != filterClient) return false;
+      }
+      var dms = item.client.getComponent<DirectMessagesComponent>();
+
+      if (dms?.isRoomDirectMessage(item) != false) {
+        return false;
+      }
+
+      if (item.client.spaces
+          .any((space) => space.containsRoom(item.identifier))) {
+        return false;
+      }
+
+      return true;
+    }, onFilterParamsChanged: [
+      onFilterClientChanged.stream,
+      clientManager.onSpaceUpdated.stream,
+      clientManager.rooms.onListUpdated
     ]);
 
     ServicesBinding.instance.keyboard.addHandler(_onKeyPressed);
@@ -347,6 +372,13 @@ class MainPageState extends State<MainPage> {
     setState(() {
       _currentView = MainPageSubView.home;
       clearSpaceSelection();
+    });
+  }
+
+  void selectRoomsView() {
+    setState(() {
+      clearSpaceSelection();
+      _currentView = MainPageSubView.rooms;
     });
   }
 
