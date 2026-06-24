@@ -65,7 +65,8 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     if (eventType != null && relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelTypeAndEventType(
-              runner.room!.identifier, eventId, relType, eventType, from: from, to: to, limit: limit);
+              runner.room!.identifier, eventId, relType, eventType,
+              from: from, to: to, limit: limit);
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
@@ -73,17 +74,16 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     } else if (relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelType(
-              runner.room!.identifier, eventId, relType, from: from, to: to, limit: limit);
+              runner.room!.identifier, eventId, relType,
+              from: from, to: to, limit: limit);
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
       nextBatch = result.nextBatch;
     } else {
       var result = await runner.room!.matrixRoom.client.getRelatingEvents(
-        runner.room!.identifier,
-        eventId,
-         from: from, to: to, limit: limit
-      );
+          runner.room!.identifier, eventId,
+          from: from, to: to, limit: limit);
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
