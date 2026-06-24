@@ -46,6 +46,10 @@ class MatrixTimeline extends Timeline {
   }
 
   Future<void> initTimeline({String? contextEventId}) async {
+    if (contextEventId == "") {
+      contextEventId = null;
+    }
+
     _matrixTimeline = await _matrixRoom.getTimeline(
         onInsert: onEventInserted,
         onChange: onEventChanged,
