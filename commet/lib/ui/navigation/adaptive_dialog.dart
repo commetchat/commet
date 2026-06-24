@@ -111,14 +111,15 @@ class AdaptiveDialog {
   }
 
   static Future<void> showError(
-      BuildContext context, Object exception, StackTrace trace) {
+      BuildContext context, Object exception, StackTrace trace,
+      {String title = "Error"}) {
     return show(context, builder: (context) {
       return Column(
         children: [
           tiamat.Text.body(exception.toString()),
         ],
       );
-    }, title: "Error");
+    }, title: title);
   }
 
   static Future<T?> show<T extends Object?>(

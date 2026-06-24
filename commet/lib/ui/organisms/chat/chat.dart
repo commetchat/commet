@@ -21,6 +21,7 @@ import 'package:commet/ui/organisms/attachment_processor/attachment_processor.da
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
 import 'package:commet/utils/debounce.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:exif/exif.dart';
@@ -118,23 +119,27 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> loadTimeline() async {
-    var t = await room.getTimeline(contextEventId: room.lastRead);
-    setState(() {
-      _timeline = t;
-    });
+    ErrorUtils.tryRun(context, () async {
+      var t = await room.getTimeline(contextEventId: room.lastRead);
+      setState(() {
+        _timeline = t;
+      });
+    }, title: "Error loading timeline");
   }
 
   Future<void> loadThreadTimeline() async {
-    Timeline? timeline = room.timeline;
-    timeline ??= room.lastRead.isNotEmpty
-        ? await room.getTimeline(contextEventId: room.lastRead)
-        : await room.getTimeline();
+    ErrorUtils.tryRun(context, () async {
+      Timeline? timeline = room.timeline;
+      timeline ??= room.lastRead.isNotEmpty
+          ? await room.getTimeline(contextEventId: room.lastRead)
+          : await room.getTimeline();
 
-    var threadTimeline = await threadsComponent!.getThreadTimeline(
-        roomTimeline: timeline, threadRootEventId: widget.threadId!);
-    setState(() {
-      _timeline = threadTimeline;
-    });
+      var threadTimeline = await threadsComponent!.getThreadTimeline(
+          roomTimeline: timeline, threadRootEventId: widget.threadId!);
+      setState(() {
+        _timeline = threadTimeline;
+      });
+    }, title: "Error loading thread timeline");
   }
 
   @override
