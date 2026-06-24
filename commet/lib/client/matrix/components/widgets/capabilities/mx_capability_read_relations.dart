@@ -58,11 +58,14 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     List<MatrixEvent> chunk;
     String? prevBatch;
     String? nextBatch;
+    int? limit = message.data.tryGet<int>("limit");
+    String? from = message.data.tryGet<String>("from");
+    String? to = message.data.tryGet<String>("to");
 
     if (eventType != null && relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelTypeAndEventType(
-              runner.room!.identifier, eventId, relType, eventType);
+              runner.room!.identifier, eventId, relType, eventType, from: from, to: to, limit: limit);
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
@@ -70,7 +73,7 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     } else if (relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelType(
-              runner.room!.identifier, eventId, relType);
+              runner.room!.identifier, eventId, relType, from: from, to: to, limit: limit);
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
@@ -79,6 +82,7 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
       var result = await runner.room!.matrixRoom.client.getRelatingEvents(
         runner.room!.identifier,
         eventId,
+         from: from, to: to, limit: limit
       );
 
       chunk = result.chunk;
