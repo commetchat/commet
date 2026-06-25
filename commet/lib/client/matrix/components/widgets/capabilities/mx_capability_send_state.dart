@@ -106,7 +106,7 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
     //     .setRoomStateWithKey(runner.room!.identifier, eventType, key!, content);
 
     int? delay = message.data.tryGet<int>("delay");
-    if (canSendDelayedEvents == false) {
+    if (delay != null && canSendDelayedEvents == false) {
       throw Exception("Request denied");
     }
 
