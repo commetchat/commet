@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_capabilities_manager.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
+import 'package:commet/debug/log.dart';
+import 'package:matrix/matrix_api_lite/matrix_api.dart' show RequestType;
+import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 
 class MatrixCapabilitySendDelayedEvent implements MatrixWidgetCapability {
   @override
@@ -54,17 +59,36 @@ class MatrixCapabilityUpdateDelayedEvent implements MatrixWidgetCapability {
 
   @override
   String toString() {
-    return "Send Delayed Event";
+    return "Update Delayed Event";
   }
 
   @override
   bool canHandleRequest(MatrixWidgetMessage message) {
-    return false;
+    if (message.action != "org.matrix.msc4157.update_delayed_event")
+      return false;
+
+    if (message.data.containsKey("delay_id") == false) return false;
+    if (message.data.containsKey("action") == false) return false;
+
+    return true;
   }
 
   @override
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
-    throw UnimplementedError();
+    var delayId = message.data.tryGet<String>("delay_id");
+    var action = message.data.tryGet<String>("action");
+    if (delayId == null || action == null)
+      throw UnsupportedError("Invalid request");
+
+    final result = await runner.room!.matrixRoom.client.request(
+        RequestType.POST,
+        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
+        contentType: "application/json",
+        data: jsonEncode({"action": action}));
+
+    Log.i("Got result from delayed event update ${result}");
+
+    return message.createResponseObject(response: {});
   }
 
   @override

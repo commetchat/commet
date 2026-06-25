@@ -1,5 +1,6 @@
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/matrix_widget_capability.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_delayed_events.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_download_file.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_get_media_config.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_oidc.dart';
@@ -180,9 +181,9 @@ class MatrixWidgetCapabilitiesManager
     MatrixCapabilityReadEventRelations.entry,
     MatrixCapabilityTimeline.entry,
     MatrixCapabilityTheme.entry,
+    MatrixCapabilityUpdateDelayedEvent.entry,
+    MatrixCapabilitySendDelayedEvent.entry,
     // MatrixCapabilityAlwaysOnScreen.entry,
-    // MatrixCapabilitySendDelayedEvent.entry,
-    // MatrixCapabilityUpdateDelayedEvent.entry,
     // MatrixCapabilitySendStickyEvent.entry,
     // MatrixCapabilityReceiveStickyEvent.entry,
   ]);
