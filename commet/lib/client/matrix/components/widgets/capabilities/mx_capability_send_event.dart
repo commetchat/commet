@@ -46,6 +46,8 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
 
     if (message.data.containsKey("state_key")) return false;
 
+    if (message.data.containsKey("delay")) return false;
+
     return true;
   }
 
