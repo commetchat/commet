@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/debug/log.dart';
+import 'package:mutex/mutex.dart';
 
 class MatrixAndroidIpcTransceiver implements WidgetTransceiver {
   final ServerSocket socket;
@@ -14,8 +15,11 @@ class MatrixAndroidIpcTransceiver implements WidgetTransceiver {
 
   StreamController<Uint8List> _messageController = StreamController.broadcast();
 
+  late Mutex mutex;
+
   MatrixAndroidIpcTransceiver(this.socket) {
     seperator = "\n".codeUnits.first;
+    mutex = Mutex();
     startConnection();
   }
 
@@ -28,12 +32,17 @@ class MatrixAndroidIpcTransceiver implements WidgetTransceiver {
   }
 
   @override
-  void send(Uint8List data) {
-    if (client != null) {
-      client!.writeln(Utf8Decoder().convert(data));
-    } else {
-      Log.e("Client was null when trying to send data");
-    }
+  void send(Uint8List data) async {
+    Log.i("Waiting for mutex to send data");
+    mutex.protect(() async {
+      if (client != null) {
+        Log.i("Sending data!");
+        client!.writeln(Utf8Decoder().convert(data));
+        await client!.flush();
+      } else {
+        Log.e("Client was null when trying to send data");
+      }
+    });
   }
 
   Future<void> startConnection() async {

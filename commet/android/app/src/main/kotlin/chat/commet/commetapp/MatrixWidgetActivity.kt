@@ -69,8 +69,9 @@ class WidgetWebViewClient : WebViewClient {
 
         Log.d(TAG, "Injecting safe area variables!" + safeAreaJs)
 
+        webView!!.setPadding(insets.left, insets.top, insets.right, insets.bottom)
         // Inject the density independent pixels into the CSS variables as CSS pixels
-        webView?.evaluateJavascript(safeAreaJs, null)
+        webView.evaluateJavascript(safeAreaJs, null)
     }
 
 
@@ -89,10 +90,16 @@ class MatrixWidgetActivity : AppCompatActivity() {
         val socketPath = intent.getStringExtra("socket");
         var page = intent.getStringExtra("page");
 
-        Log.d(TAG, "Socket: $socket");
-
         setContentView(R.layout.activity_matrix_widget)
 
+        if(page == null) {
+            val webView: WebView = findViewById(R.id.webview);
+            val view = findViewById<View>(R.id.main);
+            webView.loadUrl("https://commet.chat/")
+            return;
+        };
+
+        Log.d(TAG, "Socket: $socket");
 
         val rootView = findViewById<View>(R.id.main);
 
@@ -119,7 +126,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
                 Log.e(TAG, "Failed to get initial widget insets");
             }
 
-            val webView: WebView = initWebView(page)
+            val webView: WebView = initWebView(page, insets);
 
             val newSocket = LocalSocket();
             newSocket.connect(LocalSocketAddress(socketPath, LocalSocketAddress.Namespace.FILESYSTEM));
@@ -131,7 +138,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun initWebView(page: String?): WebView {
+    private fun initWebView(page: String?, insets: Insets?): WebView {
         val webView: WebView = findViewById(R.id.webview);
         val view = findViewById<View>(R.id.main);
         val density = Density(this)
@@ -139,8 +146,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
 
         webView.settings.javaScriptEnabled = true;
         webView.settings.domStorageEnabled = true;
-        webView.setPadding(0, 0, 0, 0)
-        webView.clipToPadding = false
+
         webView.loadDataWithBaseURL("http://localhost/widget", page!!, "text/html", "UTF-8", null);
         webView.addJavascriptInterface(this, "WidgetRunner");
         webView.overScrollMode = OVER_SCROLL_NEVER;
@@ -151,7 +157,7 @@ class MatrixWidgetActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
 
             val lineBuffer = StringBuilder()
-            val readBuffer = ByteArray(8096)
+            val readBuffer = ByteArray(100_000)
 
             while (socket.isConnected) {
 
@@ -173,6 +179,14 @@ class MatrixWidgetActivity : AppCompatActivity() {
                     val line = lineBuffer.substring(0, idx)
                     lineBuffer.delete(0, idx + 1)
                     idx = lineBuffer.indexOf("\n")
+
+
+                    var debugStr = line;
+                    if(line.length > 500) {
+                        debugStr = line.substring(0,  500);
+                    }
+                    Log.d(TAG, "Received message: " + debugStr);
+
                     val b64 = android.util.Base64.encodeToString(
                         line.toByteArray(),
                         android.util.Base64.NO_WRAP

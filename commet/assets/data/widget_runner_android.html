@@ -19,7 +19,7 @@
 
 <body style="margin: 0px; overflow: hidden;">
 
-    <iframe id="widget-frame" allow="fullscreen" src="$IFRAME_URL"
+    <iframe id="widget-frame" sandbox='allow-forms allow-scripts allow-same-origin' allow="$IFRAME_ALLOW" src="$IFRAME_URL"
         style="width: 100vw; height: 100dvh; border: none; overflow: hidden;"></iframe>
 
     <script>
@@ -57,6 +57,8 @@
         window.onMessagePolyfill = (data) => {
             var text = atob(data);
             var message = JSON.parse(text);
+
+            console.log("Received from host: ", message);
 
             const frame = document.getElementById('widget-frame')
             const childWindow = frame.contentWindow;

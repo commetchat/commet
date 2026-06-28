@@ -80,7 +80,7 @@
             android:label="Widget"
             android:launchMode="standard"
             android:resizeableActivity="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/Theme.Material3Expressive.DayNight.NoActionBar"
             android:windowSoftInputMode="adjustResize">
 
             <!--

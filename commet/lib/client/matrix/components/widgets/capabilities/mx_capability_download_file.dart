@@ -55,6 +55,8 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
     if (bytes == null) {
       var response = await runner.client.matrixClient.getContentFromUri(uri);
       bytes = response.data;
+
+      fileCache?.putFile(uri.toString(), response.data);
     }
 
     return message

@@ -304,6 +304,12 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     });
   }
 
+  static bool get allowLocalNetwork => false;
+  
+  static String get iframeAllowPermissions =>
+      "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen;" +
+      (allowLocalNetwork ? " local-network-access;" : "");
+
   Future<void> createAndroidActivityWidget(String url,
       MatrixUserWidgetInfo info, Room room, BuildContext context) async {
     var receiveSocketPath = await AppConfig.getWidgetSocketPath();
@@ -326,6 +332,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
+    text = text.replaceAll("\$IFRAME_ALLOW", iframeAllowPermissions);
     text = text.replaceAll("\$WIDGET_ID", info.id);
 
     text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
@@ -376,6 +383,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
+    text = text.replaceAll("\$IFRAME_ALLOW", iframeAllowPermissions);
 
     text = text.replaceAll("//\${WIDGETS_COMMON}", scriptText.toString());
 

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/debug/log.dart';
 import 'package:flutter/services.dart';
 
@@ -97,6 +98,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
         text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", editedUrl.toString());
+    text = text.replaceAll("\$IFRAME_ALLOW", MatrixWidgetComponent.iframeAllowPermissions);
 
     text = text.replaceAll("\$AUTH_SECRET", secret.toString());
 
