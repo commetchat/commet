@@ -13,6 +13,7 @@ class MatrixSessionView extends StatelessWidget {
       super.key,
       this.verified = false,
       this.isThisDevice = false,
+      this.inactive = false,
       this.beginVerification,
       this.removeSession});
 
@@ -22,6 +23,7 @@ class MatrixSessionView extends StatelessWidget {
   final int? lastSeenTimestamp;
   final bool verified;
   final bool isThisDevice;
+  final bool inactive;
   final Function? beginVerification;
   final Function? removeSession;
 
@@ -63,6 +65,15 @@ class MatrixSessionView extends StatelessWidget {
                               const Padding(
                                 padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
                                 child: TinyPill("This Device"),
+                              ),
+                            if (inactive)
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                child: TinyPill(
+                                  "Inactive",
+                                  background: ColorScheme.of(context).error,
+                                  foreground: ColorScheme.of(context).onError,
+                                ),
                               ),
                             tiamat.Text.labelLow(deviceId),
                           ],

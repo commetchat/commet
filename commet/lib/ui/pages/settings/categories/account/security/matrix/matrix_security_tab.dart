@@ -26,8 +26,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool? messageBackupEnabled;
   bool isVerified = false;
   List<Device>? devices;
+  late DateTime time;
 
   Map<String, Object?>? authMetadata;
+
+  bool? supportsLegacyUIA;
 
   Uri? get accountManagementUri {
     var str = authMetadata?.tryGet<String>("account_management_uri");
@@ -84,6 +87,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
 
   @override
   void initState() {
+    time = DateTime.now();
     checkState();
     getDevices();
     super.initState();
@@ -101,12 +105,33 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   void getDevices() async {
     var gotDevices = await widget.client.getMatrixClient().getDevices();
 
-    if (authMetadata == null) {
+    if (supportsLegacyUIA == null) {
       try {
-        authMetadata = await widget.client.matrixClient
-            .request(RequestType.GET, "/client/v1/auth_metadata");
-      } catch (e, s) {
-        Log.onError(e, s);
+        await widget.client.matrixClient
+            .request(RequestType.DELETE, "/client/v3/devices/_", data: {
+          "auth": {
+            "type": "m.login.dummy",
+          }
+        });
+      } catch (e) {
+        if (e case MatrixException mx) {
+          if (mx.error == MatrixError.M_FORBIDDEN) {
+            supportsLegacyUIA = true;
+          } else {
+            supportsLegacyUIA = false;
+          }
+        }
+      }
+    }
+
+    if (supportsLegacyUIA != true) {
+      if (authMetadata == null) {
+        try {
+          authMetadata = await widget.client.matrixClient
+              .request(RequestType.GET, "/client/v1/auth_metadata");
+        } catch (e, s) {
+          Log.onError(e, s);
+        }
       }
     }
 
@@ -130,6 +155,9 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     );
   }
 
+  Iterable<Device> get inactiveDevices =>
+      devices?.where((i) => isDeviceInactive(i)) ?? [];
+
   Panel sessionsPanel() {
     return Panel(
       header: labelMatrixAccountSessions,
@@ -138,34 +166,108 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
           ? SizedBox(
               height: 300,
               child: Center(child: const CircularProgressIndicator()))
-          : ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                var device = devices![index];
-                return Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: MatrixSession(
-                    device,
-                    widget.client.getMatrixClient(),
-                    removeSession: canRemoveDeviceOAuth
-                        ? () async {
-                            LinkUtils.open(
-                                accountManagementUri!.replace(queryParameters: {
-                                  "action": "org.matrix.device_delete",
-                                  "device_id": device.deviceId
-                                }),
-                                context: context,
-                                filterTrackingParameters: false,
-                                bypassConfirmation: false);
-                          }
-                        : null,
+          : Column(
+              children: [
+                if (supportsLegacyUIA == true && inactiveDevices.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: ColorScheme.of(context).surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: AlertView(
+                                Alert(
+                                  AlertType.warning,
+                                  messageGetter: () =>
+                                      "You have ${inactiveDevices.length} sessions which have not been used recently",
+                                  titleGetter: () => "Inactive Devices",
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: tiamat.IconButton(
+                                size: 15,
+                                icon: Icons.logout,
+                                onPressed: () {
+                                  removeInactiveDevices();
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                );
-              },
-              itemCount: devices!.length,
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    var device = devices![index];
+                    return Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: MatrixSession(
+                        device,
+                        widget.client.getMatrixClient(),
+                        inactive: isDeviceInactive(device),
+                        removeSession: supportsLegacyUIA == true
+                            ? () => removeDeviceUIA(device.deviceId)
+                            : canRemoveDeviceOAuth
+                                ? () => removeDeviceOAuth(device.deviceId)
+                                : null,
+                      ),
+                    );
+                  },
+                  itemCount: devices!.length,
+                ),
+              ],
             ),
     );
+  }
+
+  void removeDeviceUIA(String deviceID) async {
+    await widget.client.matrixClient.uiaRequestBackground((auth) async {
+      await widget.client.matrixClient.deleteDevice(deviceID, auth: auth);
+
+      getDevices();
+    });
+  }
+
+  void removeInactiveDevices() async {
+    var confirm = await AdaptiveDialog.confirmation(context,
+        dangerous: true,
+        prompt:
+            "Are you sure you want to log out of ${inactiveDevices.length} sessions?");
+
+    if (confirm != true) return;
+
+    await widget.client.matrixClient.uiaRequestBackground((auth) async {
+      await widget.client.matrixClient.deleteDevices(
+          inactiveDevices.map((i) => i.deviceId).toList(),
+          auth: auth);
+    });
+
+    getDevices();
+  }
+
+  void removeDeviceOAuth(String deviceID) {
+    LinkUtils.open(
+        accountManagementUri!.replace(queryParameters: {
+          "action": "org.matrix.device_delete",
+          "device_id": deviceID
+        }),
+        context: context,
+        filterTrackingParameters: false,
+        bypassConfirmation: false);
   }
 
   void onUpdated() {
@@ -292,5 +394,14 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                     : const CircularProgressIndicator())
       ],
     );
+  }
+
+  bool isDeviceInactive(Device device) {
+    if (device.lastSeenTs == null) return false;
+
+    var date = DateTime.fromMillisecondsSinceEpoch(device.lastSeenTs!);
+    var diff = time.difference(date);
+
+    return diff.inDays > 60;
   }
 }
