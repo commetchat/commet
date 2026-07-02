@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NotificationBadge extends StatelessWidget {
-  const NotificationBadge(this.count, {super.key, this.size = 15});
+  const NotificationBadge(this.count, {super.key, this.size = 16});
   final double size;
   final int count;
 

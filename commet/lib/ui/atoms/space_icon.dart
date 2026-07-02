@@ -14,6 +14,7 @@ class SpaceIcon extends StatefulWidget {
       this.showUser = false,
       this.onUpdate,
       required this.spaceId,
+      required this.clientId,
       this.avatar,
       this.placeholderColor,
       this.notificationCount = 0,
@@ -26,6 +27,7 @@ class SpaceIcon extends StatefulWidget {
   final void Function()? onTap;
   final bool showUser;
   final String spaceId;
+  final String clientId;
   final Stream<void>? onUpdate;
   final String displayName;
   final Color? placeholderColor;
@@ -59,7 +61,8 @@ class _SpaceIconState extends State<SpaceIcon> {
 
   void onSelectedSpaceChanged(Space? event) {
     setState(() {
-      selected = event?.identifier == widget.spaceId;
+      selected = event?.identifier == widget.spaceId &&
+          event?.client.identifier == widget.clientId;
     });
   }
 
@@ -124,11 +127,7 @@ class _SpaceIconState extends State<SpaceIcon> {
     return Positioned(
       right: 0,
       top: 0,
-      child: SizedBox(
-        width: 20,
-        height: 20,
-        child: NotificationBadge(widget.highlightedNotificationCount),
-      ),
+      child: NotificationBadge(widget.highlightedNotificationCount),
     );
   }
 

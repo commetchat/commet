@@ -348,6 +348,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
                 avatar: avatar,
                 userAvatar: userAvatar,
                 spaceId: space.identifier,
+                clientId: space.client.identifier,
                 userColor: userColor,
                 userDisplayName: userDisplayName,
                 highlightedNotificationCount: highlightedNotificationCount,

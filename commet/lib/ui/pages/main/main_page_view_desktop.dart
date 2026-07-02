@@ -1,6 +1,5 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
-
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -8,6 +7,7 @@ import 'package:commet/ui/molecules/current_session_panel.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/home_screen/single_rooms_list.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
@@ -75,6 +75,9 @@ class MainPageViewDesktop extends StatelessWidget {
                                   },
                                   clearSpaceSelection: () {
                                     state.clearSpaceSelection();
+                                  },
+                                  onRoomsViewSelected: () {
+                                    state.selectRoomsView();
                                   },
                                   onDirectMessageSelected: (room) {
                                     state.selectHome();
@@ -259,6 +262,15 @@ class MainPageViewDesktop extends StatelessWidget {
   }
 
   Widget buildRoomPicker(BuildContext context) {
+    if (state.currentView == MainPageSubView.rooms) {
+      return SingleRoomsList(
+        state: state,
+        onSelectRoom: (room) {
+          state.selectRoom(room);
+        },
+      );
+    }
+
     if (state.currentSpace == null) {
       return ScaledSafeArea(
         top: true,
@@ -276,7 +288,8 @@ class MainPageViewDesktop extends StatelessWidget {
   }
 
   Widget mainView(BuildContext context) {
-    if (state.currentView == MainPageSubView.home)
+    if (state.currentView == MainPageSubView.home ||
+        state.currentView == MainPageSubView.rooms)
       return Flexible(child: homeView());
     if (state.currentRoom != null && state.currentView != MainPageSubView.home)
       return roomChatView();

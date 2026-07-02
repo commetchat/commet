@@ -69,6 +69,17 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Description for enabling using visibility of room state events in the timeline");
 
+  String get labelShowRoomsInSidebar => Intl.message("Show rooms in sidebar",
+      name: "labelShowRoomsInSidebar",
+      desc:
+          "Label for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
+
+  String get labelShowRoomsInSidebarDescription => Intl.message(
+      "Add an entry to the sidebar that shows all rooms which are not contained in a space",
+      name: "labelShowRoomsInSidebarDescription",
+      desc:
+          "Description for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
+
   @override
   void initState() {
     super.initState();
@@ -130,6 +141,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 ),
                 const Seperator(),
                 BooleanPreferenceToggle(
+                  preference: preferences.showRoomsInSidebar,
+                  title: labelShowRoomsInSidebar,
+                  description: labelShowRoomsInSidebarDescription,
+                ),
+                const Seperator(),
+                BooleanPreferenceToggle(
                   preference: preferences.showRoomAvatars,
                   title: labelUseRoomAvatars,
                   description: labelEnableRoomIconsDescription,
@@ -145,7 +162,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.showStateEvents,
                   title: labelShowRoomStateEvents,
                   description: labelShowRoomStateEventsDescription,
-                )
+                ),
               ],
             ),
           ),
