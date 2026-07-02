@@ -81,7 +81,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 12,
         children: [
-         if (canUsePassword)
+          if (canUsePassword)
             tiamat.Button(
               text: "Continue with password",
               onTap: () => setState(() {
