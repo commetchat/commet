@@ -51,8 +51,10 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 500,
-      height: 200,
-      child: buildView(),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: buildView(),
+      ),
     );
   }
 
@@ -72,29 +74,34 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
   }
 
   Widget showAvailableSteps() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (canUsePassword)
-          tiamat.Button(
-            text: "Continue with password",
-            onTap: () => setState(() {
-              pickedStep = UIAStep.password;
-            }),
-          ),
-        if (canUseSso)
-          tiamat.Button(
-              text: "Continue with SSO",
-              onTap: () {
-                widget.onSubmitSso?.call();
-                setState(() {
-                  pickedStep = UIAStep.sso;
-                });
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 12,
+        children: [
+         if (canUsePassword)
+            tiamat.Button(
+              text: "Continue with password",
+              onTap: () => setState(() {
+                pickedStep = UIAStep.password;
               }),
-        if(canUseAnyNextStep == false) 
-          tiamat.Text.labelLow("Sorry, none of the authentication methods provided by the server are supported."),
-      ],
+            ),
+          if (canUseSso)
+            tiamat.Button(
+                text: "Continue with SSO",
+                onTap: () {
+                  widget.onSubmitSso?.call();
+                  setState(() {
+                    pickedStep = UIAStep.sso;
+                  });
+                }),
+          if (canUseAnyNextStep == false)
+            tiamat.Text.labelLow(
+                "Sorry, none of the authentication methods provided by the server are supported."),
+        ],
+      ),
     );
   }
 
@@ -123,23 +130,20 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
   Widget userPasswordInput() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 12,
       children: [
         TextInput(
           placeholder: "Account Password",
           obscureText: true,
           controller: passwordFieldController,
         ),
-        Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                  height: 40,
-                  child: Button(
-                    text: CommonStrings.promptSubmit,
-                    onTap: () => widget.onSubmitAuthentication
-                        ?.call(passwordFieldController.text),
-                  )),
+        SizedBox(
+            height: 40,
+            child: Button(
+              text: CommonStrings.promptSubmit,
+              onTap: () => widget.onSubmitAuthentication
+                  ?.call(passwordFieldController.text),
             ))
       ],
     );
