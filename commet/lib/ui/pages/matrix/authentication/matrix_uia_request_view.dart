@@ -91,7 +91,9 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                 setState(() {
                   pickedStep = UIAStep.sso;
                 });
-              })
+              }),
+        if(canUseAnyNextStep == false) 
+          tiamat.Text.labelLow("Sorry, none of the authentication methods provided by the server are supported."),
       ],
     );
   }
