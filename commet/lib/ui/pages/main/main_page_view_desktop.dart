@@ -54,9 +54,10 @@ class MainPageViewDesktop extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Tile(
-                            caulkPadTop: true,
+                            caulkPadTop: false,
                             caulkPadRight: true,
-                            caulkClipTopRight: true,
+                            caulkClipTopRight: false,
+                            caulkBorderTop: false,
                             caulkClipBottomRight: true,
                             caulkBorderRight: true,
                             mode: TileType.surfaceDim,
@@ -90,10 +91,11 @@ class MainPageViewDesktop extends StatelessWidget {
                           Flexible(
                             child: tiamat.Tile.surfaceContainer(
                                 caulkClipBottomLeft: true,
-                                caulkClipTopRight: true,
-                                caulkPadTop: true,
+                                caulkClipTopRight: false,
+                                caulkPadTop: false,
+                                caulkBorderTop: false,
                                 caulkClipBottomRight: true,
-                                caulkClipTopLeft: true,
+                                caulkClipTopLeft: false,
                                 child: buildRoomPicker(context)),
                           ),
                         ],
@@ -168,10 +170,8 @@ class MainPageViewDesktop extends StatelessWidget {
           Expanded(
             child: Tile(
               caulkPadLeft: true,
-              caulkClipTopLeft: true,
-              caulkClipBottomLeft: true,
-              caulkPadTop: true,
-              caulkPadBottom: true,
+              caulkPadTop: false,
+              caulkPadBottom: false,
               child: ScaledSafeArea(
                 child: HomeScreen(
                   clientManager: state.clientManager,
@@ -223,9 +223,10 @@ class MainPageViewDesktop extends StatelessWidget {
                     caulkClipTopLeft: true,
                     caulkClipTopRight: true,
                     caulkBorderRight: true,
-                    caulkPadBottom: true,
-                    caulkClipBottomLeft: true,
-                    caulkClipBottomRight: true,
+                    caulkPadBottom: false,
+                    caulkClipBottomLeft: false,
+                    caulkClipBottomRight: false,
+                    caulkBorderBottom: false,
                     caulkBorderLeft: true,
                     child: RoomPrimaryView(state.currentRoom!,
                         bypassSpecialRoomTypes: state.showAsTextRoom),
@@ -239,8 +240,9 @@ class MainPageViewDesktop extends StatelessWidget {
                   builder: (state, child) {
                     Widget result = Tile.surfaceContainer(
                       caulkPadLeft: true,
-                      caulkPadBottom: true,
-                      caulkClipBottomLeft: true,
+                      caulkPadBottom: false,
+                      caulkBorderBottom: false,
+                      caulkClipBottomLeft: false,
                       caulkClipTopLeft: true,
                       child: child,
                     );

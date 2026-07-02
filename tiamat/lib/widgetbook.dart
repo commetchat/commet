@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/config.dart';
-import 'package:tiamat/config/style/theme_dark.dart';
-import 'package:tiamat/config/style/theme_light.dart';
-import 'package:tiamat/config/style/theme_you.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
-import 'dart:io' show Platform;
+
 // Import the generated directories variable
 import 'widgetbook.directories.g.dart';
 

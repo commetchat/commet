@@ -1,11 +1,6 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_base.dart';
-import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
-import 'dart:io' show Platform;
 
 class ThemeAmoledColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 30, 30, 30);
