@@ -17,6 +17,7 @@ import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
@@ -118,9 +119,12 @@ class ChatState extends State<Chat> {
     super.initState();
   }
 
+  String? get initialEventId =>
+      preferences.openRoomsAtLastReadMessage.value ? room.lastRead : null;
+
   Future<void> loadTimeline() async {
     ErrorUtils.tryRun(context, () async {
-      var t = await room.getTimeline(contextEventId: room.lastRead);
+      var t = await room.getTimeline(contextEventId: initialEventId);
       setState(() {
         _timeline = t;
       });
@@ -130,9 +134,7 @@ class ChatState extends State<Chat> {
   Future<void> loadThreadTimeline() async {
     ErrorUtils.tryRun(context, () async {
       Timeline? timeline = room.timeline;
-      timeline ??= room.lastRead.isNotEmpty
-          ? await room.getTimeline(contextEventId: room.lastRead)
-          : await room.getTimeline();
+      timeline ??= await room.getTimeline(contextEventId: initialEventId);
 
       var threadTimeline = await threadsComponent!.getThreadTimeline(
           roomTimeline: timeline, threadRootEventId: widget.threadId!);

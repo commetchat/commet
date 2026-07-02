@@ -179,12 +179,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       }
     }
 
-    if (isCollapsible && isNextCollapsible && !isPrevCollapsible) {
-      collapse = TimelineEventWidgetCollapseType.root;
-    }
+    if (preferences.collapseStateEvents.value) {
+      if (isCollapsible && isNextCollapsible && !isPrevCollapsible) {
+        collapse = TimelineEventWidgetCollapseType.root;
+      }
 
-    if (isCollapsible && isPrevCollapsible) {
-      collapse = TimelineEventWidgetCollapseType.child;
+      if (isCollapsible && isPrevCollapsible) {
+        collapse = TimelineEventWidgetCollapseType.child;
+      }
     }
 
     showDateSeperator = shouldEventShowDate(eventIndex);
@@ -341,7 +343,11 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return ExpansionTile(
         title: Padding(
           padding: const EdgeInsets.fromLTRB(52, 0, 0, 0),
-          child: tiamat.Text.labelLow(text),
+          child: tiamat.Text.labelLow(
+            text,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         children: [
           Column(

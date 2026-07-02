@@ -465,7 +465,7 @@ class MatrixBackgroundRoom implements Room {
   }
 
   @override
-  String get lastRead => throw UnimplementedError();
+  String? get lastRead => throw UnimplementedError();
 
   @override
   // TODO: implement visibility

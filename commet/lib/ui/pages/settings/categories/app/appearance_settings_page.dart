@@ -69,6 +69,17 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Description for enabling using visibility of room state events in the timeline");
 
+  String get labelCollapseStateEvents => Intl.message("Collapse state events",
+      name: "labelCollapseStateEvents",
+      desc:
+          "Label for enabling collapsing of state events in the room timeline");
+
+  String get labelCollapseStateEventsDescription => Intl.message(
+      "Group changes to room state in to a single timeline event",
+      name: "labelCollapseStateEventsDescription",
+      desc:
+          "Description for enabling using collapsing of room state events in the timeline");
+
   String get labelShowRoomsInSidebar => Intl.message("Show rooms in sidebar",
       name: "labelShowRoomsInSidebar",
       desc:
@@ -163,6 +174,11 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   title: labelShowRoomStateEvents,
                   description: labelShowRoomStateEventsDescription,
                 ),
+                BooleanPreferenceToggle(
+                  preference: preferences.collapseStateEvents,
+                  title: labelCollapseStateEvents,
+                  description: labelCollapseStateEventsDescription,
+                )
               ],
             ),
           ),
