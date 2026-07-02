@@ -1,0 +1,9 @@
+# Lightweight runtime image — Flutter web is pre-built by CI before this runs.
+# Use this instead of the main Dockerfile on GitHub Actions to avoid pulling
+# the multi-GB cirruslabs/flutter builder image on the runner.
+FROM nginx:alpine
+
+COPY commet/build/web /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
