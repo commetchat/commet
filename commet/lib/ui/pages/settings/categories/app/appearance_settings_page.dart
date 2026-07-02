@@ -79,7 +79,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       name: "labelCollapseStateEventsDescription",
       desc:
           "Description for enabling using collapsing of room state events in the timeline");
-          
+
   String get labelShowRoomsInSidebar => Intl.message("Show rooms in sidebar",
       name: "labelShowRoomsInSidebar",
       desc:
