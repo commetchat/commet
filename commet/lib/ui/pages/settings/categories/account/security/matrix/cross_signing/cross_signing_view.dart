@@ -279,19 +279,33 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
     return m.Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
+      spacing: 12,
       children: [
         m.Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 12,
           children: [
             tiamat.Text.label(labelMatrixRecoveryKeyExplanation),
-            const SizedBox(height: 8),
-            m.SelectionArea(
-              child: Codeblock(
-                text: widget.recoveryKey!,
+            m.Container(
+              decoration: BoxDecoration(
+                color: m.ColorScheme.of(context).surfaceContainerLowest,
+                borderRadius: BorderRadiusGeometry.circular(8),
+              ),
+              child: m.SelectionArea(
+                child: m.Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+                  child: m.Center(
+                      child: Text(
+                    widget.recoveryKey!,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontFamily: "Code",
+                        fontFeatures: [FontFeature.disable("calt")]),
+                  )),
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            tiamat.Button.secondary(
+            tiamat.Button(
                 text: copyBackupCodeText,
                 onTap: () {
                   services.Clipboard.setData(
@@ -302,10 +316,7 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                 }),
           ],
         ),
-        const SizedBox(
-          height: 50,
-        ),
-        tiamat.Button(
+        tiamat.Button.secondary(
             text: CommonStrings.promptConfirm,
             isLoading: isActionLoading,
             onTap: () async {
