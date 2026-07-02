@@ -57,7 +57,6 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  width: 100,
                   height: 40,
                   child: Button(
                     text: CommonStrings.promptSubmit,

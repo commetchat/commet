@@ -104,7 +104,7 @@ class MatrixSessionView extends StatelessWidget {
             text: promptMatrixVerifySession,
             onTap: () => beginVerification?.call(),
           ),
-        if (!isThisDevice)
+        if (!isThisDevice && removeSession != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
             child: tiamat.IconButton(

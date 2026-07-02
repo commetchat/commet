@@ -1,7 +1,11 @@
+import 'package:commet/client/alert.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/debug/log.dart';
+import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session.dart';
 import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart';
@@ -20,7 +24,23 @@ class MatrixSecurityTab extends StatefulWidget {
 class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
   bool? messageBackupEnabled;
+  bool isVerified = false;
   List<Device>? devices;
+
+  Map<String, Object?>? authMetadata;
+
+  Uri? get accountManagementUri {
+    var str = authMetadata?.tryGet<String>("account_management_uri");
+    if (str == null) return null;
+    return Uri.tryParse(str);
+  }
+
+  List<String>? get supportedActions =>
+      authMetadata?.tryGetList<String>("account_management_actions_supported");
+
+  bool get canRemoveDeviceOAuth =>
+      supportedActions?.contains("org.matrix.device_delete") == true &&
+      accountManagementUri != null;
 
   String get labelMatrixCrossSigning => Intl.message("Cross signing",
       desc: "Title label for matrix cross signing",
@@ -74,11 +94,21 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       var encryption = widget.client.getMatrixClient().encryption;
       crossSigningEnabled = encryption?.crossSigning.enabled ?? false;
       messageBackupEnabled = encryption?.keyManager.enabled ?? false;
+      isVerified = widget.client.matrixClient.isUnknownSession == false;
     });
   }
 
   void getDevices() async {
     var gotDevices = await widget.client.getMatrixClient().getDevices();
+
+    if (authMetadata == null) {
+      try {
+        authMetadata = await widget.client.matrixClient
+            .request(RequestType.GET, "/client/v1/auth_metadata");
+      } catch (e, s) {
+        Log.onError(e, s);
+      }
+    }
 
     gotDevices
         ?.sort((a, b) => (b.lastSeenTs ?? 0).compareTo(a.lastSeenTs ?? 0));
@@ -95,16 +125,8 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
-      children: [
-        const SizedBox(
-          height: 4,
-        ),
-        crossSigningPanel(),
-        const SizedBox(
-          height: 4,
-        ),
-        sessionsPanel()
-      ],
+      spacing: 4,
+      children: [crossSigningPanel(), sessionsPanel()],
     );
   }
 
@@ -113,27 +135,43 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       header: labelMatrixAccountSessions,
       mode: TileType.surfaceContainerLow,
       child: devices == null
-          ? const CircularProgressIndicator()
+          ? SizedBox(
+              height: 300,
+              child: Center(child: const CircularProgressIndicator()))
           : ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
+                var device = devices![index];
                 return Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: MatrixSession(
-                    devices![index],
+                    device,
                     widget.client.getMatrixClient(),
-                    onUpdated: () {
-                      setState(() {
-                        getDevices();
-                      });
-                    },
+                    removeSession: canRemoveDeviceOAuth
+                        ? () async {
+                            LinkUtils.open(
+                                accountManagementUri!.replace(queryParameters: {
+                                  "action": "org.matrix.device_delete",
+                                  "device_id": device.deviceId
+                                }),
+                                context: context,
+                                filterTrackingParameters: false,
+                                bypassConfirmation: false);
+                          }
+                        : null,
                   ),
                 );
               },
               itemCount: devices!.length,
             ),
     );
+  }
+
+  void onUpdated() {
+    setState(() {
+      getDevices();
+    });
   }
 
   Panel crossSigningPanel() {
@@ -143,7 +181,24 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
           child: Column(
+            spacing: 4,
             children: [
+              if (!isVerified)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: ColorScheme.of(context).surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AlertView(Alert(AlertType.warning,
+                          messageGetter: () =>
+                              "Your current session is not verified. You will not be able to participate in encrypted chats.",
+                          titleGetter: () => "Unverified")),
+                    ),
+                  ),
+                ),
               crossSigning(),
               const tiamat.Seperator(),
               messageBackup()
