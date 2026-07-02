@@ -9,6 +9,7 @@ import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/home_screen/single_rooms_list.dart';
 import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/organisms/home_screen/important_rooms_list.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
@@ -208,6 +209,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                         onHomeSelected: () {
                           widget.state.selectHome();
                         },
+                        onRoomsViewSelected: () {
+                          widget.state.selectRoomsView();
+                        },
                         onDirectMessageSelected: (room) {
                           widget.state.selectHome();
                           widget.state.selectRoom(room);
@@ -219,6 +223,18 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 ),
                 if (widget.state.currentView == MainPageSubView.home)
                   directMessagesView(),
+                if (widget.state.currentView == MainPageSubView.rooms)
+                  Flexible(
+                      child: Tile.surfaceContainer(
+                          caulkClipTopLeft: true,
+                          caulkClipBottomLeft: true,
+                          caulkPadRight: true,
+                          caulkClipTopRight: true,
+                          caulkClipBottomRight: true,
+                          child: SingleRoomsList(
+                            state: widget.state,
+                            onSelectRoom: (r) => selectRoom(r),
+                          ))),
                 if (widget.state.currentView == MainPageSubView.space &&
                     widget.state.currentSpace != null)
                   spaceRoomSelector(newContext),

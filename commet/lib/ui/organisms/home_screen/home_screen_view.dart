@@ -42,7 +42,7 @@ class HomeScreenView extends StatelessWidget {
   String get labelHomeAlerts => Intl.message("Alerts",
       name: "labelHomeAlerts", desc: "Short label for header of alerts");
 
-  String get labelHomeRoomsList => Intl.message("Rooms",
+  static String get labelHomeRoomsList => Intl.message("Rooms",
       name: "labelHomeRoomsList", desc: "Short label for header of rooms list");
 
   String get labelHomeInvitations => Intl.message("Invitations",
@@ -106,7 +106,13 @@ class HomeScreenView extends StatelessWidget {
             return Padding(
               padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
               child: RoomPanel(
-                  key: ValueKey("recent-activity-room_${room.localId}"), room),
+                  shouldShowAvatarForRoom: (room) =>
+                      clientManager.clients
+                          .where((i) => i.hasRoom(room.identifier))
+                          .length >
+                      1,
+                  key: ValueKey("recent-activity-room_${room.localId}"),
+                  room),
             );
           },
         ));
@@ -129,6 +135,11 @@ class HomeScreenView extends StatelessWidget {
                 return Padding(
                   padding: EdgeInsetsGeometry.fromLTRB(0, 2, 0, 2),
                   child: RoomPanel(room,
+                      shouldShowAvatarForRoom: (room) =>
+                          clientManager.clients
+                              .where((i) => i.hasRoom(room.identifier))
+                              .length >
+                          1,
                       key: ValueKey("homescreen-room_${room.localId}")),
                 );
               },

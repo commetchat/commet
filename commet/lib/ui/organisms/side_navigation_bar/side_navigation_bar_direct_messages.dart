@@ -85,6 +85,7 @@ class _SideNavigationBarDirectMessagesState
               displayName: data.displayName,
               placeholderColor: data.defaultColor,
               spaceId: data.identifier,
+              clientId: data.client.identifier,
               avatar: data.avatar,
               width: 70,
               highlightedNotificationCount: data.notificationCount,

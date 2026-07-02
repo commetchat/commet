@@ -226,10 +226,7 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                           : 1.0,
                       duration: Duration(milliseconds: 300),
                       curve: Curves.easeOutExpo,
-                      child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: NotificationBadge(highlightNotificationCount)),
+                      child: NotificationBadge(highlightNotificationCount),
                     ),
                   )),
             ],
