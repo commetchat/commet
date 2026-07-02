@@ -358,6 +358,9 @@ class Preferences {
   BoolPreference showStateEvents =
       BoolPreference("show_state_events", defaultValue: true);
 
+  BoolPreference collapseStateEvents =
+      BoolPreference("collapse_state_events", defaultValue: true);
+
   BoolPreference debugTranslations =
       BoolPreference("enable_translations_debug", defaultValue: false);
 
@@ -400,6 +403,9 @@ class Preferences {
 
   BoolPreference useLegacyNotificationHandler =
       BoolPreference("use_legacy_notification_handler", defaultValue: false);
+
+  BoolPreference openRoomsAtLastReadMessage =
+      BoolPreference("open_rooms_at_last_read_message", defaultValue: false);
 
   BoolPreference askBeforeDeletingMessageEnabled =
       BoolPreference("ask_before_deleting_message_enabled", defaultValue: true);

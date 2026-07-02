@@ -926,7 +926,8 @@ class MatrixRoom extends Room {
   }
 
   @override
-  String get lastRead => _matrixRoom.fullyRead;
+  String? get lastRead =>
+      _matrixRoom.fullyRead.isEmpty ? null : _matrixRoom.fullyRead;
 
   @override
   RoomVisibility get visibility {
