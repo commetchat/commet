@@ -36,6 +36,8 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
   bool get canUsePassword => widget.nextSteps.contains("m.login.password");
   bool get canUseSso => widget.nextSteps.contains("m.login.sso");
 
+  bool get canUseAnyNextStep => canUsePassword || canUseSso;
+
   UIAStep? pickedStep;
 
   @override
@@ -57,8 +59,6 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
       ),
     );
   }
-
-  bool get canUseAnyNextStep => canUsePassword || canUseSso;
 
   Widget buildView() {
     switch (widget.state) {
@@ -97,9 +97,11 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                     pickedStep = UIAStep.sso;
                   });
                 }),
-          if (canUseAnyNextStep == false)
+          if (canUseAnyNextStep == false) ...[
             tiamat.Text.labelLow(
                 "Sorry, none of the authentication methods provided by the server are supported."),
+            tiamat.Text.labelLow(widget.nextSteps.toString()),
+          ]
         ],
       ),
     );

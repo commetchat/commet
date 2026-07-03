@@ -271,4 +271,10 @@ class MatrixBackgroundClient implements Client {
   @override
   // TODO: implement favoriteRooms
   NotifyingListFilter<Room> get favoriteRooms => throw UnimplementedError();
+
+  @override
+  Future<bool> hasServerDisabledEncryption() {
+    // TODO: implement hasServerDisabledEncryption
+    throw UnimplementedError();
+  }
 }

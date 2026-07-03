@@ -899,6 +899,23 @@ class MatrixClient extends Client {
   }
 
   @override
+  Future<bool> hasServerDisabledEncryption() async {
+    var data = await matrixClient.getWellknown();
+    Log.i(data);
+
+    var prop =
+        data.additionalProperties.tryGetMap<String, dynamic>("io.element.e2ee");
+
+    var value = prop?.tryGet<bool>("force_disable");
+
+    if (value == true) {
+      return true;
+    }
+
+    return false;
+  }
+
+  @override
   Future<Room> joinRoomFromPreview(RoomPreview preview) {
     String roomId = preview.roomId;
     if (preview is MatrixSpaceRoomChunkPreview) {

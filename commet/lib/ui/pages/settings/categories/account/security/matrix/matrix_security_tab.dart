@@ -25,6 +25,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
   bool? messageBackupEnabled;
   bool isVerified = false;
+  bool encryptionDisabled = false;
   List<Device>? devices;
   late DateTime time;
 
@@ -90,6 +91,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     time = DateTime.now();
     checkState();
     getDevices();
+
+    widget.client.hasServerDisabledEncryption().then((v) => setState(() {
+          encryptionDisabled = v;
+        }));
+
     super.initState();
   }
 
@@ -285,6 +291,22 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
           child: Column(
             spacing: 4,
             children: [
+              if (encryptionDisabled)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: ColorScheme.of(context).surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AlertView(Alert(AlertType.info,
+                          messageGetter: () =>
+                              "Your homeserver has force-disabled encryption",
+                          titleGetter: () => "Encryption Disabled")),
+                    ),
+                  ),
+                ),
               if (!isVerified)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),

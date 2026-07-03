@@ -150,6 +150,9 @@ abstract class Client {
 
   Future<LoginResult> executeLoginFlow(LoginFlow flow);
 
+  // returns true if the homeserver is configured in a way to disable end to end encryption
+  Future<bool> hasServerDisabledEncryption();
+
   /// Logout and invalidate the current session
   Future<void> logout();
 

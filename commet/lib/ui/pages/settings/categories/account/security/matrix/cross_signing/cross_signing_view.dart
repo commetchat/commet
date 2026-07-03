@@ -1,5 +1,4 @@
 import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/text_utils.dart';
