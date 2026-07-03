@@ -105,7 +105,6 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
   }
 
   void updateEntries() {
-    print("Updating group entries");
     entries = widget.spaces.toList();
     entries.sort((a, b) => a.order.compareTo(b.order));
 

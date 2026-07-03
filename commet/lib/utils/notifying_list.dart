@@ -44,6 +44,10 @@ class NotifyingList<T> implements INotifyingList<T> {
   @override
   int get length => _internalList.length;
 
+  void update() {
+    _onListUpdated.add(null);
+  }
+
   void close() {
     _onAdd.close();
     _onRemove.close();

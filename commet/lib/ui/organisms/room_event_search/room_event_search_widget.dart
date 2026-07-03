@@ -65,14 +65,6 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
                         prefix: const SizedBox(
                           width: 10,
                         ),
-                        suffix: loading
-                            ? const SizedBox(
-                                width: 15,
-                                height: 15,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ))
-                            : null,
                         contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 0)),
                   ),
                 ),
@@ -88,7 +80,7 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
             ],
           ),
         ),
-        if (currentResults != null)
+        if (currentResults?.isNotEmpty == true)
           Flexible(
             child: ClipRect(
               child: ImplicitlyAnimatedList(
@@ -109,7 +101,10 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: TimelineEventViewSingle(
-                                  room: widget.room, event: data),
+                                room: widget.room,
+                                event: data,
+                                key: ValueKey("search-result_${data.eventId}"),
+                              ),
                             ),
                           )),
                     ),
@@ -118,6 +113,48 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
               ),
             ),
           ),
+        if (currentResults?.isEmpty == true &&
+            searchSession != null &&
+            loading == false)
+          Flexible(
+              child: Center(child: tiamat.Text.labelLow("No results found"))),
+        if (loading ||
+            (currentResults?.isNotEmpty == true &&
+                searchSession?.canContinueSearch == true))
+          SizedBox(
+            height: 50,
+            child: loading
+                ? Center(
+                    child: const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        )))
+                : currentResults?.isNotEmpty == true
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                        child: tiamat.TextButton(
+                          "Next",
+                          icon: Icons.search,
+                          highlighted: true,
+                          highlightColor:
+                              ColorScheme.of(context).surfaceContainerLow,
+                          onTap: () {
+                            var stream = searchSession?.continueSearch();
+
+                            currentSubscription?.cancel();
+                            currentSubscription =
+                                stream!.listen(onResultsChanged);
+
+                            setState(() {
+                              loading = true;
+                            });
+                          },
+                        ),
+                      )
+                    : Container(),
+          )
       ],
     );
   }
