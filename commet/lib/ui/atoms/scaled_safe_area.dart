@@ -21,7 +21,6 @@ class ScaledSafeArea extends SafeArea {
       padding = padding.copyWith(
           bottom: MediaQuery.of(context).scale().viewPadding.bottom);
     }
-    var data = MediaQuery.of(context);
 
     return Padding(
       padding: EdgeInsets.only(
