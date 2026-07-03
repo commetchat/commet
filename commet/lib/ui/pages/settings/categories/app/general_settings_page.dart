@@ -159,6 +159,12 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: "Always open space",
               description:
                   "When navigating to a room from outside of a space, also open the space the room is in, if any",
+            ),
+            BooleanPreferenceToggle(
+              preference: preferences.openRoomsAtLastReadMessage,
+              title: "Open at last read message",
+              description:
+                  "When opening a room, jump to the last message you read",
             )
           ]),
         ),

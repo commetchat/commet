@@ -207,7 +207,7 @@ abstract class Room {
   Color getColorOfUser(String userId);
 
   /// Gets the timeline of a room, loading it if not yet loaded
-  Future<Timeline> getTimeline({String contextEventId});
+  Future<Timeline> getTimeline({String? contextEventId});
 
   /// Enables end to end encryption in a room
   Future<void> enableE2EE();
@@ -249,7 +249,7 @@ abstract class Room {
 
   Future<void> markAsRead();
 
-  String get lastRead;
+  String? get lastRead;
 
   @override
   bool operator ==(Object other) {

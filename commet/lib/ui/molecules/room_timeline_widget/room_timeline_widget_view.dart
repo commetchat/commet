@@ -105,7 +105,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       }
     }
 
-    String? targetEventId = timeline.room.lastRead; // timeline.contextEventId;
+    String? targetEventId = timeline.room.lastRead;
 
     this.timeline = timeline;
     var index = timeline.events.indexWhere((i) => i.eventId == targetEventId);
