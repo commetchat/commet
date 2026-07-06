@@ -29,6 +29,7 @@ class SingleRoomsList extends StatelessWidget {
             },
             shrinkWrap: true,
             list: state.singleRooms,
+            physics: NeverScrollableScrollPhysics(),
             builder: (context, {required child, required list}) {
               if (list.isNotEmpty) {
                 return Column(

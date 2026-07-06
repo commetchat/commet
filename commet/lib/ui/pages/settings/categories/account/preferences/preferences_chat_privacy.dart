@@ -87,8 +87,8 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
             });
           },
           getValue: () => userPresenceComponent.typingIndicatorEnabled,
-          title: labelPublicReadReceiptsToggle,
-          description: labelPublicReadReceiptsDescription,
+          title: labelTypingIndicatorsToggle,
+          description: labelPublicTypingIndicatorDescription,
         ),
         BooleanToggle(
           setValue: (value) async {
