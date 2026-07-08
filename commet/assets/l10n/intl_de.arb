@@ -1970,5 +1970,45 @@
         "description": "Label for the Keyboard shortcuts settings page",
         "type": "text",
         "placeholders": {}
+    },
+    "promptProfileSetBadges": "Abzeichen festlegen",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "Deine Abzeichen",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "Du hast noch keine Abzeichen. Du kannst Abzeichen erhalten, indem du spendest und die Entwicklung von Commet unterstützt",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "Rohprofil anzeigen",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Space",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "Diesen Raum kann jeder nutzen, der Mitglied in den übergeordneten Spaces ist",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonate": "Spenden",
+    "@promptDonate": {
+        "description": "Prompt the user to donate to the project",
+        "type": "text",
+        "placeholders": {}
     }
 }
