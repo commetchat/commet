@@ -11,7 +11,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeRecentActivity": "Son Etkinlikler",
+    "labelHomeRecentActivity": "Son etkinlikler",
     "@labelHomeRecentActivity": {
         "description": "Short label for header of recent room activity",
         "type": "text",
@@ -1010,6 +1010,84 @@
     "labelMatrixAccountSessions": "Oturumlar",
     "@labelMatrixAccountSessions": {
         "description": "Title label for account sessions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "durumu sil",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Banner seç",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Durum değiştir",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "Rozet seç",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "Hakkındayı değiştir",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "Hakkındayı sil",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Zaman dilimini paylaş",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Zaman diliminini sil",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Profil rengi seç",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "Rozetlerin",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "{callingUserName} arıyor!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelRoomTypeSpace": "Alan",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Oda oluştur",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Odaya katıl",
+    "@labelJoinRoom": {
         "type": "text",
         "placeholders": {}
     }
