@@ -1,7 +1,9 @@
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
+import 'package:commet/ui/molecules/typing_indicators_widget.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -30,6 +32,7 @@ class RoomPanelView extends StatefulWidget {
       this.showUserAvatar = false,
       this.notificationCount = 0,
       this.highlightNotificationCount = 0,
+      this.typingMembers,
       super.key});
   final ImageProvider? avatar;
   final ImageProvider? userAvatar;
@@ -46,6 +49,7 @@ class RoomPanelView extends StatefulWidget {
   final String? secondaryButtonLabel;
   final Future<void> Function()? onSecondaryButtonPressed;
   final bool showUserAvatar;
+  final List<Member>? typingMembers;
   final bool loading;
   final String? directMessagePartner;
   final double random;
@@ -182,8 +186,16 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                      if (widget.body != null)
-                                        Flexible(child: recentEvent())
+                                      if (widget.typingMembers?.isNotEmpty ==
+                                          true)
+                                        SizedBox(
+                                            height: 16,
+                                            child: TypingIndicatorAnimation()),
+                                      if (widget.typingMembers?.isNotEmpty !=
+                                              true &&
+                                          widget.body != null)
+                                        SizedBox(
+                                            height: 16, child: recentEvent()),
                                     ],
                                   ),
                                 ),

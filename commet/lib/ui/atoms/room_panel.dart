@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_panel_view.dart';
@@ -26,6 +28,7 @@ class _RoomPanelState extends State<RoomPanel> {
   late List<StreamSubscription> subs;
   String? directMessagePartner;
   UserPresence? presence = null;
+  List<Member> typingUsers = [];
 
   @override
   void initState() {
@@ -34,6 +37,18 @@ class _RoomPanelState extends State<RoomPanel> {
 
     var dm = widget.room.client.getComponent<DirectMessagesComponent>();
     directMessagePartner = dm?.getDirectMessagePartnerId(widget.room);
+
+    var typing = widget.room.getComponent<TypingIndicatorComponent>();
+
+    if (typing != null) {
+      subs.add(typing.onTypingUsersUpdated.listen((_) {
+        setState(() {
+          typingUsers = typing.typingUsers;
+        });
+      }));
+
+      typingUsers = typing.typingUsers;
+    }
 
     if (directMessagePartner != null) {
       final presenceComponent =
@@ -108,6 +123,7 @@ class _RoomPanelState extends State<RoomPanel> {
             : null,
         body: widget.room.lastMessage?.plainTextBody,
         notificationCount: widget.room.notificationCount,
+        typingMembers: typingUsers,
         highlightNotificationCount:
             widget.room.displayHighlightedNotificationCount,
       ),
