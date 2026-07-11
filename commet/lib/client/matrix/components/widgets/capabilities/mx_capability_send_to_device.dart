@@ -44,11 +44,6 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
     var type = message.data.tryGet<String>("type")!;
     var encrypted = message.data.tryGet<bool>("encrypted") ?? false;
 
-    if (encrypted) {
-      throw UnimplementedError(
-          "Not yet implemented suport for sending encrypted toDevice events");
-    }
-
     var messages = message.data.tryGetMap<String, dynamic>("messages");
 
     Map<String, Map<String, Map<String, dynamic>>> map = Map();
@@ -72,6 +67,26 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
     }
 
     final txn = runner.client.matrixClient.generateUniqueTransactionId();
+
+    if (encrypted) {
+      for (var user in map.entries) {
+        for (var device in user.value.entries) {
+          final deviceKey = runner.client.matrixClient.userDeviceKeys[user.key]
+              ?.deviceKeys[device.key];
+
+          if (deviceKey != null) {
+            await runner.client.matrixClient
+                .sendToDeviceEncrypted([deviceKey], eventType, device.value);
+          }
+        }
+      }
+
+      return message.createResponseObject();
+    }
+
+    if (encrypted) {
+      throw Exception("Failed to send to-device message with encryption");
+    }
 
     await runner.client.matrixClient.sendToDevice(type, txn, map);
 
