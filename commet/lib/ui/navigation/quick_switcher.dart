@@ -184,7 +184,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                 for (var room in clientManager!.rooms
                     .sorted((a, b) =>
                         b.lastEventTimestamp.compareTo(a.lastEventTimestamp))
-                    .sublist(0, 4))
+                    .sublist(0, clientManager!.rooms.length.clamp(0, 4)))
                   RoomPanelView(
                     onTap: () {
                       EventBus.doOpenRoom(room.identifier,
