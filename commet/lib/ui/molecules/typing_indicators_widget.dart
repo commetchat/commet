@@ -87,15 +87,16 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   }
 }
 
-class _SingleTypingIndicatorBlob extends StatefulWidget {
-  const _SingleTypingIndicatorBlob({super.key});
-
+class SingleTypingIndicatorBlob extends StatefulWidget {
+  const SingleTypingIndicatorBlob({this.color, this.border, super.key});
+  final Color? color;
+  final BoxBorder? border;
   @override
-  State<_SingleTypingIndicatorBlob> createState() =>
-      __SingleTypingIndicatorBlobState();
+  State<SingleTypingIndicatorBlob> createState() =>
+      SingleTypingIndicatorBlobState();
 }
 
-class __SingleTypingIndicatorBlobState extends State<_SingleTypingIndicatorBlob>
+class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
     with TickerProviderStateMixin {
   late AnimationController controller = AnimationController(
       duration: const Duration(milliseconds: 200), vsync: this, value: 1);
@@ -118,20 +119,21 @@ class __SingleTypingIndicatorBlobState extends State<_SingleTypingIndicatorBlob>
           var translation = sin(controller.value * 3.1415926);
 
           return SizedBox(
-            height: 7,
-            width: 7,
+            height: 6,
+            width: 6,
             child: Align(
               alignment: Alignment.center,
               heightFactor: controller.value,
               child: Transform(
                 transform: Matrix4.translationValues(0, translation * 4, 0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Align(
-                    heightFactor: alpha,
-                    child: Container(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                child: Align(
+                  heightFactor: alpha,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: widget.border,
+                        color: widget.color ??
+                            Theme.of(context).colorScheme.secondary),
                   ),
                 ),
               ),
@@ -193,20 +195,20 @@ class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
       return;
     }
 
-    var state = key.currentState! as __SingleTypingIndicatorBlobState;
+    var state = key.currentState! as SingleTypingIndicatorBlobState;
     state.controller.forward(from: 0);
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(children: [
-      _SingleTypingIndicatorBlob(
+      SingleTypingIndicatorBlob(
         key: blobKeys[0],
       ),
-      _SingleTypingIndicatorBlob(
+      SingleTypingIndicatorBlob(
         key: blobKeys[1],
       ),
-      _SingleTypingIndicatorBlob(
+      SingleTypingIndicatorBlob(
         key: blobKeys[2],
       ),
     ]);

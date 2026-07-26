@@ -1,10 +1,12 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/molecules/typing_indicators_widget.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -77,6 +79,23 @@ class _RoomPanelViewState extends State<RoomPanelView> {
   bool secondaryButtonLoading = false;
 
   @override
+  void initState() {
+    startTimer();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant RoomPanelView oldWidget) {
+    if (widget.typingMembers?.isNotEmpty == true) {
+      startTimer();
+    } else {
+      timer?.cancel();
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var shimmerColor = Theme.of(context).colorScheme.surfaceContainerHighest;
     bool shimmer = widget.loading;
@@ -112,23 +131,23 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                                     child: Stack(
                                       alignment: AlignmentGeometry.bottomRight,
                                       children: [
-                                        Avatar(
-                                          radius: 20,
-                                          image: widget.avatar,
-                                          placeholderText: shimmer
-                                              ? " "
-                                              : widget.displayName,
-                                          placeholderColor: shimmer
-                                              ? shimmerColor
-                                              : widget.color,
+                                        Padding(
+                                          padding: EdgeInsetsGeometry.all(3),
+                                          child: Avatar(
+                                            radius: 17,
+                                            image: widget.avatar,
+                                            placeholderText: shimmer
+                                                ? " "
+                                                : widget.displayName,
+                                            placeholderColor: shimmer
+                                                ? shimmerColor
+                                                : widget.color,
+                                          ),
                                         ),
-                                        if (widget.userPresence != null)
-                                          UserPanelView.createPresenceIcon(
-                                              context,
-                                              widget.userPresence!.status),
                                       ],
                                     ),
                                   ),
+                                  typingIndicators(),
                                   if (widget.showUserAvatar)
                                     Avatar(
                                       radius: 10,
@@ -141,7 +160,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                               Flexible(
                                 child: Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                      const EdgeInsets.fromLTRB(4, 0, 8, 0),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
@@ -186,14 +205,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                      if (widget.typingMembers?.isNotEmpty ==
-                                          true)
-                                        SizedBox(
-                                            height: 16,
-                                            child: TypingIndicatorAnimation()),
-                                      if (widget.typingMembers?.isNotEmpty !=
-                                              true &&
-                                          widget.body != null)
+                                      if (widget.body != null)
                                         SizedBox(
                                             height: 16, child: recentEvent()),
                                     ],
@@ -224,6 +236,103 @@ class _RoomPanelViewState extends State<RoomPanelView> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  late List<GlobalKey> blobKeys = [
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+  ];
+
+  Timer? timer;
+
+  int prevIndex = 0;
+  void startTimer() {
+    onTimer();
+    timer?.cancel();
+    timer = Timer.periodic(const Duration(milliseconds: 250), (_) => onTimer());
+  }
+
+  void onTimer() {
+    var r = Random().nextInt(3);
+
+    if (r == prevIndex) {
+      r += 1;
+      r = r % blobKeys.length;
+    }
+
+    prevIndex = r;
+
+    var key = blobKeys[r];
+
+    if (key.currentState == null) {
+      return;
+    }
+
+    var state = key.currentState! as SingleTypingIndicatorBlobState;
+    state.controller.forward(from: 0);
+  }
+
+  Widget typingIndicators() {
+    var color = widget.userPresence?.status.getColor();
+    var border = null;
+    var expanded = widget.typingMembers?.isNotEmpty == true;
+    var backgroundColor = ColorScheme.of(context).surfaceContainer;
+    if (!expanded && color == null) {
+      color = Colors.transparent;
+      backgroundColor = Colors.transparent;
+    }
+
+    var duration =
+        expanded ? Duration(seconds: 1) : Duration(milliseconds: 300);
+    var curve = expanded ? Curves.elasticOut : Curves.easeInOutCubic;
+
+    var offset = expanded ? 7.0 : 0.0;
+    var rightPad = 2.0;
+    return AnimatedContainer(
+      duration: duration,
+      curve: curve,
+      width: (expanded ? 23 : 10) + rightPad,
+      decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(5),
+              topRight: Radius.circular(5),
+              bottomLeft: Radius.circular(expanded ? 0 : 5))),
+      height: 12,
+      child: Stack(
+        alignment: AlignmentGeometry.center,
+        children: [
+          AnimatedPositioned(
+              duration: duration,
+              right: rightPad,
+              curve: curve,
+              child: SingleTypingIndicatorBlob(
+                key: blobKeys[0],
+                border: border,
+                color: color,
+              )),
+          AnimatedPositioned(
+              duration: duration,
+              right: rightPad + offset,
+              curve: curve,
+              child: SingleTypingIndicatorBlob(
+                key: blobKeys[1],
+                border: border,
+                color: color,
+              )),
+          AnimatedPositioned(
+              duration: duration,
+              right: rightPad + (offset * 2),
+              curve: curve,
+              child: SingleTypingIndicatorBlob(
+                key: blobKeys[2],
+                border: border,
+                color: color,
+              )),
+        ],
       ),
     );
   }
