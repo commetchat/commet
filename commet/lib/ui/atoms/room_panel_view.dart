@@ -300,6 +300,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(5),
               topRight: Radius.circular(5),
+              bottomRight: Radius.circular(5),
               bottomLeft: Radius.circular(expanded ? 0 : 5))),
       height: 12,
       child: Stack(
