@@ -63,6 +63,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                     "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that",
               ),
             BooleanPreferenceToggle(
+                preference: preferences.useSharedIsolateInBackgroundTasks,
+                title: "Use shared database isolate in background"),
+            BooleanPreferenceToggle(
                 preference: preferences.debugTranslations,
                 title: "Debug Translations"),
             DoublePreferenceSlider(
