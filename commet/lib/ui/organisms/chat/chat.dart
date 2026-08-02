@@ -331,6 +331,10 @@ class ChatState extends State<Chat> {
         interactionType == EventInteractionType.reply
             ? interactingEvent
             : null);
+
+    if (interactionType == EventInteractionType.reply) {
+      setInteractingEvent(null);
+    }
   }
 
   Future<void> sendGif(GifSearchResult gif) async {
@@ -340,6 +344,10 @@ class ChatState extends State<Chat> {
         interactionType == EventInteractionType.reply
             ? interactingEvent
             : null);
+
+    if (interactionType == EventInteractionType.reply) {
+      setInteractingEvent(null);
+    }
   }
 
   void editLastMessage() {
