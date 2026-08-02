@@ -304,12 +304,7 @@ class UserPanelView extends material.StatelessWidget {
 
     var backgroundColor = scheme.surfaceContainer;
 
-    var color = switch (status) {
-      UserPresenceStatus.offline => Colors.grey,
-      UserPresenceStatus.online => Colors.lightGreen,
-      UserPresenceStatus.unavailable => Colors.amber,
-      UserPresenceStatus.unknown => Colors.grey,
-    };
+    var color = status.getColor();
 
     return DecoratedBox(
       decoration: BoxDecoration(

@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:flutter/material.dart';
 
 enum UserPresenceStatus {
   offline,
@@ -24,6 +25,17 @@ class UserPresence {
   UserPresenceMessage? message;
 
   UserPresence(this.status, {this.message});
+}
+
+extension UserPresenceColor on UserPresenceStatus {
+  Color getColor() {
+    return switch (this) {
+      UserPresenceStatus.offline => Colors.grey,
+      UserPresenceStatus.online => Colors.lightGreen,
+      UserPresenceStatus.unavailable => Colors.amber,
+      UserPresenceStatus.unknown => Colors.grey,
+    };
+  }
 }
 
 abstract class UserPresenceComponent<T extends Client> implements Component<T> {

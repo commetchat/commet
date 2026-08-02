@@ -21,14 +21,6 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
 
   late List<Member> typingMembers;
 
-  late List<GlobalKey> blobKeys = [
-    GlobalKey(),
-    GlobalKey(),
-    GlobalKey(),
-  ];
-
-  Timer? timer;
-
   late String currentText = "";
 
   String typingUsers(int howMany, String user1, String user2, String user3) =>
@@ -47,38 +39,14 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
     typingMembers = widget.component.typingUsers;
     if (typingMembers.isNotEmpty) {
       currentText = getTypingText();
-      startTimer();
     }
     super.initState();
   }
 
   @override
   void dispose() {
-    timer?.cancel();
     sub?.cancel();
     super.dispose();
-  }
-
-  int prevIndex = 0;
-
-  void onTimer(Timer timer) {
-    var r = Random().nextInt(3);
-
-    if (r == prevIndex) {
-      r += 1;
-      r = r % blobKeys.length;
-    }
-
-    prevIndex = r;
-
-    var key = blobKeys[r];
-
-    if (key.currentState == null) {
-      return;
-    }
-
-    var state = key.currentState! as __SingleTypingIndicatorBlobState;
-    state.controller.forward(from: 0);
   }
 
   void onTypingUsersUpdated(void event) {
@@ -86,18 +54,8 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
       typingMembers = widget.component.typingUsers;
       if (typingMembers.isNotEmpty) {
         currentText = getTypingText();
-        if (timer == null) {
-          startTimer();
-        }
-      } else {
-        timer?.cancel();
-        timer = null;
       }
     });
-  }
-
-  void startTimer() {
-    timer = Timer.periodic(const Duration(milliseconds: 250), onTimer);
   }
 
   @override
@@ -112,19 +70,7 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
               child: Row(children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                  child: Row(
-                    children: [
-                      _SingleTypingIndicatorBlob(
-                        key: blobKeys[0],
-                      ),
-                      _SingleTypingIndicatorBlob(
-                        key: blobKeys[1],
-                      ),
-                      _SingleTypingIndicatorBlob(
-                        key: blobKeys[2],
-                      ),
-                    ],
-                  ),
+                  child: TypingIndicatorAnimation(),
                 ),
                 tiamat.Text.labelLow(currentText)
               ])),
@@ -141,15 +87,16 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   }
 }
 
-class _SingleTypingIndicatorBlob extends StatefulWidget {
-  const _SingleTypingIndicatorBlob({super.key});
-
+class SingleTypingIndicatorBlob extends StatefulWidget {
+  const SingleTypingIndicatorBlob({this.color, this.border, super.key});
+  final Color? color;
+  final BoxBorder? border;
   @override
-  State<_SingleTypingIndicatorBlob> createState() =>
-      __SingleTypingIndicatorBlobState();
+  State<SingleTypingIndicatorBlob> createState() =>
+      SingleTypingIndicatorBlobState();
 }
 
-class __SingleTypingIndicatorBlobState extends State<_SingleTypingIndicatorBlob>
+class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
     with TickerProviderStateMixin {
   late AnimationController controller = AnimationController(
       duration: const Duration(milliseconds: 200), vsync: this, value: 1);
@@ -172,20 +119,21 @@ class __SingleTypingIndicatorBlobState extends State<_SingleTypingIndicatorBlob>
           var translation = sin(controller.value * 3.1415926);
 
           return SizedBox(
-            height: 7,
-            width: 7,
+            height: 6,
+            width: 6,
             child: Align(
               alignment: Alignment.center,
               heightFactor: controller.value,
               child: Transform(
                 transform: Matrix4.translationValues(0, translation * 4, 0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Align(
-                    heightFactor: alpha,
-                    child: Container(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                child: Align(
+                  heightFactor: alpha,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: widget.border,
+                        color: widget.color ??
+                            Theme.of(context).colorScheme.secondary),
                   ),
                 ),
               ),
@@ -194,5 +142,75 @@ class __SingleTypingIndicatorBlobState extends State<_SingleTypingIndicatorBlob>
         },
       ),
     );
+  }
+}
+
+class TypingIndicatorAnimation extends StatefulWidget {
+  const TypingIndicatorAnimation({super.key});
+
+  @override
+  State<TypingIndicatorAnimation> createState() =>
+      _TypingIndicatorAnimationState();
+}
+
+class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
+  late List<GlobalKey> blobKeys = [
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+  ];
+
+  Timer? timer;
+  int prevIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(milliseconds: 250), onTimer);
+  }
+
+  void onTimer(Timer timer) {
+    var r = Random().nextInt(3);
+
+    if (r == prevIndex) {
+      r += 1;
+      r = r % blobKeys.length;
+    }
+
+    prevIndex = r;
+
+    var key = blobKeys[r];
+
+    if (key.currentState == null) {
+      return;
+    }
+
+    var state = key.currentState! as SingleTypingIndicatorBlobState;
+    state.controller.forward(from: 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      SingleTypingIndicatorBlob(
+        key: blobKeys[0],
+      ),
+      SingleTypingIndicatorBlob(
+        key: blobKeys[1],
+      ),
+      SingleTypingIndicatorBlob(
+        key: blobKeys[2],
+      ),
+    ]);
   }
 }
