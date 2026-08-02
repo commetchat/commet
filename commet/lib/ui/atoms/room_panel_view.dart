@@ -296,12 +296,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
       curve: curve,
       width: (expanded ? 23 : 10) + rightPad,
       decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(5),
-              topRight: Radius.circular(5),
-              bottomRight: Radius.circular(5),
-              bottomLeft: Radius.circular(expanded ? 0 : 5))),
+          color: backgroundColor, borderRadius: BorderRadius.circular(5)),
       height: 12,
       child: Stack(
         alignment: AlignmentGeometry.center,
