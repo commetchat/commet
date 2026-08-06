@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
@@ -168,6 +167,12 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
             description: "distributor for unified push: $distributor",
             passed: distributor != null));
       }
+    } else {
+      steps.add(_NotificationDebugStep(
+          name: "Google Services Configuration",
+          description:
+              "Checks the current config for Google services notifications: ${preferences.fcmKey.value == null ? "null" : preferences.fcmKey.value!.substring(0, 10) + "..."}",
+          passed: preferences.fcmKey.value != null));
     }
 
     String? pushKey = BuildConfig.ENABLE_GOOGLE_SERVICES

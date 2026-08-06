@@ -291,6 +291,16 @@ Future<void> startGui() async {
     FirstTimeSetup.registerPostLoginSetup(UpdateCheckerSetup());
   }
 
+  if (PlatformUtils.isAndroid) {
+    var roomsListCache = Map<String, List<String>>.new();
+    for (var client in clientManager!.clients) {
+      roomsListCache[client.identifier] =
+          client.rooms.map((i) => i.identifier).toList();
+    }
+
+    preferences.storeRoomsListCache(roomsListCache);
+  }
+
   runApp(App(
     clientManager: clientManager!,
     initialTheme: initialTheme,
