@@ -319,17 +319,21 @@ class MatrixRoom extends Room {
   Future<void> handleNotification(TimelineEvent event,
       {Function(String reason)? onNotificationRejected}) async {
     if (!shouldNotify(event, onNotificationRejected: onNotificationRejected)) {
+      onNotificationRejected?.call("shouldNotify returned false");
       return;
     }
 
     if (event is MatrixTimelineEventCall ||
         event is MatrixTimelineEventUnknown) {
+      onNotificationRejected?.call("Event type does not trigger notifications");
       return;
     }
 
     if (event is TimelineEventMessage || event is TimelineEventSticker) {
       // let push notifications handle it
       if (BuildConfig.ANDROID) {
+        onNotificationRejected?.call(
+            "Notifications should be handled by a push service on Android, but we are in the desktop notifications handler");
         return;
       }
 
@@ -338,6 +342,8 @@ class MatrixRoom extends Room {
       if (notification != null) {
         NotificationManager.notify(notification,
             onNotificationRejected: onNotificationRejected);
+      } else {
+        onNotificationRejected?.call("Notification content was null");
       }
     }
   }
