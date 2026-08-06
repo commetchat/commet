@@ -183,7 +183,7 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
     var step = _NotificationDebugStep(
         name: "Has Registered Pusher",
         description:
-            "Tests if the client has registered a push notification service with the homeserver",
+            "Tests if the client has registered a push notification service with the homeserver: ${pusher?.data.url?.host}",
         passed: pusher != null);
 
     steps.add(step);
