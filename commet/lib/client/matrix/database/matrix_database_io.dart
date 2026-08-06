@@ -46,7 +46,9 @@ NativeDatabase setupNativeDatabase(File file, {bool readOnly = false}) {
   return NativeDatabase.opened(
     db,
     setup: (database) {
-      database.execute("pragma journal_mode = wal;");
+      if (!readOnly) {
+        database.execute("pragma journal_mode = wal;");
+      }
     },
   );
 }
