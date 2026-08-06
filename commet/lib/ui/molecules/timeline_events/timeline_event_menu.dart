@@ -448,8 +448,6 @@ class TimelineEventMenu {
           name: "Diagnose Notification",
           icon: Icons.notification_important,
           action: (BuildContext context) async {
-            var room = timeline.room;
-
             AdaptiveDialog.show(context,
                 builder: (context) => NotificationDebugger(
                       event: event,
