@@ -10,9 +10,9 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
-import 'package:commet/utils/event_bus.dart';
 
 // Manage these to enable / disable firebase
 // import 'package:firebase_core/firebase_core.dart';
