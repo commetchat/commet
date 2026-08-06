@@ -12,6 +12,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
+import 'package:commet/utils/event_bus.dart';
 
 // Manage these to enable / disable firebase
 // import 'package:firebase_core/firebase_core.dart';
@@ -23,6 +24,8 @@ dynamic DefaultFirebaseOptions;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
+  EventBus.onReceivedPushNotificationData.add("${message.data}");
+
   return AndroidNotifier.onForegroundMessage(message.data);
 }
 
@@ -31,6 +34,8 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   Log.prefix = "fcm-background";
   Log.i("Got background message: ${message.data}");
   isHeadless = true;
+
+  EventBus.onReceivedPushNotificationData.add("${message.data}");
 
   final data = message.data;
 

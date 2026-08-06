@@ -120,12 +120,14 @@ class AndroidNotifier implements Notifier {
     }
   }
 
-  Future<void> checkPermission() async {
+  Future<bool> checkPermission() async {
     var android = flutterLocalNotificationsPlugin!
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()!;
 
     hasPermission = await android.requestNotificationsPermission() ?? false;
+
+    return hasPermission;
   }
 
   @override

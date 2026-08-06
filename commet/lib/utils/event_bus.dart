@@ -39,6 +39,8 @@ class EventBus {
   static StreamController<(String, String, String)> openThread =
       StreamController<(String, String, String)>.broadcast();
 
+  static StreamController<void> openHomeScreen = StreamController.broadcast();
+
   static StreamController<void> closeThread = StreamController.broadcast();
 
   static StreamController<Client?> setFilterClient =
@@ -68,6 +70,9 @@ class EventBus {
   static StreamController<void> openCalendar = StreamController.broadcast();
 
   static StreamController<void> openWidgets = StreamController.broadcast();
+
+  static StreamController<String> onReceivedPushNotificationData =
+      StreamController.broadcast();
 
   static StreamController<void> toggleRoomSidePanel =
       StreamController.broadcast();
