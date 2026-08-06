@@ -3,7 +3,7 @@ import 'package:matrix/matrix.dart';
 import 'package:universal_html/html.dart' as html;
 
 Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName,
-    {bool onDatabaseIsolate = true}) async {
+    {bool onDatabaseIsolate = true, bool readOnly = false}) async {
   await html.window.navigator.storage?.persist();
   var db = await MatrixSdkDatabase.init(clientName);
   await db.open();

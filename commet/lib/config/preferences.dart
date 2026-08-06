@@ -479,6 +479,10 @@ class Preferences {
       "experiment_enabled_e2ee_element_call",
       defaultValue: false);
 
+  BoolPreference useSharedIsolateInBackgroundTasks = BoolPreference(
+      "use_shared_isolate_in_background_tasks",
+      defaultValue: false);
+
   DoublePreference notificationsVolume =
       DoublePreference("notifications_volume", defaultValue: 90.0);
 

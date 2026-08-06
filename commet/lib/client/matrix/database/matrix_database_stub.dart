@@ -1,7 +1,7 @@
 import 'package:matrix/matrix.dart';
 
 Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName,
-    {bool onDatabaseIsolate = true}) async {
+    {bool onDatabaseIsolate = true, bool readOnly = false}) async {
   throw UnimplementedError();
 }
 
