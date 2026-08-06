@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:commet/client/matrix/database/matrix_database_io.dart';
 import 'package:commet/debug/log.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
-import 'package:drift/native.dart';
 
 final class MultiDatabaseServer {
   final Map<String, DriftIsolate> _activeIsolates = {};
@@ -18,13 +18,14 @@ final class MultiDatabaseServer {
         return;
       }
 
-      if (message.length != 2) {
+      if (message.length != 3) {
         Log.e("Received list of incorrect length");
         return;
       }
 
       final name = message[0];
       final port = message[1];
+      final readOnly = message[2] as bool;
 
       if (name is! String) {
         Log.e("list[0] was not a string");
@@ -42,7 +43,7 @@ final class MultiDatabaseServer {
           return DriftIsolate.inCurrent(
               serialize: true,
               // obviously you can pass a path instead of a name and use that to open the right NativeDatabase
-              () => NativeDatabase(File(name)));
+              () => setupNativeDatabase(File(name), readOnly: readOnly));
         },
       );
 
@@ -73,14 +74,15 @@ class DatabaseIsolate {
     }
   }
 
-  static Future<DatabaseConnection> connect(String databaseName) async {
+  static Future<DatabaseConnection> connect(String databaseName,
+      {bool readOnly = false}) async {
     if (connectToServer == null) {
       await start();
     }
 
     final response = ReceivePort();
 
-    connectToServer!.send([databaseName, response.sendPort]);
+    connectToServer!.send([databaseName, response.sendPort, readOnly]);
 
     final connectPort = await response.first as SendPort;
     return DriftIsolate.fromConnectPort(connectPort, serialize: true).connect();

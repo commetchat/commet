@@ -9,6 +9,7 @@ import 'package:commet/client/matrix_background/matrix_background_direct_message
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
@@ -86,7 +87,13 @@ class MatrixBackgroundClient implements Client {
   @override
   Future<void> init(bool loadingFromCache,
       {bool isBackgroundService = false}) async {
-    final db = await getMatrixDatabase(databaseId, onDatabaseIsolate: false);
+    Log.i(
+        "Using shared database isolate: ${preferences.useSharedIsolateInBackgroundTasks.value}");
+
+    final db = await getMatrixDatabase(databaseId,
+        onDatabaseIsolate: preferences.useSharedIsolateInBackgroundTasks.value,
+        readOnly: true);
+
     if (db is MatrixSdkDriftDatabase) {
       database = db;
     }
