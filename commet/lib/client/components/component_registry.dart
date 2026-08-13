@@ -26,6 +26,7 @@ import 'package:commet/client/matrix/components/sidebar_entries/matrix_sidebar_e
 import 'package:commet/client/matrix/components/space_banner/matrix_space_banner_component.dart';
 import 'package:commet/client/matrix/components/space_color_scheme/matrix_space_color_scheme_component.dart';
 import 'package:commet/client/matrix/components/user_color/matrix_user_color_component.dart';
+import 'package:commet/client/matrix/components/petname/matrix_petname_component.dart';
 import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_component.dart';
 import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
@@ -64,6 +65,7 @@ class ComponentRegistry {
       MatrixRecentEmoticonComponent(client),
       MatrixProfileComponent(client),
       MatrixUserColorComponent(client),
+      MatrixPetNameComponent(client),
       MatrixDonationAwardsComponent(client),
       MatrixKeyVerificationComponent(client),
       MatrixPollComponent(client),

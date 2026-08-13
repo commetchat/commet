@@ -2,6 +2,7 @@ import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/member.dart';
+import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -21,8 +22,9 @@ class MatrixMember implements Member {
   @override
   String? get detail => matrixUser.id.domain;
 
-  @override
-  String get displayName => matrixUser.calcDisplayname();
+  String get displayName =>
+      client.getComponent<PetNameComponent>()?.getPetName(identifier) ??
+      matrixUser.calcDisplayname();
 
   @override
   String get identifier => matrixUser.id;

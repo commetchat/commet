@@ -36,6 +36,9 @@ class UserProfileView extends StatefulWidget {
       this.hasColorOverride = false,
       this.setPreviewBrightness,
       this.setColorOverride,
+      this.setPetName,
+      this.currentPetName,
+      this.hasPetName = false,
       this.shareCurrentTimezone,
       this.removeTimezone,
       this.onSetAvatar,
@@ -84,6 +87,9 @@ class UserProfileView extends StatefulWidget {
   final void Function(Color)? setPreviewColor;
   final Widget? bio;
   final Future<void> Function(Brightness)? setPreviewBrightness;
+  final Future<void> Function(String?)? setPetName;
+  final String? currentPetName;
+  final bool hasPetName;
   final Future<void> Function()? onMessageButtonClicked;
   final Future<void> Function()? savePreviewTheme;
   final Future<void> Function(Color?)? setColorOverride;
@@ -581,6 +587,27 @@ class UserProfileViewState extends State<UserProfileView> {
             }
           },
           icon: Icons.colorize),
+      tiamat.ContextMenuItem(
+        text: "Set Nickame",
+        icon: Icons.badge,
+        onPressed: () async {
+          final text = await AdaptiveDialog.textPrompt(
+            context,
+            initialText: widget.currentPetName ?? '',
+            title: "Nickname",
+          );
+          if (text != null) {
+            await widget.setPetName
+                ?.call(text.trim().isEmpty ? null : text.trim());
+          }
+        },
+      ),
+      if (widget.hasPetName)
+        tiamat.ContextMenuItem(
+          text: "Clear Nickname",
+          icon: Icons.remove,
+          onPressed: () => widget.setPetName?.call(null),
+        ),
       if (widget.hasColorOverride)
         tiamat.ContextMenuItem(
             text: promptProfileClearColorOverride,

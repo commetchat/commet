@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
+import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
