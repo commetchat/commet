@@ -2,8 +2,7 @@ import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 
-class MatrixPetNameComponent
-    implements PetNameComponent<MatrixClient>, NeedsPostLoginInit {
+class MatrixPetNameComponent implements PetNameComponent<MatrixClient> {
   static const String key = 'chat.commet.petnames';
 
   @override
@@ -11,29 +10,25 @@ class MatrixPetNameComponent
 
   MatrixPetNameComponent(this.client);
 
-  Map<String, dynamic> names = {};
-
   @override
   String? getPetName(String identifier) {
-    final value = names[identifier];
+    final content = client.matrixClient.accountData[key]?.content ?? const {};
+    final value = content[identifier];
     return value is String && value.isNotEmpty ? value : null;
   }
 
   @override
   Future<void> setPetName(String identifier, String? name) async {
+    final content = Map<String, dynamic>.from(
+        client.matrixClient.accountData[key]?.content ?? const {});
+
     if (name == null || name.trim().isEmpty) {
-      names.remove(identifier);
+      content.remove(identifier);
     } else {
-      names[identifier] = name.trim();
+      content[identifier] = name.trim();
     }
 
     await client.matrixClient
-        .setAccountData(client.matrixClient.userID!, key, names);
-  }
-
-  @override
-  void postLoginInit() {
-    final data = client.matrixClient.accountData[key];
-    names = data?.content ?? {};
+        .setAccountData(client.matrixClient.userID!, key, content);
   }
 }
