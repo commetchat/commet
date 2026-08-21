@@ -1,4 +1,3 @@
-import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 
@@ -20,7 +19,8 @@ class MatrixPetNameComponent implements PetNameComponent<MatrixClient> {
   @override
   Future<void> setPetName(String identifier, String? name) async {
     final content = Map<String, dynamic>.from(
-        client.matrixClient.accountData[key]?.content ?? const {});
+      client.matrixClient.accountData[key]?.content ?? const {},
+    );
 
     if (name == null || name.trim().isEmpty) {
       content.remove(identifier);
@@ -28,7 +28,10 @@ class MatrixPetNameComponent implements PetNameComponent<MatrixClient> {
       content[identifier] = name.trim();
     }
 
-    await client.matrixClient
-        .setAccountData(client.matrixClient.userID!, key, content);
+    await client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      key,
+      content,
+    );
   }
 }
