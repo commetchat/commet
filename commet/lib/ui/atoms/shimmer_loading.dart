@@ -155,33 +155,33 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
   Widget build(BuildContext context) {
     return widget.child;
 
-    if (!widget.isLoading) {
-      return widget.child;
-    }
+    // if (!widget.isLoading) {
+    //   return widget.child;
+    // }
 
-    final shimmer = Shimmer.of(context)!;
-    if (!shimmer.isSized) {
-      return const SizedBox();
-    }
-    final shimmerSize = shimmer.size;
-    final gradient = shimmer.gradient;
-    final offsetWithinShimmer = shimmer.getDescendantOffset(
-      descendant: context.findRenderObject() as RenderBox,
-    );
+    // final shimmer = Shimmer.of(context)!;
+    // if (!shimmer.isSized) {
+    //   return const SizedBox();
+    // }
+    // final shimmerSize = shimmer.size;
+    // final gradient = shimmer.gradient;
+    // final offsetWithinShimmer = shimmer.getDescendantOffset(
+    //   descendant: context.findRenderObject() as RenderBox,
+    // );
 
-    return ShaderMask(
-      blendMode: BlendMode.srcATop,
-      shaderCallback: (bounds) {
-        return gradient.createShader(
-          Rect.fromLTWH(
-            -offsetWithinShimmer.dx,
-            -offsetWithinShimmer.dy,
-            shimmerSize.width,
-            shimmerSize.height,
-          ),
-        );
-      },
-      child: widget.child,
-    );
+    // return ShaderMask(
+    //   blendMode: BlendMode.srcATop,
+    //   shaderCallback: (bounds) {
+    //     return gradient.createShader(
+    //       Rect.fromLTWH(
+    //         -offsetWithinShimmer.dx,
+    //         -offsetWithinShimmer.dy,
+    //         shimmerSize.width,
+    //         shimmerSize.height,
+    //       ),
+    //     );
+    //   },
+    //   child: widget.child,
+    // );
   }
 }
