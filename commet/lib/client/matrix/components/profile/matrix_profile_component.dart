@@ -149,16 +149,21 @@ class MatrixProfile
   String? get timezone => fields["m.tz"] as String?;
 
   @override
-  Widget buildBio(BuildContext context, ThemeData theme,
-      {String? overrideText}) {
+  Widget buildBio(
+    BuildContext context,
+    ThemeData theme, {
+    String? overrideText,
+  }) {
     // to be compatible with both the MSC version and commet's own version
     List<dynamic>? content =
         fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
     Map<String, dynamic>? commetBioContent =
         fields[MatrixProfileComponent.bioKey];
     if (overrideText != null) {
-      commetBioContent =
-          MatrixProfileComponent.textToContent(overrideText, client);
+      commetBioContent = MatrixProfileComponent.textToContent(
+        overrideText,
+        client,
+      );
     }
 
     Map<String, dynamic>? htmlPart;
@@ -172,9 +177,7 @@ class MatrixProfile
         };
       }
       if (commetBioContent["body"] != null) {
-        textPart = {
-          "body": commetBioContent["body"],
-        };
+        textPart = {"body": commetBioContent["body"]};
       }
     } else if (content is List) {
       for (final item in content) {
@@ -198,13 +201,10 @@ class MatrixProfile
     return Material(
       color: Colors.transparent,
       child: Text(
-        content["body"],
+        textPart?["body"],
         style: theme.textTheme.bodyMedium?.copyWith(
           color: theme.colorScheme.onSurface,
         ),
-        textPart?["body"],
-        style: theme.textTheme.bodyMedium
-            ?.copyWith(color: theme.colorScheme.onSurface),
       ),
     );
   }
@@ -513,20 +513,20 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
       await setField(msc4440BioKey, {
         'm.text': [
           {'body': content['formatted_body'], 'mimetype': 'text/html'},
-          {'body': content['body']}
-        ]
+          {'body': content['body']},
+        ],
       });
     } else if (content['formatted_body'] == null && content['body'] != null) {
       await setField(msc4440BioKey, {
         'm.text': [
-          {'body': content['body']}
-        ]
+          {'body': content['body']},
+        ],
       });
     } else if (content['formatted_body'] != null && content['body'] == null) {
       await setField(msc4440BioKey, {
         'm.text': [
           {'body': content['formatted_body'], 'mimetype': 'text/html'},
-        ]
+        ],
       });
     }
 
