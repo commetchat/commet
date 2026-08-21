@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/foundation.dart';
-import 'package:tiamat/atoms/glass_tile.dart';
+import 'package:tiamat/config/custom_theme/custom_borders.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -209,6 +209,25 @@ class Tile extends StatelessWidget {
   })  : mode = TileType.surfaceContainerLow,
         super(key: key);
 
+  const Tile.dim({
+    Key? key,
+    this.child,
+    this.decoration,
+    this.caulkClipTopLeft = false,
+    this.caulkClipTopRight = false,
+    this.caulkClipBottomLeft = false,
+    this.caulkClipBottomRight = false,
+    this.caulkPadBottom = false,
+    this.caulkPadTop = false,
+    this.caulkPadLeft = false,
+    this.caulkPadRight = false,
+    this.caulkBorderBottom = false,
+    this.caulkBorderTop = false,
+    this.caulkBorderLeft = false,
+    this.caulkBorderRight = false,
+  })  : mode = TileType.surfaceDim,
+        super(key: key);
+
   @Deprecated("Use Low")
   const Tile.low3({
     Key? key,
@@ -304,48 +323,61 @@ class Tile extends StatelessWidget {
         Theme.of(context).colorScheme.surfaceContainerHighest,
     };
 
-    double glassSigma = 0;
-    double glassOpacity = 1;
+    double? glassSigma;
+    double? glassOpacity;
 
-    var settings = Theme.of(context).extension<ThemeSettings>()!;
+    var type = mode.toString().toString().split(".").last;
+
+    type = "tile." + type;
+
+    var types = ["tile", type];
+
+    var textures = Theme.of(context).extension<PanelTextures>();
+    var borders = Theme.of(context).extension<CustomThemeBorders>();
     var glass = Theme.of(context).extension<GlassSettings>();
-    var shadows = Theme.of(context).extension<ShadowSettings>();
 
-    if (glass != null) {
-      glassSigma = switch (mode) {
-        TileType.surface => glass.surfaceSigma,
-        TileType.surfaceContainer => glass.surfaceContainerSigma,
-        TileType.surfaceContainerLow => glass.surfaceContainerLowSigma,
-        TileType.surfaceContainerLowest => glass.surfaceContainerLowestSigma,
-        TileType.surfaceContainerHigh => glass.surfaceContainerHighSigma,
-        TileType.surfaceContainerHighest => glass.surfaceContainerHighestSigma,
-        TileType.surfaceDim => glass.surfaceDimSigma,
-      };
-      glassOpacity = switch (mode) {
-        TileType.surface => glass.surfaceOpacity,
-        TileType.surfaceContainer => glass.surfaceContainerOpacity,
-        TileType.surfaceContainerLow => glass.surfaceContainerLowOpacity,
-        TileType.surfaceContainerLowest => glass.surfaceContainerLowestOpacity,
-        TileType.surfaceContainerHigh => glass.surfaceContainerHighOpacity,
-        TileType.surfaceContainerHighest =>
-          glass.surfaceContainerHighestOpacity,
-        TileType.surfaceDim => glass.surfaceDimOpacity,
-      };
+    NinePatchTexture? texture;
+    CustomBorders? borderTheme;
+
+    for (var t in types) {
+      var border = borders?.getBorder(t);
+      borderTheme = CustomBorders(
+        innerPadding: border?.innerPadding ?? borderTheme?.innerPadding,
+        outerPadding: border?.outerPadding ?? borderTheme?.outerPadding,
+        borderRadius: border?.borderRadius ?? borderTheme?.borderRadius,
+      );
+
+      var g = glass?.getGlass(t);
+
+      if (g?.opacity != null) {
+        glassOpacity = g!.opacity;
+      }
+
+      if (g?.sigma != null) {
+        glassSigma = g!.sigma;
+      }
+
+      texture ??= textures?.getTexture(type);
     }
 
-    double caulkBorder = settings.caulkBorderRadius;
-    double caulkOuterPadding = settings.caulkPadding;
+    var settings = Theme.of(context).extension<ThemeSettings>()!;
+    var shadows = Theme.of(context).extension<ShadowSettings>();
 
     bool adaptiveBorder = settings.caulkPadding > 0;
 
     var radius = BorderRadius.only(
-        topLeft: caulkClipTopLeft ? Radius.circular(caulkBorder) : Radius.zero,
-        topRight:
-            caulkClipTopRight ? Radius.circular(caulkBorder) : Radius.zero,
-        bottomLeft:
-            caulkClipBottomLeft ? Radius.circular(caulkBorder) : Radius.zero,
-        bottomRight:
-            caulkClipBottomRight ? Radius.circular(caulkBorder) : Radius.zero);
+        topLeft: caulkClipTopLeft
+            ? Radius.circular(borderTheme?.borderRadius ?? 0)
+            : Radius.zero,
+        topRight: caulkClipTopRight
+            ? Radius.circular(borderTheme?.borderRadius ?? 0)
+            : Radius.zero,
+        bottomLeft: caulkClipBottomLeft
+            ? Radius.circular(borderTheme?.borderRadius ?? 0)
+            : Radius.zero,
+        bottomRight: caulkClipBottomRight
+            ? Radius.circular(borderTheme?.borderRadius ?? 0)
+            : Radius.zero);
 
     var border = BorderSide.none;
 
@@ -382,25 +414,40 @@ class Tile extends StatelessWidget {
           width: settings.caulkStrokeThickness);
     }
 
-    return Padding(
+    DecorationImage? image;
+    if (texture != null) {
+      image = DecorationImage(
+          fit: BoxFit.fill,
+          scale: texture.scale ?? 1.0,
+          centerSlice: texture.offset,
+          image: texture.image);
+    }
+
+    if (texture != null) {
+      color = Colors.transparent;
+    }
+
+    Widget result = Padding(
       padding: EdgeInsets.only(
-          left: caulkPadLeft ? caulkOuterPadding : 0,
-          right: caulkPadRight ? caulkOuterPadding : 0,
-          top: caulkPadTop ? caulkOuterPadding : 0,
-          bottom: caulkPadBottom ? caulkOuterPadding : 0),
+          left: caulkPadLeft ? borderTheme?.outerPadding?.left ?? 0 : 0,
+          right: caulkPadRight ? borderTheme?.outerPadding?.right ?? 0 : 0,
+          top: caulkPadTop ? borderTheme?.outerPadding?.top ?? 0 : 0,
+          bottom: caulkPadBottom ? borderTheme?.outerPadding?.bottom ?? 0 : 0),
       child: Container(
           decoration:
               BoxDecoration(borderRadius: radius, boxShadow: shadows?.shadows),
           clipBehavior: Clip.antiAlias,
           child: BackdropFilter(
-              filter: glass != null
+              filter: glassSigma != null && glassSigma > 0.0
                   ? ImageFilter.blur(sigmaX: glassSigma, sigmaY: glassSigma)
                   : ImageFilter.matrix(Matrix4.identity().storage),
+              enabled: glassSigma != null && glassSigma > 0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: glass != null
+                  color: glassOpacity != null && glassOpacity < 1.0
                       ? color.withAlpha((glassOpacity * 255.0).toInt())
                       : color,
+                  image: image,
                   borderRadius: radius,
                   border: Border(
                       top: borderTop ? border : BorderSide.none,
@@ -408,8 +455,20 @@ class Tile extends StatelessWidget {
                       right: borderRight ? border : BorderSide.none,
                       bottom: borderBottom ? border : BorderSide.none),
                 ),
-                child: child,
+                child: Container(
+                  decoration: BoxDecoration(image: image),
+                  child: Padding(
+                      padding: EdgeInsetsGeometry.fromLTRB(
+                        borderTheme?.innerPadding?.left ?? 0,
+                        borderTheme?.innerPadding?.top ?? 0,
+                        borderTheme?.innerPadding?.right ?? 0,
+                        borderTheme?.innerPadding?.bottom ?? 0,
+                      ),
+                      child: child),
+                ),
               ))),
     );
+
+    return result;
   }
 }

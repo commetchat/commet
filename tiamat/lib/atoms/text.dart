@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/seperator.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 const String exampleText =
@@ -217,7 +216,7 @@ class Text extends StatelessWidget {
     double saturationMultiplier = 1,
     double maxLightnessOnLight = 0.7,
   }) {
-    var hsl = HSLColor.fromColor(color!);
+    var hsl = HSLColor.fromColor(color);
     double lightness = hsl.lightness;
     double saturation = hsl.saturation * saturationMultiplier;
     if (Theme.of(context).brightness == Brightness.dark) {
