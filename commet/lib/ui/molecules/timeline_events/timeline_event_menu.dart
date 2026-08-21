@@ -21,6 +21,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
+import 'package:commet/ui/molecules/notification_debugger.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -440,6 +441,19 @@ class TimelineEventMenu {
             }
 
             onActionFinished?.call();
+          },
+        ),
+      if (preferences.developerMode.value)
+        TimelineEventMenuEntry(
+          name: "Diagnose Notification",
+          icon: Icons.notification_important,
+          action: (BuildContext context) async {
+            AdaptiveDialog.show(context,
+                builder: (context) => NotificationDebugger(
+                      event: event,
+                      client: timeline.client,
+                      room: timeline.room,
+                    ));
           },
         ),
     ];

@@ -10,7 +10,8 @@ import 'package:matrix/matrix_api_lite/generated/model.dart' show Device;
 class NotificationModifierSuppressOtherActiveDevice
     implements NotificationModifier {
   @override
-  Future<NotificationContent?> process(NotificationContent content) async {
+  Future<NotificationContent?> process(NotificationContent content,
+      {Function(String reason)? onNotificationRejected}) async {
     if (!preferences.silenceNotifications.value) {
       return content;
     }

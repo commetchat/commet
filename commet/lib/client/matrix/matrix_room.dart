@@ -316,32 +316,41 @@ class MatrixRoom extends Room {
     handleNotification(event);
   }
 
-  Future<void> handleNotification(TimelineEvent event) async {
-    if (!shouldNotify(event)) {
+  Future<void> handleNotification(TimelineEvent event,
+      {Function(String reason)? onNotificationRejected}) async {
+    if (!shouldNotify(event, onNotificationRejected: onNotificationRejected)) {
+      onNotificationRejected?.call("shouldNotify returned false");
       return;
     }
 
     if (event is MatrixTimelineEventCall ||
         event is MatrixTimelineEventUnknown) {
+      onNotificationRejected?.call("Event type does not trigger notifications");
       return;
     }
 
     if (event is TimelineEventMessage || event is TimelineEventSticker) {
       // let push notifications handle it
       if (BuildConfig.ANDROID) {
+        onNotificationRejected?.call(
+            "Notifications should be handled by a push service on Android, but we are in the desktop notifications handler");
         return;
       }
 
       var notification =
           await MessageNotificationContent.fromEvent(event, this);
       if (notification != null) {
-        NotificationManager.notify(notification);
+        NotificationManager.notify(notification,
+            onNotificationRejected: onNotificationRejected);
+      } else {
+        onNotificationRejected?.call("Notification content was null");
       }
     }
   }
 
   @override
-  bool shouldNotify(TimelineEvent event) {
+  bool shouldNotify(TimelineEvent event,
+      {Function(String reason)? onNotificationRejected}) {
     if ((client as MatrixClient).firstSyncComplete == false) {
       return false;
     }
@@ -350,6 +359,8 @@ class MatrixRoom extends Room {
     if (clientManager?.clients
             .any((element) => element.self?.identifier == event.senderId) ==
         true) {
+      onNotificationRejected
+          ?.call("Message came from a user logged in to this client");
       return false;
     }
 
@@ -357,11 +368,16 @@ class MatrixRoom extends Room {
 
     // dont notify if we are receiving an old message
     if (timeDiff.inMinutes > 10) {
+      onNotificationRejected?.call("Message is over 10 minutes old");
       return false;
     }
 
     var evaluator = _matrixRoom.client.pushruleEvaluator;
     var match = evaluator.match((event as MatrixTimelineEvent).event);
+
+    if (match.notify == false) {
+      onNotificationRejected?.call("Did not pass push rules");
+    }
 
     return match.notify;
   }
