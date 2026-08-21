@@ -124,6 +124,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                     },
                   ),
                 ],
+              ),
+              BooleanPreferenceToggle(
+                preference: preferences.showPerformanceOverlay,
+                title: "Show performance overlay",
+                description: "Requires restart",
               )
             ]),
           )

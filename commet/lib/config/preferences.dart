@@ -464,6 +464,9 @@ class Preferences {
       "use_shared_isolate_in_background_tasks",
       defaultValue: false);
 
+  BoolPreference showPerformanceOverlay =
+      BoolPreference("show_performance_overlay", defaultValue: false);
+
   DoublePreference notificationsVolume =
       DoublePreference("notifications_volume", defaultValue: 90.0);
 
