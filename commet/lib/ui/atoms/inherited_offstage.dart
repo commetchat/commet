@@ -12,7 +12,6 @@ class InheritedOffstage extends InheritedWidget {
 
   static InheritedOffstage of(BuildContext context) {
     final InheritedOffstage? result = maybeOf(context);
-    assert(result != null, 'No FrogColor found in context');
     return result!;
   }
 
