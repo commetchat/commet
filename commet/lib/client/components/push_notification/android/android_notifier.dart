@@ -70,7 +70,16 @@ class AndroidNotifier implements Notifier {
     }
 
     if (localClientId == null) {
+      var cache = preferences.getRoomsListCache();
+      var id =
+          cache.entries.firstWhereOrNull((i) => i.value.contains(roomId))?.key;
+      Log.i("Found client id from rooms list cache: $id");
+      localClientId = id;
+    }
+
+    if (localClientId == null) {
       Log.w("Received notification did not contain a client id!");
+
       return;
     }
 
@@ -120,12 +129,14 @@ class AndroidNotifier implements Notifier {
     }
   }
 
-  Future<void> checkPermission() async {
+  Future<bool> checkPermission() async {
     var android = flutterLocalNotificationsPlugin!
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()!;
 
     hasPermission = await android.requestNotificationsPermission() ?? false;
+
+    return hasPermission;
   }
 
   @override

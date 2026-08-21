@@ -183,6 +183,11 @@ class MainPageState extends State<MainPage> {
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
 
+    EventBus.openHomeScreen.stream.listen((_) {
+      clearRoomSelection();
+      clearSpaceSelection();
+    });
+
     EventBus.setFilterClient.stream.listen(setFilterClient);
 
     EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);

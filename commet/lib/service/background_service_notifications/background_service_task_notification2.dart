@@ -106,6 +106,15 @@ class BackgroundNotificationsManager2 {
 
       var localClientId = data["local_client_id"] as String?;
 
+      if (localClientId == null) {
+        var cache = preferences.getRoomsListCache();
+        var id = cache.entries
+            .firstWhereOrNull((i) => i.value.contains(roomId))
+            ?.key;
+        Log.i("Found client id from rooms list cache: $id");
+        localClientId = id;
+      }
+
       if (roomId == null || eventId == null) {
         Log.w("TODO: Handle counts: $counts");
         return;

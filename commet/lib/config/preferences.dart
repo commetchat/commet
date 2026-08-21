@@ -12,6 +12,7 @@ import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:matrix/matrix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
@@ -341,6 +342,24 @@ class Preferences {
         ?.remove(_rejectedCapabilitiesKey(clientId, widgetNamespace));
 
     await _preferences?.remove(_widgetAllowedKey(clientId, widgetNamespace));
+  }
+
+  static const String _roomsListCache = "rooms_list_cache";
+
+  Map<String, List<String>> getRoomsListCache() {
+    var str = _preferences?.getString(_roomsListCache) ?? "{}";
+    var data = jsonDecode(str) as Map<String, dynamic>;
+
+    var result = Map<String, List<String>>.new();
+    for (var entry in data.entries) {
+      result[entry.key] = data.tryGetList<String>(entry.key) ?? [];
+    }
+
+    return result;
+  }
+
+  Future<void> storeRoomsListCache(Map<String, List<String>> rooms) async {
+    await _preferences?.setString(_roomsListCache, jsonEncode(rooms));
   }
 
   BoolPreference shouldFollowSystemTheme =

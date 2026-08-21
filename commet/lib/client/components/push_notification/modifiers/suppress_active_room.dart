@@ -17,7 +17,8 @@ class NotificationModifierSuppressActiveRoom implements NotificationModifier {
   }
 
   @override
-  Future<NotificationContent?> process(NotificationContent content) async {
+  Future<NotificationContent?> process(NotificationContent content,
+      {Function(String reason)? onNotificationRejected}) async {
     if (preferences.suppressNotificationWhenRoomFocused.value == false) {
       return content;
     }
@@ -34,7 +35,11 @@ class NotificationModifierSuppressActiveRoom implements NotificationModifier {
         }
       }
 
-      if (content.roomId == roomId) return null;
+      if (content.roomId == roomId) {
+        onNotificationRejected?.call(
+            "The notification was intended for the same room that is currently open, and the app was detected as being in focus. If this doesn't seem right, you may want to disable the 'Hide notifications for current room' setting to bypass this check");
+        return null;
+      }
     }
 
     return content;

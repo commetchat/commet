@@ -13,6 +13,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/first_time_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:unifiedpush/unifiedpush.dart';
@@ -122,6 +123,9 @@ class UnifiedPushNotifier implements Notifier {
   void onMessage(Uint8List message, String instance) async {
     Log.i("Received unified push message! $instance");
     var data = utf8.decode(message);
+
+    EventBus.onReceivedPushNotificationData.add(data);
+
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
