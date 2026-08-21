@@ -4,6 +4,7 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart'; // For preferences
+import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/utils/notification_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -109,22 +110,26 @@ class _RoomHeaderState extends State<RoomHeader> {
       );
     } else {
       iconPadding = EdgeInsets.fromLTRB(4, 0, 8, 0);
-      iconWidget = tiamat.Avatar(
-        radius: 15,
-        image: showRoomIcons && widget.room.avatar != null
-            ? widget.room.avatar
-            : null,
-        placeholderText:
-            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+      iconWidget = GestureDetector(
+          onTap: fullscreenAvatar,
+          child: tiamat.Avatar(
+            radius: 15,
+            image: showRoomIcons && widget.room.avatar != null
+                ? widget.room.avatar
+                : null,
+            placeholderText: (showRoomIcons &&
+                        useGenericIcons &&
+                        widget.room.avatar == null) ||
                     (!showRoomIcons && useGenericIcons)
                 ? widget.room.displayName
                 : "",
-        placeholderColor:
-            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+            placeholderColor: (showRoomIcons &&
+                        useGenericIcons &&
+                        widget.room.avatar == null) ||
                     (!showRoomIcons && useGenericIcons)
                 ? widget.room.defaultColor
                 : m.Colors.grey,
-      );
+          ));
     }
     return HeaderView(
         showBurger: MediaQuery.of(context).mobile,
@@ -136,6 +141,10 @@ class _RoomHeaderState extends State<RoomHeader> {
         onBurgerMenuTap: widget.onBurgerMenuTap,
         menu: widget.menu,
         status: status);
+  }
+
+  void fullscreenAvatar() {
+    Lightbox.show(context, image: widget.room.avatar);
   }
 }
 

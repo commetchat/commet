@@ -7,6 +7,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -382,7 +383,7 @@ class UserProfileViewState extends State<UserProfileView> {
                                     child: GestureDetector(
                                         onTap: widget.isSelf
                                             ? widget.onSetAvatar
-                                            : null,
+                                            : fullscreenAvatar,
                                         child: tiamat.Avatar.large(
                                           border: BoxBorder.all(
                                               color: background,
@@ -409,6 +410,10 @@ class UserProfileViewState extends State<UserProfileView> {
         ),
       ),
     );
+  }
+
+  void fullscreenAvatar() {
+    Lightbox.show(context, image: widget.userAvatar!);
   }
 
   Padding username(BuildContext context) {
