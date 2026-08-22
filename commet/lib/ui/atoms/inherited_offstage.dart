@@ -10,9 +10,9 @@ class InheritedOffstage extends InheritedWidget {
     return context.dependOnInheritedWidgetOfExactType<InheritedOffstage>();
   }
 
-  static InheritedOffstage of(BuildContext context) {
+  static bool isOffstage(BuildContext context) {
     final InheritedOffstage? result = maybeOf(context);
-    return result!;
+    return result?.offstage ?? false;
   }
 
   @override

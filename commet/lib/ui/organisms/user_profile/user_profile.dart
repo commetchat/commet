@@ -206,7 +206,7 @@ class _UserProfileState extends State<UserProfile> {
       }
     }
 
-    if (InheritedOffstage.of(context).offstage) {
+    if (InheritedOffstage.isOffstage(context)) {
       return Placeholder();
     }
 
