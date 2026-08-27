@@ -109,12 +109,13 @@ class MatrixProfile
   @override
   Brightness? get brightness =>
       fields.containsKey(MatrixProfileComponent.colorSchemeKey) == false
-      ? null
-      : switch (fields[MatrixProfileComponent.colorSchemeKey]["brightness"]) {
-          "light" => Brightness.light,
-          "dark" => Brightness.dark,
-          _ => null,
-        };
+          ? null
+          : switch (fields[MatrixProfileComponent.colorSchemeKey]
+              ["brightness"]) {
+              "light" => Brightness.light,
+              "dark" => Brightness.dark,
+              _ => null,
+            };
 
   @override
   Color? get color {
