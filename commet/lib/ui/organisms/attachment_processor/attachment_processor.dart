@@ -241,7 +241,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   Future<PendingFileAttachment> processImage() async {
     var mimeType = await _resolveMimeType(widget.attachment);
 
-    final bool supportsNativeCompress = !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS);
+    final bool supportsNativeCompress =
+        !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isLinux);
 
     CompressFormat? format;
     if (mimeType.contains("jpeg") || mimeType.contains("jpg")) {

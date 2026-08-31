@@ -632,6 +632,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  flutter_image_compress_linux:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_linux
+      sha256: "42519445b0e02d1900bad3ada705204cb12b18dd0b76b2441f2620bd3e761817"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   flutter_image_compress_macos:
     dependency: transitive
     description:
