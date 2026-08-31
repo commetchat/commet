@@ -331,17 +331,21 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   }
 
   Future<PendingFileAttachment> processVideo() async {
-    var file = widget.attachment;
+    final file = widget.attachment;
 
-    if (videoController != null) {
+    if (videoController == null) return file;
+
+    try {
       file.thumbnailFile = await videoController!.screenshot();
       if (file.thumbnailFile != null) {
-        file.thumbnailMime = Mime.lookupType("", data: file.thumbnailFile);
+        file.thumbnailMime = Mime.lookupType("", data: file.thumbnailFile) ?? "image/png";
       }
-    }
 
-    file.length = await videoController!.getLength();
-    file.dimensions = await videoController!.getSize();
+      file.length = await videoController!.getLength();
+      file.dimensions = await videoController!.getSize();
+    } catch (_) {
+      // Safe fallback: continue sending video even if thumbnail/metadata extraction fails
+    }
 
     return file;
   }
