@@ -87,6 +87,7 @@ dependencies:
   exif: ^3.3.0
   image: ^4.2.0
   flutter_image_compress: ^2.3.0
+  flutter_image_compress_linux: ^0.1.0
   livekit_client: 2.7.0
   flutter_webrtc: 1.4.0
   file_picker: ^10.2.0
