@@ -9,6 +9,7 @@ import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
@@ -23,14 +24,12 @@ class AttachmentProcessor extends StatefulWidget {
 }
 
 class _AttachmentProcessorState extends State<AttachmentProcessor> {
-  String get promptAttachmentProcessingSendOriginal => Intl.message(
-      "Send Original",
+  String get promptAttachmentProcessingSendOriginal => Intl.message("Send Original",
       name: "promptAttachmentProcessingSendOriginal",
       desc:
           "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata");
 
-  String get labelImageContainsLocationInfo => Intl.message(
-      "Warning: This image contains location metadata",
+  String get labelImageContainsLocationInfo => Intl.message("Warning: This image contains location metadata",
       name: "labelImageContainsLocationInfo",
       desc:
           "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata");
@@ -128,8 +127,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ConstrainedBox(
-                          constraints:
-                              BoxConstraints.loose(const Size(500, 500)),
+                          constraints: BoxConstraints.loose(const Size(500, 500)),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: FilePreview(
@@ -147,8 +145,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                         padding: const EdgeInsets.all(8.0),
                         child: buildFileProcessingSwitch(),
                       ),
-                    if (sendOriginalFile || !canProcessData)
-                      buildMetadataDisplay(),
+                    if (sendOriginalFile || !canProcessData) buildMetadataDisplay(),
                     buildConfirmButton(),
                   ],
                 ),
@@ -179,7 +176,10 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   Widget buildMetadataDisplay() {
     return Column(
       children: [
-        if (containsGpsData) tiamat.Text.error(labelImageContainsLocationInfo)
+        if (containsGpsData)
+          tiamat.Text.error(
+            labelImageContainsLocationInfo,
+          )
       ],
     );
   }
@@ -205,48 +205,129 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     }
   }
 
-  Future<PendingFileAttachment> processFile() async {
-    late PendingFileAttachment processedFile;
+  /// Helper to resolve MIME type using dynamic magic-number stream reads
+  static Future<String> _resolveMimeType(PendingFileAttachment attachment) async {
+    var mimeType = attachment.mimeType?.toLowerCase();
+    if ((mimeType == null || mimeType.isEmpty) && attachment.path != null) {
+      try {
+        final file = File(attachment.path!);
+        if (await file.exists()) {
+          final stream = file.openRead(0, Mime.magicNumbersMaxLength);
+          final headerBytes = await stream.first;
+          mimeType = Mime.lookupType(
+            attachment.path!,
+            data: Uint8List.fromList(headerBytes),
+          )?.toLowerCase();
+        }
+      } catch (_) {
+        mimeType = Mime.lookupType(attachment.path!)?.toLowerCase();
+      }
+    }
+    return mimeType ?? "";
+  }
 
-    if (Mime.imageTypes.contains(widget.attachment.mimeType)) {
-      processedFile = await processImage();
-    } else if (Mime.videoTypes.contains(widget.attachment.mimeType)) {
-      processedFile = await processVideo();
+  Future<PendingFileAttachment> processFile() async {
+    final mimeType = await _resolveMimeType(widget.attachment);
+
+    if (Mime.imageTypes.contains(mimeType)) {
+      return await processImage();
+    } else if (Mime.videoTypes.contains(mimeType)) {
+      return await processVideo();
     }
 
-    return processedFile;
+    return widget.attachment;
   }
 
   Future<PendingFileAttachment> processImage() async {
-    return await compute((PendingFileAttachment attachment) async {
-      var data = attachment.data ?? await File(attachment.path!).readAsBytes();
+    var mimeType = await _resolveMimeType(widget.attachment);
 
-      var decoder = img.findDecoderForData(data);
-      var image = decoder!.decode(data)!;
+    final bool supportsNativeCompress = !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS);
 
-      image.exif.clear();
+    CompressFormat? format;
+    if (mimeType.contains("jpeg") || mimeType.contains("jpg")) {
+      format = CompressFormat.jpeg;
+    } else if (mimeType.contains("png")) {
+      format = CompressFormat.png;
+    } else if (mimeType.contains("webp")) {
+      format = CompressFormat.webp;
+    }
 
+    if (!supportsNativeCompress || format == null) {
+      return await compute(_fallbackProcessImage, widget.attachment);
+    }
+
+    try {
       Uint8List? processedData;
-      String? name = attachment.name;
-      String mime = attachment.mimeType!;
-      if (attachment.name != null) {
-        processedData = img.encodeNamedImage(attachment.name!, image);
+
+      if (widget.attachment.path != null) {
+        processedData = await FlutterImageCompress.compressWithFile(
+          widget.attachment.path!,
+          keepExif: false,
+          quality: 100,
+          format: format,
+        );
+      } else if (widget.attachment.data != null) {
+        processedData = await FlutterImageCompress.compressWithList(
+          widget.attachment.data!,
+          keepExif: false,
+          quality: 100,
+          format: format,
+        );
       }
 
-      if (processedData == null) {
-        processedData = img.encodePng(image);
-        mime = "image/png";
-        var fileName = attachment.name ?? "untitled.png";
-        var rawName = path.basenameWithoutExtension(fileName);
-        name = "$rawName.png";
-      }
-
-      return PendingFileAttachment(
-          name: name,
+      if (processedData != null) {
+        return PendingFileAttachment(
+          name: widget.attachment.name,
           data: processedData,
           size: processedData.lengthInBytes,
-          mimeType: mime);
-    }, widget.attachment);
+          mimeType: mimeType,
+        );
+      }
+    } catch (_) {}
+
+    // Fallback if native compression returned null or threw an error
+    return await compute(_fallbackProcessImage, widget.attachment);
+  }
+
+  /// Pure-Dart fallback isolate worker for Windows / Linux
+  static Future<PendingFileAttachment> _fallbackProcessImage(PendingFileAttachment attachment) async {
+    img.Image? image;
+
+    // Stream directly from disk to avoid allocating raw file bytes in RAM
+    if (attachment.path != null) {
+      image = await img.decodeImageFile(attachment.path!);
+    } else if (attachment.data != null) {
+      image = img.decodeImage(attachment.data!);
+    }
+
+    if (image == null) throw Exception("Unable to decode image file.");
+
+    image.exif.clear();
+
+    var mime = await _resolveMimeType(attachment);
+    if (mime.isEmpty) mime = "image/png";
+
+    Uint8List? processedData;
+    String? name = attachment.name;
+
+    if (attachment.name != null) {
+      processedData = img.encodeNamedImage(attachment.name!, image);
+    }
+
+    if (processedData == null) {
+      processedData = img.encodePng(image);
+      mime = "image/png";
+      var fileName = attachment.name ?? "untitled.png";
+      var rawName = path.basenameWithoutExtension(fileName);
+      name = "$rawName.png";
+    }
+
+    return PendingFileAttachment(
+      name: name,
+      data: processedData,
+      size: processedData.lengthInBytes,
+      mimeType: mime,
+    );
   }
 
   Future<PendingFileAttachment> processVideo() async {
