@@ -18,3 +18,5 @@ commet/.livekit/
 commet/web/e2ee.worker.dart.js.map
 commet/web/e2ee.worker.dart.js.deps
 commet/web/e2ee.worker.dart.js
+.fvm/*
+.fvmrc
