@@ -1827,7 +1827,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmShareTimezone": "Êtes-vous sûr.e de vouloir partager votre fuseau horaire '{timezone}' de manière publique ?",
+    "labelConfirmShareTimezone": "Êtes-vous sûr de vouloir partager votre fuseau horaire '{timezone}' de manière publique ?",
     "@labelConfirmShareTimezone": {
         "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
         "type": "text",
@@ -1970,7 +1970,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmCancelDonationConfirmation": "Êtes-vous sûr.e de vouloir abandonner sans n'accepter aucune récompense ?",
+    "labelConfirmCancelDonationConfirmation": "Êtes-vous sûr de vouloir abandonner sans accepter aucune récompense ?",
     "@labelConfirmCancelDonationConfirmation": {
         "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
         "type": "text",
