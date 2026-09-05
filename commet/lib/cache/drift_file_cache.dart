@@ -3,7 +3,6 @@ import 'package:commet/cache/file_cache.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:commet/utils/database/multiple_database_server.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:drift/drift.dart';
@@ -35,15 +34,14 @@ class DriftFileCacheDatabase extends _$DriftFileCacheDatabase {
 }
 
 class DriftFileCache implements FileCache {
-  bool isInit = false;
-  late DriftFileCacheDatabase db;
+  DriftFileCacheDatabase? database;
 
   static const String isolateName = "chat.commet.commetapp.isolate.file_cache";
 
   @override
   Future<void> clean() async {
     Log.i("Cleaning files");
-
+    final db = await get();
     var now = DateTime.now();
     var cutoffTime = now.subtract(const Duration(days: 5));
     var timeMs = cutoffTime.millisecondsSinceEpoch;
@@ -77,8 +75,8 @@ class DriftFileCache implements FileCache {
   }
 
   @override
-  Future<void> close() {
-    return db.close();
+  Future<void> close() async {
+    return await database?.close();
   }
 
   @override
@@ -99,7 +97,7 @@ class DriftFileCache implements FileCache {
         id: identifier,
         path: path,
         lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch);
-
+    final db = await get();
     await db.into(db.fileCacheEntry).insertOnConflictUpdate(entry);
 
     return file.uri;
@@ -112,7 +110,7 @@ class DriftFileCache implements FileCache {
     var entry = await _getByFileId(identifier);
     if (entry == null) return null;
     //var lastAccess = DateTime.fromMillisecondsSinceEpoch(entry!.lastAccessedTimestamp).toLocal().toString();
-
+    final db = await get();
     db.into(db.fileCacheEntry).insertOnConflictUpdate(entry.copyWith(
         lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch));
 
@@ -125,7 +123,7 @@ class DriftFileCache implements FileCache {
   Future<bool> hasFile(String identifier) async {
     var file = await _getByFileId(identifier);
     if (file == null) return false;
-
+    final db = await get();
     // if the file exists in the database but not on disk, we should remove it from db
     var exists = await File(file.path).exists();
     if (!exists)
@@ -137,12 +135,6 @@ class DriftFileCache implements FileCache {
 
   @override
   Future<void> init() async {
-    if (isInit) {
-      return;
-    }
-
-    isInit = true;
-
     var tempDir = await getTemporaryDirectory();
     var temp = p.join(tempDir.path, "chat.commet.app", "file_cache");
 
@@ -157,17 +149,14 @@ class DriftFileCache implements FileCache {
     final file = File(p.join(dir, "app_data.db"));
 
     var connection = await DatabaseIsolate.connect(file.absolute.path);
-    db = DriftFileCacheDatabase(connection);
-
-    if (!isHeadless) {
-      clean();
-    }
+    database = DriftFileCacheDatabase(connection);
   }
 
   @override
   Future<Uri> putFile(String identifier, Uint8List bytes) async {
     var path = await generateTempFilePath();
     if (BuildConfig.DEBUG) path += "_${Uri.encodeComponent(identifier)}";
+    final db = await get();
     var file = File(path);
     await file.create(recursive: true);
     await file.writeAsBytes(bytes);
@@ -180,6 +169,15 @@ class DriftFileCache implements FileCache {
     await db.into(db.fileCacheEntry).insertOnConflictUpdate(entry);
 
     return file.uri;
+  }
+
+  Future<DriftFileCacheDatabase> get() async {
+    if (database != null) {
+      return database!;
+    }
+
+    await init();
+    return database!;
   }
 
   Future<String> newPath() async {
@@ -198,6 +196,7 @@ class DriftFileCache implements FileCache {
   }
 
   Future<FileCacheEntryData?> _getByFileId(String fileId) async {
+    final db = await get();
     return (db.select(db.fileCacheEntry)
           ..where((tbl) => tbl.id.equals(fileId))
           ..limit(1))
