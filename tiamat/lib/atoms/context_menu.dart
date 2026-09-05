@@ -315,7 +315,7 @@ class ContextMenuItem {
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.all(3.0),
+        padding: const EdgeInsets.all(4.0),
         child: InkWell(
             onTap: onClicked,
             borderRadius: BorderRadius.circular(8),

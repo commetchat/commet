@@ -511,15 +511,17 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> clearBio() async {
-    setState(() {
-      bioText = null;
-    });
+    if (await AdaptiveDialog.confirmation(context) == true) {
+      setState(() {
+        bioText = null;
+      });
 
-    await widget.client.getComponent<UserProfileComponent>()?.removeBio();
+      await widget.client.getComponent<UserProfileComponent>()?.removeBio();
 
-    component.getProfile(widget.userId).then((value) async {
-      await stateFromProfile(value);
-    });
+      component.getProfile(widget.userId).then((value) async {
+        await stateFromProfile(value);
+      });
+    }
   }
 
   String get labelProfileYourBadges => Intl.message("Your Badges",
