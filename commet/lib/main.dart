@@ -217,6 +217,8 @@ Future<void> initNecessary() async {
     GlobalConfig.init(),
   ]);
 
+  fileCache?.clean();
+
   clientManager = await ClientManager.init();
   Diagnostics.setPostInit();
 
