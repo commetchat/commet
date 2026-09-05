@@ -2,6 +2,7 @@
 // Copyright 2022 De-Great Yartey. All rights reserved.
 
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/inherited_offstage.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
@@ -210,9 +211,12 @@ class OverlappingPanelsState extends State<OverlappingPanels>
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(borderRadius),
                     bottomRight: Radius.circular(borderRadius)),
-                child: Offstage(
-                  offstage: translate < 0,
-                  child: widget.left,
+                child: InheritedOffstage(
+                  offstage: translate <= 0,
+                  child: Offstage(
+                    offstage: translate <= 0,
+                    child: widget.left,
+                  ),
                 ),
               ),
             ),
@@ -222,9 +226,12 @@ class OverlappingPanelsState extends State<OverlappingPanels>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(borderRadius),
                     bottomLeft: Radius.circular(borderRadius)),
-                child: Offstage(
-                  offstage: translate > 0,
-                  child: widget.right,
+                child: InheritedOffstage(
+                  offstage: translate >= 0,
+                  child: Offstage(
+                    offstage: translate >= 0,
+                    child: widget.right,
+                  ),
                 ),
               ),
             ),
