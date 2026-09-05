@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/atoms/inherited_offstage.dart';
 import 'package:commet/ui/molecules/image_select_dialog.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -15,6 +16,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:commet/utils/picker_utils.dart';
 import 'package:commet/utils/timezone_utils.dart';
+import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
@@ -205,7 +207,11 @@ class _UserProfileState extends State<UserProfile> {
       }
     }
 
-    return Theme(
+    if (InheritedOffstage.isOffstage(context)) {
+      return Placeholder();
+    }
+
+    var result = Theme(
       data: theme!,
       child: UserProfileView(
         userAvatar: avatar,
@@ -233,6 +239,14 @@ class _UserProfileState extends State<UserProfile> {
         badges: badges,
         editBadges: editBadges,
         bio: bio,
+        setPetName: setPetName,
+        currentPetName: widget.client
+            .getComponent<PetNameComponent>()
+            ?.getPetName(widget.userId),
+        hasPetName: widget.client
+                .getComponent<PetNameComponent>()
+                ?.getPetName(widget.userId) !=
+            null,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
         showSource: showSource,
@@ -246,6 +260,8 @@ class _UserProfileState extends State<UserProfile> {
             null,
       ),
     );
+
+    return result;
   }
 
   Future<void> openDirectMessage() async {
@@ -353,6 +369,12 @@ class _UserProfileState extends State<UserProfile> {
         widget.client.setDisplayName(text.trim());
       });
     }
+  }
+
+  Future<void> setPetName(String? name) async {
+    var comp = widget.client.getComponent<PetNameComponent>();
+    await comp?.setPetName(widget.userId, name);
+    setState(() {}); // refresh so the view shows the new name
   }
 
   Future<void> setAvatar() async {

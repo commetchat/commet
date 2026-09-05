@@ -361,6 +361,8 @@ class App extends StatelessWidget {
                   return MaterialApp(
                     title: 'Commet',
                     theme: theme,
+                    showPerformanceOverlay:
+                        preferences.showPerformanceOverlay.value,
                     debugShowCheckedModeBanner: false,
                     navigatorKey: navigator,
                     builder: (context, child) => Provider<ClientManager>(

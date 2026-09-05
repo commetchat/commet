@@ -41,8 +41,13 @@ class MatrixProfile
 
   @override
   ImageProvider<Object>? get avatar => profile.avatarUrl != null
-      ? MatrixMxcImage(profile.avatarUrl!, client.matrixClient,
-          autoLoadFullRes: false, thumbnailHeight: 128, fullResHeight: 128)
+      ? MatrixMxcImage(
+          profile.avatarUrl!,
+          client.matrixClient,
+          autoLoadFullRes: false,
+          thumbnailHeight: 128,
+          fullResHeight: 128,
+        )
       : null;
 
   @override
@@ -58,11 +63,12 @@ class MatrixProfile
           }
 
           return MatrixMxcImage(
-              Uri.parse(fields[MatrixProfileComponent.bannerKey]),
-              doFullres: true,
-              doThumbnail: false,
-              autoLoadFullRes: true,
-              client.matrixClient);
+            Uri.parse(fields[MatrixProfileComponent.bannerKey]),
+            doFullres: true,
+            doThumbnail: false,
+            autoLoadFullRes: true,
+            client.matrixClient,
+          );
         }
       }
     } catch (e, s) {
@@ -90,8 +96,12 @@ class MatrixProfile
   @override
   String get userName => profile.userId;
 
-  MatrixProfile(this.client, this.profile,
-      {this.precence, this.fields = const {}});
+  MatrixProfile(
+    this.client,
+    this.profile, {
+    this.precence,
+    this.fields = const {},
+  });
 
   @override
   UserPresence? precence;
@@ -140,16 +150,21 @@ class MatrixProfile
   String? get timezone => fields["m.tz"] as String?;
 
   @override
-  Widget buildBio(BuildContext context, ThemeData theme,
-      {String? overrideText}) {
+  Widget buildBio(
+    BuildContext context,
+    ThemeData theme, {
+    String? overrideText,
+  }) {
     // to be compatible with both the MSC version and commet's own version
     List<dynamic>? content =
         fields[MatrixProfileComponent.msc4440BioKey]?['m.text'];
     Map<String, dynamic>? commetBioContent =
         fields[MatrixProfileComponent.bioKey];
     if (overrideText != null) {
-      commetBioContent =
-          MatrixProfileComponent.textToContent(overrideText, client);
+      commetBioContent = MatrixProfileComponent.textToContent(
+        overrideText,
+        client,
+      );
     }
 
     Map<String, dynamic>? htmlPart;
@@ -163,9 +178,7 @@ class MatrixProfile
         };
       }
       if (commetBioContent["body"] != null) {
-        textPart = {
-          "body": commetBioContent["body"],
-        };
+        textPart = {"body": commetBioContent["body"]};
       }
     } else if (content is List) {
       for (final item in content) {
@@ -190,8 +203,9 @@ class MatrixProfile
       color: Colors.transparent,
       child: Text(
         textPart?["body"],
-        style: theme.textTheme.bodyMedium
-            ?.copyWith(color: theme.colorScheme.onSurface),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -238,8 +252,11 @@ class MatrixProfile
     }
   }
 
-  static Future<ProfileBadge?> badgeFromContent(MatrixClient client,
-      String recipientIdentifier, Map<String, dynamic> entry) async {
+  static Future<ProfileBadge?> badgeFromContent(
+    MatrixClient client,
+    String recipientIdentifier,
+    Map<String, dynamic> entry,
+  ) async {
     var isValid = await validateBadgeSignature(entry);
     if (!isValid) return null;
 
@@ -275,32 +292,37 @@ class MatrixProfile
     }
 
     return ProfileBadge(
-        MatrixMxcImage(
-          Uri.parse(image),
-          client.matrixClient,
-          doFullres: true,
-          doThumbnail: false,
-          autoLoadFullRes: true,
-        ),
-        source: entry,
-        sender: signedContent["sender"],
-        id: signedContent["id"],
-        body: body,
-        link: link,
-        brightness: brightness);
+      MatrixMxcImage(
+        Uri.parse(image),
+        client.matrixClient,
+        doFullres: true,
+        doThumbnail: false,
+        autoLoadFullRes: true,
+      ),
+      source: entry,
+      sender: signedContent["sender"],
+      id: signedContent["id"],
+      body: body,
+      link: link,
+      brightness: brightness,
+    );
   }
 
   static bool validateAwardRecipient(
-      String recipientIdentifier, Map<String, dynamic> awardContent) {
+    String recipientIdentifier,
+    Map<String, dynamic> awardContent,
+  ) {
     if (awardContent.containsKey("user_id_hash")) {
       var hashBytes = Uint8List.fromList(
-          sha256.convert(AsciiEncoder().convert(recipientIdentifier)).bytes);
+        sha256.convert(AsciiEncoder().convert(recipientIdentifier)).bytes,
+      );
 
       var expectedHash = TextUtils.toHexString(hashBytes);
 
       if (awardContent["user_id_hash"] != expectedHash) {
         Log.i(
-            "This award has a has which does not match the current user, Expected: $expectedHash, but got: ${awardContent["user_id_hash"]}");
+          "This award has a has which does not match the current user, Expected: $expectedHash, but got: ${awardContent["user_id_hash"]}",
+        );
 
         return false;
       } else {
@@ -310,7 +332,8 @@ class MatrixProfile
     } else if (awardContent.containsKey("user_id")) {
       if (awardContent["user_id"] != recipientIdentifier) {
         Log.i(
-            "Expected user $recipientIdentifier but got ${awardContent["user_id"]}");
+          "Expected user $recipientIdentifier but got ${awardContent["user_id"]}",
+        );
         return false;
       }
 
@@ -324,8 +347,8 @@ class MatrixProfile
   static Future<bool> validateBadgeSignature(Map<String, dynamic> entry) async {
     const knownPublicKeys = {
       "@awards:data.commet.chat": {
-        "8d4f773c": "a3KSUrUaC0nph7EpOpC1Y6XDnYHttUW5jns3euZ8D+E"
-      }
+        "8d4f773c": "a3KSUrUaC0nph7EpOpC1Y6XDnYHttUW5jns3euZ8D+E",
+      },
     };
 
     Log.i("Verifying signature content");
@@ -340,13 +363,12 @@ class MatrixProfile
 
     if (keys == null) {
       Log.e(
-          "Could not find any known public key for sender: ${signed["sender"]}");
+        "Could not find any known public key for sender: ${signed["sender"]}",
+      );
       return false;
     }
 
-    Log.i(
-      "Known keys for sender: ${signed["sender"]}: $keys",
-    );
+    Log.i("Known keys for sender: ${signed["sender"]}: $keys");
 
     for (var entry in signatures.entries) {
       var publicKeyB64 = keys[entry.key];
@@ -387,8 +409,10 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<Profile> getProfile(String identifier) async {
     try {
-      var fields = await client.matrixClient.request(RequestType.GET,
-          "/client/v3/profile/${Uri.encodeComponent(identifier)}");
+      var fields = await client.matrixClient.request(
+        RequestType.GET,
+        "/client/v3/profile/${Uri.encodeComponent(identifier)}",
+      );
       fields["user_id"] = identifier;
 
       var precense = await client
@@ -397,14 +421,22 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
 
       if (precense == null || precense.message == null) {
         if (fields.containsKey(statusKey)) {
-          precense = UserPresence(UserPresenceStatus.unknown,
-              message: UserPresenceMessage(fields[statusKey].toString(),
-                  PresenceMessageType.userCustom));
+          precense = UserPresence(
+            UserPresenceStatus.unknown,
+            message: UserPresenceMessage(
+              fields[statusKey].toString(),
+              PresenceMessageType.userCustom,
+            ),
+          );
         }
       }
 
-      return MatrixProfile(client, matrix.Profile.fromJson(fields),
-          precence: precense, fields: fields);
+      return MatrixProfile(
+        client,
+        matrix.Profile.fromJson(fields),
+        precence: precense,
+        fields: fields,
+      );
     } catch (e, s) {
       Log.onError(e, s, content: "Error while fetching profile");
       return MatrixProfile(client, matrix.Profile(userId: identifier));
@@ -426,9 +458,11 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   Future<void> setField(String field, dynamic content) async {
     final data = {field: content};
 
-    var response = await client.matrixClient.request(RequestType.PUT,
-        "/client/v3/profile/${Uri.encodeComponent(client.self!.identifier)}/$field",
-        data: data);
+    var response = await client.matrixClient.request(
+      RequestType.PUT,
+      "/client/v3/profile/${Uri.encodeComponent(client.self!.identifier)}/$field",
+      data: data,
+    );
 
     print(response);
   }
@@ -449,7 +483,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
       "brightness": switch (brightness) {
         Brightness.dark => "dark",
         Brightness.light => "light",
-      }
+      },
     });
   }
 
@@ -480,20 +514,20 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
       await setField(msc4440BioKey, {
         'm.text': [
           {'body': content['formatted_body'], 'mimetype': 'text/html'},
-          {'body': content['body']}
-        ]
+          {'body': content['body']},
+        ],
       });
     } else if (content['formatted_body'] == null && content['body'] != null) {
       await setField(msc4440BioKey, {
         'm.text': [
-          {'body': content['body']}
-        ]
+          {'body': content['body']},
+        ],
       });
     } else if (content['formatted_body'] != null && content['body'] == null) {
       await setField(msc4440BioKey, {
         'm.text': [
           {'body': content['formatted_body'], 'mimetype': 'text/html'},
-        ]
+        ],
       });
     }
 
@@ -509,9 +543,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
           : null,
     );
 
-    var content = {
-      "body": bio,
-    };
+    var content = {"body": bio};
 
     if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=
         bio) {
@@ -529,13 +561,17 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
 
   @override
   Future<List<ProfileBadge>> getAvailableBadges() async {
-    var accountEntries = client.matrixClient.accountData.entries
-        .where((i) => i.key.startsWith("chat.commet.profile_badge."));
+    var accountEntries = client.matrixClient.accountData.entries.where(
+      (i) => i.key.startsWith("chat.commet.profile_badge."),
+    );
 
     List<ProfileBadge> badges = List.empty(growable: true);
     for (var entry in accountEntries) {
       var award = await MatrixProfile.badgeFromContent(
-          client, client.self!.identifier, entry.value.content);
+        client,
+        client.self!.identifier,
+        entry.value.content,
+      );
       if (award != null) {
         badges.add(award);
       }
@@ -547,6 +583,8 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> setProfileBadges(List<ProfileBadge> badges) {
     return setField(
-        "chat.commet.profile_badges", badges.map((i) => i.source).toList());
+      "chat.commet.profile_badges",
+      badges.map((i) => i.source).toList(),
+    );
   }
 }

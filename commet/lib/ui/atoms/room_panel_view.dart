@@ -80,7 +80,10 @@ class _RoomPanelViewState extends State<RoomPanelView> {
 
   @override
   void initState() {
-    startTimer();
+    if (widget.typingMembers?.isNotEmpty == true) {
+      startTimer();
+    }
+
     super.initState();
   }
 
@@ -309,6 +312,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                 key: blobKeys[0],
                 border: border,
                 color: color,
+                playing: expanded,
               )),
           AnimatedPositioned(
               duration: duration,
@@ -318,6 +322,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                 key: blobKeys[1],
                 border: border,
                 color: color,
+                playing: expanded,
               )),
           AnimatedPositioned(
               duration: duration,
@@ -327,6 +332,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                 key: blobKeys[2],
                 border: border,
                 color: color,
+                playing: expanded,
               )),
         ],
       ),

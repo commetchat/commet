@@ -70,7 +70,9 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
               child: Row(children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                  child: TypingIndicatorAnimation(),
+                  child: TypingIndicatorAnimation(
+                    playing: typingMembers.isNotEmpty,
+                  ),
                 ),
                 tiamat.Text.labelLow(currentText)
               ])),
@@ -88,9 +90,11 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
 }
 
 class SingleTypingIndicatorBlob extends StatefulWidget {
-  const SingleTypingIndicatorBlob({this.color, this.border, super.key});
+  const SingleTypingIndicatorBlob(
+      {this.color, this.border, super.key, this.playing = true});
   final Color? color;
   final BoxBorder? border;
+  final bool playing;
   @override
   State<SingleTypingIndicatorBlob> createState() =>
       SingleTypingIndicatorBlobState();
@@ -104,6 +108,25 @@ class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SingleTypingIndicatorBlob oldWidget) {
+    if (widget.playing) {
+      controller.reset();
+      controller.forward();
+    } else {
+      controller.value = 0;
+      controller.stop();
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -146,7 +169,8 @@ class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
 }
 
 class TypingIndicatorAnimation extends StatefulWidget {
-  const TypingIndicatorAnimation({super.key});
+  const TypingIndicatorAnimation({super.key, this.playing = true});
+  final bool playing;
 
   @override
   State<TypingIndicatorAnimation> createState() =>
@@ -162,11 +186,15 @@ class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
 
   Timer? timer;
   int prevIndex = 0;
+  bool playing = false;
 
   @override
   void initState() {
     super.initState();
-    startTimer();
+    playing = widget.playing;
+    if (playing) {
+      startTimer();
+    }
   }
 
   @override
@@ -175,7 +203,24 @@ class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant TypingIndicatorAnimation oldWidget) {
+    if (widget.playing == false) {
+      timer?.cancel();
+      timer = null;
+    } else {
+      startTimer();
+    }
+
+    setState(() {
+      playing = widget.playing;
+    });
+
+    super.didUpdateWidget(oldWidget);
+  }
+
   void startTimer() {
+    timer?.cancel();
     timer = Timer.periodic(const Duration(milliseconds: 250), onTimer);
   }
 
@@ -204,12 +249,15 @@ class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
     return Row(children: [
       SingleTypingIndicatorBlob(
         key: blobKeys[0],
+        playing: playing,
       ),
       SingleTypingIndicatorBlob(
         key: blobKeys[1],
+        playing: playing,
       ),
       SingleTypingIndicatorBlob(
         key: blobKeys[2],
+        playing: playing,
       ),
     ]);
   }
