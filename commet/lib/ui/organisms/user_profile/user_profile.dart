@@ -16,6 +16,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:commet/utils/picker_utils.dart';
 import 'package:commet/utils/timezone_utils.dart';
+import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
@@ -238,6 +239,14 @@ class _UserProfileState extends State<UserProfile> {
         badges: badges,
         editBadges: editBadges,
         bio: bio,
+        setPetName: setPetName,
+        currentPetName: widget.client
+            .getComponent<PetNameComponent>()
+            ?.getPetName(widget.userId),
+        hasPetName: widget.client
+                .getComponent<PetNameComponent>()
+                ?.getPetName(widget.userId) !=
+            null,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
         showSource: showSource,
@@ -360,6 +369,12 @@ class _UserProfileState extends State<UserProfile> {
         widget.client.setDisplayName(text.trim());
       });
     }
+  }
+
+  Future<void> setPetName(String? name) async {
+    var comp = widget.client.getComponent<PetNameComponent>();
+    await comp?.setPetName(widget.userId, name);
+    setState(() {}); // refresh so the view shows the new name
   }
 
   Future<void> setAvatar() async {
