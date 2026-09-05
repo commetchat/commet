@@ -6,7 +6,7 @@ We are open to most types of contributions, but for larger changes and new featu
 
 ## Restrictions on Generative AI Usage
 
-We expect and appreciate authentic engagement in our community, as such usage of generative AI tools are prohibited. Commet is a project made for people, by people.  
+We expect and appreciate authentic engagement in our community, as such usage of generative AI tools is prohibited. Commet is a project made for people, by people.  
 
 Do not post output from Large Language Models or similar generative AI as comments on GitHub, as such comments tend to be formulaic and low content.
 
