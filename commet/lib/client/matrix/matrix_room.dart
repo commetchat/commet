@@ -6,6 +6,7 @@ import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
+import 'package:commet/client/components/petname/petname_component.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -220,7 +221,7 @@ class MatrixRoom extends Room {
     _matrixRoom = room;
     _client = client;
 
-    _displayName = room.getLocalizedDisplayname();
+    _updateDisplayName();
     _components = ComponentRegistry.getMatrixRoomComponents(client, this);
 
     _matrixRoom.postLoad();
@@ -795,8 +796,35 @@ class MatrixRoom extends Room {
     return MatrixRole(_matrixRoom.getPowerLevelByUserId(identifier));
   }
 
-  void onRoomStateUpdated(({String roomId, StrippedStateEvent state}) event) {
+  void _updateDisplayName() {
     _displayName = _matrixRoom.getLocalizedDisplayname();
+
+    var comp = client.getComponent<DirectMessagesComponent>();
+
+    if (comp?.isRoomDirectMessage(this) == true) {
+      var partner = comp!.getDirectMessagePartnerId(this);
+
+      if (partner != null) {
+        var nicknames = client.getComponent<PetNameComponent>();
+        if (nicknames != null) {
+          var name = nicknames.getPetName(partner);
+          if (name != null) {
+            _displayName = name;
+            return;
+          }
+        }
+
+        var name =
+            matrixRoom.unsafeGetUserFromMemoryOrFallback(partner).displayName;
+        if (name != null) {
+          _displayName = name;
+        }
+      }
+    }
+  }
+
+  void onRoomStateUpdated(({String roomId, StrippedStateEvent state}) event) {
+    _updateDisplayName();
     if (event.state.type == "m.room.name" ||
         event.state.type == "m.room.avatar" ||
         event.state.type == "m.room.topic") {
