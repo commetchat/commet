@@ -1585,5 +1585,123 @@
         "description": "Label for the menu option to view the JSON source of an event",
         "type": "text",
         "placeholders": {}
+    },
+    "noPinnedMessages": "ピン留めされたメッセージはありません！",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileChangeBanner": "バーナーを変更する",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "ステータスを設定する",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "ステータスを削除する",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "バッジを設定する",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "プロフィールを設定する",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "プロフィールを削除する",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "タイムゾーンを公開する",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "タイムゾーンを公開しない",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "カラーテーマ設定",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "色を上書きする",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "表示色の上書きを削除する",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "プロフィールの生データを表示する",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "本当にタイムゾーン（{timezone}）を公開しますか？",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "あなた自身について記して下さい",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "バッジ",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "バッジがありません。Commetに寄付し、開発を援助することでバッジを取得できます",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "制限されたスペース",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "{callingUserName} から着信があります！",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelTextChatDescription": "シンプルなチャットに、欲しかったもの全部凝縮！メッセージ、メディア、ステッカー、GIFなどを送れます！",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
     }
 }
