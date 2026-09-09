@@ -21,7 +21,8 @@ class _DragDropFileTargetState extends State<DragDropFileTarget> {
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: DropTarget(
-          onDragEntered: (_) {
+          onDragEntered: (ev) {
+            print(ev);
             setState(() {
               isFileHovered = true;
             });

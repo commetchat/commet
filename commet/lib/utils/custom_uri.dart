@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:tiamat/config/style/theme_json_converter.dart';
 
 class CustomURI {
   static CustomURI? parse(String text) {
@@ -24,6 +25,24 @@ class CustomURI {
       return OpenRoomURI(
           roomId: uri.queryParameters["room_id"]!,
           clientId: uri.queryParameters["client_id"]!);
+    }
+
+    if (uri.host == "add_widget") {
+      var url = uri.queryParameters.tryGet<String>("url");
+      var avatar = uri.queryParameters.tryGet<String>("avatar");
+      var widgetType = uri.queryParameters.tryGet<String>("type");
+      var widgetName = uri.queryParameters.tryGet<String>("name");
+      var preview = uri.queryParameters.tryGet<String>("preview");
+      if (url != null) {
+        return AddWidgetURI(
+            widgetUrl: Uri.decodeComponent(url),
+            widgetAvatarMxc:
+                avatar != null ? Uri.decodeComponent(avatar) : null,
+                widgetName: widgetName != null ? Uri.decodeComponent(widgetName) : null,
+            previewMxc: preview != null && preview.startsWith("mxc") == true ? Uri.decodeComponent(preview) : null,
+            widgetType:
+                widgetType != null ? Uri.decodeComponent(widgetType) : null);
+      }
     }
 
     if (uri.host == "accept_call") {
@@ -72,6 +91,29 @@ class OpenRoomURI implements CustomURI {
         scheme: BuildConfig.appSchema,
         host: "open_room",
         queryParameters: {"room_id": roomId, "client_id": clientId}).toString();
+  }
+}
+
+class AddWidgetURI implements CustomURI {
+  final String widgetUrl;
+  final String? widgetType;
+  final String? widgetAvatarMxc;
+  final String? widgetName;
+  final String? previewMxc;
+
+  AddWidgetURI(
+      {required this.widgetUrl, this.previewMxc, this.widgetName, this.widgetType, this.widgetAvatarMxc});
+
+  @override
+  String toString() {
+    return Uri(
+        scheme: BuildConfig.appSchema,
+        host: "add_widget",
+        queryParameters: {
+          "url": widgetUrl,
+          if (widgetType != null) "type": widgetType,
+          if (widgetAvatarMxc != null) "avatar": widgetAvatarMxc!,
+        }).toString();
   }
 }
 

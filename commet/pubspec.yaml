@@ -14,7 +14,7 @@ dependencies:
   matrix_widget_api:
     path: ../widgets/matrix_widget_api
   crypto: ^3.0.2
-  desktop_drop: ^0.4.1
+  desktop_drop: ^0.8.4 
   desktop_notifications: ^0.6.3
   device_info_plus: ^12.2.0
   flutter_background_service: ^5.0.5

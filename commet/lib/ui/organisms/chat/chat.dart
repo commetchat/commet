@@ -12,6 +12,8 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
@@ -21,6 +23,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -399,6 +402,76 @@ class ChatState extends State<Chat> {
   }
 
   void onFileDropped(DropDoneDetails event) async {
+    var path = event.rawText;
+
+    print(path);
+    if (path != null) {
+      var custom = CustomURI.parse(path);
+
+      if (custom case AddWidgetURI widgetUri) {
+        AdaptiveDialog.show(context, builder: (dialogContext) {
+          return SizedBox(
+            width: 500,
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      if (widgetUri.widgetAvatarMxc != null)
+                        SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: Image(
+                              fit: BoxFit.cover,
+                              image: MatrixMxcImage(
+                                  Uri.parse(widgetUri.widgetAvatarMxc!),
+                                  doThumbnail: false,
+                                  doFullres: true,
+                                  (widget.room.client as MatrixClient)
+                                      .matrixClient)),
+                        ),
+                      tiamat.Text.label(
+                          "Add the widget '${widgetUri.widgetName ?? "Custom"}' to ${widget.room.displayName}?"),
+                    ],
+                  ),
+                ),
+
+                tiamat.Text.labelLow(
+                    "Host: ${Uri.parse(widgetUri.widgetUrl).host}"),
+
+                if (widgetUri.previewMxc != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadiusGeometry.circular(20),
+                      child: SizedBox(
+                        height: 300,
+                        child: Image(
+                            fit: BoxFit.cover,
+                            image: MatrixMxcImage(
+                                Uri.parse(widgetUri.previewMxc!),
+                                doThumbnail: false,
+                                doFullres: true,
+                                (widget.room.client as MatrixClient)
+                                    .matrixClient)),
+                      ),
+                    ),
+                  ),
+                tiamat.Button(text: "Add Widget",),
+                tiamat.Button.secondary(text: "Cancel",),
+                tiamat.Text.error(
+                    "Widgets are hosted on external websites, and the code can be changed without notice. Do not use the widget if you do not trust the host.")
+              ],
+            ),
+          );
+        }, title: 'Add "${widgetUri.widgetName ?? "Widget"}"?');
+      }
+    }
+
     for (var file in event.files) {
       var size = await file.length();
       Uint8List? data;

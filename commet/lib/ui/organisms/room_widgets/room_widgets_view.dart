@@ -2,6 +2,7 @@ import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -57,6 +58,11 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
     return tiamat.Tile.low(
       child: Column(
         children: [
+          if (widgets.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Text.labelLow("No widgets have been added to this room"),
+            ),
           Flexible(
             child: ListView.builder(
               padding: EdgeInsets.all(0),
@@ -107,6 +113,21 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                 );
               },
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: SizedBox(
+                height: 50,
+                child: tiamat.TextButton(
+                  "Browse Widgets",
+                  icon: Icons.open_in_browser,
+                  onTap: () {
+                    LinkUtils.open(
+                      Uri.parse("https://commet.chat/widgets"),
+                      context: context,
+                    );
+                  },
+                )),
           ),
         ],
       ),
