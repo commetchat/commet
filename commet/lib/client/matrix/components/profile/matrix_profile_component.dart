@@ -13,6 +13,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/color_utils.dart';
+import 'package:commet/utils/pronoun_utils.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -131,17 +132,8 @@ class MatrixProfile
   }
 
   @override
-  List<String> get pronouns {
-    var array = fields[MatrixProfileComponent.pronounsKey];
-
-    try {
-      if (array is List<dynamic>) {
-        return array.map((i) => i["summary"].toString()).toList();
-      }
-    } catch (_) {}
-
-    return [];
-  }
+  List<String> get pronouns =>
+      parsePronounsField(fields[MatrixProfileComponent.pronounsKey]);
 
   @override
   String get source => JsonEncoder.withIndent("  ").convert(fields);
@@ -399,7 +391,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String msc4440BioKey = "gay.fomx.biography";
   static const String badgeKey = "chat.commet.profile_badges";
   static const String statusKey = "chat.commet.profile_status";
-  static const String pronounsKey = "io.fsky.nyx.pronouns";
+  static const String pronounsKey = pronounsFieldKey;
 
   @override
   MatrixClient client;
