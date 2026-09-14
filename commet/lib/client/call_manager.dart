@@ -148,6 +148,46 @@ class CallManager {
     player?.setPlaylistMode(PlaylistMode.none);
   }
 
+  bool get isDeafened => currentSessions.any((session) => session.isDeafened);
+
+  void deafen() {
+    for (var session in currentSessions) {
+      session.setDeafened(true);
+    }
+
+    playMuteSound();
+  }
+
+  void undeafen() {
+    for (var session in currentSessions) {
+      session.setDeafened(false);
+    }
+
+    playUnmuteSound();
+  }
+
+  bool fakeDeafenToggle = false;
+  void toggleDeafen() {
+    var session = currentSessions.firstOrNull;
+
+    if (session != null) {
+      if (session.isDeafened) {
+        undeafen();
+      } else {
+        deafen();
+      }
+    } else {
+      fakeDeafenToggle = !fakeDeafenToggle;
+
+      // just to give user feedback when not in a call
+      if (fakeDeafenToggle) {
+        playMuteSound();
+      } else {
+        playUnmuteSound();
+      }
+    }
+  }
+
   void mute() {
     for (var session in currentSessions) {
       session.setMicrophoneMute(true);
@@ -161,7 +201,7 @@ class CallManager {
     var session = currentSessions.firstOrNull;
 
     if (session != null) {
-      if (session.isMicrophoneMuted) {
+      if (session.isDeafened || session.isMicrophoneMuted) {
         unmute();
       } else {
         mute();
@@ -179,35 +219,47 @@ class CallManager {
   }
 
   void playMuteSound() {
-    if (muteSoundPlayer == null) {
-      muteSoundPlayer ??= Player(configuration: PlayerConfiguration());
-      muteSoundPlayer?.open(Media("asset:///assets/sound/muted.ogg"));
-      muteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
-    }
+    try {
+      if (muteSoundPlayer == null) {
+        muteSoundPlayer ??= Player(configuration: PlayerConfiguration());
+        muteSoundPlayer?.open(Media("asset:///assets/sound/muted.ogg"));
+        muteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
+      }
 
-    muteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
-    muteSoundPlayer?.seek(Duration.zero);
-    muteSoundPlayer?.play();
+      muteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
+      muteSoundPlayer?.seek(Duration.zero);
+      muteSoundPlayer?.play();
+    } catch (_) {
+      // Ignore audio playback errors in headless/test environments
+    }
   }
 
   void unmute() {
     for (var session in currentSessions) {
-      session.setMicrophoneMute(false);
+      if (session.isDeafened) {
+        session.setDeafened(false);
+      } else {
+        session.setMicrophoneMute(false);
+      }
     }
 
     playUnmuteSound();
   }
 
   void playUnmuteSound() {
-    if (unmuteSoundPlayer == null) {
-      unmuteSoundPlayer ??= Player(configuration: PlayerConfiguration());
-      unmuteSoundPlayer?.open(Media("asset:///assets/sound/unmuted.ogg"));
-      unmuteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
-    }
+    try {
+      if (unmuteSoundPlayer == null) {
+        unmuteSoundPlayer ??= Player(configuration: PlayerConfiguration());
+        unmuteSoundPlayer?.open(Media("asset:///assets/sound/unmuted.ogg"));
+        unmuteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
+      }
 
-    unmuteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
-    unmuteSoundPlayer?.seek(Duration.zero);
-    unmuteSoundPlayer?.play();
+      unmuteSoundPlayer!.setVolume(preferences.notificationsVolume.value);
+      unmuteSoundPlayer?.seek(Duration.zero);
+      unmuteSoundPlayer?.play();
+    } catch (_) {
+      // Ignore audio playback errors in headless/test environments
+    }
   }
 
   void endCallSound() {

@@ -119,21 +119,25 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                         width: widget.height,
                         child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: AnimatedBuilder(
-                              animation: audioLevel,
-                              builder: (context, child) {
-                                return Container(
-                                  child: Icon(
-                                    Icons.volume_up_rounded,
-                                    color: Color.lerp(
-                                        ColorScheme.of(context).onSurface,
-                                        ColorScheme.of(context).inversePrimary,
-                                        audioLevel.value),
-                                    size: 16,
-                                  ),
-                                );
-                              },
-                            )),
+                              child: AnimatedBuilder(
+                                animation: audioLevel,
+                                builder: (context, child) {
+                                  return Container(
+                                    child: Icon(
+                                      widget.session.isDeafened
+                                          ? Icons.volume_off_rounded
+                                          : Icons.volume_up_rounded,
+                                      color: widget.session.isDeafened
+                                          ? ColorScheme.of(context).error
+                                          : Color.lerp(
+                                              ColorScheme.of(context).onSurface,
+                                              ColorScheme.of(context).inversePrimary,
+                                              audioLevel.value),
+                                      size: 16,
+                                    ),
+                                  );
+                                },
+                              )),
                       )),
                   tiamat.Text(widget.session.roomName),
                 ],
@@ -157,6 +161,26 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                             icon: widget.session.isMicrophoneMuted
                                 ? Icons.mic_off_rounded
                                 : Icons.mic_rounded)),
+                  ),
+                  SizedBox(
+                    width: widget.height,
+                    height: widget.height,
+                    child: AspectRatio(
+                        aspectRatio: 1.0,
+                        child: tiamat.IconButton(
+                            onPressed: () {
+                              if (widget.session.isDeafened) {
+                                clientManager!.callManager.undeafen();
+                              } else {
+                                clientManager!.callManager.deafen();
+                              }
+                            },
+                            iconColor: widget.session.isDeafened
+                                ? ColorScheme.of(context).error
+                                : null,
+                            icon: widget.session.isDeafened
+                                ? Icons.headset_off_rounded
+                                : Icons.headset_rounded)),
                   ),
                   SizedBox(
                     width: widget.height,

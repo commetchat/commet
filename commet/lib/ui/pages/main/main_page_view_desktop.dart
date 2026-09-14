@@ -114,7 +114,7 @@ class MainPageViewDesktop extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded(child: mainView(context)),
+              mainView(context),
             ],
           ),
           if (state.currentRoom != null)
@@ -319,6 +319,6 @@ class MainPageViewDesktop extends StatelessWidget {
         ),
       );
 
-    return Placeholder();
+    return const Expanded(child: Placeholder());
   }
 }

@@ -45,6 +45,19 @@ class SystemWideShortcuts {
       desc:
           "name for the system wide shortcut to toggle the microphone mute status");
 
+  static String get shortcutNameDeafen => Intl.message("Deafen",
+      name: "shortcutNameDeafen",
+      desc: "name for the system wide shortcut to activate deafen");
+
+  static String get shortcutNameUndeafen => Intl.message("Undeafen",
+      name: "shortcutNameUndeafen",
+      desc: "name for the system wide shortcut to disable deafen");
+
+  static String get shortcutNameToggleDeafen => Intl.message("Toggle Deafen",
+      name: "shortcutNameToggleDeafen",
+      desc:
+          "name for the system wide shortcut to toggle the deafen status");
+
   static Map<String, AppShortcut> shortcuts = {
     "mute": AppShortcut(
         getDisplayName: () => shortcutNameMute,
@@ -55,6 +68,15 @@ class SystemWideShortcuts {
     "toggle_mute": AppShortcut(
         getDisplayName: () => shortcutNameToggleMute,
         callback: () => clientManager?.callManager.toggleMute()),
+    "deafen": AppShortcut(
+        getDisplayName: () => shortcutNameDeafen,
+        callback: () => clientManager?.callManager.deafen()),
+    "undeafen": AppShortcut(
+        getDisplayName: () => shortcutNameUndeafen,
+        callback: () => clientManager?.callManager.undeafen()),
+    "toggle_deafen": AppShortcut(
+        getDisplayName: () => shortcutNameToggleDeafen,
+        callback: () => clientManager?.callManager.toggleDeafen()),
   };
 
   static Future<void> storeHotkeys() async {

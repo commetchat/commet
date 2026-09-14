@@ -26,6 +26,9 @@ class WindowManagement {
 
     if (commandLineArgs.contains("--minimize")) {
       windowManager.minimize();
+    } else {
+      windowManager.show();
+      windowManager.focus();
     }
   }
 

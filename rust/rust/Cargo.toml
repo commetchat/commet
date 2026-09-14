@@ -6,6 +6,11 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
+[[bin]]
+name = "widget_runner"
+path = "src/main.rs"
+
+
 [dependencies]
 base64 = "0.22.1"
 bytes = "1.11.1"

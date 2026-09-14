@@ -21,6 +21,7 @@ class _CallWidgetState extends State<CallWidget> {
       pickScreenshareSource: pickScreenShareSource,
       stopScreenshare: stopScreenshare,
       setMicrophoneMute: setMicrophoneMute,
+      setDeafened: setDeafened,
       pickCamera: pickCamera,
       disableCamera: disableCamera,
       hangUp: hangUp,
@@ -48,6 +49,16 @@ class _CallWidgetState extends State<CallWidget> {
     }
 
     return widget.session.setMicrophoneMute(isMuted);
+  }
+
+  Future<void> setDeafened(bool isDeafened) {
+    if (isDeafened) {
+      clientManager?.callManager.playMuteSound();
+    } else {
+      clientManager?.callManager.playUnmuteSound();
+    }
+
+    return widget.session.setDeafened(isDeafened);
   }
 
   Future<void> pickCamera() async {

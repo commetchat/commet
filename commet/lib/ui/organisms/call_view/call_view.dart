@@ -17,6 +17,7 @@ class CallView extends StatefulWidget {
   const CallView(
     this.currentSession, {
     this.setMicrophoneMute,
+    this.setDeafened,
     this.pickScreenshareSource,
     this.stopScreenshare,
     this.pickCamera,
@@ -31,6 +32,7 @@ class CallView extends StatefulWidget {
   static const Duration volumeAnimationDuration = Duration(milliseconds: 500);
 
   final Future<void> Function(bool)? setMicrophoneMute;
+  final Future<void> Function(bool)? setDeafened;
   final Future<void> Function()? pickScreenshareSource;
   final Future<void> Function()? stopScreenshare;
   final Future<void> Function()? pickCamera;
@@ -106,6 +108,7 @@ class _CallViewState extends State<CallView> {
 
   Widget callButtons(
       {bool canMute = false,
+      bool canDeafen = false,
       bool canScreenshare = false,
       bool canHangUp = false,
       bool canToggleCamera = false,
@@ -157,6 +160,21 @@ class _CallViewState extends State<CallView> {
                         setState(() {});
                       },
                     ),
+                  if (canDeafen)
+                    tiamat.CircleButton(
+                      radius: buttonRadius,
+                      icon: widget.currentSession.isDeafened
+                          ? Icons.headset_off
+                          : Icons.headset,
+                      color: widget.currentSession.isDeafened
+                          ? Theme.of(context).colorScheme.errorContainer
+                          : null,
+                      onPressed: () async {
+                        await widget.setDeafened
+                            ?.call(!widget.currentSession.isDeafened);
+                        setState(() {});
+                      },
+                    ),
                   if (canToggleCamera)
                     tiamat.CircleButton(
                       radius: buttonRadius,
@@ -189,6 +207,7 @@ class _CallViewState extends State<CallView> {
   Widget callConnectedView() {
     return callButtons(
         canMute: true,
+        canDeafen: true,
         canHangUp: true,
         canScreenshare: true,
         canToggleCamera: true,
