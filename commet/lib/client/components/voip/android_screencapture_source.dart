@@ -6,6 +6,11 @@ import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class WebrtcAndroidScreencaptureSource implements ScreenCaptureSource {
+  @override
+  final bool captureAudio;
+
+  WebrtcAndroidScreencaptureSource({this.captureAudio = true});
+
   static Future<ScreenCaptureSource?> getCaptureSource(
       BuildContext context) async {
     if (PlatformUtils.isAndroid) {

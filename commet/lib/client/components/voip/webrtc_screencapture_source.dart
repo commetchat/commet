@@ -8,8 +8,10 @@ import 'package:tiamat/atoms/popup_dialog.dart';
 
 class WebrtcScreencaptureSource implements ScreenCaptureSource {
   DesktopCapturerSource source;
+  @override
+  final bool captureAudio;
 
-  WebrtcScreencaptureSource(this.source);
+  WebrtcScreencaptureSource(this.source, {this.captureAudio = true});
 
   static Future<ScreenCaptureSource?> showSelectSourcePrompt(
       BuildContext context) async {
@@ -28,13 +30,16 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
     }
 
     if (context.mounted) {
-      var result = await PopupDialog.show<DesktopCapturerSource>(context,
+      var result = await PopupDialog.show<ScreenCaptureDialogResult>(context,
           content: ScreenCaptureSourceDialog(
               sources, desktopCapturer.onThumbnailChanged.stream),
           title: "Screen Share");
 
       if (result != null) {
-        return WebrtcScreencaptureSource(result);
+        return WebrtcScreencaptureSource(
+          result.source,
+          captureAudio: result.captureAudio,
+        );
       }
     }
 

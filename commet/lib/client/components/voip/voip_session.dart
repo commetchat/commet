@@ -14,9 +14,16 @@ enum VoipState {
   ended,
 }
 
-abstract class ScreenCaptureSource {}
+abstract class ScreenCaptureSource {
+  bool get captureAudio => true;
+}
 
-class WebrtcBrowserScreenCaptureSource implements ScreenCaptureSource {}
+class WebrtcBrowserScreenCaptureSource implements ScreenCaptureSource {
+  @override
+  final bool captureAudio;
+
+  WebrtcBrowserScreenCaptureSource({this.captureAudio = true});
+}
 
 abstract class VoipSession {
   Client get client;

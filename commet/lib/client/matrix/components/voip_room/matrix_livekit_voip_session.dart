@@ -326,28 +326,37 @@ class MatrixLivekitVoipSession implements VoipSession {
     Log.i(
         "Starting stream with settings: ${preferences.streamBitrate.value}Mbps, ${framerate}FPS, $codec ${res}");
 
-    var track = await lk.LocalVideoTrack.createScreenShareTrack(
-        lk.ScreenShareCaptureOptions(
+    var captureOptions = lk.ScreenShareCaptureOptions(
       sourceId: srcid,
       maxFrameRate: framerate,
+      captureScreenAudio: source.captureAudio,
       params: lk.VideoParameters(
         dimensions: lk.VideoDimensionsPresets.h720_169,
         encoding: lk.VideoEncoding(
             maxFramerate: framerate.toInt(), maxBitrate: bitrate),
       ),
-    ));
+    );
 
-    await livekitRoom.localParticipant?.publishVideoTrack(track,
-        publishOptions: lk.VideoPublishOptions(
-          simulcast: preferences.doSimulcast.value,
-          screenShareEncoding: lk.VideoEncoding(
-              maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-          videoEncoding: lk.VideoEncoding(
-              maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-          videoCodec: preferences.streamCodec.value,
-        ));
+    final tracks = source.captureAudio
+        ? await lk.LocalVideoTrack.createScreenShareTracksWithAudio(captureOptions)
+        : [await lk.LocalVideoTrack.createScreenShareTrack(captureOptions)];
 
-    track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+    for (final track in tracks) {
+      if (track is lk.LocalVideoTrack) {
+        await livekitRoom.localParticipant?.publishVideoTrack(track,
+            publishOptions: lk.VideoPublishOptions(
+              simulcast: preferences.doSimulcast.value,
+              screenShareEncoding: lk.VideoEncoding(
+                  maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+              videoEncoding: lk.VideoEncoding(
+                  maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+              videoCodec: preferences.streamCodec.value,
+            ));
+        track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+      } else if (track is lk.LocalAudioTrack) {
+        await livekitRoom.localParticipant?.publishAudioTrack(track);
+      }
+    }
 
     _stateChanged.add(());
   }
@@ -373,6 +382,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   @override
   Future<void> stopScreenshare() async {
     await livekitRoom.localParticipant?.setScreenShareEnabled(false);
+    final screenAudio = livekitRoom.localParticipant
+        ?.getTrackPublicationBySource(lk.TrackSource.screenShareAudio);
+    if (screenAudio != null) {
+      await livekitRoom.localParticipant?.removePublishedTrack(screenAudio.sid);
+    }
 
     if (PlatformUtils.isAndroid) {
       try {
