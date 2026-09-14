@@ -1,6 +1,8 @@
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/client/components/video_embed/composite_video_provider.dart';
+import 'package:commet/client/components/video_embed/video_embed_info.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -50,11 +52,15 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     UrlPreviewData? data;
 
-    try {
-      data = await fetchPreviewData(mxClient, uri);
-    } catch (_) {
-      return null;
+    if (serverSupportsUrlPreview != false) {
+      try {
+        data = await fetchPreviewData(mxClient, uri);
+      } catch (_) {
+        data = null;
+      }
     }
+
+    data ??= await _fallbackVideoEmbed(uri);
 
     if (data != null) {
       cache[uri.toString()] = data;
@@ -106,13 +112,15 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     final room = timeline.room;
 
+    final links = event.getLinks(timeline: timeline);
+    if (links?.isNotEmpty != true) return false;
+
     if (!shouldGetPreviewsInRoom(room)) {
-      return false;
+      // Allow fallback if client can directly handle the video link
+      return links!.any(CompositeVideoProvider.instance.canHandle);
     }
 
-    final links = event.getLinks(timeline: timeline);
-
-    return links?.isNotEmpty == true;
+    return true;
   }
 
   Future<String> getRequestPath() async {
@@ -125,10 +133,6 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
   @override
   Future<UrlPreviewData?> getPreviewForUrl(Room room, Uri uri) async {
-    if (shouldGetPreviewsInRoom(room) == false) {
-      return null;
-    }
-
     if (uri.authority == "matrix.to") {
       return null;
     }
@@ -137,14 +141,19 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
       return cache[uri.toString()];
     }
 
-    var data = null;
+    UrlPreviewData? data;
 
-    try {
-      data =
-          await fetchPreviewData((room as MatrixRoom).matrixRoom.client, uri);
-    } catch (_) {
-      return null;
+    if (shouldGetPreviewsInRoom(room) != false &&
+        serverSupportsUrlPreview != false) {
+      try {
+        data =
+            await fetchPreviewData((room as MatrixRoom).matrixRoom.client, uri);
+      } catch (_) {
+        data = null;
+      }
     }
+
+    data ??= await _fallbackVideoEmbed(uri);
 
     if (data != null) {
       cache[uri.toString()] = data;
@@ -169,7 +178,7 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
       Log.onError(e, s);
 
-      return null;
+      return await _fallbackVideoEmbed(url);
     }
 
     serverSupportsUrlPreview = true;
@@ -177,12 +186,18 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
     var siteName = response['og:site_name'] as String?;
     var imageUrl = response['og:image'] as String?;
     var description = response['og:description'] as String?;
+
+    if (title == null && imageUrl == null) {
+      final fallback = await _fallbackVideoEmbed(url);
+      if (fallback != null) return fallback;
+    }
+
     var video =
         (response['og:video:secure_url'] ?? response["og:video"]) as String?;
     var videoType = response['og:video:type'] as String?;
 
-    int? videoWidth = null;
-    int? videoHeight = null;
+    int? videoWidth;
+    int? videoHeight;
 
     var videoWidthStr = response['og:video:width'] as String?;
     var videoHeightStr = response['og:video:height'] as String?;
@@ -214,24 +229,50 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     var destinationType = UrlDestinationType.page;
     VideoAttachment? videoAttachment;
+    VideoEmbedInfo? videoEmbedInfo;
+
+    if (CompositeVideoProvider.instance.canHandle(url)) {
+      destinationType = UrlDestinationType.video;
+      try {
+        videoEmbedInfo = await CompositeVideoProvider.instance.resolve(url);
+        if (videoEmbedInfo != null) {
+          siteName ??= videoEmbedInfo.platformName;
+          title ??= videoEmbedInfo.title;
+          image ??= videoEmbedInfo.thumbnail;
+          if (videoEmbedInfo.streamUrl != null) {
+            videoAttachment = VideoAttachment(
+              WebFileProvider(videoEmbedInfo.streamUrl!),
+              width: videoEmbedInfo.isShortForm ? 360 : 640,
+              height: videoEmbedInfo.isShortForm ? 640 : 360,
+              streamUrl: videoEmbedInfo.streamUrl,
+              thumbnail: image ?? videoEmbedInfo.thumbnail,
+              mimeType: 'video/mp4',
+            );
+          }
+        }
+      } catch (_) {}
+    }
 
     if (video != null) {
       destinationType = UrlDestinationType.video;
     }
 
-    if (video is String &&
+    if (videoAttachment == null &&
+        video is String &&
         videoType != null &&
         (Mime.videoTypes.contains(videoType) ||
             Mime.videoStreamTypes.contains(videoType))) {
       var uri = Uri.parse(video);
 
       if (uri.scheme == "https") {
-        videoAttachment = VideoAttachment(WebFileProvider(uri),
-            width: videoWidth?.toDouble(),
-            height: videoHeight?.toDouble(),
-            streamUrl: uri,
-            thumbnail: image,
-            mimeType: videoType);
+        videoAttachment = VideoAttachment(
+          WebFileProvider(uri),
+          width: videoWidth?.toDouble(),
+          height: videoHeight?.toDouble(),
+          streamUrl: uri,
+          thumbnail: image,
+          mimeType: videoType,
+        );
       }
     }
 
@@ -239,12 +280,49 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
       description = description.replaceAll("\n", "    ");
     }
 
-    return UrlPreviewData(url,
-        siteName: siteName,
-        title: title,
-        image: image,
-        video: videoAttachment,
-        type: destinationType,
-        description: description);
+    return UrlPreviewData(
+      url,
+      siteName: siteName,
+      title: title,
+      image: image,
+      video: videoAttachment,
+      videoEmbedInfo: videoEmbedInfo,
+      type: destinationType,
+      description: description,
+    );
+  }
+
+  Future<UrlPreviewData?> _fallbackVideoEmbed(Uri uri) async {
+    if (!CompositeVideoProvider.instance.canHandle(uri)) return null;
+    try {
+      final videoInfo = await CompositeVideoProvider.instance.resolve(uri);
+      if (videoInfo != null) {
+        VideoAttachment? videoAttachment;
+        if (videoInfo.streamUrl != null) {
+          videoAttachment = VideoAttachment(
+            WebFileProvider(videoInfo.streamUrl!),
+            width: videoInfo.isShortForm ? 360 : 640,
+            height: videoInfo.isShortForm ? 640 : 360,
+            streamUrl: videoInfo.streamUrl,
+            thumbnail: videoInfo.thumbnail,
+            mimeType: 'video/mp4',
+          );
+        }
+
+        return UrlPreviewData(
+          uri,
+          siteName: videoInfo.platformName,
+          title: videoInfo.title,
+          description: videoInfo.author != null
+              ? 'by ${videoInfo.author}'
+              : videoInfo.description,
+          image: videoInfo.thumbnail,
+          video: videoAttachment,
+          type: UrlDestinationType.video,
+          videoEmbedInfo: videoInfo,
+        );
+      }
+    } catch (_) {}
+    return null;
   }
 }

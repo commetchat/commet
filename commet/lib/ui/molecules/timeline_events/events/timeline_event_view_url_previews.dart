@@ -41,7 +41,7 @@ class _TimelineEventViewUrlPreviewsState
         child: UrlPreviewWidget(
           key: key,
           data,
-          onTap: () {
+          onOpenLink: () {
             LinkUtils.open(data!.uri, context: context);
           },
         ));

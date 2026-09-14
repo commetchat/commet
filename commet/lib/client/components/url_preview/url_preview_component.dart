@@ -1,6 +1,7 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/components/video_embed/video_embed_info.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:flutter/widgets.dart';
 
@@ -38,6 +39,7 @@ class UrlPreviewData {
   final ImageProvider? image;
   final VideoAttachment? video;
   final UrlDestinationType? type;
+  final VideoEmbedInfo? videoEmbedInfo;
 
   const UrlPreviewData(
     this.uri, {
@@ -47,5 +49,6 @@ class UrlPreviewData {
     this.type,
     this.image,
     this.video,
+    this.videoEmbedInfo,
   });
 }
