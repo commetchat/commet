@@ -14,9 +14,16 @@ enum VoipState {
   ended,
 }
 
-abstract class ScreenCaptureSource {}
+abstract class ScreenCaptureSource {
+  bool get captureAudio => true;
+}
 
-class WebrtcBrowserScreenCaptureSource implements ScreenCaptureSource {}
+class WebrtcBrowserScreenCaptureSource implements ScreenCaptureSource {
+  @override
+  final bool captureAudio;
+
+  WebrtcBrowserScreenCaptureSource({this.captureAudio = true});
+}
 
 abstract class VoipSession {
   Client get client;
@@ -34,6 +41,8 @@ abstract class VoipSession {
   VoipState get state;
 
   bool get isMicrophoneMuted;
+
+  bool get isDeafened;
 
   bool get supportsScreenshare;
 
@@ -61,6 +70,8 @@ abstract class VoipSession {
   Stream<void> get onUpdateVolumeVisualizers;
 
   Future<void> setMicrophoneMute(bool state);
+
+  Future<void> setDeafened(bool state);
 
   Future<void> updateStats();
 

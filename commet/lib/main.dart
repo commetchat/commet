@@ -236,13 +236,13 @@ Future<void> initGuiRequirements() async {
 
   var locale = PlatformDispatcher.instance.locale;
 
-  Future.wait([
-    UnicodeEmojis.load(),
-    if (!preferences.debugTranslations.value)
-      initializeMessages(locale.languageCode),
-    if (preferences.debugTranslations.value) initializeMessagesDebug(),
-    initializeDateFormatting(locale.languageCode),
-  ]);
+  UnicodeEmojis.load();
+  if (!preferences.debugTranslations.value) {
+    initializeMessages(locale.languageCode);
+  } else {
+    initializeMessagesDebug();
+  }
+  initializeDateFormatting(locale.languageCode);
 
   tiamat.getAppScale = () {
     return preferences.appScale.value;

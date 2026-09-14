@@ -84,7 +84,9 @@ class MatrixLivekitVoipSession implements VoipSession {
         String userId = entry.key;
         userId = userId.split(":").getRange(0, 2).join(":");
 
-        streams.add(MatrixLivekitVoipStream(stream.value, userId));
+        final s = MatrixLivekitVoipStream(stream.value, userId);
+        _applyStreamVolume(s);
+        streams.add(s);
       }
     }
   }
@@ -139,7 +141,9 @@ class MatrixLivekitVoipSession implements VoipSession {
       return;
     }
 
-    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    final s = MatrixLivekitVoipStream(event.publication, participant);
+    _applyStreamVolume(s);
+    streams.add(s);
     _stateChanged.add(());
   }
 
@@ -147,7 +151,9 @@ class MatrixLivekitVoipSession implements VoipSession {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
-    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    final s = MatrixLivekitVoipStream(event.publication, participant);
+    _applyStreamVolume(s);
+    streams.add(s);
     _stateChanged.add(());
   }
 
@@ -213,6 +219,21 @@ class MatrixLivekitVoipSession implements VoipSession {
     clientManager?.callManager.onSessionEnded(this);
   }
 
+  bool _isDeafened = false;
+
+  @override
+  bool get isDeafened => _isDeafened;
+
+  void _applyStreamVolume(MatrixLivekitVoipStream stream) {
+    if (stream.publication.track is lk.AudioTrack &&
+        stream.direction == VoipStreamDirection.incoming) {
+      final track = stream.publication.track as lk.AudioTrack;
+      final volume =
+          _isDeafened ? 0.0 : preferences.getVoipUserVolume(stream.userId);
+      Helper.setVolume(volume, track.mediaStreamTrack);
+    }
+  }
+
   @override
   bool get isCameraEnabled =>
       livekitRoom.localParticipant?.isCameraEnabled() ?? false;
@@ -247,7 +268,32 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> setMicrophoneMute(bool state) async {
+    // Regra do Discord: desmutar microfone enquanto ensurdecido cancela o deafen
+    if (!state && _isDeafened) {
+      await setDeafened(false);
+      return;
+    }
+
     await livekitRoom.localParticipant?.setMicrophoneEnabled(!state);
+    _stateChanged.add(());
+  }
+
+  @override
+  Future<void> setDeafened(bool state) async {
+    _isDeafened = state;
+
+    if (state) {
+      await livekitRoom.localParticipant?.setMicrophoneEnabled(false);
+    } else {
+      await livekitRoom.localParticipant?.setMicrophoneEnabled(true);
+    }
+
+    for (var stream in streams) {
+      if (stream is MatrixLivekitVoipStream) {
+        _applyStreamVolume(stream);
+      }
+    }
+
     _stateChanged.add(());
   }
 
@@ -280,28 +326,37 @@ class MatrixLivekitVoipSession implements VoipSession {
     Log.i(
         "Starting stream with settings: ${preferences.streamBitrate.value}Mbps, ${framerate}FPS, $codec ${res}");
 
-    var track = await lk.LocalVideoTrack.createScreenShareTrack(
-        lk.ScreenShareCaptureOptions(
+    var captureOptions = lk.ScreenShareCaptureOptions(
       sourceId: srcid,
       maxFrameRate: framerate,
+      captureScreenAudio: source.captureAudio,
       params: lk.VideoParameters(
         dimensions: lk.VideoDimensionsPresets.h720_169,
         encoding: lk.VideoEncoding(
             maxFramerate: framerate.toInt(), maxBitrate: bitrate),
       ),
-    ));
+    );
 
-    await livekitRoom.localParticipant?.publishVideoTrack(track,
-        publishOptions: lk.VideoPublishOptions(
-          simulcast: preferences.doSimulcast.value,
-          screenShareEncoding: lk.VideoEncoding(
-              maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-          videoEncoding: lk.VideoEncoding(
-              maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-          videoCodec: preferences.streamCodec.value,
-        ));
+    final tracks = source.captureAudio
+        ? await lk.LocalVideoTrack.createScreenShareTracksWithAudio(captureOptions)
+        : [await lk.LocalVideoTrack.createScreenShareTrack(captureOptions)];
 
-    track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+    for (final track in tracks) {
+      if (track is lk.LocalVideoTrack) {
+        await livekitRoom.localParticipant?.publishVideoTrack(track,
+            publishOptions: lk.VideoPublishOptions(
+              simulcast: preferences.doSimulcast.value,
+              screenShareEncoding: lk.VideoEncoding(
+                  maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+              videoEncoding: lk.VideoEncoding(
+                  maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+              videoCodec: preferences.streamCodec.value,
+            ));
+        track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+      } else if (track is lk.LocalAudioTrack) {
+        await livekitRoom.localParticipant?.publishAudioTrack(track);
+      }
+    }
 
     _stateChanged.add(());
   }
@@ -327,6 +382,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   @override
   Future<void> stopScreenshare() async {
     await livekitRoom.localParticipant?.setScreenShareEnabled(false);
+    final screenAudio = livekitRoom.localParticipant
+        ?.getTrackPublicationBySource(lk.TrackSource.screenShareAudio);
+    if (screenAudio != null) {
+      await livekitRoom.localParticipant?.removePublishedTrack(screenAudio.sid);
+    }
 
     if (PlatformUtils.isAndroid) {
       try {

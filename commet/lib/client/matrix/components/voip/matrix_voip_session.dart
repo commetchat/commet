@@ -72,6 +72,11 @@ class MatrixVoipSession implements VoipSession {
   @override
   Stream<void> get onStateChanged => _onStateChanged.stream;
 
+  bool _isDeafened = false;
+
+  @override
+  bool get isDeafened => _isDeafened;
+
   @override
   bool get isMicrophoneMuted => session.isMicrophoneMuted;
 
@@ -159,8 +164,44 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  Future<void> setMicrophoneMute(bool state) {
+  Future<void> setMicrophoneMute(bool state) async {
+    // Regra do Discord: desmutar microfone enquanto ensurdecido cancela o deafen
+    if (!state && _isDeafened) {
+      await setDeafened(false);
+      return;
+    }
     return session.setMicrophoneMuted(state);
+  }
+
+  @override
+  Future<void> setDeafened(bool state) async {
+    _isDeafened = state;
+
+    if (state) {
+      await session.setMicrophoneMuted(true);
+      for (var remoteStream in session.getRemoteStreams) {
+        var tracks = remoteStream.stream?.getAudioTracks();
+        if (tracks != null) {
+          for (var track in tracks) {
+            await Helper.setVolume(0.0, track);
+          }
+        }
+      }
+    } else {
+      await session.setMicrophoneMuted(false);
+      for (var remoteStream in session.getRemoteStreams) {
+        var tracks = remoteStream.stream?.getAudioTracks();
+        if (tracks != null) {
+          var vol =
+              preferences.getVoipUserVolume(remoteStream.participant.userId);
+          for (var track in tracks) {
+            await Helper.setVolume(vol, track);
+          }
+        }
+      }
+    }
+
+    _onStateChanged.add(null);
   }
 
   Future<void> setCameraEnabled(bool state) {
@@ -191,7 +232,8 @@ class MatrixVoipSession implements VoipSession {
       stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
           'mandatory': {'frameRate': preferences.streamFramerate.value}
-        }
+        },
+        'audio': source.captureAudio,
       });
     }
 
@@ -202,7 +244,8 @@ class MatrixVoipSession implements VoipSession {
           'height': 1080,
           'deviceId': {'exact': source.source.id},
           'mandatory': {'frameRate': preferences.streamFramerate.value}
-        }
+        },
+        'audio': source.captureAudio,
       });
     }
 
@@ -278,7 +321,16 @@ class MatrixVoipSession implements VoipSession {
 
   void onStreamAdded(matrix.WrappedMediaStream event) {
     if (shouldAddStream(event)) {
-      streams.add(MatrixVoipStream(event, this));
+      final s = MatrixVoipStream(event, this);
+      if (_isDeafened) {
+        var tracks = event.stream?.getAudioTracks();
+        if (tracks != null) {
+          for (var track in tracks) {
+            Helper.setVolume(0.0, track);
+          }
+        }
+      }
+      streams.add(s);
       _onStateChanged.add(null);
     }
   }
