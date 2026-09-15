@@ -52,6 +52,27 @@ abstract class AudioProcessingManager {
   /// Level and gate state, about ten times a second while [isActive].
   Stream<AudioDspReport> get onReport => _reports.stream;
 
+  // Reports keep coming while the frame counter is stuck if the hook stops
+  // receiving audio, so liveness is judged by the counter.
+  static const Duration _liveWindow = Duration(milliseconds: 500);
+  int _lastFrames = -1;
+  DateTime? _framesAdvancedAt;
+  DateTime? _gateOpenAt;
+
+  /// Whether the DSP is processing microphone audio right now, which makes
+  /// its gate the judge of what actually leaves the client.
+  bool get isProcessing {
+    final t = _framesAdvancedAt;
+    return isActive &&
+        t != null &&
+        DateTime.now().difference(t) < _liveWindow;
+  }
+
+  /// Last time the input gate was seen open, i.e. the microphone was being
+  /// sent at full gain. The gate holds for 150 ms and reports come every
+  /// 100 ms, so no opening is missed.
+  DateTime? get lastGateOpenAt => _gateOpenAt;
+
   AudioDspSettings get settings => _lastSettings;
 
   /// Called by [CallManager] for every session that starts.
@@ -67,6 +88,13 @@ abstract class AudioProcessingManager {
   Future<void> applySettings(AudioDspSettings settings);
 
   void publishReport(AudioDspReport report) {
+    if (report.frames != _lastFrames) {
+      _lastFrames = report.frames;
+      final now = DateTime.now();
+      _framesAdvancedAt = now;
+      if (report.gateOpen) _gateOpenAt = now;
+    }
+
     if (_reports.hasListener) {
       _reports.add(report);
     }

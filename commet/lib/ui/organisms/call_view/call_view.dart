@@ -31,7 +31,7 @@ class CallView extends StatefulWidget {
   });
   final VoipSession currentSession;
 
-  static const Duration volumeAnimationDuration = Duration(milliseconds: 500);
+  static const Duration volumeAnimationDuration = Duration(milliseconds: 150);
 
   final Future<void> Function(bool)? setMicrophoneMute;
   final Future<void> Function(bool)? setDeafened;

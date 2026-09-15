@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/speaking_indicator.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -131,7 +132,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                                           ? ColorScheme.of(context).error
                                           : Color.lerp(
                                               ColorScheme.of(context).onSurface,
-                                              ColorScheme.of(context).inversePrimary,
+                                              SpeakingIndicator.color,
                                               audioLevel.value),
                                       size: 16,
                                     ),

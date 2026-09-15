@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,9 +21,11 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
     if (publication.track case AudioTrack t) {
+      // Several bands so the loudest one can be picked: a single band averages
+      // the whole spectrum and buries quiet speech under the empty highs.
       visualizer = createVisualizer(t,
-          options:
-              AudioVisualizerOptions(barCount: 1, smoothTransition: false));
+          options: AudioVisualizerOptions(
+              barCount: 7, centeredBands: false, smoothTransition: false));
 
       var volume = preferences.getVoipUserVolume(userId);
       Helper.setVolume(volume, t.mediaStreamTrack);
@@ -36,11 +39,57 @@ class MatrixLivekitVoipStream implements VoipStream {
     }
   }
 
+  // Loudest visualizer band (0..1, dB scaled so -100 dB is 0) above which a
+  // frame counts as audio. Quiet speech (-50 dBFS) lands near 0.47; a mic
+  // behind a closed input gate (-40 dB floor) stays under 0.35 even when
+  // shouting, so only audio that was really sent lights the indicator.
+  static const double _audioThreshold = 0.4;
+
+  // Keep reporting "speaking" this long after the last audio, so the
+  // indicator stays lit across the gaps between syllables instead of
+  // flickering.
+  static const Duration _speakingHold = Duration(milliseconds: 400);
+
+  DateTime? _lastAudioAt;
+
+  bool get _isLocalMic =>
+      publication is LocalTrackPublication &&
+      publication.source == TrackSource.microphone;
+
   @override
-  double audiolevel = 0.0;
+  double get audiolevel {
+    if (isMuted) return 0;
+
+    // For our own mic the visualizer taps the audio before the input gate,
+    // so it would light up for audio that never leaves the client. When the
+    // DSP is running, its gate is what decides.
+    final dsp = AudioProcessingManager.instance;
+    final last = _isLocalMic && dsp.isProcessing
+        ? dsp.lastGateOpenAt
+        : _lastAudioAt;
+    if (last != null && DateTime.now().difference(last) < _speakingHold) {
+      return 1;
+    }
+
+    // LiveKit's server side speaker detection works from the audio level of
+    // what was actually sent, including our own mic.
+    if (publication.source == TrackSource.microphone &&
+        publication.participant.isSpeaking) {
+      return 1;
+    }
+
+    return 0;
+  }
 
   void setAudioLevel(AudioVisualizerEvent e) {
-    audiolevel = (e.event[0] as double) > 0.5 ? 1 : 0;
+    var peak = 0.0;
+    for (final band in e.event) {
+      final v = (band as num).toDouble();
+      if (v > peak) peak = v;
+    }
+    if (peak > _audioThreshold) {
+      _lastAudioAt = DateTime.now();
+    }
   }
 
   void onStreamUpdatedEvent() {
