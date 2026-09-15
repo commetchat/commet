@@ -17,7 +17,7 @@ class Mime {
     "image/png",
     "image/gif",
     "image/bmp",
-    "image/webp",
+    "image/webp"
   };
 
   static const imageTypes = {

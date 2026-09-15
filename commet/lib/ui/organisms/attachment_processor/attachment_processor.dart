@@ -180,10 +180,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   Widget buildMetadataDisplay() {
     return Column(
       children: [
-        if (containsGpsData)
-          tiamat.Text.error(
-            labelImageContainsLocationInfo,
-          )
+        if (containsGpsData) tiamat.Text.error(labelImageContainsLocationInfo)
       ],
     );
   }
@@ -234,11 +231,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   Future<PendingFileAttachment> processFile() async {
     final mimeType = await _resolveMimeType(widget.attachment);
 
-    if (Mime.imageTypes.contains(mimeType)) {
-      return await processImage();
-    } else if (Mime.videoTypes.contains(mimeType)) {
-      return await processVideo();
-    }
+    if (Mime.imageTypes.contains(mimeType)) return await processImage();
+    if (Mime.videoTypes.contains(mimeType)) return await processVideo();
 
     return widget.attachment;
   }
