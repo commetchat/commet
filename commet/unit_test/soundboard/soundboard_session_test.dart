@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
@@ -115,6 +117,19 @@ void main() {
           svc.importFromPageUrl(
               'https://www.myinstants.com/en/instant/x-1/'),
           throwsA(anything));
+    });
+
+    test('DNS failure surfaces an actionable message', () async {
+      final svc = SoundboardImportService(fetcher: (_) async {
+        throw SocketException(
+            'Failed host lookup: www.myinstants.com',
+            address: InternetAddress('93.184.216.34'));
+      });
+      await expectLater(
+          svc.importFromPageUrl(
+              'https://www.myinstants.com/en/instant/x-1/'),
+          throwsA(predicate(
+              (e) => e.toString().contains('internet connection'))));
     });
 
     test('bot-protection (403) surfaces a specific error', () async {

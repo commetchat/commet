@@ -4,6 +4,8 @@
 // Split from UI/Matrix so it is unit-testable with injected [fetcher].
 // The actual MXC upload stays in the Matrix component (needs authenticated
 // client); this service returns validated bytes + suggested metadata.
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
@@ -66,7 +68,7 @@ class SoundboardImportService {
     if (_looksLikeAudioFileUrl(trimmed)) {
       return importFromAudioUrl(trimmed);
     }
-    final pageRes = await fetcher(Uri.parse(trimmed));
+    final pageRes = await _fetch(Uri.parse(trimmed));
     if (pageRes.statusCode == 403 || pageRes.statusCode == 429) {
       throw const MyInstantsValidationError(
           'MyInstants refused the connection (bot protection)');
@@ -96,10 +98,28 @@ class SoundboardImportService {
         .any((ext) => path.endsWith(ext));
   }
 
+  /// Runs [fetcher], translating low-level network failures into a
+  /// user-actionable validation error instead of a generic crash.
+  Future<http.Response> _fetch(Uri uri) async {
+    try {
+      return await fetcher(uri);
+    } on SocketException catch (e) {
+      throw MyInstantsValidationError(
+          'Network unreachable (${e.address?.host ?? uri.host}). '
+          'Check your internet connection and try again.');
+    } on TimeoutException {
+      throw const MyInstantsValidationError(
+          'Network timeout. Check your internet connection and try again.');
+    } on HttpException {
+      throw const MyInstantsValidationError(
+          'Network error. Check your internet connection and try again.');
+    }
+  }
+
   /// Imports already-resolved audio file bytes (also used by tests).
   Future<FetchedAudio> importFromAudioUrl(String audioUrl) async {
     MyInstantsResolver.requireAllowedUrl(audioUrl);
-    final res = await fetcher(Uri.parse(audioUrl));
+    final res = await _fetch(Uri.parse(audioUrl));
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw MyInstantsValidationError(
           'Audio download failed (${res.statusCode})');

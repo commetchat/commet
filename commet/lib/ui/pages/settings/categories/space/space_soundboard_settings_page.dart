@@ -223,6 +223,13 @@ class _SpaceSoundboardSettingsPageState
       return 'MyInstants blocked the request. Wait a minute and try again, '
           'or paste the direct .mp3 URL of the sound instead.';
     }
+    if (s.contains('Network unreachable') ||
+        s.contains('Network timeout') ||
+        s.contains('Network error') ||
+        s.contains('internet connection')) {
+      return 'Could not reach MyInstants. Check your internet connection '
+          'and try again.';
+    }
     if (s.contains('404')) {
       return 'MyInstants page not found. Check the link.';
     }
