@@ -258,7 +258,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     }
 
     if (!supportsNativeCompress || format == null) {
-      return await compute(_fallbackProcessImage, widget.attachment);
+      return await compute(_fallbackProcessImage,
+          (attachment: widget.attachment, mimeType: mimeType));
     }
 
     try {
@@ -291,13 +292,17 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     } catch (_) {}
 
     // Fallback if native compression returned null or threw an error
-    return await compute(_fallbackProcessImage, widget.attachment);
+    return await compute(_fallbackProcessImage,
+        (attachment: widget.attachment, mimeType: mimeType));
   }
 
   /// Pure-Dart fallback isolate worker for Windows / Linux
   static Future<PendingFileAttachment> _fallbackProcessImage(
-      PendingFileAttachment attachment) async {
+      ({PendingFileAttachment attachment, String mimeType}) args) async {
     img.Image? image;
+
+    final attachment = args.attachment;
+    String mime = args.mimeType.isEmpty ? "image/png" : args.mimeType;
 
     // Stream directly from disk to avoid allocating raw file bytes in RAM
     if (attachment.path != null) {
@@ -309,9 +314,6 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     if (image == null) throw Exception("Unable to decode image file.");
 
     image.exif.clear();
-
-    var mime = await _resolveMimeType(attachment);
-    if (mime.isEmpty) mime = "image/png";
 
     Uint8List? processedData;
     String? name = attachment.name;
