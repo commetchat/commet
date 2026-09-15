@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -19,11 +22,17 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
   late List<UserWidgetInfo> widgets;
   late List<WidgetHostType> additionalHostTypes;
 
+  StreamSubscription? sub;
+
   @override
   void initState() {
     var client = widget.room.client;
+
     var widgetComponent = client.getComponent<WidgetComponent>();
+
     widgets = widgetComponent!.getWidgets(widget.room);
+
+    sub = widgetComponent.onWidgetsChanged.listen(onWidgetsChanged);
 
     additionalHostTypes = widgetComponent
         .supportedHostTypes()
@@ -31,6 +40,20 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
         .toList();
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
+  }
+
+  void onWidgetsChanged(void event) {
+    setState(() {
+      var client = widget.room.client;
+      var widgetComponent = client.getComponent<WidgetComponent>();
+      widgets = widgetComponent!.getWidgets(widget.room);
+    });
   }
 
   String hostTypeToLabel(WidgetHostType type) {
@@ -61,7 +84,8 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
           if (widgets.isEmpty)
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: tiamat.Text.labelLow("No widgets have been added to this room"),
+              child: tiamat.Text.labelLow(
+                  "No widgets have been added to this room"),
             ),
           Flexible(
             child: ListView.builder(
@@ -95,6 +119,22 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                               preferences.clearWidgetSettings(
                                   widget.room.client.identifier,
                                   data.namespace);
+                            },
+                          ),
+                          tiamat.ContextMenuItem(
+                            text: "Remove Widget",
+                            icon: Icons.delete_forever,
+                            color: ColorScheme.of(context).error,
+                            onPressed: () async {
+                              if (await AdaptiveDialog.confirmation(context,
+                                      prompt:
+                                          "Are you sure you want to remove the widget '${data.name}' from '${widget.room.displayName}'?") ==
+                                  true) {
+                                var comp = widget.room.client
+                                    .getComponent<WidgetComponent>();
+                                comp?.removeWidget(
+                                    widget: data, room: widget.room);
+                              }
                             },
                           )
                         ],

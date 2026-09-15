@@ -92,6 +92,8 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
 
   WidgetHostType get defaultHostType;
 
+  Stream<void> get onWidgetsChanged;
+
   static NotifyingList<WidgetRunner> currentSessions =
       NotifyingList.empty(growable: true);
 
@@ -123,6 +125,17 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
     }
     widgetComponent?.openWidget(data, room, context, type: type);
   }
+
+  Future<void> addWidget({
+    required Uri url,
+    required Room room,
+    Uri? iconImageUrl,
+    String? widgetType,
+    String? widgetName,
+  });
+
+  Future<void> removeWidget(
+      {required UserWidgetInfo widget, required Room room});
 
   Future<void> openWidget(
       UserWidgetInfo widget, Room room, BuildContext context,

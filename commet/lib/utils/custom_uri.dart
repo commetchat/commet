@@ -38,8 +38,11 @@ class CustomURI {
             widgetUrl: Uri.decodeComponent(url),
             widgetAvatarMxc:
                 avatar != null ? Uri.decodeComponent(avatar) : null,
-                widgetName: widgetName != null ? Uri.decodeComponent(widgetName) : null,
-            previewMxc: preview != null && preview.startsWith("mxc") == true ? Uri.decodeComponent(preview) : null,
+            widgetName:
+                widgetName != null ? Uri.decodeComponent(widgetName) : null,
+            previewMxc: preview != null && preview.startsWith("mxc") == true
+                ? Uri.decodeComponent(preview)
+                : null,
             widgetType:
                 widgetType != null ? Uri.decodeComponent(widgetType) : null);
       }
@@ -102,7 +105,11 @@ class AddWidgetURI implements CustomURI {
   final String? previewMxc;
 
   AddWidgetURI(
-      {required this.widgetUrl, this.previewMxc, this.widgetName, this.widgetType, this.widgetAvatarMxc});
+      {required this.widgetUrl,
+      this.previewMxc,
+      this.widgetName,
+      this.widgetType,
+      this.widgetAvatarMxc});
 
   @override
   String toString() {
