@@ -555,8 +555,8 @@ class Preferences {
   NullableStringPreference lastDownloadLocation =
       NullableStringPreference("last_download_location", defaultValue: null);
 
-  StringListPreference allowedRemoteVideoHosts =
-      StringListPreference("allowed_remote_video_hosts", defaultValue: []);
+  DoublePreference videoPlayerVolume =
+      DoublePreference("video_player_volume", defaultValue: 100.0);
 
   StringListPreference expandedSpaceGroups =
       StringListPreference("expanded_space_groups", defaultValue: []);

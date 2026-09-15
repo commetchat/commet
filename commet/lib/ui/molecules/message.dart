@@ -150,7 +150,7 @@ class _MessageState extends State<Message> {
       padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
       child: UrlPreviewWidget(
         widget.links,
-        onTap: () {
+        onOpenLink: () {
           LinkUtils.open(widget.links!.uri, context: context);
         },
       ),
