@@ -489,6 +489,11 @@ class Preferences {
   DoublePreference notificationsVolume =
       DoublePreference("notifications_volume", defaultValue: 90.0);
 
+  /// Single per-user Soundboard volume (0..100). Local-only preference;
+  /// never sent to other participants. 0 = mute.
+  DoublePreference soundboardVolume =
+      DoublePreference("soundboard_volume", defaultValue: 80.0);
+
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
 
