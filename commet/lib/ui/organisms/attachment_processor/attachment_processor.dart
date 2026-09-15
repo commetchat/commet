@@ -68,6 +68,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   @override
   void dispose() {
     videoController?.pause();
+    videoController?.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 

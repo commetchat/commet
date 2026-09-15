@@ -1,3 +1,4 @@
+import 'dart:async' show StreamSubscription;
 import 'dart:typed_data';
 
 import 'package:commet/cache/file_provider.dart';
@@ -35,6 +36,9 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
   bool loaded = false;
   Uri? file;
 
+  StreamSubscription? _positionSub;
+  StreamSubscription? _completedSub;
+
   @override
   void initState() {
     super.initState();
@@ -50,11 +54,11 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
         seekTo: seekTo,
         getLength: getLength);
 
-    player.stream.position.listen((event) {
+    _positionSub = player.stream.position.listen((event) {
       widget.controller.setProgress(event);
     });
 
-    player.stream.completed.listen(
+    _completedSub = player.stream.completed.listen(
       (completed) {
         widget.controller.setCompleted(completed);
       },
@@ -115,6 +119,8 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
   @override
   void dispose() {
+    _positionSub?.cancel();
+    _completedSub?.cancel();
     player.dispose();
     super.dispose();
   }
