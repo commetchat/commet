@@ -217,10 +217,10 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
         final file = File(attachment.path!);
         if (await file.exists()) {
           final stream = file.openRead(0, Mime.magicNumbersMaxLength);
-          final headerBytes = await stream.first;
+          final headerBytes = (await stream.first) as Uint8List;
           mimeType = Mime.lookupType(
             attachment.path!,
-            data: Uint8List.fromList(headerBytes),
+            data: headerBytes,
           )?.toLowerCase();
         }
       } catch (_) {
