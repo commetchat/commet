@@ -171,7 +171,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixRecoveryKeyCreateExplanation": "Tenemos que establecer una clave de seguridad, que se puede utilizar para acceder al historial de los mensajes. Podemos generar una clave para ti, o puedes elegir tu propia frase de seguridad",
+    "labelMatrixRecoveryKeyCreateExplanation": "Tenemos que establecer una clave de seguridad, que se puede utilizar para acceder al historial de los mensajes. Podemos generar una clave para usted, o usted puede elegir su propia frase de seguridad",
     "@labelMatrixRecoveryKeyCreateExplanation": {
         "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
         "type": "text",
@@ -691,13 +691,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixAskEnableMessageBackup": "¿Desea activar la copia de seguridad online?",
+    "labelMatrixAskEnableMessageBackup": "¿Quiere activar el respaldo de claves en línea?",
     "@labelMatrixAskEnableMessageBackup": {
         "description": "Asks the user if they want to enable online backup",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixExistingMessageBackupFound": "¡Se ha encontrado una copia de seguridad!",
+    "labelMatrixExistingMessageBackupFound": "Se encontró un respaldo existente.",
     "@labelMatrixExistingMessageBackupFound": {
         "description": "Message to explain that existing backup has been found",
         "type": "text",
@@ -763,7 +763,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nEsta versión de Commet se ha creado sin los Servicios de Google Play. Para recibir notificaciones push, tendrás que utilizar [Unified Push](https://unifiedpush.org/). \n\nSi ya tienes instalada una aplicación distribuidora compatible con Unified Push, puedes configurarla a continuación\n",
+    "unifiedPushExplainer": "# Unified Push\nEsta versión de Commet se compiló sin los Servicios de Google Play. Para recibir notificaciones automáticas, tendrá que utilizar [Unified Push](https://unifiedpush.org/). \n\nSi ya tiene instalada una aplicación distribuidora compatible con Unified Push, puede configurarla a continuación\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -983,7 +983,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigningAndBackup": "Firma cruzada y copia de seguridad",
+    "labelMatrixCrossSigningAndBackup": "Firma cruzada y respaldo",
     "@labelMatrixCrossSigningAndBackup": {
         "description": "Header label for matrix cross signing and message backup section",
         "type": "text",
@@ -1007,7 +1007,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackupExplanation": "Mantiene una copia de seguridad de tu historial de mensajes, en caso de que pierdas todas tus sesiones. Tus mensajes serán encriptados antes de ser subidos",
+    "labelMatrixMessageBackupExplanation": "Guarda una copia de respaldo de su historial de mensajes, por si acaso perdiera todas sus sesiones. Sus mensajes se cifrarán antes de cargarlos",
     "@labelMatrixMessageBackupExplanation": {
         "description": "Explains what matrix message backup does",
         "type": "text",
@@ -1019,7 +1019,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelRestoreMatrixBackupTitle": "Restaurar copia de seguridad",
+    "labelRestoreMatrixBackupTitle": "Restaurar copia de respaldo",
     "@labelRestoreMatrixBackupTitle": {
         "description": "Title of the popup dialog for restoring message backup",
         "type": "text",
@@ -1159,7 +1159,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveRoomConfirmation": "¿Estás seguro que quieres salir de {roomName}?",
+    "promptLeaveRoomConfirmation": "¿Confirma que quiere abandonar {roomName}?",
     "@promptLeaveRoomConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave",
         "type": "text",
@@ -1167,7 +1167,7 @@
             "roomName": {}
         }
     },
-    "promptLeaveSpaceConfirmation": "¿Estás seguro de que quieres salir de {spaceName}?",
+    "promptLeaveSpaceConfirmation": "¿Confirma que quiere abandonar {spaceName}?",
     "@promptLeaveSpaceConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave a space",
         "type": "text",
@@ -1372,7 +1372,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Permite al usuario borrar mensajes enviados por otros",
+    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Permite al usuario eliminar mensajes enviados por otros",
     "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
         "description": "Describes the permission to delete messages",
         "type": "text",
@@ -1604,7 +1604,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPrivateRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y las url en las charlas privadas",
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Alternar la previsualización de imágenes, vídeos, pegatinas y enlaces en las charlas privadas",
     "@labelMediaPreviewPrivateRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for private rooms",
         "type": "text",
@@ -1616,7 +1616,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPublicRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y las url en las salas públicas",
+    "labelMediaPreviewPublicRoomsToggleDescription": "Alternar la previsualización de imágenes, vídeos, pegatinas y enlaces en las charlas públicas",
     "@labelMediaPreviewPublicRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for public rooms",
         "type": "text",
@@ -1955,7 +1955,7 @@
             "callingUserName": {}
         }
     },
-    "labelTextChatDescription": "¡Charla de texto simple, con todas las capacidades que pudo desear! Envía mensajes, medio, pegatinas, GIF y más!",
+    "labelTextChatDescription": "¡Un chat de texto sencillo, con todas las funciones que pueda desear! ¡Envíe mensajes, multimedia, pegatinas, GIF y más!",
     "@labelTextChatDescription": {
         "type": "text",
         "placeholders": {}
@@ -2263,7 +2263,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsAddCalendarEventTitle": "Editar Eventos del Calendario",
+    "labelMatrixPermissionsAddCalendarEventTitle": "Editar eventos del calendario",
     "@labelMatrixPermissionsAddCalendarEventTitle": {
         "description": "Title for the permission to allow users to edit the calendar",
         "type": "text",
