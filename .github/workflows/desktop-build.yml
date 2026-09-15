@@ -1,0 +1,97 @@
+name: desktop-build
+
+# Reusable: builds the Windows and Linux desktop bundles in one mode and
+# uploads each as an artifact named roscord-<version>-<platform>-x64-<mode>.
+on:
+  workflow_call:
+    inputs:
+      build_mode:
+        description: release or debug
+        required: true
+        type: string
+      version:
+        description: Version tag baked into the build, e.g. v0.5.0
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: ${{ matrix.platform }} (${{ inputs.build_mode }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows
+            os: windows-2022
+            bundle: commet/build/windows/x64/runner/${{ inputs.build_mode == 'debug' && 'Debug' || 'Release' }}
+            archive: zip
+          - platform: linux
+            os: ubuntu-latest
+            bundle: commet/build/linux/x64/${{ inputs.build_mode }}/bundle
+            archive: tar.gz
+    runs-on: ${{ matrix.os }}
+    env:
+      ASSET_NAME: roscord-${{ inputs.version }}-${{ matrix.platform }}-x64-${{ inputs.build_mode }}
+      # Release builds get the production application id, debug builds the
+      # .develop one so both can be installed side by side.
+      COMMET_PROD: ${{ inputs.build_mode == 'release' && '1' || '0' }}
+    steps:
+      - name: Enable long paths
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          channel: stable
+          cache: true
+
+      # cargokit builds librust_lib_commet with cargo during the Flutter build
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev \
+            libwebkit2gtk-4.1-dev libkeybinder-3.0-dev libpulse-dev libasound2-dev clang lld cmake pkg-config
+
+      - name: Code generation
+        working-directory: commet
+        run: dart run scripts/codegen.dart
+
+      - name: Build
+        working-directory: commet
+        run: >-
+          dart run scripts/build_release.dart
+          --platform ${{ matrix.platform }}
+          --build_mode ${{ inputs.build_mode }}
+          --version_tag ${{ inputs.version }}
+          --git_hash ${{ github.sha }}
+          --build_detail ${{ matrix.platform }}-x64
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp -r "${{ matrix.bundle }}" "dist/$ASSET_NAME"
+          cd dist
+          if [ "${{ matrix.archive }}" = zip ]; then
+            7z a -tzip "$ASSET_NAME.zip" "$ASSET_NAME" > /dev/null
+          else
+            tar -czf "$ASSET_NAME.tar.gz" "$ASSET_NAME"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ASSET_NAME }}
+          path: dist/${{ env.ASSET_NAME }}.${{ matrix.archive }}
+          if-no-files-found: error

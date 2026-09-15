@@ -30,6 +30,16 @@ String getEnableGoogleServices(List<String> args) {
   return getArg(args, "--enable_google_services") ?? "false";
 }
 
+String getBuildMode(List<String> args) {
+  var mode = getArg(args, "--build_mode") ?? "release";
+  if (mode != "release" && mode != "debug") {
+    print("Unsupported build mode '$mode', expected 'release' or 'debug'");
+    exit(64);
+  }
+
+  return mode;
+}
+
 String getBuildVersion(String versionTag) {
   var regex = RegExp(r"\d+(\.\d+)+");
   var match = regex.firstMatch(versionTag);
@@ -51,8 +61,9 @@ Future<void> main(List<String> args) async {
   String enableGoogleServices = getEnableGoogleServices(args);
   String buildVersion = getBuildVersion(version);
   String flutterPlatform = getFlutterPlatformName(platform);
+  String buildMode = getBuildMode(args);
   String? buildDetail = getArg(args, "--build_detail");
-  print("Building release:");
+  print("Building $buildMode:");
   print("Version:\t'$version'");
   print("Build Version:\t'$buildVersion'");
   print("Platform:\t'$platform' / '$flutterPlatform' ");
@@ -68,9 +79,9 @@ Future<void> main(List<String> args) async {
       "build",
       flutterPlatform,
       "--build-name=$buildVersion",
-      "--release",
+      "--$buildMode",
       "--dart-define",
-      "BUILD_MODE=release",
+      "BUILD_MODE=$buildMode",
       "--dart-define",
       "PLATFORM=$platform",
       "--dart-define",

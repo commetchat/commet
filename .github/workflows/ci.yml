@@ -1,0 +1,182 @@
+name: ci
+
+# Every push to main: run the tests, build Windows and Linux in release mode,
+# publish a GitHub release tagged with the next version, then build the debug
+# variants and attach them to the same release.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump. auto reads conventional commits since the last tag.
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
+
+# Queue runs instead of overlapping them so two pushes never pick the same version.
+concurrency:
+  group: ci-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Find tests
+        id: find
+        run: |
+          if find commet/unit_test -name '*_test.dart' 2> /dev/null | grep -q .; then
+            echo "dart=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Only crates that have tests: rust_lib_commet pulls in wry/tao and
+          # would need the whole GTK/WebKit stack just to compile.
+          crates=""
+          for manifest in rust/*/Cargo.toml; do
+            dir=$(dirname "$manifest")
+            if grep -rqsE '#\[([a-z_]+::)?test\]' "$dir/src" "$dir/tests"; then
+              crates="$crates -p $(sed -nE 's/^name = "(.+)"/\1/p' "$manifest" | head -n1)"
+            fi
+          done
+          echo "rust_crates=$crates" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Flutter
+        if: steps.find.outputs.dart == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          channel: stable
+          cache: true
+
+      - name: Dart unit tests
+        if: steps.find.outputs.dart == 'true'
+        working-directory: commet
+        run: |
+          dart run scripts/codegen.dart
+          flutter test unit_test
+
+      - name: Setup Rust
+        if: steps.find.outputs.rust_crates != ''
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust tests
+        if: steps.find.outputs.rust_crates != ''
+        run: cargo test ${{ steps.find.outputs.rust_crates }}
+
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next version
+        id: next
+        env:
+          BUMP: ${{ inputs.bump || 'auto' }}
+        run: |
+          set -euo pipefail
+
+          # Latest plain vX.Y.Z tag. Prerelease and hotfix tags are ignored.
+          last=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)
+          if [ -n "$last" ]; then
+            base=${last#v}
+            commits=$(git log --format='%s%n%b' "$last..HEAD")
+          else
+            base=$(sed -nE 's/^version: *([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' commet/pubspec.yaml)
+            commits=$(git log --format='%s%n%b')
+          fi
+
+          bump=$BUMP
+          if [ "$bump" = auto ]; then
+            if grep -qE '^[a-z]+(\([^)]*\))?!:|^BREAKING[ -]CHANGE:' <<< "$commits"; then
+              bump="major"
+            elif grep -qE '^feat(\([^)]*\))?:' <<< "$commits"; then
+              bump="minor"
+            else
+              bump="patch"
+            fi
+          fi
+
+          IFS=. read -r major minor patch <<< "$base"
+          case "$bump" in
+            major) major=$((major + 1)); minor=0; patch=0 ;;
+            minor) minor=$((minor + 1)); patch=0 ;;
+            patch) patch=$((patch + 1)) ;;
+          esac
+          version="v$major.$minor.$patch"
+
+          echo "Last release: ${last:-none, using pubspec $base}. Bump: $bump. Next: $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  build-release:
+    needs: [test, version]
+    uses: ./.github/workflows/desktop-build.yml
+    with:
+      build_mode: release
+      version: ${{ needs.version.outputs.version }}
+
+  publish:
+    needs: [version, build-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: roscord-*-release
+          path: dist
+          merge-multiple: true
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: >-
+          gh release create "$VERSION" dist/*
+          --repo "$GITHUB_REPOSITORY"
+          --target "$GITHUB_SHA"
+          --title "$VERSION"
+          --generate-notes
+
+  build-debug:
+    needs: [version, build-release]
+    uses: ./.github/workflows/desktop-build.yml
+    with:
+      build_mode: debug
+      version: ${{ needs.version.outputs.version }}
+
+  attach-debug:
+    needs: [version, publish, build-debug]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download debug builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: roscord-*-debug
+          path: dist
+          merge-multiple: true
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: gh release upload "$VERSION" dist/* --repo "$GITHUB_REPOSITORY" --clobber
