@@ -77,6 +77,7 @@ class ChatState extends State<Chat> {
   StreamController<void> onFocusMessageInput = StreamController();
   StreamController<String> setMessageInputText = StreamController();
 
+  StreamSubscription? onLinkedSubscription;
   StreamSubscription? onFileDroppedSubscription;
 
   GifComponent? gifs;
@@ -107,6 +108,8 @@ class ChatState extends State<Chat> {
     threadsComponent = room.client.getComponent<ThreadsComponent>();
     receipts = room.getComponent<ReadReceiptComponent>();
     typingIndicators = room.getComponent<TypingIndicatorComponent>();
+
+    onLinkedSubscription = CustomURI.onLinked.listen(onLinked);
 
     if (widget.threadId != null && threadsComponent != null) {
       loadThreadTimeline();
@@ -151,6 +154,7 @@ class ChatState extends State<Chat> {
     Log.i(
         "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
+    onLinkedSubscription?.cancel();
     onFileDroppedSubscription?.cancel();
     super.dispose();
   }
@@ -410,7 +414,7 @@ class ChatState extends State<Chat> {
       if (custom case AddWidgetURI widgetUri) {
         AdaptiveDialog.show(context, builder: (dialogContext) {
           return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
-        }, title: 'Add "${widgetUri.widgetName ?? "Widget"}"?');
+        }, title: 'Add "${widgetUri.widgetName ?? "Custom"}"?');
       }
     }
 
@@ -448,5 +452,15 @@ class ChatState extends State<Chat> {
         interactionType == EventInteractionType.reply
             ? interactingEvent
             : null);
+  }
+
+  void onLinked(Uri event) {
+    var custom = CustomURI.parse(event.toString());
+
+    if (custom case AddWidgetURI widgetUri) {
+      AdaptiveDialog.show(context, builder: (dialogContext) {
+        return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
+      }, title: 'Add "${widgetUri.widgetName ?? "Custom"}"?');
+    }
   }
 }

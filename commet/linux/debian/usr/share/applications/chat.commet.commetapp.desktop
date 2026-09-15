@@ -7,3 +7,4 @@ Icon=commet-desktop
 StartupWMClass=Commet
 Comment=Your space to connect!
 Categories=Network;InstantMessaging;Chat;
+MimeType=x-scheme-handler/commetchat;
