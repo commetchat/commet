@@ -68,10 +68,10 @@ class _VoipAudioProcessingSettingsState
       desc:
           "Shown instead of the audio processing settings on platforms without the voice DSP");
 
-  String get labelVoipInputMeterIdle => Intl.message(
-      "Join a voice call to see your live input level.",
-      name: "labelVoipInputMeterIdle",
-      desc: "Shown under the microphone level meter when not in a call");
+  String get labelVoipInputMeterIdle =>
+      Intl.message("Join a voice call to see your live input level.",
+          name: "labelVoipInputMeterIdle",
+          desc: "Shown under the microphone level meter when not in a call");
 
   AudioDspReport? _report;
 
@@ -128,7 +128,8 @@ class _VoipAudioProcessingSettingsState
                 tiamat.Text.labelLow(labelVoipInputSensitivityDescription),
               InputLevelMeter(
                 report: manager.isActive ? _report : null,
-                thresholdDb: auto ? null : preferences.voipInputSensitivityDb.value,
+                thresholdDb:
+                    auto ? null : preferences.voipInputSensitivityDb.value,
               ),
               if (!auto)
                 Row(
@@ -142,8 +143,8 @@ class _VoipAudioProcessingSettingsState
                       child: tiamat.Slider(
                         min: InputLevelMeter.minDb,
                         max: InputLevelMeter.maxDb,
-                        value: preferences.voipInputSensitivityDb.value
-                            .clamp(InputLevelMeter.minDb, InputLevelMeter.maxDb),
+                        value: preferences.voipInputSensitivityDb.value.clamp(
+                            InputLevelMeter.minDb, InputLevelMeter.maxDb),
                         onChanged: (value) {
                           preferences.voipInputSensitivityDb.set(value);
                           setState(() {});

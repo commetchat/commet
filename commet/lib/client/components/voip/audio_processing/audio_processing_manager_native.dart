@@ -93,14 +93,16 @@ class _Bindings {
       void Function(Pointer<Void>)>('commet_dsp_destroy');
 
   late final void Function(Pointer<Void>, Pointer<DspParams>) setParams =
-      lib.lookupFunction<Void Function(Pointer<Void>, Pointer<DspParams>),
-              void Function(Pointer<Void>, Pointer<DspParams>)>(
-          'commet_dsp_set_params');
+      lib.lookupFunction<
+          Void Function(Pointer<Void>, Pointer<DspParams>),
+          void Function(
+              Pointer<Void>, Pointer<DspParams>)>('commet_dsp_set_params');
 
   late final void Function(Pointer<Void>, Pointer<DspReport>) getReport =
-      lib.lookupFunction<Void Function(Pointer<Void>, Pointer<DspReport>),
-              void Function(Pointer<Void>, Pointer<DspReport>)>(
-          'commet_dsp_get_report');
+      lib.lookupFunction<
+          Void Function(Pointer<Void>, Pointer<DspReport>),
+          void Function(
+              Pointer<Void>, Pointer<DspReport>)>('commet_dsp_get_report');
 
   late final Pointer<DspParams> Function() paramsAlloc = lib.lookupFunction<
       Pointer<DspParams> Function(),
@@ -120,8 +122,9 @@ class _Bindings {
 
   // Addresses of the CustomProcessing shaped callbacks, handed to the
   // LiveKit plugin which calls them from WebRTC's audio thread.
-  late final int captureInit =
-      lib.lookup<NativeFunction<_InitNative>>('commet_dsp_capture_init').address;
+  late final int captureInit = lib
+      .lookup<NativeFunction<_InitNative>>('commet_dsp_capture_init')
+      .address;
   late final int captureProcess = lib
       .lookup<NativeFunction<_ProcessNative>>('commet_dsp_capture_process')
       .address;
@@ -183,9 +186,8 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   }
 
   DynamicLibrary? _openLibrary() {
-    final name = Platform.isWindows
-        ? 'rust_lib_commet.dll'
-        : 'librust_lib_commet.so';
+    final name =
+        Platform.isWindows ? 'rust_lib_commet.dll' : 'librust_lib_commet.so';
     final exeDir = p.dirname(Platform.resolvedExecutable);
     final candidates = [
       // packaged builds and `flutter run` bundles

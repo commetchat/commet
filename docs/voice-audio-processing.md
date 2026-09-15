@@ -4,9 +4,24 @@ Client-side noise suppression, input gate and far-end ducking for voice
 rooms. Everything runs on the user's own device before audio leaves the
 client. Browser support is a first-class target.
 
-Status (2026-09-14): Phase 0 and the code for Phase 1 are written. Rust is
-tested; the Dart, C++ and JavaScript glue has not been compiled or run yet
-(no Flutter toolchain on the authoring machine). See "What to verify first".
+Status (2026-09-14): Phase 0 and Phase 1 code is written on branch
+`feature/voice-dsp`. Verified so far, all inside a Flutter 3.41.9 container
+mirroring CI:
+
+- `cargo test -p audio_dsp`: 17 tests pass; wasm build is 478 KB.
+- `dart analyze` in `commet/`: no new issues. The vendored LiveKit files
+  analyze clean.
+- `flutter build linux --debug`: passes, including the vendored C++ plugin
+  and the cargokit Rust build. The bundled `librust_lib_commet.so` exports
+  all 24 `commet_dsp_*` symbols; a dart:ffi smoke test through the app's
+  struct layouts and callback signatures processes 100 frames correctly.
+- The prebuilt libwebrtc 1.4.0 contains `RTCAudioProcessingImpl` and
+  `CustomProcessingAdapter`, so the hook is implemented, not just declared.
+- `flutter build web --release`: passes; `audio_dsp.js`, the worklet and
+  the wasm land in `build/web`.
+
+Not yet verified: anything at runtime with a real microphone and a real
+room. See "What to verify first".
 
 ## Decisions
 
@@ -132,8 +147,9 @@ Ordered by how badly it hurts if wrong.
    suppression on. If it does, gate the processor on the mic source.
 5. **Encrypted rooms on web** still decrypt with the processed track, before
    and after a mic switch.
-6. **`nm -D lib/libwebrtc.so | grep SetCapturePostProcessing`** in a built
-   bundle, to confirm the prebuilt libwebrtc exports the hook.
+6. ~~libwebrtc exports the hook~~ Done: the methods are virtual (not in
+   `nm -D`), but `strings libwebrtc.so` shows `RTCAudioProcessingImpl` and
+   `CustomProcessingAdapter`, so the implementation is in the 1.4.0 binary.
 7. **Packaged builds** (flatpak, .deb, MSIX, web bundle with
    `application/wasm` MIME type), not only `flutter run`.
 

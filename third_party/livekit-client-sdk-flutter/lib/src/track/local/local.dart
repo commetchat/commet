@@ -374,8 +374,8 @@ abstract class LocalTrack extends Track {
     logger.fine('stopping processor');
     // COMMET: put the original capture track back on the sender before the
     // processor tears its graph down, so audio keeps flowing unprocessed.
-    if (_originalTrack != null) {
-      final original = _originalTrack!;
+    if (originalTrack != null) {
+      final original = originalTrack!;
       restoreOriginalTrack();
       if (sender != null) {
         try {

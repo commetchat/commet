@@ -21,7 +21,8 @@ external _CommetAudioDsp? get _commetAudioDsp;
 
 extension type _CommetAudioDsp._(JSObject _) implements JSObject {
   external bool get isSupported;
-  external JSPromise<_DspGraph> create(web.MediaStreamTrack track, JSAny? params);
+  external JSPromise<_DspGraph> create(
+      web.MediaStreamTrack track, JSAny? params);
 }
 
 extension type _DspGraph._(JSObject _) implements JSObject {
