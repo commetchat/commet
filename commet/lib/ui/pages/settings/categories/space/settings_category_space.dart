@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/soundboard/soundboard_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
@@ -10,6 +11,7 @@ import 'package:commet/ui/pages/settings/categories/room/security/room_security_
 import 'package:commet/ui/pages/settings/categories/space/space_developer_settings_view.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/space/space_soundboard_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +34,10 @@ class SettingsCategorySpace implements SettingsCategory {
   String get labelSpaceEmoticonSettings => Intl.message("Emoticons",
       name: "labelSpaceEmoticonSettings",
       desc: "Label for space emoticon settings");
+
+  String get labelSpaceSoundboardSettings => Intl.message("Soundboard",
+      name: "labelSpaceSoundboardSettings",
+      desc: "Label for space soundboard settings");
 
   String get labelSpacePermissionSettings => Intl.message("Permissions",
       name: "labelSpacePermissionSettings",
@@ -66,6 +72,7 @@ class SettingsCategorySpace implements SettingsCategory {
   List<SettingsTab> getTabs() {
     SpaceEmoticonComponent? emoticons =
         space.getComponent<SpaceEmoticonComponent>();
+    final soundboard = space.getComponent<SpaceSoundboardComponent>();
     return List.from([
       SettingsTab(
           label: labelSpaceSettingsGeneral,
@@ -103,6 +110,13 @@ class SettingsCategorySpace implements SettingsCategory {
             icon: Icons.emoji_emotions,
             pageBuilder: (context) {
               return SpaceEmojiPackSettings(space);
+            }),
+      if (soundboard != null)
+        SettingsTab(
+            label: labelSpaceSoundboardSettings,
+            icon: Icons.surround_sound,
+            pageBuilder: (context) {
+              return SpaceSoundboardSettingsPage(soundboard: soundboard);
             }),
       if (space is MatrixSpace)
         SettingsTab(

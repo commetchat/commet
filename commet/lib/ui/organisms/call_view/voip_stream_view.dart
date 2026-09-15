@@ -7,6 +7,8 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_emoji_overlay.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_overlay_registry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -175,15 +177,46 @@ class _VoipStreamViewState extends State<VoipStreamView>
                 child: AnimatedOpacity(
                   opacity: widget.stream.isMuted ? 0.5 : 1.0,
                   duration: Duration(milliseconds: 200),
-                  child: tiamat.Avatar(
-                      border: Border.all(
-                          strokeAlign: 0.5,
-                          color: getBorderColor(context),
-                          width: clampDouble(audioLevel.value * 15, 0, 5)),
-                      radius: 50,
-                      image: user.avatar,
-                      placeholderColor: user.defaultColor,
-                      placeholderText: user.displayName),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      tiamat.Avatar(
+                          border: Border.all(
+                              strokeAlign: 0.5,
+                              color: getBorderColor(context),
+                              width: clampDouble(audioLevel.value * 15, 0, 5)),
+                          radius: 50,
+                          image: user.avatar,
+                          placeholderColor: user.defaultColor,
+                          placeholderText: user.displayName),
+                      // Soundboard emoji burst: overlay only on the sender's
+                      // avatar, timed by the real sound duration.
+                      ListenableBuilder(
+                        listenable:
+                            SoundboardOverlayRegistry.instance,
+                        builder: (context, _) {
+                          final entry = SoundboardOverlayRegistry.instance
+                              .entryFor(user.identifier);
+                          if (entry == null) {
+                            return const SizedBox.shrink();
+                          }
+                          return Positioned(
+                            top: 0,
+                            right: 0,
+                            child: SoundboardEmojiOverlay(
+                              key: ValueKey(
+                                  'sb_${entry.soundId}_${entry.expiresAtMs}'),
+                              emoji: entry.emoji,
+                              durationMs: entry.overlayMs,
+                              onDone: () =>
+                                  SoundboardOverlayRegistry.instance
+                                      .clearUser(user.identifier),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               AnimatedScale(

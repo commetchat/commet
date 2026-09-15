@@ -7,6 +7,8 @@ import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_panel.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/animation/ripple.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,7 @@ class _CallViewState extends State<CallView> {
   bool isMouseHovering = false;
   VoipStream? mainStream;
   late Room room;
+  SoundboardCallController? _soundboard;
 
   @override
   void initState() {
@@ -59,12 +62,20 @@ class _CallViewState extends State<CallView> {
 
     room = widget.currentSession.client.getRoom(widget.currentSession.roomId)!;
     statTimer = Timer.periodic(const Duration(milliseconds: 200), timer);
+
+    // Soundboard: preload catalog audio on call join for instant click->play.
+    _soundboard = SoundboardCallController(widget.currentSession);
+    _soundboard!.init().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
   void dispose() {
     statTimer?.cancel();
     sub?.cancel();
+    _soundboard?.dispose();
+    _soundboard = null;
     super.dispose();
   }
 
@@ -167,6 +178,12 @@ class _CallViewState extends State<CallView> {
                           ? widget.disableCamera
                           : widget.pickCamera,
                     ),
+                  if (canHangUp && _soundboard != null)
+                    tiamat.CircleButton(
+                      radius: buttonRadius,
+                      icon: Icons.surround_sound,
+                      onPressed: () => _openSoundboard(context),
+                    ),
                   if (canHangUp)
                     tiamat.CircleButton(
                       color: Theme.of(context).colorScheme.errorContainer,
@@ -203,6 +220,26 @@ class _CallViewState extends State<CallView> {
             }
           },
         ));
+  }
+
+  void _openSoundboard(BuildContext context) {
+    final ctrl = _soundboard;
+    if (ctrl == null) return;
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: ListenableBuilder(
+          listenable: ctrl,
+          builder: (context, _) => SoundboardPanel(
+            catalog: ctrl.catalog,
+            session: ctrl.soundboard,
+            volume01: ctrl.volume01,
+            onVolumeChanged: (v) => ctrl.setVolume01(v),
+          ),
+        ),
+      ),
+    );
   }
 
   List<Widget> generateLayout() {

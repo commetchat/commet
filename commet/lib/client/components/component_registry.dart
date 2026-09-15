@@ -23,6 +23,7 @@ import 'package:commet/client/matrix/components/profile/matrix_profile_component
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
 import 'package:commet/client/matrix/components/room_activities/matrix_activities_component.dart';
 import 'package:commet/client/matrix/components/sidebar_entries/matrix_sidebar_entries_component.dart';
+import 'package:commet/client/matrix/components/soundboard/matrix_space_soundboard_component.dart';
 import 'package:commet/client/matrix/components/space_banner/matrix_space_banner_component.dart';
 import 'package:commet/client/matrix/components/space_color_scheme/matrix_space_color_scheme_component.dart';
 import 'package:commet/client/matrix/components/user_color/matrix_user_color_component.dart';
@@ -98,7 +99,8 @@ class ComponentRegistry {
     return [
       MatrixSpaceEmoticonComponent(client, space),
       MatrixSpaceColorSchemeComponent(client, space),
-      MatrixSpaceBannerComponent(client, space)
+      MatrixSpaceBannerComponent(client, space),
+      MatrixSpaceSoundboardComponent(client, space),
     ];
   }
 }
