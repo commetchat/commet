@@ -6,13 +6,12 @@ import 'package:commet/debug/log.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
 
 class CustomURI {
-
   static StreamController<Uri> _onLinked = StreamController.broadcast();
 
   static void init() {
     final appLinks = AppLinks();
 
-    final sub = appLinks.uriLinkStream.listen((uri) {
+    appLinks.uriLinkStream.listen((uri) {
       Log.i("Received custom app link: ${uri}");
       _onLinked.add(uri);
     });
