@@ -302,7 +302,6 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     final attachment = args.attachment;
     String mime = args.mimeType.isEmpty ? "image/png" : args.mimeType;
 
-    // Stream directly from disk to avoid allocating raw file bytes in RAM
     if (attachment.path != null) {
       image = await img.decodeImageFile(attachment.path!);
     } else if (attachment.data != null) {
