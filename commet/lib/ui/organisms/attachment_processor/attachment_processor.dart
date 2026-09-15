@@ -24,12 +24,14 @@ class AttachmentProcessor extends StatefulWidget {
 }
 
 class _AttachmentProcessorState extends State<AttachmentProcessor> {
-  String get promptAttachmentProcessingSendOriginal => Intl.message("Send Original",
+  String get promptAttachmentProcessingSendOriginal => Intl.message(
+      "Send Original",
       name: "promptAttachmentProcessingSendOriginal",
       desc:
           "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata");
 
-  String get labelImageContainsLocationInfo => Intl.message("Warning: This image contains location metadata",
+  String get labelImageContainsLocationInfo => Intl.message(
+      "Warning: This image contains location metadata",
       name: "labelImageContainsLocationInfo",
       desc:
           "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata");
@@ -127,7 +129,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ConstrainedBox(
-                          constraints: BoxConstraints.loose(const Size(500, 500)),
+                          constraints:
+                              BoxConstraints.loose(const Size(500, 500)),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: FilePreview(
@@ -145,7 +148,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                         padding: const EdgeInsets.all(8.0),
                         child: buildFileProcessingSwitch(),
                       ),
-                    if (sendOriginalFile || !canProcessData) buildMetadataDisplay(),
+                    if (sendOriginalFile || !canProcessData)
+                      buildMetadataDisplay(),
                     buildConfirmButton(),
                   ],
                 ),
@@ -206,7 +210,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   }
 
   /// Helper to resolve MIME type using dynamic magic-number stream reads
-  static Future<String> _resolveMimeType(PendingFileAttachment attachment) async {
+  static Future<String> _resolveMimeType(
+      PendingFileAttachment attachment) async {
     var mimeType = attachment.mimeType?.toLowerCase();
     if ((mimeType == null || mimeType.isEmpty) && attachment.path != null) {
       try {
@@ -241,8 +246,11 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   Future<PendingFileAttachment> processImage() async {
     var mimeType = await _resolveMimeType(widget.attachment);
 
-    final bool supportsNativeCompress =
-        !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isLinux);
+    final bool supportsNativeCompress = !kIsWeb &&
+        (Platform.isAndroid ||
+            Platform.isIOS ||
+            Platform.isMacOS ||
+            Platform.isLinux);
 
     CompressFormat? format;
     if (mimeType.contains("jpeg") || mimeType.contains("jpg")) {
@@ -291,7 +299,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   }
 
   /// Pure-Dart fallback isolate worker for Windows / Linux
-  static Future<PendingFileAttachment> _fallbackProcessImage(PendingFileAttachment attachment) async {
+  static Future<PendingFileAttachment> _fallbackProcessImage(
+      PendingFileAttachment attachment) async {
     img.Image? image;
 
     // Stream directly from disk to avoid allocating raw file bytes in RAM
@@ -339,7 +348,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     try {
       file.thumbnailFile = await videoController!.screenshot();
       if (file.thumbnailFile != null) {
-        file.thumbnailMime = Mime.lookupType("", data: file.thumbnailFile) ?? "image/png";
+        file.thumbnailMime =
+            Mime.lookupType("", data: file.thumbnailFile) ?? "image/png";
       }
 
       file.length = await videoController!.getLength();

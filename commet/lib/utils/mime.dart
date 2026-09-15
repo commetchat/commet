@@ -43,7 +43,12 @@ class Mime {
 
   static bool isText(String mime) => mime.startsWith("text/");
 
-  static const videoTypes = {"video/mp4", "video/mpeg", "video/webm", "video/quicktime"};
+  static const videoTypes = {
+    "video/mp4",
+    "video/mpeg",
+    "video/webm",
+    "video/quicktime"
+  };
 
   static const videoStreamTypes = {"application/vnd.apple.mpegurl"};
 
