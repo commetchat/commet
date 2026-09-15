@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
+import 'package:commet/client/components/voip/audio_processing/audio_dsp_settings.dart';
+import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_session.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
@@ -193,8 +195,19 @@ class MatrixLivekitBackend {
 
     print("Using default device: ${device}");
 
+    final dsp = AudioProcessingManager.instance;
+    final dspSettings = AudioDspSettings.fromPreferences();
+
     lkRoom.localParticipant?.setMicrophoneEnabled(true,
-        audioCaptureOptions: lk.AudioCaptureOptions(deviceId: device));
+        audioCaptureOptions: lk.AudioCaptureOptions(
+          deviceId: device,
+          // Our suppressor replaces the WebRTC / browser one when it is on,
+          // running both makes voices sound hollow.
+          noiseSuppression: !(dsp.isSupported && dspSettings.noiseSuppression),
+          // Web only: routes the mic through the AudioWorklet. Native
+          // platforms hook into WebRTC's pipeline instead and return null.
+          processor: dsp.createTrackProcessor(),
+        ));
 
     livekitRoom = lkRoom;
     return MatrixLivekitVoipSession(room, lkRoom, keyProvider: provider);

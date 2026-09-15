@@ -543,6 +543,24 @@ class Preferences {
   NullableStringPreference voipDefaultVideoInput =
       NullableStringPreference("voip_default_video_input", defaultValue: null);
 
+  // Voice DSP (docs/voice-audio-processing.md). Noise suppression defaults
+  // to on except on Android, where the Rust library is not built yet and the
+  // interplay with hardware DSP is untested.
+  BoolPreference voipNoiseSuppression = BoolPreference(
+      "voip_noise_suppression",
+      defaultValue: true,
+      defaultGetter: () => !PlatformUtils.isAndroid);
+
+  BoolPreference voipInputSensitivityAuto =
+      BoolPreference("voip_input_sensitivity_auto", defaultValue: true);
+
+  /// Manual gate threshold in dBFS, used when [voipInputSensitivityAuto] is off.
+  DoublePreference voipInputSensitivityDb =
+      DoublePreference("voip_input_sensitivity_db", defaultValue: -50);
+
+  BoolPreference voipFarEndDucking =
+      BoolPreference("voip_far_end_ducking", defaultValue: true);
+
   NullableStringPreference filterClient =
       NullableStringPreference("filter_client_id", defaultValue: null);
 

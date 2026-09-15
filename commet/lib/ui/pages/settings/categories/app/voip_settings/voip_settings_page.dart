@@ -8,6 +8,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/app/string_preference_options.dart';
+import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_audio_processing_settings.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
 import 'package:flutter/widgets.dart';
 
@@ -167,7 +168,8 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
         tiamat.Panel(
             header: headerVoipSettingsAudioSettings,
             mode: tiamat.TileType.surfaceContainerLow,
-            child: Column(children: [
+            child: Column(spacing: 12, children: [
+              const VoipAudioProcessingSettings(),
               DoublePreferenceSlider(
                 preference: preferences.streamAudioBitrate,
                 title: labelVoipAudioBitrateSettings,
