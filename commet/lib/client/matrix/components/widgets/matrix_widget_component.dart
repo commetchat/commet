@@ -27,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:matrix/matrix.dart' show StrippedStateEvent;
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:uuid/uuid.dart';
 
 class MatrixUserWidgetInfo implements UserWidgetInfo {
   late String _name;
@@ -35,9 +36,12 @@ class MatrixUserWidgetInfo implements UserWidgetInfo {
 
   String roomId;
 
+  String stateKey;
+
   MatrixUserWidgetInfo({
     required this.id,
     required String name,
+    required this.stateKey,
     required this.url,
     required this.type,
     required this.icon,
@@ -121,6 +125,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       result.add(MatrixUserWidgetInfo(
           id: id,
           name: name,
+          stateKey: s.key,
           url: url,
           type: type,
           roomId: room.identifier,
@@ -491,4 +496,46 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     registerRunner(runner);
   }
+
+  @override
+  Future<void> addWidget(
+      {required Uri url,
+      required Room room,
+      Uri? iconImageUrl,
+      String? widgetType,
+      String? widgetName}) async {
+    var uuid = const Uuid();
+    var id = uuid.v4();
+
+    var content = {
+      "type": widgetType ?? "m.custom",
+      "url": url.toString(),
+      "name": widgetName ?? "Custom",
+      "id": id,
+      "creatorUserId": client.self!.identifier,
+      "roomId": room.identifier,
+      if (iconImageUrl?.scheme == "mxc") "avatar_url": iconImageUrl.toString(),
+    };
+
+    if (url.host == "calendar-widget.commet.chat") {
+      content["type"] = "chat.commet.widgets.calendar";
+      content["name"] = "Calendar";
+    }
+
+    await client.matrixClient.setRoomStateWithKey(
+        room.identifier, "im.vector.modular.widgets", id, content);
+  }
+
+  @override
+  Future<void> removeWidget(
+      {required UserWidgetInfo widget, required Room room}) async {
+    await client.matrixClient.setRoomStateWithKey(
+        room.identifier,
+        "im.vector.modular.widgets",
+        (widget as MatrixUserWidgetInfo).stateKey, {});
+  }
+
+  @override
+  Stream<void> get onWidgetsChanged => client.matrixClient.onRoomState.stream
+      .where((i) => i.state.type == "im.vector.modular.widgets");
 }
