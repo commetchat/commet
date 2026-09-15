@@ -32,12 +32,20 @@ class FetchedAudio {
 typedef HttpFetcher = Future<http.Response> Function(Uri uri);
 
 Future<http.Response> _defaultFetcher(Uri uri) {
+  // MyInstants (behind anti-bot protection) rejects non-browser clients
+  // with 403, so present full browser-like headers.
   return http
       .get(uri, headers: {
         'User-Agent':
-            'Mozilla/5.0 (Commet Soundboard import; +https://commet.chat)',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
         'Accept':
-            'text/html,application/xhtml+xml,audio/mpeg,audio/ogg,audio/wav,*/*;q=0.8',
+            'text/html,application/xhtml+xml,application/xml;q=0.9,audio/mpeg,audio/ogg,audio/wav,audio/*;q=0.8,*/*;q=0.5',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.myinstants.com/',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Dest': 'document',
       })
       .timeout(SoundboardConstraints.httpTimeout);
 }
@@ -48,23 +56,44 @@ class SoundboardImportService {
   SoundboardImportService({HttpFetcher? fetcher})
       : fetcher = fetcher ?? _defaultFetcher;
 
-  /// Full import from an admin-pasted MyInstants page URL.
+  /// Full import from an admin-pasted MyInstants URL. Accepts either an
+  /// instant page URL (…/instant/<slug>/) or a direct audio file URL
+  /// (…/media/sounds/….mp3) from the same host as an escape hatch when the
+  /// page is unreadable.
   Future<FetchedAudio> importFromPageUrl(String pageUrl) async {
-    MyInstantsResolver.requireAllowedUrl(pageUrl);
-    final pageRes = await fetcher(Uri.parse(pageUrl.trim()));
+    final trimmed = pageUrl.trim();
+    MyInstantsResolver.requireAllowedUrl(trimmed);
+    if (_looksLikeAudioFileUrl(trimmed)) {
+      return importFromAudioUrl(trimmed);
+    }
+    final pageRes = await fetcher(Uri.parse(trimmed));
+    if (pageRes.statusCode == 403 || pageRes.statusCode == 429) {
+      throw const MyInstantsValidationError(
+          'MyInstants refused the connection (bot protection)');
+    }
+    if (pageRes.statusCode == 404) {
+      throw const MyInstantsValidationError(
+          'MyInstants page not found (404)');
+    }
     if (pageRes.statusCode < 200 || pageRes.statusCode >= 300) {
       throw MyInstantsValidationError(
           'MyInstants page not found (${pageRes.statusCode})');
     }
     final audioUrl = MyInstantsResolver.extractAudioUrl(
       pageRes.body,
-      pageUrl: pageUrl,
+      pageUrl: trimmed,
     );
     if (audioUrl == null) {
       throw const MyInstantsValidationError(
           'Could not find audio on that MyInstants page');
     }
     return importFromAudioUrl(audioUrl);
+  }
+
+  static bool _looksLikeAudioFileUrl(String url) {
+    final path = url.toLowerCase().split('?').first;
+    return SoundboardConstraints.allowedExtensions
+        .any((ext) => path.endsWith(ext));
   }
 
   /// Imports already-resolved audio file bytes (also used by tests).

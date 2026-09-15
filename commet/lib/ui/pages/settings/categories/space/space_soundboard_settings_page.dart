@@ -57,7 +57,8 @@ class _SpaceSoundboardSettingsPageState
               const SizedBox(height: 8),
               tiamat.TextInput(
                 label: 'MyInstants link',
-                placeholder: 'https://www.myinstants.com/en/instant/...',
+                placeholder:
+                    'https://www.myinstants.com/en/instant/... (page or .mp3)',
                 controller: _urlCtrl,
               ),
               const SizedBox(height: 8),
@@ -217,6 +218,13 @@ class _SpaceSoundboardSettingsPageState
     final s = e.toString();
     if (s.contains('Only myinstants.com')) {
       return 'Only myinstants.com links are supported.';
+    }
+    if (s.contains('bot protection') || s.contains('refused')) {
+      return 'MyInstants blocked the request. Wait a minute and try again, '
+          'or paste the direct .mp3 URL of the sound instead.';
+    }
+    if (s.contains('404')) {
+      return 'MyInstants page not found. Check the link.';
     }
     if (s.contains('too large')) return 'Audio file too large (max 1MB).';
     if (s.contains('too long')) return 'Audio too long (max 15 seconds).';
