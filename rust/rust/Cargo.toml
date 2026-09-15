@@ -12,6 +12,7 @@ path = "src/main.rs"
 
 
 [dependencies]
+audio_dsp = { path = "../audio_dsp" }
 base64 = "0.22.1"
 bytes = "1.11.1"
 flutter_rust_bridge = "=2.11.1"

@@ -5,6 +5,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
@@ -64,6 +65,8 @@ class CallManager {
     var room = event.client.getRoom(event.roomId);
     currentSessions.add(event);
 
+    AudioProcessingManager.instance.onSessionStarted(event);
+
     if (event.state == VoipState.incoming) {
       startRingtone();
 
@@ -103,6 +106,10 @@ class CallManager {
   void onSessionEnded(VoipSession event) {
     currentSessions
         .removeWhere((element) => element.sessionId == event.sessionId);
+
+    if (currentSessions.isEmpty) {
+      AudioProcessingManager.instance.onSessionEnded();
+    }
 
     if (currentSessions.where((e) => e.state == VoipState.incoming).isEmpty) {
       stopRingtone();

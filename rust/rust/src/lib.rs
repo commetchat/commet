@@ -1,6 +1,10 @@
 pub mod api;
 mod frb_generated;
 
+// Voice DSP (noise suppression, gate, ducking). Re-exported so its C ABI
+// symbols are linked into this library; Dart loads them from here.
+pub use audio_dsp;
+
 #[cfg(any(target_os = "windows", target_os = "linux"))]
 mod widget_runner;
 

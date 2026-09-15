@@ -1,0 +1,19 @@
+[package]
+name = "audio_dsp"
+version = "0.1.0"
+edition = "2021"
+description = "Commet voice DSP: RNNoise-based noise suppression, input gate and far-end ducking. C ABI, also built to wasm."
+license = "AGPL-3.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+nnnoiseless = { version = "0.5", default-features = false }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
