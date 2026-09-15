@@ -23,6 +23,15 @@ mirroring CI:
 Not yet verified: anything at runtime with a real microphone and a real
 room. See "What to verify first".
 
+Runtime finding (2026-09-15, Windows): joining a voice room killed the
+process. libwebrtc's `CustomProcessingAdapter::SetExternalAudioProcessing`
+calls `Initialize` on whatever pointer it is given, null included, once the
+APM is initialized. The host used to pass nullptr to detach before
+installing and again on clear; since the mic track already exists at that
+point this was a null virtual call. The host now installs one long-lived
+no-op proxy per slot exactly once and swaps the Rust callbacks inside it
+(`shared_cpp/commet_external_audio_processing.h`).
+
 ## Decisions
 
 | Question | Decision |
