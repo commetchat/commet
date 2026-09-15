@@ -70,6 +70,9 @@
               webkitgtk_4_1
               keybinder3
               pcre2
+              # libpulse: system-audio capture for screen share in the
+              # vendored flutter-webrtc (third_party/flutter-webrtc/linux).
+              libpulseaudio
         ];
 
       in

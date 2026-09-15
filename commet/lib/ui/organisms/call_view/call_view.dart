@@ -165,6 +165,9 @@ class _CallViewState extends State<CallView> {
                       icon: widget.currentSession.isMicrophoneMuted
                           ? Icons.mic_off
                           : Icons.mic,
+                      color: widget.currentSession.isMicrophoneMuted
+                          ? Theme.of(context).colorScheme.errorContainer
+                          : null,
                       onPressed: () async {
                         await widget.setMicrophoneMute
                             ?.call(!widget.currentSession.isMicrophoneMuted);

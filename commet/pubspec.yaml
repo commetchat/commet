@@ -160,12 +160,12 @@ dependency_overrides:
       ref: webview-patch
       path: ./packages/desktop_webview_window
 
+  # Vendored copies (see third_party/README.md). We change them in place.
+  # flutter_webrtc: upstream 1.6.2+hotfix.2, which adds system-audio capture
+  # for getDisplayMedia on Windows (WASAPI) and Linux (PulseAudio/PipeWire).
   flutter_webrtc:
-    git:
-      url: https://github.com/commetchat/flutter-webrtc.git
-      ref: hkdf
+    path: ../third_party/flutter-webrtc
 
-  # Vendored copy (see third_party/README.md). We change it in place.
   livekit_client:
     path: ../third_party/livekit-client-sdk-flutter
 

@@ -165,6 +165,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
   }
 
   Widget buildDefault() {
+    final showBadge = widget.stream.isMuted || widget.stream.isDeafened;
     switch (widget.stream.type) {
       case VoipStreamType.audio:
         return tiamat.Tile.low(
@@ -175,7 +176,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: AnimatedOpacity(
-                  opacity: widget.stream.isMuted ? 0.5 : 1.0,
+                  opacity: showBadge ? 0.5 : 1.0,
                   duration: Duration(milliseconds: 200),
                   child: Stack(
                     alignment: Alignment.center,
@@ -220,22 +221,25 @@ class _VoipStreamViewState extends State<VoipStreamView>
                 ),
               ),
               AnimatedScale(
-                scale: widget.stream.isMuted ? 1.0 : 0.0,
-                curve: widget.stream.isMuted
-                    ? Curves.bounceOut
-                    : Curves.easeInExpo,
-                duration:
-                    Duration(milliseconds: widget.stream.isMuted ? 500 : 200),
+                scale: showBadge ? 1.0 : 0.0,
+                curve: showBadge ? Curves.bounceOut : Curves.easeInExpo,
+                duration: Duration(milliseconds: showBadge ? 500 : 200),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: ColorScheme.of(context).primary,
+                      color: widget.stream.isDeafened
+                          ? ColorScheme.of(context).error
+                          : ColorScheme.of(context).primary,
                       borderRadius: BorderRadius.circular(8)),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(
-                      Icons.mic_off_rounded,
+                      widget.stream.isDeafened
+                          ? Icons.headset_off_rounded
+                          : Icons.mic_off_rounded,
                       size: 18,
-                      color: ColorScheme.of(context).onPrimary,
+                      color: widget.stream.isDeafened
+                          ? ColorScheme.of(context).onError
+                          : ColorScheme.of(context).onPrimary,
                     ),
                   ),
                 ),

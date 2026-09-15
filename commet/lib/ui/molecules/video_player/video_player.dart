@@ -28,6 +28,7 @@ class VideoPlayer extends StatefulWidget {
     this.doThumbnail = true,
     this.showProgressBar = true,
     this.capabilities = VideoCapabilities.native,
+    this.isFullscreen = false,
   });
 
   final FileProvider videoFile;
@@ -44,6 +45,11 @@ class VideoPlayer extends StatefulWidget {
   final VideoPlayerController? controller;
   final VideoCapabilities capabilities;
 
+  /// Whether the host is currently presenting this player fullscreen. Only
+  /// affects which fullscreen icon is shown; the host owns the transition
+  /// through [onFullscreen].
+  final bool isFullscreen;
+
   @override
   State<VideoPlayer> createState() => VideoPlayerState();
 }
@@ -57,6 +63,8 @@ class VideoPlayerState extends State<VideoPlayer> {
   bool shouldShowControls = true;
   bool isCompleted = false;
   double videoProgress = 0;
+  Duration position = Duration.zero;
+  Duration length = Duration.zero;
   bool updateSlider = true;
   Timer? uiHideTimer;
   String? playbackError;
@@ -106,17 +114,20 @@ class VideoPlayerState extends State<VideoPlayer> {
         });
       }),
       controller.onProgressed.listen((event) async {
-        final length = await controller.getLength();
-        if (updateSlider && length.inMilliseconds > 0) {
-          setState(() {
+        final total = await controller.getLength();
+        if (!mounted) return;
+        setState(() {
+          position = event;
+          length = total;
+          if (updateSlider && total.inMilliseconds > 0) {
             videoProgress = clampDouble(
               event.inMilliseconds.toDouble() /
-                  length.inMilliseconds.toDouble(),
+                  total.inMilliseconds.toDouble(),
               0,
               1,
             );
-          });
-        }
+          }
+        });
       }),
     ];
 
@@ -229,34 +240,31 @@ class VideoPlayerState extends State<VideoPlayer> {
           initialData: controller.settings,
           builder: (context, snapshot) {
             final settings = snapshot.data ?? controller.settings;
-            final capabilities = widget.capabilities;
 
             return Stack(
               fit: StackFit.expand,
               children: [
+                if (widget.fileName != null) titleOverlay(),
                 Align(
                   alignment: Alignment.center,
                   child: AnimatedScale(
                     scale: shouldShowControls ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 150),
-                    child: i.IconButton(
-                      icon: isCompleted
-                          ? Icons.replay_rounded
-                          : (settings.playing
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded),
-                      size: 48,
-                      onPressed: () {
-                        if (isCompleted) {
-                          replay();
-                        } else {
-                          if (settings.playing) {
-                            pause();
-                          } else {
-                            play();
-                          }
-                        }
-                      },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.black38,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(6),
+                      child: i.IconButton(
+                        icon: isCompleted
+                            ? Icons.replay_rounded
+                            : (settings.playing
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded),
+                        size: 48,
+                        onPressed: togglePlayback,
+                      ),
                     ),
                   ),
                 ),
@@ -269,94 +277,7 @@ class VideoPlayerState extends State<VideoPlayer> {
                         ? const Offset(0, 0)
                         : const Offset(0, 1),
                     duration: const Duration(milliseconds: 150),
-                    child: GradientBackground(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      backgroundColor: Colors.black87,
-                      child: Row(
-                        children: [
-                          if (widget.fileName != null)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Text(
-                                widget.fileName!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          if (widget.showProgressBar && capabilities.supportsSeeking)
-                            Expanded(
-                              child: Slider(
-                                value: videoProgress,
-                                onChangeEnd: (value) {
-                                  updateSlider = true;
-                                  seekPercent(value);
-                                },
-                                onChanged: (value) {
-                                  setState(() {
-                                    videoProgress = value;
-                                  });
-                                },
-                                onChangeStart: (_) {
-                                  updateSlider = false;
-                                },
-                              ),
-                            )
-                          else
-                            const Spacer(),
-                          if (capabilities.supportsVolume)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: i.IconButton(
-                                icon: settings.isMuted
-                                    ? Icons.volume_off_rounded
-                                    : (settings.volume < 50
-                                        ? Icons.volume_down_rounded
-                                        : Icons.volume_up_rounded),
-                                size: 22,
-                                onPressed: () {
-                                  controller.toggleMute();
-                                  preferences.videoPlayerVolume
-                                      .set(controller.settings.volume);
-                                },
-                              ),
-                            ),
-                          if (capabilities.supportsPlaybackRate ||
-                              (capabilities.supportsQualitySelection &&
-                                  settings.qualities.length > 1) ||
-                              (capabilities.supportsCaptions &&
-                                  settings.subtitles.isNotEmpty))
-                            Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: i.IconButton(
-                                icon: Icons.settings_rounded,
-                                size: 22,
-                                onPressed: _showPlaybackSettings,
-                              ),
-                            ),
-                          if (widget.canGoFullscreen && capabilities.supportsFullscreen)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                              child: i.IconButton(
-                                icon: Icons.fullscreen_rounded,
-                                size: 24,
-                                onPressed: () async {
-                                  if (widget.onFullscreen != null) {
-                                    widget.onFullscreen?.call();
-                                  } else {
-                                    await controller.enterFullscreen();
-                                  }
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+                    child: bottomBar(settings),
                   ),
                 ),
               ],
@@ -365,6 +286,207 @@ class VideoPlayerState extends State<VideoPlayer> {
         ),
       ),
     );
+  }
+
+  /// Title strip along the top edge. Kept out of the bottom bar so long
+  /// titles (tweet text, file names) never fight the seek bar for space.
+  Widget titleOverlay() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: AnimatedSlide(
+        offset: shouldShowControls ? const Offset(0, 0) : const Offset(0, -1),
+        duration: const Duration(milliseconds: 150),
+        child: GradientBackground(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          backgroundColor: Colors.black87,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 10, 56, 22),
+            child: Text(
+              widget.fileName!,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget bottomBar(VideoPlayerSettings settings) {
+    final capabilities = widget.capabilities;
+    final showSeekBar = widget.showProgressBar && capabilities.supportsSeeking;
+    final showTime = length > Duration.zero;
+
+    return GradientBackground(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      backgroundColor: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 18, 8, 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showSeekBar)
+              SliderTheme(
+                data: compactSliderTheme(context),
+                child: Slider(
+                  key: const ValueKey('video-seek-slider'),
+                  value: videoProgress,
+                  onChangeEnd: (value) {
+                    updateSlider = true;
+                    seekPercent(value);
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      videoProgress = value;
+                      if (length > Duration.zero) position = length * value;
+                    });
+                  },
+                  onChangeStart: (_) {
+                    updateSlider = false;
+                  },
+                ),
+              ),
+            Row(
+              children: [
+                i.IconButton(
+                  icon: isCompleted
+                      ? Icons.replay_rounded
+                      : (settings.playing
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded),
+                  size: 22,
+                  onPressed: togglePlayback,
+                ),
+                if (showTime)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: Text(
+                      '${formatDuration(position)} / ${formatDuration(length)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontFeatures: [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
+                const Spacer(),
+                if (capabilities.supportsVolume) volumeControl(settings),
+                if (capabilities.supportsPlaybackRate ||
+                    (capabilities.supportsQualitySelection &&
+                        settings.qualities.length > 1) ||
+                    (capabilities.supportsCaptions &&
+                        settings.subtitles.isNotEmpty))
+                  i.IconButton(
+                    icon: Icons.settings_rounded,
+                    size: 22,
+                    onPressed: _showPlaybackSettings,
+                  ),
+                if (widget.canGoFullscreen && capabilities.supportsFullscreen)
+                  i.IconButton(
+                    icon: widget.isFullscreen
+                        ? Icons.fullscreen_exit_rounded
+                        : Icons.fullscreen_rounded,
+                    size: 24,
+                    onPressed: () async {
+                      if (widget.onFullscreen != null) {
+                        widget.onFullscreen?.call();
+                      } else if (widget.isFullscreen) {
+                        await controller.exitFullscreen();
+                      } else {
+                        await controller.enterFullscreen();
+                      }
+                    },
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mute toggle plus, on desktop, an inline slider so the level can be set
+  /// without opening the settings sheet. Mobile keeps the toggle only; the
+  /// slider lives in the sheet where there is room for a finger.
+  Widget volumeControl(VideoPlayerSettings settings) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        i.IconButton(
+          icon: settings.isMuted
+              ? Icons.volume_off_rounded
+              : (settings.volume < 50
+                  ? Icons.volume_down_rounded
+                  : Icons.volume_up_rounded),
+          size: 22,
+          onPressed: () {
+            controller.toggleMute();
+            preferences.videoPlayerVolume.set(controller.settings.volume);
+          },
+        ),
+        if (!BuildConfig.MOBILE)
+          SizedBox(
+            width: 90,
+            child: SliderTheme(
+              data: compactSliderTheme(context),
+              child: Slider(
+                key: const ValueKey('video-inline-volume-slider'),
+                value: settings.volume.clamp(0.0, 100.0),
+                min: 0,
+                max: 100,
+                onChanged: (vol) {
+                  controller.setVolume(vol);
+                },
+                onChangeEnd: (vol) {
+                  preferences.videoPlayerVolume.set(vol);
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  static SliderThemeData compactSliderTheme(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SliderTheme.of(context).copyWith(
+      trackHeight: 3,
+      activeTrackColor: scheme.primary,
+      inactiveTrackColor: Colors.white30,
+      thumbColor: scheme.primary,
+      overlayColor: scheme.primary.withValues(alpha: 0.2),
+      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+      overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+      padding: EdgeInsets.zero,
+    );
+  }
+
+  static String formatDuration(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+    final mm = minutes.toString().padLeft(hours > 0 ? 2 : 1, '0');
+    final ss = seconds.toString().padLeft(2, '0');
+    return hours > 0 ? '$hours:$mm:$ss' : '$mm:$ss';
+  }
+
+  void togglePlayback() {
+    if (isCompleted) {
+      replay();
+    } else if (controller.settings.playing) {
+      pause();
+    } else {
+      play();
+    }
   }
 
   Widget thumbnail() {

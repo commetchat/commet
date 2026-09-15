@@ -29,8 +29,12 @@ class TwitterProvider implements VideoProvider {
   @override
   VideoCapabilities get capabilities => VideoCapabilities.native;
 
+  /// Matches twitter.com / x.com plus the common "fixup" mirrors
+  /// (fxtwitter, fixupx, vxtwitter, fixvx, twittpr) that people paste to get
+  /// working embeds elsewhere. They all share the /<user>/status/<id> layout
+  /// and resolve through the same fxtwitter API.
   static final RegExp _twitterDomainRegex = RegExp(
-    r'^(?:(?:www|mobile)\.)?(?:twitter\.com|x\.com)$',
+    r'^(?:(?:www|mobile)\.)?(?:twitter\.com|x\.com|fxtwitter\.com|fixupx\.com|vxtwitter\.com|fixvx\.com|twittpr\.com)$',
     caseSensitive: false,
   );
 

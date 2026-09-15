@@ -44,6 +44,9 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     ];
 
     updateCallUrl();
+    widget.voip.clearStaleOwnMembership().catchError((e, s) {
+      Log.onError(e, s);
+    });
     super.initState();
   }
 

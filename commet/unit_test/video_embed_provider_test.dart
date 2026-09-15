@@ -136,6 +136,13 @@ void main() {
     test('canHandle detects Twitter and X status URLs', () {
       expect(provider.canHandle(Uri.parse('https://twitter.com/jack/status/20')), isTrue);
       expect(provider.canHandle(Uri.parse('https://x.com/jack/status/20?s=20')), isTrue);
+      expect(
+          provider.canHandle(
+              Uri.parse('https://fxtwitter.com/crubielson/status/2099241162825470403')),
+          isTrue);
+      expect(provider.canHandle(Uri.parse('https://fixupx.com/jack/status/20')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://vxtwitter.com/jack/status/20')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://fxtwitter.com/jack')), isFalse);
     });
 
     test('canHandle rejects non-status Twitter/X URLs and attacker domains', () {

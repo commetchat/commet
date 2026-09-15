@@ -6,7 +6,17 @@ back to their origin; we change them here.
 | Directory | Origin | Ref |
 |-----------|--------|-----|
 | `livekit-client-sdk-flutter` | https://github.com/commetchat/livekit-client-sdk-flutter (branch `hkdf`) | `19f6b86d7a391876aceabf8ef3e117d399c23899` (2026-05-23) |
+| `flutter-webrtc` | https://github.com/flutter-webrtc/flutter-webrtc (tag `1.6.2+hotfix.2`) | `d77879b` (2026-09) |
 
-`example/`, `test/`, `testfiles/` and git metadata were dropped from the copy.
-Local changes are marked with `// COMMET:` comments in Dart and C++ and listed
-in `docs/voice-audio-processing.md`.
+`example/`, `test/`, `testfiles/`, `.github/` and git metadata were dropped
+from the copies. Local changes are marked with `// COMMET:` comments in Dart
+and C++ and listed in `docs/voice-audio-processing.md`.
+
+`flutter-webrtc` replaced the commetchat fork (branch `hkdf`, 1.4.1). Upstream
+1.6.2 already carries the fork's only change (`KeyDerivationAlgorithm`
+handling in the frame cryptor) and adds what we needed it for: system-audio
+capture in `getDisplayMedia({audio: true})` on Windows (WASAPI process
+loopback) and Linux (PulseAudio / PipeWire monitor source, needs `libpulse`
+dev headers at build time). It pulls the prebuilt libwebrtc `m150.7871.01` at
+configure time into `flutter-webrtc/third_party/{downloads,libwebrtc}/`, both
+gitignored. No `// COMMET` changes yet.

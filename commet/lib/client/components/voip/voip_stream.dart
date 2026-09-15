@@ -25,6 +25,10 @@ abstract class VoipStream {
 
   bool get isMuted;
 
+  /// Whether the owner of this stream has deafened themselves (stopped
+  /// listening). Implies muted; shown with a distinct badge.
+  bool get isDeafened;
+
   double? get aspectRatio;
 
   double get volume;

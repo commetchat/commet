@@ -1,0 +1,260 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
+
+import 'package:logger/logger.dart';
+
+import '../flutter_webrtc.dart';
+import 'native_logs_listener.dart';
+
+class Helper {
+  /// Whether the sharer's OS mouse cursor is composited into desktop screen
+  /// capture (native getDisplayMedia on Windows/Linux).
+  ///
+  /// Read when a capture starts, so it applies to the NEXT screen share rather
+  /// than one already running. Defaults to `true` — the existing behaviour —
+  /// so nothing changes unless an app opts out. Set it to `false` to avoid the
+  /// "double cursor" viewers see when the sharer's pointer is drawn on top of
+  /// their own. Web is unaffected: the browser owns cursor handling there.
+  static bool screenCaptureShowCursor = true;
+
+  /// Show/hide the broadcaster's mouse cursor in desktop screen capture.
+  /// Applies to the NEXT screen share started via getDisplayMedia; an already
+  /// running capture is unaffected.
+  static void setScreenCaptureCursor(bool show) {
+    screenCaptureShowCursor = show;
+  }
+
+  /// Set Logger object for webrtc;
+  ///
+  /// Params:
+  ///
+  /// "severity": possible values: ['verbose', 'info', 'warning', 'error', 'none']
+  static void setLogger(Logger logger, [String severity = 'none']) {
+    NativeLogsListener.instance.setLogger(logger, severity);
+  }
+
+  static Future<List<MediaDeviceInfo>> enumerateDevices(String type) async {
+    var devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.where((d) => d.kind == type).toList();
+  }
+
+  /// Return the available cameras
+  ///
+  /// Note: Make sure to call this gettet after
+  /// navigator.mediaDevices.getUserMedia(), otherwise the devices will not be
+  /// listed.
+  static Future<List<MediaDeviceInfo>> get cameras =>
+      enumerateDevices('videoinput');
+
+  /// Return the available audiooutputs
+  ///
+  /// Note: Make sure to call this gettet after
+  /// navigator.mediaDevices.getUserMedia(), otherwise the devices will not be
+  /// listed.
+  static Future<List<MediaDeviceInfo>> get audiooutputs =>
+      enumerateDevices('audiooutput');
+
+  /// For web implementation, make sure to pass the target deviceId
+  static Future<bool> switchCamera(MediaStreamTrack track,
+      [String? deviceId, MediaStream? stream]) async {
+    if (track.kind != 'video') {
+      throw 'The is not a video track => $track';
+    }
+
+    if (!kIsWeb) {
+      return WebRTC.invokeMethod(
+        'mediaStreamTrackSwitchCamera',
+        <String, dynamic>{'trackId': track.id},
+      ).then((value) => value ?? false);
+    }
+
+    if (deviceId == null) throw 'You need to specify the deviceId';
+    if (stream == null) throw 'You need to specify the stream';
+
+    var cams = await cameras;
+    if (!cams.any((e) => e.deviceId == deviceId)) {
+      throw 'The provided deviceId is not available, make sure to retreive the deviceId from Helper.cammeras()';
+    }
+
+    // stop only video tracks
+    // so that we can recapture video track
+    stream.getVideoTracks().forEach((track) {
+      track.stop();
+      stream.removeTrack(track);
+    });
+
+    var mediaConstraints = {
+      'audio': false, // NO need to capture audio again
+      'video': {'deviceId': deviceId}
+    };
+
+    var newStream = await openCamera(mediaConstraints);
+    var newCamTrack = newStream.getVideoTracks()[0];
+
+    await stream.addTrack(newCamTrack, addToNative: true);
+
+    return Future.value(true);
+  }
+
+  static Future<void> setZoom(MediaStreamTrack videoTrack, double zoomLevel) =>
+      CameraUtils.setZoom(videoTrack, zoomLevel);
+
+  static Future<void> setFocusMode(
+          MediaStreamTrack videoTrack, CameraFocusMode focusMode) =>
+      CameraUtils.setFocusMode(videoTrack, focusMode);
+
+  static Future<void> setFocusPoint(
+          MediaStreamTrack videoTrack, Point<double>? point) =>
+      CameraUtils.setFocusPoint(videoTrack, point);
+
+  static Future<void> setExposureMode(
+          MediaStreamTrack videoTrack, CameraExposureMode exposureMode) =>
+      CameraUtils.setExposureMode(videoTrack, exposureMode);
+
+  static Future<void> setExposurePoint(
+          MediaStreamTrack videoTrack, Point<double>? point) =>
+      CameraUtils.setExposurePoint(videoTrack, point);
+
+  /// Used to select a specific audio output device.
+  ///
+  /// Note: This method is only used for Flutter native,
+  /// supported on iOS/Android/macOS/Windows.
+  ///
+  /// Android/macOS/Windows: Can be used to switch all output devices.
+  /// iOS: you can only switch directly between the
+  /// speaker and the preferred device
+  /// web: flutter web can use RTCVideoRenderer.audioOutput instead
+  static Future<void> selectAudioOutput(String deviceId) async {
+    await navigator.mediaDevices
+        .selectAudioOutput(AudioOutputOptions(deviceId: deviceId));
+  }
+
+  /// Set audio input device for Flutter native
+  /// Note: The usual practice in flutter web is to use deviceId as the
+  /// `getUserMedia` parameter to get a new audio track and replace it with the
+  ///  audio track in the original rtpsender.
+  static Future<void> selectAudioInput(String deviceId) =>
+      NativeAudioManagement.selectAudioInput(deviceId);
+
+  /// Enable or disable speakerphone
+  /// for iOS/Android only
+  static Future<void> setSpeakerphoneOn(bool enable) =>
+      NativeAudioManagement.setSpeakerphoneOn(enable);
+
+  /// Ensure audio session
+  /// for iOS only
+  static Future<void> ensureAudioSession() =>
+      NativeAudioManagement.ensureAudioSession();
+
+  /// Enable speakerphone, but use bluetooth if audio output device available
+  /// for iOS/Android only
+  static Future<void> setSpeakerphoneOnButPreferBluetooth() =>
+      NativeAudioManagement.setSpeakerphoneOnButPreferBluetooth();
+
+  /// To select a a specific camera, you need to set constraints
+  /// eg.
+  /// var constraints = {
+  ///      'audio': true,
+  ///      'video': {
+  ///          'deviceId': Helper.cameras[0].deviceId,
+  ///          }
+  ///      };
+  ///
+  /// var stream = await Helper.openCamera(constraints);
+  ///
+  static Future<MediaStream> openCamera(Map<String, dynamic> mediaConstraints) {
+    return navigator.mediaDevices.getUserMedia(mediaConstraints);
+  }
+
+  /// Set the volume for Flutter native
+  static Future<void> setVolume(double volume, MediaStreamTrack track) =>
+      NativeAudioManagement.setVolume(volume, track);
+
+  /// Set the microphone mute/unmute for Flutter native
+  static Future<void> setMicrophoneMute(bool mute, MediaStreamTrack track) =>
+      NativeAudioManagement.setMicrophoneMute(mute, track);
+
+  /// Get how the audio device module mutes microphone input.
+  ///
+  /// iOS/macOS only. On all other platforms this returns
+  /// [MicrophoneMuteMode.unknown] without calling into native code, so it is
+  /// always safe to call from cross-platform code.
+  static Future<MicrophoneMuteMode> getMicrophoneMuteMode() =>
+      NativeAudioManagement.getMicrophoneMuteMode();
+
+  /// Set how the audio device module mutes microphone input.
+  ///
+  /// [MicrophoneMuteMode.voiceProcessing] (the default) plays the platform
+  /// mute sound effect on mute/unmute; use [MicrophoneMuteMode.inputMixer] or
+  /// [MicrophoneMuteMode.restartEngine] for silent muting.
+  ///
+  /// iOS/macOS only. On all other platforms this is a no-op that completes
+  /// normally (including for [MicrophoneMuteMode.unknown]), so it is always
+  /// safe to call from cross-platform code.
+  static Future<void> setMicrophoneMuteMode(MicrophoneMuteMode mode) =>
+      NativeAudioManagement.setMicrophoneMuteMode(mode);
+
+  /// Get whether microphone input is muted at the audio device module level.
+  /// Unrelated to `MediaStreamTrack.enabled`.
+  ///
+  /// Supported on iOS/macOS and Android; on all other platforms this returns
+  /// `false` without calling into native code.
+  static Future<bool> isMicrophoneMuted() =>
+      NativeAudioManagement.isMicrophoneMuted();
+
+  /// Mute or unmute microphone input at the audio device module level,
+  /// honoring the mode set via [setMicrophoneMuteMode] on iOS/macOS.
+  /// Unrelated to `MediaStreamTrack.enabled`.
+  ///
+  /// Supported on iOS/macOS and Android; on all other platforms this is a
+  /// no-op that completes normally.
+  static Future<void> setMicrophoneMuted(bool muted) =>
+      NativeAudioManagement.setMicrophoneMuted(muted);
+
+  /// Set the audio configuration to for Android.
+  /// Must be set before initiating a WebRTC session and cannot be changed
+  /// mid session.
+  static Future<void> setAndroidAudioConfiguration(
+          AndroidAudioConfiguration androidAudioConfiguration) =>
+      AndroidNativeAudioManagement.setAndroidAudioConfiguration(
+          androidAudioConfiguration);
+
+  /// After Android app finishes a session, on audio focus loss, clear the active communication device.
+  static Future<void> clearAndroidCommunicationDevice() =>
+      WebRTC.invokeMethod('clearAndroidCommunicationDevice');
+
+  /// Set the audio configuration for iOS
+  static Future<void> setAppleAudioConfiguration(
+          AppleAudioConfiguration appleAudioConfiguration) =>
+      AppleNativeAudioManagement.setAppleAudioConfiguration(
+          appleAudioConfiguration);
+
+  /// Set the audio configuration for iOS
+  static Future<void> setAppleAudioIOMode(AppleAudioIOMode mode,
+          {bool preferSpeakerOutput = false}) =>
+      AppleNativeAudioManagement.setAppleAudioConfiguration(
+          AppleNativeAudioManagement.getAppleAudioConfigurationForMode(mode,
+              preferSpeakerOutput: preferSpeakerOutput));
+
+  /// Request capture permission for Android/macOS.
+  ///
+  /// When [fullScreenOnly] is true and running on Android 14+ (API 34), the
+  /// MediaProjection consent dialog only offers entire-screen capture and the
+  /// single-app option is removed (via
+  /// `MediaProjectionConfig.createConfigForDefaultDisplay()`). Has no effect on
+  /// older Android versions or on macOS. Defaults to false, which keeps the
+  /// platform's default user-choice dialog.
+  static Future<bool> requestCapturePermission(
+      {bool fullScreenOnly = false}) async {
+    if (WebRTC.platformIsAndroid || WebRTC.platformIsMacOS) {
+      return await WebRTC.invokeMethod(
+        'requestCapturePermission',
+        <String, dynamic>{'fullScreenOnly': fullScreenOnly},
+      );
+    } else {
+      throw Exception(
+          'requestCapturePermission only support for Android/macOS');
+    }
+  }
+}

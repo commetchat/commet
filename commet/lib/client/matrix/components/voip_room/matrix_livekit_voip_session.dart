@@ -44,6 +44,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onTrackUnmutedEvent);
     listener.on(onParticipantConnected);
     listener.on(onParticipantDisconnected);
+    listener.on(onDataReceived);
 
     Timer.periodic(Duration(milliseconds: 200), (timer) {
       if (state == VoipState.ended) timer.cancel();
@@ -153,23 +154,83 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     final s = MatrixLivekitVoipStream(event.publication, participant);
     _applyStreamVolume(s);
+    s.deafened = _deafenedIdentities.contains(event.participant.identity);
     streams.add(s);
     _stateChanged.add(());
   }
 
   void onParticipantConnected(lk.ParticipantConnectedEvent event) {
     clientManager?.callManager.joinCallSound();
+    // Newcomers have no way of knowing we were already deafened.
+    if (_isDeafened) {
+      _broadcastVoiceState();
+    }
   }
 
   void onParticipantDisconnected(lk.ParticipantDisconnectedEvent event) {
+    _deafenedIdentities.remove(event.participant.identity);
     clientManager?.callManager.endCallSound();
+  }
+
+  /// Data topic used to tell the room about state LiveKit itself does not
+  /// carry (deafen). Payload: `{"deafened": bool}`.
+  static const voiceStateTopic = "chat.commet.voice_state.v1";
+
+  /// LiveKit identities of remote participants who told us they are deafened.
+  final Set<String> _deafenedIdentities = {};
+
+  void onDataReceived(lk.DataReceivedEvent event) {
+    if (event.topic != voiceStateTopic) return;
+    final identity = event.participant?.identity;
+    if (identity == null) return;
+
+    bool deafened;
+    try {
+      final data = jsonDecode(utf8.decode(event.data));
+      deafened = data is Map && data["deafened"] == true;
+    } catch (_) {
+      return;
+    }
+
+    if (deafened) {
+      _deafenedIdentities.add(identity);
+    } else {
+      _deafenedIdentities.remove(identity);
+    }
+
+    _setStreamsDeafened(identity, deafened);
+  }
+
+  void _setStreamsDeafened(String identity, bool deafened) {
+    for (var stream in streams) {
+      final s = stream as MatrixLivekitVoipStream;
+      if (s.publication.participant.identity != identity) continue;
+      if (s.deafened == deafened) continue;
+      s.deafened = deafened;
+      s.onStreamUpdatedEvent();
+    }
+    _stateChanged.add(());
+  }
+
+  Future<void> _broadcastVoiceState() async {
+    try {
+      await livekitRoom.localParticipant?.publishData(
+        utf8.encode(jsonEncode({"deafened": _isDeafened})),
+        reliable: true,
+        topic: voiceStateTopic,
+      );
+    } catch (e, s) {
+      Log.onError(e, s, content: "Failed to broadcast voice state");
+    }
   }
 
   void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
-    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    final s = MatrixLivekitVoipStream(event.publication, participant);
+    s.deafened = _isDeafened;
+    streams.add(s);
     _stateChanged.add(());
   }
 
@@ -293,6 +354,13 @@ class MatrixLivekitVoipSession implements VoipSession {
         _applyStreamVolume(stream);
       }
     }
+
+    final localIdentity = livekitRoom.localParticipant?.identity;
+    if (localIdentity != null) {
+      _setStreamsDeafened(localIdentity, state);
+    }
+
+    _broadcastVoiceState();
 
     _stateChanged.add(());
   }

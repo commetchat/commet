@@ -95,6 +95,14 @@ class MatrixLivekitVoipStream implements VoipStream {
   @override
   bool get isMuted => publication.track?.muted ?? false;
 
+  /// Set by the owning session from the deafen broadcast (remote) or the
+  /// local deafen toggle (outgoing streams). LiveKit has no notion of
+  /// "deafened", it only sees a muted mic.
+  bool deafened = false;
+
+  @override
+  bool get isDeafened => deafened;
+
   @override
   // TODO: implement stats
   String get stats => JsonEncoder.withIndent("  ").convert({

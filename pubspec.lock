@@ -820,12 +820,10 @@ packages:
   flutter_webrtc:
     dependency: "direct overridden"
     description:
-      path: "."
-      ref: hkdf
-      resolved-ref: "2d0dce5e11ad9d9a37c397095faa58b676ef8027"
-      url: "https://github.com/commetchat/flutter-webrtc.git"
-    source: git
-    version: "1.4.1"
+      path: "third_party/flutter-webrtc"
+      relative: true
+    source: path
+    version: "1.6.2+hotfix.2"
   frontend_server_client:
     dependency: transitive
     description:

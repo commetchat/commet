@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/image_or_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
@@ -57,6 +58,18 @@ class MatrixActivitiesComponent
             continue;
           }
         }
+      }
+
+      // A call membership written by this device is only real while this
+      // device is actually in the call; otherwise it is a leftover from a
+      // previous run that was closed without hanging up.
+      if (application == "m.call" &&
+          entry.value.senderId == client.self?.identifier &&
+          entry.value.content.tryGet<String>("device_id") ==
+              client.matrixClient.deviceID &&
+          clientManager?.callManager.getCallInRoom(client, room.identifier) ==
+              null) {
+        continue;
       }
 
       if (activity == null) {

@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_backend.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixVoipRoomComponent
@@ -48,6 +49,29 @@ class MatrixVoipRoomComponent
     }
   }
 
+  bool get _hasActiveSession =>
+      currentSession != null && currentSession!.state != VoipState.ended;
+
+  /// True when [entry] is a call membership written by this very device.
+  bool _isOwnDeviceMembership(StrippedStateEvent entry) {
+    if (entry.senderId != client.matrixClient.userID) return false;
+    final deviceId = entry.content.tryGet<String>("device_id");
+    return deviceId == client.matrixClient.deviceID;
+  }
+
+  /// A membership whose `expires` window (relative to when it was sent) has
+  /// already elapsed. Only full [Event]s carry a timestamp; stripped state is
+  /// assumed live.
+  static bool isMembershipExpired(StrippedStateEvent entry) {
+    final expires = entry.content.tryGet<int>("expires");
+    if (expires == null) return false;
+    if (entry case Event ev) {
+      final expiry = ev.originServerTs.add(Duration(milliseconds: expires));
+      return DateTime.now().isAfter(expiry);
+    }
+    return false;
+  }
+
   @override
   List<String> getCurrentParticipants() {
     final state = room.matrixRoom.states[callMemberStateEvent];
@@ -61,6 +85,17 @@ class MatrixVoipRoomComponent
         continue;
       }
 
+      if (isMembershipExpired(pair.value)) {
+        continue;
+      }
+
+      // A membership left behind by this device (the app was closed or
+      // crashed mid-call) is stale: we are only in the call if we hold a live
+      // session right now.
+      if (_isOwnDeviceMembership(pair.value) && !_hasActiveSession) {
+        continue;
+      }
+
       final sender = pair.value.senderId;
       if (participants.contains(sender)) {
         continue;
@@ -70,6 +105,41 @@ class MatrixVoipRoomComponent
     }
 
     return participants;
+  }
+
+  @override
+  Future<void> clearStaleOwnMembership() async {
+    if (_hasActiveSession) return;
+
+    final state = room.matrixRoom.states[callMemberStateEvent];
+    if (state == null) return;
+
+    final stale = [
+      for (var entry in state.entries)
+        if (entry.value.content.isNotEmpty &&
+            _isOwnDeviceMembership(entry.value))
+          entry.key,
+    ];
+
+    if (stale.isEmpty) return;
+
+    if (!canJoinCall) {
+      // Without permission to write the state event we can't clean up, the
+      // local filter in getCurrentParticipants still hides it for us.
+      return;
+    }
+
+    Log.i("Clearing ${stale.length} stale call membership(s) in ${room.identifier}");
+
+    await Future.wait([
+      for (var stateKey in stale)
+        client.matrixClient.setRoomStateWithKey(
+          room.identifier,
+          callMemberStateEvent,
+          stateKey,
+          {},
+        ),
+    ]);
   }
 
   @override

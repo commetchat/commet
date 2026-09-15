@@ -142,9 +142,12 @@ Ordered by how badly it hurts if wrong.
    remote side.
 3. **Web AudioContext is running.** `audio_dsp.js` resumes the context in
    `create`; if the join did not come from a user gesture the log says so.
-4. **Screen-share system audio on Linux.** If desktop-capture audio passes
-   the capture APM, it will be denoised. Check by sharing music with
-   suppression on. If it does, gate the processor on the mic source.
+4. **Screen-share system audio on Linux and Windows.** Comes from the
+   vendored flutter-webrtc 1.6.2 (`third_party/flutter-webrtc`), which feeds
+   a loopback capture into a `kCustom` audio source. Custom sources bypass
+   the ADM, so they should not pass the capture APM (and our gate); check by
+   sharing music with suppression on. If it is denoised or gated, gate the
+   processor on the mic source.
 5. **Encrypted rooms on web** still decrypt with the processed track, before
    and after a mic switch.
 6. ~~libwebrtc exports the hook~~ Done: the methods are virtual (not in

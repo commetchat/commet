@@ -39,6 +39,73 @@ void main() {
     expect(find.byIcon(Icons.fullscreen_rounded), findsOneWidget);
   });
 
+  testWidgets('bottom bar has a seek slider and an inline volume slider',
+      (tester) async {
+    final stream = Uri.parse('https://example.com/video.mp4');
+
+    await tester.pumpWidget(
+      _testApp(
+        VideoPlayer(
+          WebFileProvider(stream),
+          streamUrl: stream,
+          fileName: 'A very long tweet text that used to sit next to the seeker',
+          capabilities: VideoCapabilities.native,
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('video-seek-slider')), findsOneWidget);
+    // Desktop test environment: the volume can be changed without opening
+    // the settings sheet.
+    expect(find.byKey(const ValueKey('video-inline-volume-slider')),
+        findsOneWidget);
+    expect(find.byIcon(Icons.fullscreen_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.fullscreen_exit_rounded), findsNothing);
+
+    // The title is rendered in its own overlay, not inside the seek row.
+    final title = find.text(
+        'A very long tweet text that used to sit next to the seeker');
+    expect(title, findsOneWidget);
+    final seekBar = tester.getRect(find.byKey(const ValueKey('video-seek-slider')));
+    final titleRect = tester.getRect(title);
+    expect(titleRect.bottom <= seekBar.top, isTrue);
+  });
+
+  testWidgets('shows the exit icon while the host is fullscreen',
+      (tester) async {
+    final stream = Uri.parse('https://example.com/video.mp4');
+    var toggled = 0;
+
+    await tester.pumpWidget(
+      _testApp(
+        VideoPlayer(
+          WebFileProvider(stream),
+          streamUrl: stream,
+          isFullscreen: true,
+          onFullscreen: () => toggled++,
+          capabilities: VideoCapabilities.native,
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.fullscreen_exit_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.fullscreen_rounded), findsNothing);
+
+    await tester.tap(find.byIcon(Icons.fullscreen_exit_rounded));
+    expect(toggled, 1);
+  });
+
+  test('formatDuration renders m:ss and h:mm:ss', () {
+    expect(VideoPlayerState.formatDuration(const Duration(seconds: 5)), '0:05');
+    expect(
+        VideoPlayerState.formatDuration(const Duration(minutes: 12, seconds: 3)),
+        '12:03');
+    expect(
+        VideoPlayerState.formatDuration(
+            const Duration(hours: 1, minutes: 2, seconds: 9)),
+        '1:02:09');
+  });
+
   testWidgets('hides volume and settings when capabilities do not support them',
       (tester) async {
     final stream = Uri.parse('https://example.com/video.mp4');
