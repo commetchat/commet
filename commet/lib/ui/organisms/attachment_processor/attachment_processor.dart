@@ -248,14 +248,12 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
             Platform.isMacOS ||
             Platform.isLinux);
 
-    CompressFormat? format;
-    if (mimeType.contains("jpeg") || mimeType.contains("jpg")) {
-      format = CompressFormat.jpeg;
-    } else if (mimeType.contains("png")) {
-      format = CompressFormat.png;
-    } else if (mimeType.contains("webp")) {
-      format = CompressFormat.webp;
-    }
+    final format = switch (mimeType) {
+      'image/jpeg' || 'image/jpg' => CompressFormat.jpeg,
+      'image/png' => CompressFormat.png,
+      'image/webp' => CompressFormat.webp,
+      _ => null,
+    };
 
     if (!supportsNativeCompress || format == null) {
       return await compute(_fallbackProcessImage,
