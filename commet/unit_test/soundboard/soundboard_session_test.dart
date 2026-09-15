@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
@@ -115,6 +117,41 @@ void main() {
           svc.importFromPageUrl(
               'https://www.myinstants.com/en/instant/x-1/'),
           throwsA(anything));
+    });
+
+    test('DNS failure surfaces an actionable message', () async {
+      final svc = SoundboardImportService(fetcher: (_) async {
+        throw SocketException(
+            'Failed host lookup: www.myinstants.com',
+            address: InternetAddress('93.184.216.34'));
+      });
+      await expectLater(
+          svc.importFromPageUrl(
+              'https://www.myinstants.com/en/instant/x-1/'),
+          throwsA(predicate(
+              (e) => e.toString().contains('internet connection'))));
+    });
+
+    test('bot-protection (403) surfaces a specific error', () async {
+      final svc = SoundboardImportService(
+          fetcher: (_) async => _html('blocked', 403));
+      await expectLater(
+          svc.importFromPageUrl(
+              'https://www.myinstants.com/pt/instant/faaah-63455/'),
+          throwsA(predicate((e) =>
+              e.toString().contains('bot protection'))));
+    });
+
+    test('direct .mp3 URL skips page parsing', () async {
+      var pageFetched = false;
+      final svc = SoundboardImportService(fetcher: (uri) async {
+        if (uri.path.contains('instant')) pageFetched = true;
+        return _audio(List.filled(5000, 1), 'audio/mpeg');
+      });
+      final out = await svc.importFromPageUrl(
+          'https://www.myinstants.com/media/sounds/faaah.mp3');
+      expect(pageFetched, isFalse);
+      expect(out.bytes.length, 5000);
     });
   });
 

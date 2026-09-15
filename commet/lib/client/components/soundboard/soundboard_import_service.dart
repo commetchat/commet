@@ -4,6 +4,8 @@
 // Split from UI/Matrix so it is unit-testable with injected [fetcher].
 // The actual MXC upload stays in the Matrix component (needs authenticated
 // client); this service returns validated bytes + suggested metadata.
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
@@ -32,12 +34,20 @@ class FetchedAudio {
 typedef HttpFetcher = Future<http.Response> Function(Uri uri);
 
 Future<http.Response> _defaultFetcher(Uri uri) {
+  // MyInstants (behind anti-bot protection) rejects non-browser clients
+  // with 403, so present full browser-like headers.
   return http
       .get(uri, headers: {
         'User-Agent':
-            'Mozilla/5.0 (Commet Soundboard import; +https://commet.chat)',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
         'Accept':
-            'text/html,application/xhtml+xml,audio/mpeg,audio/ogg,audio/wav,*/*;q=0.8',
+            'text/html,application/xhtml+xml,application/xml;q=0.9,audio/mpeg,audio/ogg,audio/wav,audio/*;q=0.8,*/*;q=0.5',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.myinstants.com/',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Dest': 'document',
       })
       .timeout(SoundboardConstraints.httpTimeout);
 }
@@ -48,17 +58,32 @@ class SoundboardImportService {
   SoundboardImportService({HttpFetcher? fetcher})
       : fetcher = fetcher ?? _defaultFetcher;
 
-  /// Full import from an admin-pasted MyInstants page URL.
+  /// Full import from an admin-pasted MyInstants URL. Accepts either an
+  /// instant page URL (…/instant/<slug>/) or a direct audio file URL
+  /// (…/media/sounds/….mp3) from the same host as an escape hatch when the
+  /// page is unreadable.
   Future<FetchedAudio> importFromPageUrl(String pageUrl) async {
-    MyInstantsResolver.requireAllowedUrl(pageUrl);
-    final pageRes = await fetcher(Uri.parse(pageUrl.trim()));
+    final trimmed = pageUrl.trim();
+    MyInstantsResolver.requireAllowedUrl(trimmed);
+    if (_looksLikeAudioFileUrl(trimmed)) {
+      return importFromAudioUrl(trimmed);
+    }
+    final pageRes = await _fetch(Uri.parse(trimmed));
+    if (pageRes.statusCode == 403 || pageRes.statusCode == 429) {
+      throw const MyInstantsValidationError(
+          'MyInstants refused the connection (bot protection)');
+    }
+    if (pageRes.statusCode == 404) {
+      throw const MyInstantsValidationError(
+          'MyInstants page not found (404)');
+    }
     if (pageRes.statusCode < 200 || pageRes.statusCode >= 300) {
       throw MyInstantsValidationError(
           'MyInstants page not found (${pageRes.statusCode})');
     }
     final audioUrl = MyInstantsResolver.extractAudioUrl(
       pageRes.body,
-      pageUrl: pageUrl,
+      pageUrl: trimmed,
     );
     if (audioUrl == null) {
       throw const MyInstantsValidationError(
@@ -67,10 +92,34 @@ class SoundboardImportService {
     return importFromAudioUrl(audioUrl);
   }
 
+  static bool _looksLikeAudioFileUrl(String url) {
+    final path = url.toLowerCase().split('?').first;
+    return SoundboardConstraints.allowedExtensions
+        .any((ext) => path.endsWith(ext));
+  }
+
+  /// Runs [fetcher], translating low-level network failures into a
+  /// user-actionable validation error instead of a generic crash.
+  Future<http.Response> _fetch(Uri uri) async {
+    try {
+      return await fetcher(uri);
+    } on SocketException catch (e) {
+      throw MyInstantsValidationError(
+          'Network unreachable (${e.address?.host ?? uri.host}). '
+          'Check your internet connection and try again.');
+    } on TimeoutException {
+      throw const MyInstantsValidationError(
+          'Network timeout. Check your internet connection and try again.');
+    } on HttpException {
+      throw const MyInstantsValidationError(
+          'Network error. Check your internet connection and try again.');
+    }
+  }
+
   /// Imports already-resolved audio file bytes (also used by tests).
   Future<FetchedAudio> importFromAudioUrl(String audioUrl) async {
     MyInstantsResolver.requireAllowedUrl(audioUrl);
-    final res = await fetcher(Uri.parse(audioUrl));
+    final res = await _fetch(Uri.parse(audioUrl));
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw MyInstantsValidationError(
           'Audio download failed (${res.statusCode})');
