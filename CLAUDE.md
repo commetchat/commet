@@ -4,6 +4,7 @@ Hard fork of Commet (a Flutter Matrix client) by PondLabs. Layout:
 
 - `commet/` the app (Flutter). `tiamat/` the widget library. `widgets/` Matrix widget helpers.
 - `rust/rust` the Rust library shipped as `librust_lib_commet` (flutter_rust_bridge, built by cargokit for Linux and Windows only; Android and web do not build it).
+- `rust/audio_decode` soundboard clip decoder (symphonia, C ABI linked into `librust_lib_commet`); loudness is measured in Dart (`soundboard_normalizer.dart`).
 - `rust/audio_dsp` voice DSP crate (noise suppression, input gate, ducking). See `docs/voice-audio-processing.md`.
 - `third_party/` vendored packages we modify in place. See `third_party/README.md`.
 

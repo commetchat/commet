@@ -23,7 +23,7 @@ import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/matrix/components/soundboard/livekit_soundboard_transport.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_soundboard_emoji_image.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_todevice_soundboard_transport.dart';
-import 'package:commet/client/matrix/components/soundboard/mediakit_soundboard_player.dart';
+import 'package:commet/client/matrix/components/soundboard/soundboard_player_factory.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/debug/log.dart';
@@ -61,6 +61,8 @@ class SoundboardCallController extends ChangeNotifier {
   SoundboardCatalog catalog = InMemorySoundboardCatalog();
   List<SoundboardSource> sources = const [];
 
+  SoundboardPlayer? _player;
+
   /// Shared by every call so all open popovers see the same favorites.
   static final SoundboardFavorites favorites =
       SoundboardFavorites.preference(preferences.soundboardFavorites);
@@ -79,13 +81,15 @@ class SoundboardCallController extends ChangeNotifier {
     // Decide before preloading: the user may leave the room while the catalog
     // downloads, and a late entrance sound would be wrong.
     final entranceSoundId = _claimEntranceSound();
-    final player = MediaKitSoundboardPlayer(
+    late final SoundboardEngine engine;
+    final player = _player = createSoundboardPlayer(
       resolveSound: (id) => catalog.getById(id),
       resolvePlayableUri: _resolvePlayableUri,
+      loadBytes: _loadBytes,
+      // Audio completion, not the overlay timer, ends an activation.
+      onInstanceFinished: (id) => engine.onAudioCompleted(id),
     );
-    final engine = SoundboardEngine(player: player);
-    // Audio completion, not the overlay timer, ends an activation.
-    player.onInstanceFinished = engine.onAudioCompleted;
+    engine = SoundboardEngine(player: player);
     // Bridge engine activations -> avatar overlays (sender-specific).
     engine.addListener(_syncOverlays);
     _engineSub = null; // engine uses sync listeners, not streams.
@@ -204,10 +208,31 @@ class SoundboardCallController extends ChangeNotifier {
     return resolved.toString();
   }
 
+  /// Web: the browser has no file cache, so the player keeps the bytes.
+  Future<Uint8List> _loadBytes(SoundboardSound sound) async {
+    final client = session.client;
+    final uri = Uri.parse(sound.mediaUri);
+    if (client is! MatrixClient || uri.scheme != 'mxc') {
+      throw StateError('Cannot play ${sound.mediaUri}');
+    }
+    final bytes =
+        await MxcFileProvider(client.getMatrixClient(), uri).getFileData();
+    if (bytes == null) {
+      throw StateError('Could not download ${sound.mediaUri}');
+    }
+    return bytes;
+  }
+
   Future<void> _preload(String soundId) async {
-    // Fill the file cache so click->play has no download. Failures reach
+    // Fill the file cache (web: the player's decoded buffers) so
+    // click->play has no download. Failures reach
     // SoundboardSession.preloadAll, which logs them and leaves the sound
     // unmarked so the next preload tries again.
+    final player = _player;
+    if (player is PreloadingSoundboardPlayer) {
+      await player.preload(soundId);
+      return;
+    }
     final sound = catalog.getById(soundId);
     if (sound == null) return;
     await _resolvePlayableUri(sound);

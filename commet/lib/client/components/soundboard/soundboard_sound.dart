@@ -3,6 +3,7 @@
 // Deep module interface: callers learn SoundboardSound + SoundboardCatalog,
 // implementation (Matrix state events, MXC upload, MyInstants import) stays
 // behind the seam. See docs/adr decisions inline.
+import 'package:commet/client/components/soundboard/soundboard_normalizer.dart';
 
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 
@@ -94,12 +95,17 @@ class SoundboardSound {
     );
   }
 
+  /// Held to the normalizer's range: anyone who can send the state event
+  /// controls this number, and playback would amplify it as is.
   static double _gainFromJson(Map<String, dynamic> json) {
     final milli = json['normalized_gain_milli'];
-    if (milli is num) return milli / 1000;
     // Float written by earlier builds; only servers not enforcing canonical
     // JSON accepted it.
-    return (json['normalized_gain'] as num?)?.toDouble() ?? 1.0;
+    final gain = milli is num
+        ? milli / 1000
+        : (json['normalized_gain'] as num?)?.toDouble() ?? 1.0;
+    return gain.clamp(
+        SoundboardNormalizer.minGain, SoundboardNormalizer.maxGain);
   }
 
   static double _volumeFromJson(Map<String, dynamic> json) {

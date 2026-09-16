@@ -12,15 +12,13 @@
 // errors are swallowed after logging: a soundboard failure must never take
 // down the call.
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
-import 'package:commet/client/components/soundboard/soundboard_sound.dart';
+import 'package:commet/client/matrix/components/soundboard/soundboard_player_factory.dart';
 import 'package:commet/debug/log.dart';
 import 'package:media_kit/media_kit.dart';
-
-typedef SoundResolver = SoundboardSound? Function(String soundId);
-typedef UriResolver = Future<String> Function(SoundboardSound sound);
 
 /// One playing sound. Production wraps a media_kit [Player]; tests fake it.
 abstract class SoundboardAudioInstance {
@@ -68,11 +66,19 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
             const Duration(
                 milliseconds: SoundboardConstraints.maxDurationMs + 5000);
 
-  /// media_kit takes mpv's `volume`, where 100 plays the file unchanged (and
-  /// mpv applies it cubically, so 0..1 is silence). Never boosts past 100.
+  /// mpv's `volume-max` (default 130) must cover the loudest setting:
+  /// user 1.5 * gain +18 dB is about 229.
+  static const double mpvVolumeMax = 400;
+
+  /// media_kit takes mpv's `volume`, where 100 plays the file unchanged and
+  /// mpv scales samples by (volume / 100)^3. The cube root makes the result
+  /// the linear product userVolume * soundGain, boosts included.
   /// [soundGain] is [SoundboardSound.gain].
-  static double mpvVolume(double userVolume, double soundGain) =>
-      (userVolume * soundGain).clamp(0.0, 1.0) * 100;
+  static double mpvVolume(double userVolume, double soundGain) {
+    final amplitude = math.max(0.0, userVolume * soundGain);
+    return (100 * math.pow(amplitude, 1 / 3).toDouble())
+        .clamp(0.0, mpvVolumeMax);
+  }
 
   @override
   Future<void> start(String instanceId, String soundId) async {
@@ -149,6 +155,17 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
 
 class _MediaKitAudioInstance implements SoundboardAudioInstance {
   final Player _player = Player();
+  late final Future<void> _configured = _configure();
+
+  /// mpv clamps `volume` to `volume-max`, so raise it before the first
+  /// setVolume: normalization boosts go past 100.
+  Future<void> _configure() async {
+    final native = _player.platform;
+    if (native is NativePlayer) {
+      await native.setProperty(
+          'volume-max', MediaKitSoundboardPlayer.mpvVolumeMax.toString());
+    }
+  }
 
   @override
   late final Stream<void> finished = _finishedStream();
@@ -176,10 +193,16 @@ class _MediaKitAudioInstance implements SoundboardAudioInstance {
   }
 
   @override
-  Future<void> setVolume(double mpvVolume) => _player.setVolume(mpvVolume);
+  Future<void> setVolume(double mpvVolume) async {
+    await _configured;
+    await _player.setVolume(mpvVolume);
+  }
 
   @override
-  Future<void> open(String uri) => _player.open(Media(uri), play: true);
+  Future<void> open(String uri) async {
+    await _configured;
+    await _player.open(Media(uri), play: true);
+  }
 
   @override
   Future<void> dispose() async {

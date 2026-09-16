@@ -8,10 +8,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/soundboard/audio_decoder.dart';
 import 'package:commet/client/components/soundboard/mp3_duration.dart';
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_normalizer.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
 
 class FetchedAudio {
@@ -84,13 +86,19 @@ Future<http.Response> _getFollowingAllowedRedirects(
 class SoundboardImportService {
   final HttpFetcher fetcher;
 
+  /// Decodes non-WAV audio for loudness measurement.
+  final AudioDecoder decoder;
+
   /// Receives one line per import step (URLs, HTTP responses, duration) so a
   /// failed import can be traced from the log.
   final void Function(String message) log;
 
   SoundboardImportService(
-      {HttpFetcher? fetcher, void Function(String message)? log})
+      {HttpFetcher? fetcher,
+      AudioDecoder? decoder,
+      void Function(String message)? log})
       : fetcher = fetcher ?? fetchFromMyInstants,
+        decoder = decoder ?? decodeWithPlatform,
         log = log ?? _ignore;
 
   static void _ignore(String _) {}
@@ -218,7 +226,8 @@ class SoundboardImportService {
     );
     final bytes = res.bodyBytes;
     final mime = _inferMime(contentType, audioUrl);
-    final durationMs = _measureDurationMs(bytes, mime);
+    final pcm = await _decode(bytes, mime);
+    final durationMs = _measureDurationMs(bytes, mime, pcm);
     log('duration: ${durationMs == null ? 'unknown' : '$durationMs ms'} '
         '($mime)');
     if (durationMs != null &&
@@ -227,7 +236,10 @@ class SoundboardImportService {
           'Audio too long (${_seconds(durationMs)} s, '
           'max ${_seconds(SoundboardConstraints.maxDurationMs)} s)');
     }
-    final estimate = _estimateLoudness(bytes, mime);
+    final estimate = pcm == null
+        ? SoundboardNormalizer.fallback()
+        : await compute(SoundboardNormalizer.analyze, pcm);
+    log('loudness: $estimate');
     return FetchedAudio(
       bytes: bytes,
       mimeType: mime,
@@ -236,6 +248,19 @@ class SoundboardImportService {
       normalizedGain: estimate.gain,
       loudnessMeasured: estimate.measured,
     );
+  }
+
+  Future<PcmAudio?> _decode(Uint8List bytes, String mime) async {
+    final wav = SoundboardNormalizer.decodeWav(bytes);
+    if (wav != null) return wav;
+    try {
+      final pcm = await decoder(bytes, mime);
+      if (pcm == null) log('decoder: $mime not decodable on this platform');
+      return pcm;
+    } catch (e) {
+      log('decoder: failed on $mime: $e');
+      return null;
+    }
   }
 
   static String _seconds(int ms) =>
@@ -256,49 +281,15 @@ class SoundboardImportService {
     return 'audio/mpeg';
   }
 
-  /// WAV and MP3 are measured exactly; other formats return null (accepted,
-  /// bounded at playback by natural end + overlay clamp).
-  static int? _measureDurationMs(Uint8List bytes, String mime) {
-    // WAV: exact.
-    final pcm = SoundboardNormalizer.decodeWav16(bytes);
-    if (pcm != null) {
-      // Need sample rate: parse fmt chunk.
-      try {
-        if (bytes.length >= 28) {
-          var offset = 12;
-          while (offset + 8 <= bytes.length) {
-            final id = String.fromCharCodes(bytes.sublist(offset, offset + 4));
-            final size = ByteData.sublistView(bytes, offset + 4, offset + 8)
-                .getUint32(0, Endian.little);
-            if (id == 'fmt ') {
-              final bd =
-                  ByteData.sublistView(bytes, offset + 8, offset + 8 + size);
-              final sampleRate = bd.getUint32(4, Endian.little);
-              if (sampleRate > 0 && pcm.isNotEmpty) {
-                return (pcm.length * 1000 / sampleRate).round();
-              }
-              break;
-            }
-            offset += 8 + size + (size.isOdd ? 1 : 0);
-          }
-        }
-      } catch (_) {}
-    }
+  /// MP3 duration comes from its frame headers (the decoder stops at
+  /// [maxDecodeSeconds]); everything else from the decoded PCM. Null when
+  /// neither is available (accepted, bounded at playback by natural end +
+  /// overlay clamp).
+  static int? _measureDurationMs(Uint8List bytes, String mime, PcmAudio? pcm) {
     if (mime == 'audio/mpeg' || mime == 'audio/mp3') {
-      return Mp3Duration.inMilliseconds(bytes);
+      final ms = Mp3Duration.inMilliseconds(bytes);
+      if (ms != null) return ms;
     }
-    return null;
-  }
-
-  static LoudnessEstimate _estimateLoudness(Uint8List bytes, String mime) {
-    if (mime == 'audio/wav' ||
-        mime == 'audio/x-wav' ||
-        mime == 'audio/wave') {
-      final pcm = SoundboardNormalizer.decodeWav16(bytes);
-      if (pcm != null && pcm.isNotEmpty) {
-        return SoundboardNormalizer.analyze(pcm);
-      }
-    }
-    return SoundboardNormalizer.fallback();
+    return pcm?.durationMs;
   }
 }

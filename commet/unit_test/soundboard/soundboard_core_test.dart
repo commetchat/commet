@@ -91,6 +91,16 @@ void main() {
       expect(SoundboardSound.fromJson(json).normalizedGain, 0.5);
     });
 
+    test('a gain from room state is held to the normalizer\'s range', () {
+      // Anyone who can send the state event controls this number.
+      Map<String, dynamic> withMilli(int milli) =>
+          _sound('s1').toJson()..['normalized_gain_milli'] = milli;
+      expect(SoundboardSound.fromJson(withMilli(1000000)).normalizedGain,
+          closeTo(7.943, 0.001)); // +18 dB
+      expect(SoundboardSound.fromJson(withMilli(0)).normalizedGain,
+          closeTo(0.126, 0.001)); // -18 dB
+    });
+
     test('round-trips a custom space emoji', () {
       final sound = _sound('s1').copyWith(
           emoji: const SoundboardEmoji.custom(

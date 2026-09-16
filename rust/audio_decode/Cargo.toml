@@ -1,0 +1,13 @@
+[package]
+name = "audio_decode"
+version = "0.1.0"
+edition = "2021"
+description = "Commet soundboard: decode short compressed clips (MP3, Ogg Vorbis, FLAC, WAV) to PCM for loudness measurement. C ABI."
+license = "AGPL-3.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+symphonia = { version = "0.6", default-features = false, features = ["mp3", "ogg", "vorbis", "flac", "wav", "pcm"] }

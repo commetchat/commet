@@ -5,6 +5,9 @@ mod frb_generated;
 // symbols are linked into this library; Dart loads them from here.
 pub use audio_dsp;
 
+// Soundboard clip decoder (MP3/Ogg/FLAC/WAV to PCM), same C ABI arrangement.
+pub use audio_decode;
+
 #[cfg(any(target_os = "windows", target_os = "linux"))]
 mod widget_runner;
 

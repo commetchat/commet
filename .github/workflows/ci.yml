@@ -53,6 +53,15 @@ jobs:
           done
           echo "rust_crates=$crates" >> "$GITHUB_OUTPUT"
 
+      - name: Setup Rust
+        if: steps.find.outputs.rust_crates != '' || steps.find.outputs.dart == 'true'
+        uses: dtolnay/rust-toolchain@stable
+
+      # The soundboard decoder test loads it through dart:ffi.
+      - name: Build soundboard decoder
+        if: steps.find.outputs.dart == 'true'
+        run: cargo build -p audio_decode
+
       - name: Setup Flutter
         if: steps.find.outputs.dart == 'true'
         uses: subosito/flutter-action@v2
@@ -67,10 +76,6 @@ jobs:
         run: |
           dart run scripts/codegen.dart
           flutter test unit_test
-
-      - name: Setup Rust
-        if: steps.find.outputs.rust_crates != ''
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Rust tests
         if: steps.find.outputs.rust_crates != ''

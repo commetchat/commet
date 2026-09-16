@@ -1,3 +1,3 @@
 [workspace]
 resolver = "3"
-members = ["rust/rust", "rust/audio_dsp"]
+members = ["rust/rust", "rust/audio_dsp", "rust/audio_decode"]
