@@ -91,6 +91,11 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   bool isInResponse = false;
   bool showSender = false;
   late String eventId;
+
+  /// The event as of the last [loadStateFromEvent]. Children that need the
+  /// event use this rather than [index], which goes stale when newer events
+  /// are inserted below this one.
+  TimelineEvent? event;
   late String currentUserIdentifier;
   late DateTime sentTime;
 
@@ -193,15 +198,17 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               timeline: widget.timeline!,
               initialIndex: index)
           : null,
-      urlPreviews:
-          previewComponent != null && doUrlPreview && widget.timeline != null
-              ? TimelineEventViewUrlPreviews(
-                  initialIndex: index,
-                  timeline: widget.timeline!,
-                  component: previewComponent!,
-                  key: urlPreviewsKey,
-                )
-              : null,
+      urlPreviews: previewComponent != null &&
+              doUrlPreview &&
+              widget.timeline != null &&
+              event != null
+          ? TimelineEventViewUrlPreviews(
+              event: event!,
+              timeline: widget.timeline!,
+              component: previewComponent!,
+              key: urlPreviewsKey,
+            )
+          : null,
       thread: isHeadOfThread && widget.timeline != null
           ? TimelineEventViewThread(
               initialIndex: index,
@@ -235,6 +242,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   void loadStateFromEvent(TimelineEvent event) {
+    this.event = event;
     mentionsRoom = event.mentionsRoom;
     mentions = event.mentions;
     showSender = shouldShowSender(index);

@@ -5,18 +5,19 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
+import 'package:commet/ui/molecules/url_preview_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 class _FakeEvent implements TimelineEvent {
-  _FakeEvent(this.status);
+  _FakeEvent(this.status, {this.eventId = r'$event'});
 
   @override
   TimelineEventStatus status;
 
   @override
-  String get eventId => r'$event';
+  final String eventId;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -29,7 +30,10 @@ class _FakeTimeline extends Timeline {
 
 class _FakeComponent implements UrlPreviewComponent {
   int getPreviewCalls = 0;
+  final List<String> requested = [];
   Completer<UrlPreviewData?>? pending;
+  UrlPreviewData? result = preview;
+  Object? error;
 
   static final preview = UrlPreviewData(
     Uri.parse('https://example.com/page'),
@@ -45,8 +49,10 @@ class _FakeComponent implements UrlPreviewComponent {
   Future<UrlPreviewData?> getPreview(
       Timeline timeline, TimelineEvent event) async {
     getPreviewCalls++;
+    requested.add(event.eventId);
+    if (error != null) throw error!;
     if (pending != null) return pending!.future;
-    return preview;
+    return result;
   }
 
   @override
@@ -74,7 +80,7 @@ void main() {
 
   Widget preview() => TimelineEventViewUrlPreviews(
         key: previewKey,
-        initialIndex: 0,
+        event: event,
         timeline: timeline,
         component: component,
       );
@@ -157,5 +163,61 @@ void main() {
 
     expect(component.getPreviewCalls, 1);
     expect(find.text('Resolved title'), findsOneWidget);
+  });
+
+  testWidgets('only fetches its own message after newer messages arrive',
+      (tester) async {
+    // The message view hands the preview an index that is only refreshed by
+    // update(), and an insertion at the bottom only updates its neighbours.
+    late StateSetter rebuildParent;
+    await tester.pumpWidget(_testApp(StatefulBuilder(builder: (_, setState) {
+      rebuildParent = setState;
+      return preview();
+    })));
+    await tester.pumpAndSettle();
+
+    timeline.events
+        .insert(0, _FakeEvent(TimelineEventStatus.synced, eventId: r'$newer'));
+    rebuildParent(() {});
+    await tester.pumpAndSettle();
+
+    expect(component.requested, isNot(contains(r'$newer')));
+    expect(find.text('Resolved title'), findsNothing);
+  });
+
+  Future<StateSetter> pumpSynced(WidgetTester tester) async {
+    event.status = TimelineEventStatus.synced;
+    late StateSetter rebuildParent;
+    await tester.pumpWidget(_testApp(StatefulBuilder(builder: (_, setState) {
+      rebuildParent = setState;
+      return preview();
+    })));
+    await tester.pumpAndSettle();
+    return rebuildParent;
+  }
+
+  testWidgets('a failed fetch leaves nothing on screen and is not retried',
+      (tester) async {
+    component.error = Exception('preview server is down');
+    final rebuildParent = await pumpSynced(tester);
+
+    rebuildParent(() {});
+    await tester.pumpAndSettle();
+
+    expect(component.getPreviewCalls, 1);
+    expect(find.byType(UrlPreviewWidget), findsNothing);
+  });
+
+  testWidgets('a link without a preview leaves nothing on screen',
+      (tester) async {
+    // e.g. an encrypted room with previews turned off
+    component.result = null;
+    final rebuildParent = await pumpSynced(tester);
+
+    rebuildParent(() {});
+    await tester.pumpAndSettle();
+
+    expect(component.getPreviewCalls, 1);
+    expect(find.byType(UrlPreviewWidget), findsNothing);
   });
 }
