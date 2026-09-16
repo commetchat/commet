@@ -504,6 +504,10 @@ class Preferences {
   DoublePreference soundboardVolume =
       DoublePreference("soundboard_volume", defaultValue: 80.0);
 
+  /// Favorite soundboard sound ids, oldest first. Local-only.
+  StringListPreference soundboardFavorites =
+      StringListPreference("soundboard_favorites", defaultValue: []);
+
   /// Soundboard sound played when joining a voice channel. Null = none.
   NullableStringPreference soundboardEntranceSoundId = NullableStringPreference(
       "soundboard_entrance_sound_id",

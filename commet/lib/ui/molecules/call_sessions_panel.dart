@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/anchored_popover.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
 import 'package:commet/ui/molecules/call_session_live_panel.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_button.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -67,10 +70,12 @@ class _CallSessionPanelState extends State<CallSessionPanel>
   Timer? statUpdateTimer;
   late AnimationController audioLevel;
   Room? room;
+  late final SoundboardCallController soundboard;
 
   @override
   void initState() {
     room = widget.session.client.getRoom(widget.session.roomId);
+    soundboard = SoundboardCallController.acquire(widget.session);
 
     audioLevel = AnimationController(
         vsync: this, duration: CallView.volumeAnimationDuration);
@@ -94,6 +99,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
       sub.cancel();
     }
     statUpdateTimer?.cancel();
+    soundboard.release();
     super.dispose();
   }
 
@@ -126,38 +132,43 @@ class _CallSessionPanelState extends State<CallSessionPanel>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  pickAnimation(
-                      entry: widget.session,
-                      child: SizedBox(
-                        height: widget.height,
-                        width: widget.height,
-                        child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: AnimatedBuilder(
-                              animation: audioLevel,
-                              builder: (context, child) {
-                                return Container(
-                                  child: Icon(
-                                    widget.session.isDeafened
-                                        ? Icons.volume_off_rounded
-                                        : Icons.volume_up_rounded,
-                                    color: widget.session.isDeafened
-                                        ? ColorScheme.of(context).error
-                                        : Color.lerp(
-                                            ColorScheme.of(context).onSurface,
-                                            SpeakingIndicator.color,
-                                            audioLevel.value),
-                                    size: 16,
-                                  ),
-                                );
-                              },
-                            )),
-                      )),
-                  tiamat.Text(widget.session.roomName),
-                ],
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    pickAnimation(
+                        entry: widget.session,
+                        child: SizedBox(
+                          height: widget.height,
+                          width: widget.height,
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: AnimatedBuilder(
+                                animation: audioLevel,
+                                builder: (context, child) {
+                                  return Container(
+                                    child: Icon(
+                                      widget.session.isDeafened
+                                          ? Icons.volume_off_rounded
+                                          : Icons.volume_up_rounded,
+                                      color: widget.session.isDeafened
+                                          ? ColorScheme.of(context).error
+                                          : Color.lerp(
+                                              ColorScheme.of(context).onSurface,
+                                              SpeakingIndicator.color,
+                                              audioLevel.value),
+                                      size: 16,
+                                    ),
+                                  );
+                                },
+                              )),
+                        )),
+                    Flexible(
+                      child: tiamat.Text(widget.session.roomName,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                  ],
+                ),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -198,6 +209,22 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                             icon: widget.session.isDeafened
                                 ? Icons.headset_off_rounded
                                 : Icons.headset_rounded)),
+                  ),
+                  SizedBox(
+                    width: widget.height,
+                    height: widget.height,
+                    child: SoundboardButton(
+                      controller: soundboard,
+                      deafened: widget.session.isDeafened,
+                      alignment: PopoverAlignment.start,
+                      builder: (context, onPressed) => tiamat.IconButton(
+                        onPressed: onPressed,
+                        iconColor: onPressed == null
+                            ? Theme.of(context).disabledColor
+                            : null,
+                        icon: Icons.surround_sound_rounded,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     width: widget.height,

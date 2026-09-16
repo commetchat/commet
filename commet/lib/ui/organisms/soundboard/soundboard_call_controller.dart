@@ -1,9 +1,13 @@
 // Wires catalog + engine + transport for one joined call.
 //
-// Resolution: the VoIP room may belong to one or more Spaces; we use the
-// first parent Space containing the room (catalog belongs to the Space).
-// If no parent Space has a soundboard, the button still renders but the
-// panel shows the empty state.
+// Resolution: the VoIP room may belong to several Spaces; every parent
+// Space with a soundboard contributes its sounds (one popover section and
+// rail entry each). If none has one, the button still renders but the
+// popover shows the empty state.
+//
+// One controller lives per call session, shared by the call view and the
+// sidebar "voice connected" panel through [acquire]/[release], so remote
+// sounds keep playing while the user looks at another room.
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
@@ -24,17 +28,44 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_favorites.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_overlay_registry.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_popover.dart';
 import 'package:flutter/foundation.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
 class SoundboardCallController extends ChangeNotifier {
+  static final Map<VoipSession, SoundboardCallController> _bySession = {};
+
+  /// Returns the controller for [session], creating and initializing it on
+  /// first use. Every call must be paired with [release].
+  static SoundboardCallController acquire(VoipSession session) {
+    final ctrl = _bySession.putIfAbsent(session, () {
+      final created = SoundboardCallController(session);
+      created.init().catchError((Object e, StackTrace s) =>
+          Log.onError(e, s, content: 'Soundboard init failed'));
+      return created;
+    });
+    ctrl._refs++;
+    return ctrl;
+  }
+
+  void release() {
+    if (--_refs > 0) return;
+    _bySession.remove(session);
+    dispose();
+  }
+
   final VoipSession session;
   SoundboardSession? soundboard;
   SoundboardCatalog catalog = InMemorySoundboardCatalog();
-  SpaceSoundboardComponent? spaceComponent;
-  String? _spaceId;
+  List<SoundboardSource> sources = const [];
 
+  /// Shared by every call so all open popovers see the same favorites.
+  static final SoundboardFavorites favorites =
+      SoundboardFavorites.preference(preferences.soundboardFavorites);
+
+  int _refs = 0;
   bool _disposed = false;
   StreamSubscription? _engineSub;
 
@@ -76,6 +107,7 @@ class SoundboardCallController extends ChangeNotifier {
     final initialized = sb.init();
     if (entranceSoundId != null) sb.trigger(entranceSoundId);
     await initialized;
+    if (_disposed) return;
     notifyListeners();
   }
 
@@ -88,12 +120,16 @@ class SoundboardCallController extends ChangeNotifier {
     if (!EntranceSoundGate.instance.claim(session, roomId: session.roomId)) {
       return null;
     }
+    final choice = EntranceSoundChoice(
+      soundId: preferences.soundboardEntranceSoundId.value,
+      spaceId: preferences.soundboardEntranceSpaceId.value,
+    );
     return pickEntranceSound(
-      choice: EntranceSoundChoice(
-        soundId: preferences.soundboardEntranceSoundId.value,
-        spaceId: preferences.soundboardEntranceSpaceId.value,
-      ),
-      roomSpaceId: _spaceId,
+      choice: choice,
+      // The room may belong to several Spaces; a sound limited to one of
+      // them counts as this room's Space.
+      roomSpaceId:
+          sources.any((s) => s.id == choice.spaceId) ? choice.spaceId : null,
       catalog: catalog,
       // Deafening before joining only sets fakeDeafenToggle.
       deafened: session.isDeafened ||
@@ -103,19 +139,23 @@ class SoundboardCallController extends ChangeNotifier {
 
   void _resolveCatalog() {
     try {
-      final client = session.client;
       final roomId = session.roomId;
-      for (final space in client.spaces) {
-        if (!space.containsRoom(roomId)) continue;
-        final comp = space.getComponent<SpaceSoundboardComponent>();
-        if (comp != null) {
-          spaceComponent = comp;
-          _spaceId = space.identifier;
-          catalog = _CatalogAdapter(comp);
-          return;
-        }
-      }
-    } catch (_) {}
+      sources = [
+        for (final space in session.client.spaces)
+          if (space.containsRoom(roomId))
+            if (space.getComponent<SpaceSoundboardComponent>() case final comp?)
+              SoundboardSource(
+                id: space.identifier,
+                name: space.displayName,
+                avatar: space.avatar,
+                color: space.color,
+                catalog: _CatalogAdapter(comp),
+              ),
+      ];
+      catalog = _CompositeCatalog([for (final s in sources) s.catalog]);
+    } catch (e, s) {
+      Log.onError(e, s, content: 'Soundboard: could not resolve catalogs');
+    }
   }
 
   SoundboardTransport _createTransport() {
@@ -216,6 +256,8 @@ class SoundboardCallController extends ChangeNotifier {
     _disposed = true;
     _engineSub?.cancel();
     soundboard?.dispose();
+    final catalog = this.catalog;
+    if (catalog is _CompositeCatalog) catalog.dispose();
     soundboard = null;
     SoundboardOverlayRegistry.instance.clearAll();
     super.dispose();
@@ -235,6 +277,47 @@ class _CatalogAdapter implements SoundboardCatalog {
 
   @override
   Stream<void> get onChanged => _inner.onChanged;
+}
+
+/// All Spaces' catalogs seen as one, so remote events resolve a sound from
+/// any Space the room belongs to. Sound ids are uuids, unique across Spaces.
+class _CompositeCatalog implements SoundboardCatalog {
+  final List<SoundboardCatalog> _parts;
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+  late final List<StreamSubscription> _subs;
+
+  _CompositeCatalog(this._parts) {
+    _subs = [for (final part in _parts) part.onChanged.listen(_changes.add)];
+  }
+
+  @override
+  List<SoundboardSound> get sounds {
+    final seen = <String>{};
+    return [
+      for (final part in _parts)
+        for (final sound in part.sounds)
+          if (seen.add(sound.soundId)) sound,
+    ];
+  }
+
+  @override
+  SoundboardSound? getById(String soundId) {
+    for (final part in _parts) {
+      final sound = part.getById(soundId);
+      if (sound != null) return sound;
+    }
+    return null;
+  }
+
+  @override
+  Stream<void> get onChanged => _changes.stream;
+
+  void dispose() {
+    for (final sub in _subs) {
+      sub.cancel();
+    }
+    _changes.close();
+  }
 }
 
 /// Thin shim so the controller compiles without importing the full
