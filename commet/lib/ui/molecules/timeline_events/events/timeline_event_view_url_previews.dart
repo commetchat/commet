@@ -1,5 +1,6 @@
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/url_preview_widget.dart';
@@ -27,6 +28,7 @@ class _TimelineEventViewUrlPreviewsState
     implements TimelineEventViewWidget {
   UrlPreviewData? data;
   bool loading = false;
+  bool fetching = false;
 
   GlobalKey key = GlobalKey();
 
@@ -58,6 +60,22 @@ class _TimelineEventViewUrlPreviewsState
     super.initState();
   }
 
+  @override
+  void didUpdateWidget(covariant TimelineEventViewUrlPreviews oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // A message we just sent is first built while still sending, so the fetch
+    // was skipped. The parent rebuilds us when the event changes, so start the
+    // fetch here once the event has synced.
+    if (data != null || fetching) return;
+    if (widget.initialIndex >= widget.timeline.events.length) return;
+
+    var event = widget.timeline.events[widget.initialIndex];
+    if (event.status == TimelineEventStatus.synced) {
+      fetchPreview(event);
+    }
+  }
+
   void setStateFromIndex(int index) {
     var event = widget.timeline.events[index];
     var cachedData = widget.component.getCachedPreview(widget.timeline, event);
@@ -74,26 +92,32 @@ class _TimelineEventViewUrlPreviewsState
       });
 
       if (event.status == TimelineEventStatus.synced) {
-        widget.component.getPreview(widget.timeline, event).then(
-          (value) async {
-            if (mounted) {
-              final image = value?.image;
-              if (image != null) {
-                if (context.mounted) {
-                  await precacheImage(image, context);
-                }
-              }
-
-              if (mounted)
-                setState(() {
-                  loading = false;
-                  data = value;
-                  key = GlobalKey();
-                });
-            }
-          },
-        );
+        fetchPreview(event);
       }
     }
+  }
+
+  void fetchPreview(TimelineEvent event) {
+    fetching = true;
+    widget.component.getPreview(widget.timeline, event).then(
+      (value) async {
+        if (mounted) {
+          final image = value?.image;
+          if (image != null) {
+            if (context.mounted) {
+              await precacheImage(image, context);
+            }
+          }
+
+          if (mounted)
+            setState(() {
+              fetching = false;
+              loading = false;
+              data = value;
+              key = GlobalKey();
+            });
+        }
+      },
+    );
   }
 }
