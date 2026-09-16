@@ -38,7 +38,74 @@ void main() {
     });
   });
 
+  group('normalizeUrl', () {
+    test('keeps a plain URL', () {
+      expect(
+          MyInstantsResolver.normalizeUrl(
+              ' https://www.myinstants.com/pt/instant/faaah-63455/\n'),
+          'https://www.myinstants.com/pt/instant/faaah-63455/');
+    });
+
+    test('unwraps Markdown links and angle brackets', () {
+      expect(
+          MyInstantsResolver.normalizeUrl(
+              '[www.myinstants.com](http://www.myinstants.com)'),
+          'http://www.myinstants.com');
+      expect(
+          MyInstantsResolver.normalizeUrl(
+              '<https://www.myinstants.com/pt/instant/faaah-63455/>'),
+          'https://www.myinstants.com/pt/instant/faaah-63455/');
+    });
+
+    test('adds https to a bare address and drops the fragment', () {
+      expect(
+          MyInstantsResolver.normalizeUrl(
+              'www.myinstants.com/pt/instant/faaah-63455/#top'),
+          'https://www.myinstants.com/pt/instant/faaah-63455/');
+      expect(
+          MyInstantsResolver.normalizeUrl(
+              'MyInstants.com/media/sounds/faaah.mp3'),
+          'https://MyInstants.com/media/sounds/faaah.mp3');
+    });
+
+    test('leaves other sites for the allowlist to reject', () {
+      for (final input in [
+        'myinstants.com.evil.org/x.mp3',
+        '[myinstants](https://evil.org/myinstants.com)',
+      ]) {
+        expect(
+            MyInstantsResolver.isAllowedUrl(
+                MyInstantsResolver.normalizeUrl(input)),
+            isFalse,
+            reason: input);
+      }
+    });
+  });
+
   group('extractAudioUrl', () {
+    test('reads the live instant page markup', () {
+      // Trimmed from https://www.myinstants.com/pt/instant/faaah-63455/.
+      const html = '''
+<meta property="og:audio" content="https://www.myinstants.com/media/sounds/faaah.mp3"/>
+<meta property="og:audio:type" content="audio/mpeg" />
+<button onclick="play('/media/sounds/faaah.mp3', 'loader-', 'faaah-63455')"></button>
+<a href="/media/sounds/faaah.mp3" download target="_blank" class="instant-page-extra-button btn btn-primary">''';
+      expect(
+          MyInstantsResolver.extractAudioUrl(html,
+              pageUrl: 'https://www.myinstants.com/pt/instant/faaah-63455/'),
+          'https://www.myinstants.com/media/sounds/faaah.mp3');
+    });
+
+    test('falls back to a download link with href before download', () {
+      const html = '''
+<a href="/pt/instant/faaah-63455/">faaah</a>
+<a href="/media/sounds/faaah.mp3" download target="_blank">download</a>''';
+      expect(
+          MyInstantsResolver.extractAudioUrl(html,
+              pageUrl: 'https://www.myinstants.com/pt/instant/faaah-63455/'),
+          'https://www.myinstants.com/media/sounds/faaah.mp3');
+    });
+
     test('prefers og:audio', () {
       const html = '''
 <html><head>

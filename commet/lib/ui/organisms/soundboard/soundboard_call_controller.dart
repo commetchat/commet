@@ -107,32 +107,29 @@ class SoundboardCallController extends ChangeNotifier {
   }
 
   Future<String> _resolvePlayableUri(SoundboardSound sound) async {
-    final mxcUri = sound.mediaUri;
     // Resolve mxc:// to a local cached file (fast replay, no per-click
     // download). MxcFileProvider handles cache + authenticated fetch.
-    try {
-      final client = session.client;
-      if (client is MatrixClient) {
-        final mx = client.getMatrixClient();
-        final uri = Uri.parse(mxcUri);
-        if (uri.scheme == 'mxc') {
-          final provider =
-              MxcFileProviderShim(mx, uri);
-          final resolved = await provider.resolve();
-          if (resolved != null) return resolved.toString();
-        }
-      }
-    } catch (_) {}
-    return mxcUri;
+    // media_kit cannot open mxc:// itself, so there is nothing to fall back to.
+    final client = session.client;
+    final uri = Uri.parse(sound.mediaUri);
+    if (client is! MatrixClient || uri.scheme != 'mxc') {
+      throw StateError('Cannot play ${sound.mediaUri}');
+    }
+    final resolved =
+        await MxcFileProviderShim(client.getMatrixClient(), uri).resolve();
+    if (resolved == null) {
+      throw StateError('Could not cache ${sound.mediaUri} for playback');
+    }
+    return resolved.toString();
   }
 
   Future<void> _preload(String soundId) async {
-    // Best-effort: touch the HTTP cache so click->play has no download.
-    try {
-      final sound = catalog.getById(soundId);
-      if (sound == null) return;
-      await _resolvePlayableUri(sound);
-    } catch (_) {}
+    // Fill the file cache so click->play has no download. Failures reach
+    // SoundboardSession.preloadAll, which logs them and leaves the sound
+    // unmarked so the next preload tries again.
+    final sound = catalog.getById(soundId);
+    if (sound == null) return;
+    await _resolvePlayableUri(sound);
   }
 
   void _syncOverlays() {

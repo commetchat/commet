@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/soundboard/mp3_duration.dart';
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_normalizer.dart';
@@ -33,58 +34,86 @@ class FetchedAudio {
 
 typedef HttpFetcher = Future<http.Response> Function(Uri uri);
 
-Future<http.Response> _defaultFetcher(Uri uri) {
-  // MyInstants (behind anti-bot protection) rejects non-browser clients
-  // with 403, so present full browser-like headers.
-  return http
-      .get(uri, headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        'Accept':
-            'text/html,application/xhtml+xml,application/xml;q=0.9,audio/mpeg,audio/ogg,audio/wav,audio/*;q=0.8,*/*;q=0.5',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://www.myinstants.com/',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Dest': 'document',
-      })
-      .timeout(SoundboardConstraints.httpTimeout);
+const _isWeb = bool.fromEnvironment('dart.library.js_interop');
+
+const _redirectStatusCodes = {301, 302, 303, 307, 308};
+
+/// Default [HttpFetcher]: a plain GET that follows at most
+/// [SoundboardConstraints.maxRedirects] redirects, each to an allowlisted
+/// host.
+///
+/// MyInstants sits behind Cloudflare, which answers 403 "Attention
+/// Required!" to dart:io requests whose User-Agent claims to be a browser
+/// (anything starting with `Mozilla/5.0`); the TLS handshake gives the claim
+/// away. Dart's own User-Agent gets 200, so do not add browser headers here.
+Future<http.Response> fetchFromMyInstants(Uri uri,
+    {http.Client? client}) async {
+  final c = client ?? http.Client();
+  try {
+    return await _getFollowingAllowedRedirects(c, uri)
+        .timeout(SoundboardConstraints.httpTimeout);
+  } finally {
+    if (client == null) c.close();
+  }
+}
+
+Future<http.Response> _getFollowingAllowedRedirects(
+    http.Client client, Uri uri) async {
+  var current = uri;
+  for (var redirects = 0;; redirects++) {
+    // Browsers only allow following redirects or failing on them.
+    final request = http.Request('GET', current)..followRedirects = _isWeb;
+    final response = await http.Response.fromStream(await client.send(request));
+    final location = response.headers['location'];
+    if (!_redirectStatusCodes.contains(response.statusCode) ||
+        location == null) {
+      return response;
+    }
+    if (redirects == SoundboardConstraints.maxRedirects) {
+      throw const MyInstantsRequestError(
+          'MyInstants redirected too many times');
+    }
+    current = current.resolve(location);
+    if (!MyInstantsResolver.isAllowedUrl(current.toString())) {
+      throw MyInstantsRequestError(
+          'MyInstants redirected to an unsupported site (${current.host})');
+    }
+  }
 }
 
 class SoundboardImportService {
   final HttpFetcher fetcher;
 
-  SoundboardImportService({HttpFetcher? fetcher})
-      : fetcher = fetcher ?? _defaultFetcher;
+  /// Receives one line per import step (URLs, HTTP responses, duration) so a
+  /// failed import can be traced from the log.
+  final void Function(String message) log;
+
+  SoundboardImportService(
+      {HttpFetcher? fetcher, void Function(String message)? log})
+      : fetcher = fetcher ?? fetchFromMyInstants,
+        log = log ?? _ignore;
+
+  static void _ignore(String _) {}
 
   /// Full import from an admin-pasted MyInstants URL. Accepts either an
   /// instant page URL (…/instant/<slug>/) or a direct audio file URL
-  /// (…/media/sounds/….mp3) from the same host as an escape hatch when the
-  /// page is unreadable.
+  /// (…/media/sounds/….mp3) from the same host.
   Future<FetchedAudio> importFromPageUrl(String pageUrl) async {
-    final trimmed = pageUrl.trim();
-    MyInstantsResolver.requireAllowedUrl(trimmed);
-    if (_looksLikeAudioFileUrl(trimmed)) {
-      return importFromAudioUrl(trimmed);
+    final url = MyInstantsResolver.normalizeUrl(pageUrl);
+    final uri = Uri.tryParse(url);
+    log('input "${pageUrl.trim()}" -> $url '
+        '(scheme=${uri?.scheme} host=${uri?.host} path=${uri?.path})');
+    MyInstantsResolver.requireAllowedUrl(url);
+    if (_looksLikeAudioFileUrl(url)) {
+      return importFromAudioUrl(url);
     }
-    final pageRes = await _fetch(Uri.parse(trimmed));
-    if (pageRes.statusCode == 403 || pageRes.statusCode == 429) {
-      throw const MyInstantsValidationError(
-          'MyInstants refused the connection (bot protection)');
-    }
-    if (pageRes.statusCode == 404) {
-      throw const MyInstantsValidationError(
-          'MyInstants page not found (404)');
-    }
-    if (pageRes.statusCode < 200 || pageRes.statusCode >= 300) {
-      throw MyInstantsValidationError(
-          'MyInstants page not found (${pageRes.statusCode})');
-    }
+    final page = await _fetch(Uri.parse(url));
+    _checkStatus(page, 'page');
     final audioUrl = MyInstantsResolver.extractAudioUrl(
-      pageRes.body,
-      pageUrl: trimmed,
+      page.body,
+      pageUrl: url,
     );
+    log('audio url: ${audioUrl ?? 'none found'}');
     if (audioUrl == null) {
       throw const MyInstantsValidationError(
           'Could not find audio on that MyInstants page');
@@ -101,29 +130,85 @@ class SoundboardImportService {
   /// Runs [fetcher], translating low-level network failures into a
   /// user-actionable validation error instead of a generic crash.
   Future<http.Response> _fetch(Uri uri) async {
+    if (_isWeb) {
+      // MyInstants sends no CORS headers, so a browser cannot read its pages
+      // or sound files.
+      throw const MyInstantsRequestError(
+          'MyInstants does not allow importing from the browser. '
+          'Add the sound from the desktop or mobile app.');
+    }
+    log('GET $uri');
     try {
-      return await fetcher(uri);
+      final res = await fetcher(uri);
+      log('-> ${_describe(res)}');
+      return res;
+    } on MyInstantsValidationError catch (e) {
+      log('-> $e');
+      rethrow;
     } on SocketException catch (e) {
-      throw MyInstantsValidationError(
-          'Network unreachable (${e.address?.host ?? uri.host}). '
+      log('-> failed: $e');
+      throw MyInstantsRequestError('Could not connect to ${uri.host}. '
           'Check your internet connection and try again.');
     } on TimeoutException {
-      throw const MyInstantsValidationError(
-          'Network timeout. Check your internet connection and try again.');
-    } on HttpException {
-      throw const MyInstantsValidationError(
-          'Network error. Check your internet connection and try again.');
+      log('-> timed out');
+      throw MyInstantsRequestError('${uri.host} did not answer in time. '
+          'Check your internet connection and try again.');
+    } on http.ClientException catch (e) {
+      // IOClient reports HttpException (e.g. connection closed) this way.
+      log('-> failed: $e');
+      throw MyInstantsRequestError(
+          'The connection to ${uri.host} failed (${e.message}). '
+          'Check your internet connection and try again.');
+    } on IOException catch (e) {
+      // TLS failures (e.g. HTTPS inspection) are not wrapped by IOClient.
+      log('-> failed: $e');
+      throw MyInstantsRequestError('The connection to ${uri.host} failed ($e)');
     }
+  }
+
+  static String _describe(http.Response res) {
+    final parts = [
+      '${res.statusCode}',
+      '${res.headers['content-type']}',
+      '${res.bodyBytes.length} bytes',
+      if (res.request != null) 'from ${res.request!.url}',
+    ];
+    if (res.statusCode >= 300) {
+      final title = RegExp(r'<title>([^<]*)</title>', caseSensitive: false)
+          .firstMatch(res.body)
+          ?.group(1)
+          ?.trim();
+      parts.addAll([
+        if (title != null) 'title="$title"',
+        if (res.headers['server'] != null) 'server=${res.headers['server']}',
+        if (res.headers['cf-ray'] != null) 'cf-ray=${res.headers['cf-ray']}',
+        if (res.headers['cf-mitigated'] != null)
+          'cf-mitigated=${res.headers['cf-mitigated']}',
+      ]);
+    }
+    return parts.join(', ');
+  }
+
+  static void _checkStatus(http.Response res, String what) {
+    final code = res.statusCode;
+    if (code >= 200 && code < 300) return;
+    if (code == 403 || code == 429) {
+      throw MyInstantsRequestError(
+          'MyInstants refused the $what request (HTTP $code, bot protection)');
+    }
+    if (code == 404) {
+      throw MyInstantsRequestError(
+          'MyInstants $what not found (HTTP 404). Check the link.');
+    }
+    throw MyInstantsRequestError(
+        'MyInstants $what request failed (HTTP $code)');
   }
 
   /// Imports already-resolved audio file bytes (also used by tests).
   Future<FetchedAudio> importFromAudioUrl(String audioUrl) async {
     MyInstantsResolver.requireAllowedUrl(audioUrl);
     final res = await _fetch(Uri.parse(audioUrl));
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw MyInstantsValidationError(
-          'Audio download failed (${res.statusCode})');
-    }
+    _checkStatus(res, 'audio');
     final contentType =
         res.headers['content-type']?.split(';').first.trim().toLowerCase();
     MyInstantsResolver.validateDownload(
@@ -133,10 +218,14 @@ class SoundboardImportService {
     );
     final bytes = res.bodyBytes;
     final mime = _inferMime(contentType, audioUrl);
-    final durationMs = _estimateDurationMs(bytes, mime);
+    final durationMs = _measureDurationMs(bytes, mime);
+    log('duration: ${durationMs == null ? 'unknown' : '$durationMs ms'} '
+        '($mime)');
     if (durationMs != null &&
         durationMs > SoundboardConstraints.maxDurationMs) {
-      throw const MyInstantsValidationError('Audio too long (max 15s)');
+      throw MyInstantsValidationError(
+          'Audio too long (${_seconds(durationMs)} s, '
+          'max ${_seconds(SoundboardConstraints.maxDurationMs)} s)');
     }
     final estimate = _estimateLoudness(bytes, mime);
     return FetchedAudio(
@@ -148,6 +237,9 @@ class SoundboardImportService {
       loudnessMeasured: estimate.measured,
     );
   }
+
+  static String _seconds(int ms) =>
+      (ms / 1000).toStringAsFixed(ms % 1000 == 0 ? 0 : 1);
 
   static String _inferMime(String? contentType, String url) {
     if (contentType != null && contentType.startsWith('audio/')) {
@@ -164,10 +256,9 @@ class SoundboardImportService {
     return 'audio/mpeg';
   }
 
-  /// Best-effort duration probe. WAV parsed exactly; MP3 estimated from
-  /// bitrate (CBR assumption, 128kbps fallback); others null (accepted,
-  /// enforced at playback by natural end + overlay clamp).
-  static int? _estimateDurationMs(Uint8List bytes, String mime) {
+  /// WAV and MP3 are measured exactly; other formats return null (accepted,
+  /// bounded at playback by natural end + overlay clamp).
+  static int? _measureDurationMs(Uint8List bytes, String mime) {
     // WAV: exact.
     final pcm = SoundboardNormalizer.decodeWav16(bytes);
     if (pcm != null) {
@@ -194,10 +285,7 @@ class SoundboardImportService {
       } catch (_) {}
     }
     if (mime == 'audio/mpeg' || mime == 'audio/mp3') {
-      // Rough CBR estimate; VBR will be off but within 2x — acceptable for
-      // a 15s cap (a 30s VBR file may slip; playback still ends naturally).
-      const bitsPerSecond = 128000;
-      return (bytes.length * 8 * 1000 / bitsPerSecond).round();
+      return Mp3Duration.inMilliseconds(bytes);
     }
     return null;
   }

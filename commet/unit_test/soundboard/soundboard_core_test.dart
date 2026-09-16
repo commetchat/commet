@@ -66,6 +66,32 @@ void main() {
     });
   });
 
+  group('SoundboardSound state event content', () {
+    List<Object?> leaves(Object? value) => switch (value) {
+          Map() => value.values.expand(leaves).toList(),
+          List() => value.expand(leaves).toList(),
+          _ => [value],
+        };
+
+    test('has no floats, which homeservers reject in events', () {
+      final json = _sound('s1').copyWith(normalizedGain: 0.891).toJson();
+      expect(leaves(json).whereType<double>(), isEmpty);
+      expect(json['normalized_gain_milli'], 891);
+    });
+
+    test('round-trips the gain', () {
+      final sound = _sound('s1').copyWith(normalizedGain: 0.891);
+      expect(SoundboardSound.fromJson(sound.toJson()).normalizedGain, 0.891);
+    });
+
+    test('still reads the float gain of earlier builds', () {
+      final json = _sound('s1').toJson()
+        ..remove('normalized_gain_milli')
+        ..['normalized_gain'] = 0.5;
+      expect(SoundboardSound.fromJson(json).normalizedGain, 0.5);
+    });
+  });
+
   group('SoundboardDedup', () {
     test('one trigger -> one playback; bounded memory', () {
       final d = SoundboardDedup(maxEntries: 3);

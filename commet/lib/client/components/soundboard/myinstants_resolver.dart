@@ -13,7 +13,35 @@ class MyInstantsValidationError implements Exception {
   String toString() => 'MyInstantsValidationError: $message';
 }
 
+/// A request to MyInstants failed or was refused, as opposed to the input or
+/// the audio being unusable.
+class MyInstantsRequestError extends MyInstantsValidationError {
+  const MyInstantsRequestError(super.message);
+  @override
+  String toString() => 'MyInstantsRequestError: $message';
+}
+
 class MyInstantsResolver {
+  /// Turns what an admin pasted into the URL to fetch: trims whitespace,
+  /// unwraps a Markdown link `[text](url)` or `<url>`, adds `https://` to a
+  /// bare `myinstants.com/...` address and drops the fragment. The result
+  /// still has to pass [requireAllowedUrl].
+  static String normalizeUrl(String input) {
+    var url = input.trim();
+    final markdown = RegExp(r'^\[[^\]]*\]\(\s*(\S+?)\s*\)$').firstMatch(url);
+    if (markdown != null) url = markdown.group(1)!;
+    if (url.startsWith('<') && url.endsWith('>')) {
+      url = url.substring(1, url.length - 1).trim();
+    }
+    if (RegExp(r'^(www\.)?myinstants\.com([/?#]|$)', caseSensitive: false)
+        .hasMatch(url)) {
+      url = 'https://$url';
+    }
+    final uri = Uri.tryParse(url);
+    if (uri == null || !uri.hasFragment) return url;
+    return uri.removeFragment().toString();
+  }
+
   /// Returns true only for http(s) URLs whose host exactly matches the
   /// allowlist (case-insensitive, optional port stripped for comparison,
   /// trailing dot tolerated).
@@ -45,7 +73,7 @@ class MyInstantsResolver {
   /// 1. `<meta property="og:audio" content="...">` (and name= variant)
   /// 2. `onclick="play('/media/sounds/xxx.mp3')"` / `onmousedown` variant
   ///    (the player's actual source — what the site itself plays)
-  /// 3. `<a ... download href="/media/sounds/xxx.mp3">`
+  /// 3. `<a href="/media/sounds/xxx.mp3" download>` (any attribute order)
   ///
   /// Returns an absolute https URL on the same allowlisted host, or null.
   /// Never returns arbitrary third-party URLs found in page markup.
@@ -101,13 +129,18 @@ class MyInstantsResolver {
       if (abs != null) return abs;
     }
 
-    // 3. download anchor.
-    final dl = RegExp(
-      '''<a\\s[^>]*?download[^>]*?href\\s*=\\s*["']([^"']+)["']''',
-      caseSensitive: false,
-    ).firstMatch(pageHtml);
-    if (dl != null) {
-      final abs = absolutize(dl.group(1)!);
+    // 3. download anchor (the site writes href before download).
+    for (final anchor
+        in RegExp(r'<a\s[^>]*>', caseSensitive: false).allMatches(pageHtml)) {
+      final tag = anchor.group(0)!;
+      if (!RegExp(r'\sdownload[\s=>/]', caseSensitive: false).hasMatch(tag)) {
+        continue;
+      }
+      final href = RegExp(
+        '''\\shref\\s*=\\s*["']([^"']+)["']''',
+        caseSensitive: false,
+      ).firstMatch(tag);
+      final abs = href == null ? null : absolutize(href.group(1)!);
       if (abs != null) return abs;
     }
     void unused() {
@@ -139,7 +172,7 @@ class MyInstantsResolver {
       throw const MyInstantsValidationError('Downloaded file is empty');
     }
     if (byteLength > SoundboardConstraints.maxFileBytes) {
-      throw const MyInstantsValidationError('Audio file too large');
+      throw const MyInstantsValidationError('Audio file too large (max 1 MB)');
     }
     if (contentType != null) {
       final mime = contentType.split(';').first.trim().toLowerCase();

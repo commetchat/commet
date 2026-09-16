@@ -1,13 +1,18 @@
 import 'dart:io';
 
+import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
+import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
 import 'package:commet/client/components/soundboard/soundboard_session.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/client/components/soundboard/soundboard_transport.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:test/test.dart';
+
+import 'mp3_fixtures.dart';
 
 class FakePlayer implements SoundboardPlayer {
   final List<String> started = [];
@@ -138,8 +143,67 @@ void main() {
       await expectLater(
           svc.importFromPageUrl(
               'https://www.myinstants.com/pt/instant/faaah-63455/'),
-          throwsA(predicate((e) =>
-              e.toString().contains('bot protection'))));
+          throwsA(isA<MyInstantsRequestError>().having(
+              (e) => e.message, 'message', contains('bot protection'))));
+    });
+
+    test('connection errors wrapped by IOClient are actionable', () async {
+      final svc = SoundboardImportService(
+          fetcher: (uri) async => throw http.ClientException(
+              'Connection closed before full header was received', uri));
+      await expectLater(
+          svc.importFromPageUrl('https://www.myinstants.com/en/instant/x-1/'),
+          throwsA(isA<MyInstantsRequestError>().having((e) => e.message,
+              'message', contains('Connection closed before full header'))));
+    });
+
+    test('duration comes from MP3 frames, not file size', () async {
+      // 20 s at 32 kbps is ~80 KB, which the old 128 kbps guess let through.
+      final svc = SoundboardImportService(
+          fetcher: (_) async =>
+              _audio(mpeg1Frames(766, kbps: 32), 'audio/mpeg'));
+      await expectLater(
+          svc.importFromPageUrl(
+              'https://www.myinstants.com/media/sounds/long.mp3'),
+          throwsA(isA<MyInstantsValidationError>().having((e) => e.message,
+              'message', 'Audio too long (20.0 s, max 15 s)')));
+    });
+
+    test('cover art does not push a short clip over the limit', () async {
+      // 14.5 s at 320 kbps plus 300 KB of cover art: 55 s by the old guess.
+      final bytes = [...id3v2(300000), ...mpeg1Frames(555, kbps: 320)];
+      final svc = SoundboardImportService(
+          fetcher: (_) async => _audio(bytes, 'audio/mpeg'));
+      final out = await svc.importFromPageUrl(
+          'https://www.myinstants.com/media/sounds/short.mp3');
+      expect(out.durationMs, framesToMs(555));
+    });
+
+    test('logs the parsed input and every request', () async {
+      final lines = <String>[];
+      final svc = SoundboardImportService(
+        log: lines.add,
+        fetcher: (uri) async {
+          if (uri.path.contains('instant')) {
+            return _html('<a onclick="play(\'/media/sounds/ok.mp3\')">x</a>');
+          }
+          return _audio(mpeg1Frames(40), 'audio/mpeg');
+        },
+      );
+      await svc.importFromPageUrl(
+          '[ok](https://www.myinstants.com/en/instant/ok-1/)');
+      expect(
+          lines.first,
+          'input "[ok](https://www.myinstants.com/en/instant/ok-1/)" -> '
+          'https://www.myinstants.com/en/instant/ok-1/ '
+          '(scheme=https host=www.myinstants.com path=/en/instant/ok-1/)');
+      expect(
+          lines,
+          containsAllInOrder([
+            'GET https://www.myinstants.com/en/instant/ok-1/',
+            'GET https://www.myinstants.com/media/sounds/ok.mp3',
+            'duration: ${framesToMs(40)} ms (audio/mpeg)',
+          ]));
     });
 
     test('direct .mp3 URL skips page parsing', () async {
@@ -152,6 +216,69 @@ void main() {
           'https://www.myinstants.com/media/sounds/faaah.mp3');
       expect(pageFetched, isFalse);
       expect(out.bytes.length, 5000);
+    });
+  });
+
+  group('fetchFromMyInstants', () {
+    final page =
+        Uri.parse('https://www.myinstants.com/pt/instant/faaah-63455/');
+
+    test('does not claim to be a browser', () async {
+      // Cloudflare answers 403 to dart:io requests with a browser
+      // User-Agent; Dart's default one gets through.
+      late http.BaseRequest seen;
+      final client = MockClient((request) async {
+        seen = request;
+        return http.Response('page', 200);
+      });
+      await fetchFromMyInstants(page, client: client);
+      expect(seen.headers.keys.map((k) => k.toLowerCase()),
+          isNot(anyOf(contains('user-agent'), contains('sec-fetch-mode'))));
+    });
+
+    test('follows redirects that stay on MyInstants', () async {
+      final visited = <String>[];
+      final client = MockClient((request) async {
+        visited.add(request.url.toString());
+        expect(request.followRedirects, isFalse);
+        return switch (request.url.toString()) {
+          'http://myinstants.com/instant/faaah-63455' => http.Response('', 301,
+                headers: {
+                  'location': 'https://www.myinstants.com/instant/faaah-63455'
+                }),
+          'https://www.myinstants.com/instant/faaah-63455' => http.Response(
+              '', 302,
+              headers: {'location': '/en/instant/faaah-63455/'}),
+          _ => http.Response('page', 200),
+        };
+      });
+      final res = await fetchFromMyInstants(
+          Uri.parse('http://myinstants.com/instant/faaah-63455'),
+          client: client);
+      expect(res.body, 'page');
+      expect(visited, [
+        'http://myinstants.com/instant/faaah-63455',
+        'https://www.myinstants.com/instant/faaah-63455',
+        'https://www.myinstants.com/en/instant/faaah-63455/',
+      ]);
+    });
+
+    test('refuses a redirect to another site', () async {
+      final client = MockClient((_) async => http.Response('', 302,
+          headers: {'location': 'https://myinstants.com.evil.org/x.mp3'}));
+      await expectLater(fetchFromMyInstants(page, client: client),
+          throwsA(isA<MyInstantsRequestError>()));
+    });
+
+    test('gives up after the redirect limit', () async {
+      var requests = 0;
+      final client = MockClient((_) async {
+        requests++;
+        return http.Response('', 302, headers: {'location': '/loop/$requests'});
+      });
+      await expectLater(fetchFromMyInstants(page, client: client),
+          throwsA(isA<MyInstantsRequestError>()));
+      expect(requests, SoundboardConstraints.maxRedirects + 1);
     });
   });
 
