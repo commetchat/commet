@@ -254,4 +254,25 @@ void main() {
     await tester.pump();
     expect(find.byKey(const ValueKey('preview-video')), findsOneWidget);
   });
+
+  testWidgets(
+      'screen share system audio is not previewed and does not break the panel',
+      (tester) async {
+    // Issue #11 added VoipStreamType.screenshareAudio after the panel was
+    // written; the audio stream rides along with the screen share and must
+    // neither get its own thumbnail nor its own stop button.
+    final session = FakeVoipSession();
+    await tester.pumpWidget(_testApp(CallSessionLivePanel(session: session)));
+
+    session.publish(VoipStreamType.screenshare);
+    session.publish(VoipStreamType.screenshareAudio);
+    await tester.pump();
+
+    expect(find.text('LIVE'), findsOneWidget);
+    expect(find.byKey(const ValueKey('preview-screenshare')), findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('preview-screenshareAudio')), findsNothing);
+    expect(find.byKey(const ValueKey('live-stop-screenshare')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

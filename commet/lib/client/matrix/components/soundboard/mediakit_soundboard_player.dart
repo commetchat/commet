@@ -16,6 +16,7 @@ import 'dart:math' as math;
 
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
+import 'package:commet/client/matrix/components/soundboard/mpv_volume_max.dart';
 import 'package:commet/client/matrix/components/soundboard/soundboard_player_factory.dart';
 import 'package:commet/debug/log.dart';
 import 'package:media_kit/media_kit.dart';
@@ -159,13 +160,8 @@ class _MediaKitAudioInstance implements SoundboardAudioInstance {
 
   /// mpv clamps `volume` to `volume-max`, so raise it before the first
   /// setVolume: normalization boosts go past 100.
-  Future<void> _configure() async {
-    final native = _player.platform;
-    if (native is NativePlayer) {
-      await native.setProperty(
-          'volume-max', MediaKitSoundboardPlayer.mpvVolumeMax.toString());
-    }
-  }
+  Future<void> _configure() =>
+      raiseMpvVolumeMax(_player, MediaKitSoundboardPlayer.mpvVolumeMax);
 
   @override
   late final Stream<void> finished = _finishedStream();

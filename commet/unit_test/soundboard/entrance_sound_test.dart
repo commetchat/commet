@@ -22,7 +22,7 @@ void main() {
       expect(
         pickEntranceSound(
           choice: const EntranceSoundChoice(soundId: 'horse'),
-          roomSpaceId: '!space:x',
+          roomSpaceIds: const ['!space:x'],
           catalog: catalog,
           deafened: false,
         ),
@@ -34,7 +34,7 @@ void main() {
       expect(
         pickEntranceSound(
           choice: const EntranceSoundChoice(soundId: 'deleted'),
-          roomSpaceId: '!space:x',
+          roomSpaceIds: const ['!space:x'],
           catalog: catalog,
           deafened: false,
         ),
@@ -46,7 +46,7 @@ void main() {
       expect(
         pickEntranceSound(
           choice: const EntranceSoundChoice(soundId: 'horse'),
-          roomSpaceId: '!space:x',
+          roomSpaceIds: const ['!space:x'],
           catalog: catalog,
           deafened: true,
         ),
@@ -57,16 +57,32 @@ void main() {
     test('a choice scoped to one Space plays only in that Space', () {
       const choice =
           EntranceSoundChoice(soundId: 'horse', spaceId: '!chosen:x');
-      SoundId? pickIn(String? spaceId) => pickEntranceSound(
+      SoundId? pickIn(List<String> spaceIds) => pickEntranceSound(
             choice: choice,
-            roomSpaceId: spaceId,
+            roomSpaceIds: spaceIds,
             catalog: catalog,
             deafened: false,
           );
 
-      expect(pickIn('!chosen:x'), 'horse');
-      expect(pickIn('!other:x'), isNull);
-      expect(pickIn(null), isNull);
+      expect(pickIn(['!chosen:x']), 'horse');
+      expect(pickIn(['!other:x']), isNull);
+      expect(pickIn([]), isNull);
+    });
+
+    test('a room in several Spaces plays a choice scoped to any of them', () {
+      // A voice room can belong to more than one Space (the soundboard
+      // popover lists all of them); "only in Space B" must match a room
+      // that is in A and B.
+      const choice = EntranceSoundChoice(soundId: 'horse', spaceId: '!b:x');
+      expect(
+        pickEntranceSound(
+          choice: choice,
+          roomSpaceIds: const ['!a:x', '!b:x'],
+          catalog: catalog,
+          deafened: false,
+        ),
+        'horse',
+      );
     });
   });
 

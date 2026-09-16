@@ -124,16 +124,12 @@ class SoundboardCallController extends ChangeNotifier {
     if (!EntranceSoundGate.instance.claim(session, roomId: session.roomId)) {
       return null;
     }
-    final choice = EntranceSoundChoice(
-      soundId: preferences.soundboardEntranceSoundId.value,
-      spaceId: preferences.soundboardEntranceSpaceId.value,
-    );
     return pickEntranceSound(
-      choice: choice,
-      // The room may belong to several Spaces; a sound limited to one of
-      // them counts as this room's Space.
-      roomSpaceId:
-          sources.any((s) => s.id == choice.spaceId) ? choice.spaceId : null,
+      choice: EntranceSoundChoice(
+        soundId: preferences.soundboardEntranceSoundId.value,
+        spaceId: preferences.soundboardEntranceSpaceId.value,
+      ),
+      roomSpaceIds: sources.map((s) => s.id),
       catalog: catalog,
       // Deafening before joining only sets fakeDeafenToggle.
       deafened: session.isDeafened ||
@@ -208,9 +204,12 @@ class SoundboardCallController extends ChangeNotifier {
     return resolved.toString();
   }
 
+  Future<Uint8List> _loadBytes(SoundboardSound sound) =>
+      loadBytes(session.client, sound);
+
   /// Web: the browser has no file cache, so the player keeps the bytes.
-  Future<Uint8List> _loadBytes(SoundboardSound sound) async {
-    final client = session.client;
+  static Future<Uint8List> loadBytes(
+      Client client, SoundboardSound sound) async {
     final uri = Uri.parse(sound.mediaUri);
     if (client is! MatrixClient || uri.scheme != 'mxc') {
       throw StateError('Cannot play ${sound.mediaUri}');

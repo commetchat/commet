@@ -176,6 +176,26 @@ void main() {
         closeTo(1.5 * SoundboardNormalizer.maxGain, 1e-9));
   });
 
+  test('an instance plays at the sound\'s admin volume on top of normalization',
+      () async {
+    // Issue #14 (admin volume) on top of issue #12 (one instance per
+    // trigger): the gain of a sound normalized to 0.8 and turned down to
+    // 50 % by an admin is 0.4 for every listener at user volume 1.0.
+    final quiet = sound('quiet', gain: 0.8).copyWith(volume: 0.5);
+    final player = MediaKitSoundboardPlayer(
+      resolveSound: (id) => id == 'quiet' ? quiet : null,
+      resolvePlayableUri: (s) async => 'file:///cache/${s.soundId}.mp3',
+      createInstance: () {
+        final i = FakeAudioInstance();
+        instances.add(i);
+        return i;
+      },
+    );
+    await player.setVolumeFor('e1', 1.0);
+    await player.start('e1', 'quiet');
+    expect(mpvAmplitude(instances.single.volume!), closeTo(0.4, 1e-9));
+  });
+
   test('admin volume scales one sound on top of normalization', () {
     const quiet = SoundboardSound(
       soundId: 's1',

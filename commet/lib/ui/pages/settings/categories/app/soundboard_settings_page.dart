@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:commet/client/components/soundboard/soundboard_component.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
-import 'package:commet/client/matrix/components/soundboard/mediakit_soundboard_player.dart';
+import 'package:commet/client/components/soundboard/soundboard_engine.dart';
+import 'package:commet/client/matrix/components/soundboard/soundboard_player_factory.dart';
 import 'package:commet/client/space.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
@@ -25,7 +26,7 @@ class _SoundboardSettingsPageState extends State<SoundboardSettingsPage> {
   static const String _any = '';
 
   final List<StreamSubscription> _subs = [];
-  MediaKitSoundboardPlayer? _previewPlayer;
+  SoundboardPlayer? _previewPlayer;
   static const _previewInstanceId = 'entrance-sound-preview';
 
   String get headerSoundboardVolume => Intl.message("Sound Effects",
@@ -220,10 +221,13 @@ class _SoundboardSettingsPageState extends State<SoundboardSettingsPage> {
       (Space, SpaceSoundboardComponent, SoundboardSound) option) async {
     final (space, comp, sound) = option;
     await _previewPlayer?.stopAll();
-    final preview = MediaKitSoundboardPlayer(
+    // The platform player (Web Audio in the browser), so the preview goes
+    // through the same path and gain as a call.
+    final preview = createSoundboardPlayer(
       resolveSound: comp.getById,
       resolvePlayableUri: (s) =>
           SoundboardCallController.resolvePlayableUri(space.client, s),
+      loadBytes: (s) => SoundboardCallController.loadBytes(space.client, s),
     );
     _previewPlayer = preview;
     // setVolumeFor also stores the listener volume for instances started later.

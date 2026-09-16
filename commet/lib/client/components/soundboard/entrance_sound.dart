@@ -14,16 +14,20 @@ class EntranceSoundChoice {
   const EntranceSoundChoice({this.soundId, this.spaceId});
 }
 
-/// Which sound to trigger on join, or null to play nothing.
+/// Which sound to trigger on join, or null to play nothing. [roomSpaceIds]
+/// are the Spaces the voice room belongs to (it can be in several); a choice
+/// scoped to one Space plays when the room is in it.
 SoundId? pickEntranceSound({
   required EntranceSoundChoice choice,
-  required String? roomSpaceId,
+  required Iterable<String> roomSpaceIds,
   required SoundboardCatalog catalog,
   required bool deafened,
 }) {
   final soundId = choice.soundId;
   if (soundId == null || deafened) return null;
-  if (choice.spaceId != null && choice.spaceId != roomSpaceId) return null;
+  if (choice.spaceId != null && !roomSpaceIds.contains(choice.spaceId)) {
+    return null;
+  }
   // Sound ids are per-Space; one from another Space's catalog can't play here.
   if (catalog.getById(soundId) == null) return null;
   return soundId;

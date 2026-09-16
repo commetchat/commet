@@ -14,6 +14,35 @@ Float32List sine(double amplitude, double seconds,
   return out;
 }
 
+/// A minimal 16-bit PCM WAV with the given header values.
+Uint8List _wav16(
+    {required int rate, required int channels, required List<int> samples}) {
+  final bytes = ByteData(44 + samples.length * 2);
+  void str(int o, String s) {
+    for (var i = 0; i < s.length; i++) {
+      bytes.setUint8(o + i, s.codeUnitAt(i));
+    }
+  }
+
+  str(0, 'RIFF');
+  bytes.setUint32(4, bytes.lengthInBytes - 8, Endian.little);
+  str(8, 'WAVE');
+  str(12, 'fmt ');
+  bytes.setUint32(16, 16, Endian.little);
+  bytes.setUint16(20, 1, Endian.little);
+  bytes.setUint16(22, channels, Endian.little);
+  bytes.setUint32(24, rate, Endian.little);
+  bytes.setUint32(28, rate * channels * 2, Endian.little);
+  bytes.setUint16(32, channels * 2, Endian.little);
+  bytes.setUint16(34, 16, Endian.little);
+  str(36, 'data');
+  bytes.setUint32(40, samples.length * 2, Endian.little);
+  for (var i = 0; i < samples.length; i++) {
+    bytes.setInt16(44 + i * 2, samples[i], Endian.little);
+  }
+  return bytes.buffer.asUint8List();
+}
+
 void main() {
   group('SoundboardNormalizer.analyze', () {
     // Reference: BS.1770-4 / EBU Tech 3341, a 997 Hz sine at A dBFS on both
@@ -151,6 +180,22 @@ void main() {
 
     test('rejects non-WAV bytes', () {
       expect(SoundboardNormalizer.decodeWav(Uint8List(100)), isNull);
+    });
+
+    test('a sample rate too low to be audio is not measured', () {
+      // Reaches analyze through the Rust decoder too, so it must return
+      // promptly instead of looping on a zero hop.
+      final est = SoundboardNormalizer.analyze(
+          PcmAudio(sampleRate: 4, channels: [Float32List(8)]));
+      expect(est.measured, isFalse);
+      expect(est.gain, 1.0);
+    });
+
+    test('rejects a sample rate too low to be audio', () {
+      // A hostile file: with a 4 Hz rate the 100 ms analysis hop rounds to
+      // zero and the loudness loop would never advance.
+      final bytes = _wav16(rate: 4, channels: 1, samples: [0, 1000, -1000, 0]);
+      expect(SoundboardNormalizer.decodeWav(bytes), isNull);
     });
   });
 

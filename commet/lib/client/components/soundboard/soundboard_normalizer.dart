@@ -92,8 +92,15 @@ class SoundboardNormalizer {
   static double get maxGain => _fromDb(maxGainDb);
   static double get minGain => _fromDb(-maxGainDb);
 
+  /// Below this the K-weighting filter and true-peak oversampling are
+  /// meaningless, and the 100 ms analysis hop rounds to zero (a hostile
+  /// file declaring a few Hz would loop forever). Such input is "not
+  /// measured", never rejected outright: the sound still imports at gain 1.
+  static const int minSampleRate = 8000;
+
   static LoudnessEstimate analyze(PcmAudio audio) {
-    if (audio.frames == 0 || audio.sampleRate <= 0) {
+    if (audio.sampleRate < minSampleRate) return fallback();
+    if (audio.frames == 0) {
       return const LoudnessEstimate(gain: 1.0, measured: true);
     }
     final lufs = integratedLoudness(audio);
@@ -127,8 +134,8 @@ class SoundboardNormalizer {
     ];
     final weights = _channelWeights(audio.channels.length);
     final frames = audio.frames;
-    var blockLen = (0.4 * rate).round();
-    var hop = (0.1 * rate).round();
+    var blockLen = math.max(1, (0.4 * rate).round());
+    var hop = math.max(1, (0.1 * rate).round());
     if (frames < blockLen) {
       blockLen = frames;
       hop = frames;
@@ -316,7 +323,7 @@ class SoundboardNormalizer {
         }
         offset += 8 + size + (size.isOdd ? 1 : 0);
       }
-      if (dataStart < 0 || sampleRate <= 0) return null;
+      if (dataStart < 0 || sampleRate < minSampleRate) return null;
       if (audioFormat != 1 && audioFormat != 3) return null;
       if (channels < 1 || channels > 8) return null;
       if (audioFormat == 3 && bitsPerSample != 32) return null;

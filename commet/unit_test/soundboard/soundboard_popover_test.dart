@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
@@ -34,6 +36,10 @@ Widget _testApp(Widget child) {
     home: Scaffold(body: Center(child: child)),
   );
 }
+
+// 1x1 transparent PNG, so a custom emoji has an image to render.
+final _pixel = MemoryImage(base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='));
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -213,5 +219,58 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(sliderKey), findsNothing);
     expect(find.text('Airhorn'), findsOneWidget);
+  });
+
+  testWidgets('a custom Space emoji renders its image in the sound tile',
+      (tester) async {
+    // Issue #16 icons reach the issue #17 popover through the image
+    // resolver; without one, only the unicode fallback can be shown.
+    const velho = SoundboardEmoji.custom(
+        mxc: 'mxc://example.org/velho', shortcode: ':velho:');
+    final withImage = SoundboardSound(
+      soundId: 's1',
+      name: 'Velho',
+      emoji: velho,
+      mediaUri: 'mxc://x/s1',
+      mimeType: 'audio/mpeg',
+      durationMs: 2000,
+      normalizedGain: 1.0,
+    );
+
+    await tester.pumpWidget(_testApp(SoundboardPopover(
+      sources: [
+        _source('!a', 'Roscas do CCO', [withImage])
+      ],
+      favorites: favorites,
+      onPlay: played.add,
+      volume01: volume,
+      onVolumeChanged: (v) => volume = v,
+      imageFor: (emoji) => emoji == velho ? _pixel : null,
+    )));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Image), findsOneWidget);
+    expect(find.text(SoundboardEmoji.fallback), findsNothing);
+  });
+
+  testWidgets('a custom Space emoji without an image shows the fallback',
+      (tester) async {
+    final noImage = SoundboardSound(
+      soundId: 's1',
+      name: 'Velho',
+      emoji: const SoundboardEmoji.custom(
+          mxc: 'mxc://example.org/velho', shortcode: ':velho:'),
+      mediaUri: 'mxc://x/s1',
+      mimeType: 'audio/mpeg',
+      durationMs: 2000,
+      normalizedGain: 1.0,
+    );
+
+    await pumpPopover(tester, [
+      _source('!a', 'Roscas do CCO', [noImage]),
+    ]);
+
+    expect(find.text(SoundboardEmoji.fallback), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
   });
 }
