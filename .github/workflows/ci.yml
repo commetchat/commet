@@ -1,8 +1,9 @@
 name: ci
 
-# Every push to main: run the tests, build Windows and Linux in release mode,
-# publish a GitHub release tagged with the next version, then build the debug
-# variants and attach them to the same release.
+# Every push to main: tests, the release builds and the debug builds all start
+# at once (the builds only need the version). Publishing the GitHub release
+# waits for the tests and the release builds; attaching the debug bundles
+# waits for the release and the debug builds.
 on:
   push:
     branches: [main]
@@ -125,14 +126,14 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
   build-release:
-    needs: [test, version]
+    needs: [version]
     uses: ./.github/workflows/desktop-build.yml
     with:
       build_mode: release
       version: ${{ needs.version.outputs.version }}
 
   publish:
-    needs: [version, build-release]
+    needs: [test, version, build-release]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -156,7 +157,7 @@ jobs:
           --generate-notes
 
   build-debug:
-    needs: [version, build-release]
+    needs: [version]
     uses: ./.github/workflows/desktop-build.yml
     with:
       build_mode: debug
