@@ -4,16 +4,20 @@
 // easeOutBack + fade in; hold; exit: fade+scale down. Duration comes from
 // the engine's ActiveSound.overlayMs (real sound duration clamped to
 // 1200..3500ms). Never replaces the avatar — pure overlay, IgnorePointer.
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
+import 'package:commet/ui/molecules/soundboard_emoji_picker.dart';
 import 'package:flutter/material.dart';
 
 class SoundboardEmojiOverlay extends StatefulWidget {
-  final String emoji;
+  final SoundboardEmoji emoji;
+  final ImageProvider? image;
   final int durationMs;
   final VoidCallback? onDone;
 
   const SoundboardEmojiOverlay({
     super.key,
     required this.emoji,
+    this.image,
     required this.durationMs,
     this.onDone,
   });
@@ -92,9 +96,10 @@ class _SoundboardEmojiOverlayState extends State<SoundboardEmojiOverlay>
                   ),
                 ],
               ),
-              child: Text(
+              child: SoundboardEmojiView(
                 widget.emoji,
-                style: const TextStyle(fontSize: 34),
+                image: widget.image,
+                size: 34,
               ),
             ),
           ),

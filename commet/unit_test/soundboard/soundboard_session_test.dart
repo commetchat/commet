@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
 import 'package:commet/client/components/soundboard/soundboard_session.dart';
@@ -39,7 +40,7 @@ class FakePlayer implements SoundboardPlayer {
 SoundboardSound _s(String id) => SoundboardSound(
       soundId: id,
       name: 'S $id',
-      emoji: '🔊',
+      emoji: const SoundboardEmoji.unicode('🔊'),
       mediaUri: 'mxc://h/$id',
       mimeType: 'audio/mpeg',
       durationMs: 1500,

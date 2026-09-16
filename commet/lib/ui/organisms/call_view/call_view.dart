@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/soundboard/matrix_soundboard_emoji_image.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
@@ -259,6 +260,8 @@ class _CallViewState extends State<CallView> {
             session: ctrl.soundboard,
             volume01: ctrl.volume01,
             onVolumeChanged: (v) => ctrl.setVolume01(v),
+            imageFor: (emoji) =>
+                soundboardEmojiImage(emoji, ctrl.session.client),
           ),
         ),
       ),

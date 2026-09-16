@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/client/matrix/components/soundboard/mediakit_soundboard_player.dart';
 import 'package:test/test.dart';
@@ -31,7 +32,7 @@ class FakeAudioInstance implements SoundboardAudioInstance {
 SoundboardSound sound(String id, {double gain = 1.0}) => SoundboardSound(
       soundId: id,
       name: id,
-      emoji: '📯',
+      emoji: const SoundboardEmoji.unicode('📯'),
       mediaUri: 'mxc://x/$id',
       mimeType: 'audio/mpeg',
       durationMs: 1000,
@@ -155,7 +156,7 @@ void main() {
     const quiet = SoundboardSound(
       soundId: 's1',
       name: 'Airhorn',
-      emoji: '📢',
+      emoji: SoundboardEmoji.unicode('📢'),
       mediaUri: 'mxc://x/s1',
       mimeType: 'audio/mpeg',
       durationMs: 2000,

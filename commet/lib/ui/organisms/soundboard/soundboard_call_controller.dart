@@ -15,6 +15,7 @@ import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/client/components/soundboard/soundboard_transport.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/matrix/components/soundboard/livekit_soundboard_transport.dart';
+import 'package:commet/client/matrix/components/soundboard/matrix_soundboard_emoji_image.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_todevice_soundboard_transport.dart';
 import 'package:commet/client/matrix/components/soundboard/mediakit_soundboard_player.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -152,6 +153,7 @@ class SoundboardCallController extends ChangeNotifier {
         userId: entry.senderId,
         soundId: entry.soundId,
         emoji: sound.emoji,
+        image: soundboardEmojiImage(sound.emoji, session.client),
         overlayMs: entry.overlayMs,
       );
       // Auto-clear after overlay window so tiles don't stick. A newer

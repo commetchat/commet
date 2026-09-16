@@ -9,18 +9,27 @@
 // gets wrong) with a preview at the volume a call would use.
 import 'dart:async';
 
+import 'package:commet/client/components/emoticon/dynamic_emoticon_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/components/soundboard/myinstants_network_probe.dart';
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_component.dart';
 import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
 import 'package:commet/client/components/soundboard/soundboard_validation.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
+import 'package:commet/client/matrix/components/soundboard/matrix_soundboard_emoji_image.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_space_soundboard_component.dart';
 import 'package:commet/client/matrix/components/soundboard/soundboard_preview_player.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/molecules/soundboard_emoji_picker.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -38,7 +47,8 @@ class _SpaceSoundboardSettingsPageState
     extends State<SpaceSoundboardSettingsPage> {
   final _urlCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
-  final _emojiCtrl = TextEditingController();
+  static const _defaultEmoji = SoundboardEmoji.unicode('📢');
+  var _emoji = _defaultEmoji;
   late final _changes = _RebuildOnChange(widget.soundboard);
   final _preview = SoundboardPreviewPlayer(
       userVolume: () => SoundboardCallController.userVolume);
@@ -58,7 +68,6 @@ class _SpaceSoundboardSettingsPageState
     _changes.dispose();
     _urlCtrl.dispose();
     _nameCtrl.dispose();
-    _emojiCtrl.dispose();
     super.dispose();
   }
 
@@ -98,13 +107,11 @@ class _SpaceSoundboardSettingsPageState
                     ),
                   ),
                   const SizedBox(width: 8),
-                  SizedBox(
-                    width: 110,
-                    child: tiamat.TextInput(
-                      label: 'Emoji',
-                      placeholder: '📢',
-                      controller: _emojiCtrl,
-                    ),
+                  SoundboardEmojiPickerButton(
+                    value: _emoji,
+                    packs: _emojiPacks(),
+                    imageFor: _emojiImage,
+                    onChanged: (emoji) => setState(() => _emoji = emoji),
                   ),
                 ],
               ),
@@ -144,7 +151,8 @@ class _SpaceSoundboardSettingsPageState
                           horizontal: 10, vertical: 8),
                       child: Row(
                         children: [
-                          Text(s.emoji, style: const TextStyle(fontSize: 22)),
+                          SoundboardEmojiView(s.emoji,
+                              image: _emojiImage(s.emoji)),
                           const SizedBox(width: 10),
                           Expanded(child: tiamat.Text.label(s.name)),
                           if (s.volume != 1.0)
@@ -220,7 +228,7 @@ class _SpaceSoundboardSettingsPageState
     try {
       // Reject bad input before downloading or uploading anything.
       final name = SoundboardValidator.sanitizeName(_nameCtrl.text);
-      final emoji = SoundboardValidator.sanitizeEmoji(_emojiCtrl.text);
+      final emoji = SoundboardValidator.sanitizeSoundEmoji(_emoji);
       final fetched = await _fetch(url);
       // Upload normalized bytes to the homeserver (MXC) — clients stream
       // from here, never from MyInstants per-click.
@@ -245,10 +253,14 @@ class _SpaceSoundboardSettingsPageState
       await _preview.stop();
       _urlCtrl.clear();
       _nameCtrl.clear();
-      _emojiCtrl.clear();
       _fetched = null;
       _fetchedUrl = null;
-      if (mounted) setState(() => _volume = 1.0);
+      if (mounted) {
+        setState(() {
+          _emoji = _defaultEmoji;
+          _volume = 1.0;
+        });
+      }
     } on MyInstantsValidationError catch (e) {
       Log.w('Soundboard import failed: $e');
       if (mounted) setState(() => _error = _friendlyError(e));
@@ -287,9 +299,45 @@ class _SpaceSoundboardSettingsPageState
     }
   }
 
+  /// Frequently used, the Space's own emoticons, then unicode, like
+  /// Discord's picker.
+  List<EmoticonPack> _emojiPacks() {
+    final space = widget.soundboard.space
+            .getComponent<SpaceEmoticonComponent>()
+            ?.ownedPacks
+            .where((pack) => pack.emoji.isNotEmpty)
+            .toList() ??
+        [];
+    final spaceKeys = {
+      for (final pack in space) ...pack.emoji.map((e) => e.key),
+    };
+    // Recents span every pack the user has; keep unicode and this Space's.
+    final recent = widget.soundboard.client
+            .getComponent<RecentEmoticonComponent>()
+            ?.getRecentTypedEmoticon(null)
+            .where((e) => e.image == null || spaceKeys.contains(e.key))
+            .toList() ??
+        [];
+    return [
+      if (recent.isNotEmpty)
+        DynamicEmoticonPack(
+            identifier: 'dynamic_pack_frequently_used_soundboard',
+            displayName: 'Frequently Used',
+            icon: Icons.schedule,
+            emoticons: recent,
+            usage: EmoticonUsage.all),
+      ...space,
+      ...?UnicodeEmojis.packs,
+    ];
+  }
+
+  ImageProvider? _emojiImage(SoundboardEmoji emoji) =>
+      soundboardEmojiImage(emoji, widget.soundboard.client);
+
   Future<void> _editDialog(SoundboardSound sound) async {
     final nameCtrl = TextEditingController(text: sound.name);
-    final emojiCtrl = TextEditingController(text: sound.emoji);
+    var picked = sound.emoji;
+    final packs = _emojiPacks();
     final preview = SoundboardPreviewPlayer(
         userVolume: () => SoundboardCallController.userVolume);
     var volume = sound.volume;
@@ -303,9 +351,23 @@ class _SpaceSoundboardSettingsPageState
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              tiamat.TextInput(label: 'Name', controller: nameCtrl),
-              const SizedBox(height: 8),
-              tiamat.TextInput(label: 'Emoji', controller: emojiCtrl),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SoundboardEmojiPickerButton(
+                    value: picked,
+                    packs: packs,
+                    imageFor: _emojiImage,
+                    onChanged: (e) => setDialogState(() => picked = e),
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 240,
+                    child:
+                        tiamat.TextInput(label: 'Name', controller: nameCtrl),
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               _SoundVolumeField(
                 volume: volume,
@@ -359,14 +421,17 @@ class _SpaceSoundboardSettingsPageState
     await preview.dispose();
     if (ok == true) {
       try {
+        // Only send the emoji when it changed, so a stored value this
+        // build can't validate doesn't block renaming.
         await widget.soundboard.updateSound(sound.soundId,
-            name: nameCtrl.text, emoji: emojiCtrl.text, volume: volume);
+            name: nameCtrl.text,
+            emoji: picked == sound.emoji ? null : picked,
+            volume: volume);
       } catch (e) {
         if (mounted) setState(() => _error = _friendlyError(e));
       }
     }
     nameCtrl.dispose();
-    emojiCtrl.dispose();
   }
 
   String _friendlyError(Object e) {

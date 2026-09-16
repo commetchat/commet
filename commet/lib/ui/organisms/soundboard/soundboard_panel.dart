@@ -6,6 +6,7 @@
 // effects (local-only preference); 0 = mute.
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_session.dart';
+import 'package:commet/ui/molecules/soundboard_emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -15,12 +16,16 @@ class SoundboardPanel extends StatefulWidget {
   final double volume01;
   final ValueChanged<double>? onVolumeChanged;
 
+  /// Resolves custom Space emoji images; without it their fallback shows.
+  final SoundboardEmojiImageResolver? imageFor;
+
   const SoundboardPanel({
     super.key,
     required this.catalog,
     this.session,
     this.volume01 = 0.8,
     this.onVolumeChanged,
+    this.imageFor,
   });
 
   @override
@@ -90,8 +95,9 @@ class _SoundboardPanelState extends State<SoundboardPanel> {
                                   horizontal: 10, vertical: 8),
                               child: Row(
                                 children: [
-                                  Text(s.name.isEmpty ? '' : s.emoji,
-                                      style: const TextStyle(fontSize: 22)),
+                                  if (s.name.isNotEmpty)
+                                    SoundboardEmojiView(s.emoji,
+                                        image: widget.imageFor?.call(s.emoji)),
                                   const SizedBox(width: 10),
                                   Expanded(
                                       child: tiamat.Text.label(s.name)),

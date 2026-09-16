@@ -128,6 +128,14 @@ class AutofillUtils {
 
     if (packs == null) return [];
 
+    return searchEmoticonPacks(string, packs,
+        limit: limit, threshold: threshold);
+  }
+
+  /// Fuzzy-searches the emoji of [packs] by shortcode, best matches first.
+  static List<AutofillSearchResultEmoticon> searchEmoticonPacks(
+      String string, List<EmoticonPack> packs,
+      {int limit = 20, double threshold = 0.2}) {
     var result = List<AutofillSearchResultEmoticon>.empty(growable: true);
 
     for (var pack in packs) {

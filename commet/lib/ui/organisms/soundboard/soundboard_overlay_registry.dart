@@ -3,17 +3,22 @@
 // Written by the call's SoundboardSession (via engine listeners), read by
 // every VoipStreamView. Keyed by Matrix userId so the emoji appears ONLY on
 // the sender's avatar — never broadcast to all tiles.
-import 'package:flutter/foundation.dart';
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
+import 'package:flutter/widgets.dart';
 
 class SoundboardOverlayEntry {
   final String soundId;
-  final String emoji;
+  final SoundboardEmoji emoji;
+
+  /// Image of a custom [emoji], resolved by the caller that has a client.
+  final ImageProvider? image;
   final int expiresAtMs;
   final int overlayMs;
 
   const SoundboardOverlayEntry({
     required this.soundId,
     required this.emoji,
+    this.image,
     required this.expiresAtMs,
     required this.overlayMs,
   });
@@ -39,12 +44,14 @@ class SoundboardOverlayRegistry extends ChangeNotifier {
   SoundboardOverlayEntry show({
     required String userId,
     required String soundId,
-    required String emoji,
+    required SoundboardEmoji emoji,
+    ImageProvider? image,
     required int overlayMs,
   }) {
     final entry = _byUser[userId] = SoundboardOverlayEntry(
       soundId: soundId,
       emoji: emoji,
+      image: image,
       overlayMs: overlayMs,
       expiresAtMs: DateTime.now().millisecondsSinceEpoch + overlayMs + 200,
     );

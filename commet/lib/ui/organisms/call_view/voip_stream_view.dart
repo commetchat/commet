@@ -210,6 +210,7 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                               key: ValueKey(
                                   'sb_${entry.soundId}_${entry.expiresAtMs}'),
                               emoji: entry.emoji,
+                              image: entry.image,
                               durationMs: entry.overlayMs,
                               onDone: () => SoundboardOverlayRegistry.instance
                                   .clearUser(user.identifier),
