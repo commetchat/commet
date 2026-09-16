@@ -329,12 +329,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   bool get isDeafened => _isDeafened;
 
   void _applyStreamVolume(MatrixLivekitVoipStream stream) {
-    if (stream.publication.track is lk.AudioTrack &&
-        stream.direction == VoipStreamDirection.incoming) {
-      final track = stream.publication.track as lk.AudioTrack;
-      final volume =
-          _isDeafened ? 0.0 : preferences.getVoipUserVolume(stream.userId);
-      Helper.setVolume(volume, track.mediaStreamTrack);
+    if (stream.direction == VoipStreamDirection.incoming) {
+      stream.applyVolume(_isDeafened ? 0.0 : stream.volume);
     }
   }
 
@@ -449,7 +445,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     );
 
     final tracks = source.captureAudio
-        ? await lk.LocalVideoTrack.createScreenShareTracksWithAudio(captureOptions)
+        ? await lk.LocalVideoTrack.createScreenShareTracksWithAudio(
+            captureOptions)
         : [await lk.LocalVideoTrack.createScreenShareTrack(captureOptions)];
 
     for (final track in tracks) {
@@ -463,7 +460,8 @@ class MatrixLivekitVoipSession implements VoipSession {
                   maxFramerate: framerate.toInt(), maxBitrate: bitrate),
               videoCodec: preferences.streamCodec.value,
             ));
-        track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+        track.setDegradationPreference(
+            lk.DegradationPreference.maintainFramerate);
       } else if (track is lk.LocalAudioTrack) {
         await livekitRoom.localParticipant?.publishAudioTrack(track);
       }
@@ -595,8 +593,11 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   double get generalAudioLevel {
-    double result =
-        streams.fold(0.0, (value, stream) => max(value, stream.audiolevel));
+    // Shared screen audio is not someone talking, so it must not light up
+    // the call indicator.
+    double result = streams
+        .where((stream) => stream.type != VoipStreamType.screenshareAudio)
+        .fold(0.0, (value, stream) => max(value, stream.audiolevel));
     return result;
   }
 

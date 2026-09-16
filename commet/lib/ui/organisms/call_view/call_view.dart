@@ -5,6 +5,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
+import 'package:commet/ui/organisms/call_view/call_grid_tiles.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
@@ -265,6 +266,7 @@ class _CallViewState extends State<CallView> {
   }
 
   List<Widget> generateLayout() {
+    final tiles = callGridTiles(widget.currentSession.streams);
     return [
       if (mainStream != null)
         Flexible(
@@ -282,6 +284,10 @@ class _CallViewState extends State<CallView> {
                 child: VoipStreamView(
                   mainStream!,
                   widget.currentSession,
+                  audioStream: tiles
+                      .where((tile) => tile.stream == mainStream)
+                      .firstOrNull
+                      ?.audioStream,
                   borderColor: Colors.white,
                   onFullscreen: () {
                     Lightbox.show(context,
@@ -303,31 +309,33 @@ class _CallViewState extends State<CallView> {
         fit: FlexFit.tight,
         flex: 75,
         child: Center(
-          child: BentoLayout(widget.currentSession.streams
-              .where((element) => element != mainStream)
-              .map((e) => GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      mainStream = e;
-                    });
+          child: BentoLayout(
+              tiles.where((tile) => tile.stream != mainStream).map((tile) {
+            final e = tile.stream;
+            return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    mainStream = e;
+                  });
+                },
+                child: VoipStreamView(
+                  key: ValueKey("callView__${e.streamId}"),
+                  e,
+                  audioStream: tile.audioStream,
+                  fit: e.type == VoipStreamType.screenshare
+                      ? BoxFit.contain
+                      : BoxFit.cover,
+                  widget.currentSession,
+                  onFullscreen: () {
+                    Lightbox.show(context,
+                        aspectRatio: e.aspectRatio,
+                        customWidget: VoipFullscreenStreamView(
+                          session: widget.currentSession,
+                          stream: e,
+                        ));
                   },
-                  child: VoipStreamView(
-                    key: ValueKey("callView__${e.streamId}"),
-                    e,
-                    fit: e.type == VoipStreamType.screenshare
-                        ? BoxFit.contain
-                        : BoxFit.cover,
-                    widget.currentSession,
-                    onFullscreen: () {
-                      Lightbox.show(context,
-                          aspectRatio: e.aspectRatio,
-                          customWidget: VoipFullscreenStreamView(
-                            session: widget.currentSession,
-                            stream: e,
-                          ));
-                    },
-                  )))
-              .toList()),
+                ));
+          }).toList()),
         ),
       )
     ];

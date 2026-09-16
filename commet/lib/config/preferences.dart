@@ -242,6 +242,16 @@ class Preferences {
     return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
   }
 
+  /// Volume of the system audio a member sends with their screen share, kept
+  /// apart from their mic volume like Discord's stream volume.
+  Future<void> setVoipScreenShareVolume(String userId, double volume) async {
+    _preferences!.setDouble("call_screen_share_volume:${userId}", volume);
+  }
+
+  double getVoipScreenShareVolume(String userId) {
+    return _preferences?.getDouble("call_screen_share_volume:${userId}") ?? 1.0;
+  }
+
   String _acceptedCapabilitiesKey(String clientId, String widgetNamespace) =>
       "accepted_widget_capabilities:${clientId}:${widgetNamespace}";
 

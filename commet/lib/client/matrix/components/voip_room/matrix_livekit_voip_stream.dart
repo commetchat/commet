@@ -27,7 +27,6 @@ class MatrixLivekitVoipStream implements VoipStream {
           options: AudioVisualizerOptions(
               barCount: 7, centeredBands: false, smoothTransition: false));
 
-      var volume = preferences.getVoipUserVolume(userId);
       Helper.setVolume(volume, t.mediaStreamTrack);
 
       var _listener = visualizer!.createListener();
@@ -64,9 +63,8 @@ class MatrixLivekitVoipStream implements VoipStream {
     // so it would light up for audio that never leaves the client. When the
     // DSP is running, its gate is what decides.
     final dsp = AudioProcessingManager.instance;
-    final last = _isLocalMic && dsp.isProcessing
-        ? dsp.lastGateOpenAt
-        : _lastAudioAt;
+    final last =
+        _isLocalMic && dsp.isProcessing ? dsp.lastGateOpenAt : _lastAudioAt;
     if (last != null && DateTime.now().difference(last) < _speakingHold) {
       return 1;
     }
@@ -129,17 +127,27 @@ class MatrixLivekitVoipStream implements VoipStream {
   String get streamUserId => userId;
 
   @override
-  VoipStreamType get type {
-    if (publication.track is AudioTrack) {
-      return VoipStreamType.audio;
+  VoipStreamType get type => typeOf(publication.kind, publication.source);
+
+  /// Maps a LiveKit publication's kind and source onto the app's stream
+  /// types. System audio captured with a screen share is its own type so the
+  /// call grid can fold it into the screen share tile instead of drawing a
+  /// second avatar for the sharer.
+  static VoipStreamType typeOf(TrackType kind, TrackSource source) {
+    if (kind == TrackType.AUDIO) {
+      return source == TrackSource.screenShareAudio
+          ? VoipStreamType.screenshareAudio
+          : VoipStreamType.audio;
     }
 
-    if (publication.isScreenShare) {
+    if (source == TrackSource.screenShareVideo) {
       return VoipStreamType.screenshare;
     }
 
     return VoipStreamType.video;
   }
+
+  bool get isScreenShareAudio => type == VoipStreamType.screenshareAudio;
 
   @override
   bool get isMuted => publication.track?.muted ?? false;
@@ -161,12 +169,24 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   Future<void> setVolume(double volume) async {
-    preferences.setVoipUserVolume(userId, volume);
+    if (isScreenShareAudio) {
+      preferences.setVoipScreenShareVolume(userId, volume);
+    } else {
+      preferences.setVoipUserVolume(userId, volume);
+    }
+    applyVolume(volume);
+  }
+
+  /// Sets the playback volume without changing the saved preference. The
+  /// session uses this to silence the stream while deafened.
+  void applyVolume(double volume) {
     if (publication.track case AudioTrack track) {
       Helper.setVolume(volume, track.mediaStreamTrack);
     }
   }
 
   @override
-  double get volume => preferences.getVoipUserVolume(userId);
+  double get volume => isScreenShareAudio
+      ? preferences.getVoipScreenShareVolume(userId)
+      : preferences.getVoipUserVolume(userId);
 }

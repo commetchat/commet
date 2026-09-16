@@ -1,6 +1,15 @@
 import 'package:flutter/widgets.dart';
 
-enum VoipStreamType { audio, video, screenshare }
+enum VoipStreamType {
+  audio,
+  video,
+  screenshare,
+
+  /// System audio captured alongside a screen share. Belongs to the same
+  /// member as their [screenshare] stream and is never drawn as its own
+  /// tile; the call grid folds it into the screen share tile.
+  screenshareAudio,
+}
 
 enum VoipStreamDirection { incoming, outgoing }
 

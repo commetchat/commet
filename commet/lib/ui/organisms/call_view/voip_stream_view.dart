@@ -16,12 +16,17 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class VoipStreamView extends StatefulWidget {
   const VoipStreamView(this.stream, this.session,
       {super.key,
+      this.audioStream,
       this.fit = BoxFit.cover,
       this.borderColor,
       this.canFullscreen = true,
       this.onFullscreen});
   final VoipStream stream;
   final VoipSession session;
+
+  /// Audio that plays along with [stream] but has no tile of its own (screen
+  /// share audio). When set, the tile's volume control drives it.
+  final VoipStream? audioStream;
   final BoxFit fit;
   final Function()? onFullscreen;
   final Color? borderColor;
@@ -71,7 +76,8 @@ class _VoipStreamViewState extends State<VoipStreamView> {
         alignment: Alignment.topRight,
         children: [
           AdaptiveContextMenu(
-            items: streamContextMenuItems(widget.stream, user),
+            items: streamContextMenuItems(widget.stream, user,
+                audioStream: widget.audioStream),
             child: Container(
                 clipBehavior: Clip.antiAlias,
                 foregroundDecoration: widget.borderColor != null
@@ -118,7 +124,12 @@ class _VoipStreamViewState extends State<VoipStreamView> {
   }
 
   static List<tiamat.ContextMenuItem> streamContextMenuItems(
-      VoipStream stream, Member user) {
+      VoipStream stream, Member user,
+      {VoipStream? audioStream}) {
+    // Screen share audio has no tile of its own, so its volume lives on the
+    // screen share tile. Discord does the same: the stream's volume is
+    // separate from the person's mic volume.
+    final volumeStream = audioStream ?? stream;
     return [
       if (stream.direction == VoipStreamDirection.incoming) ...[
         tiamat.ContextMenuItem(
@@ -148,7 +159,7 @@ class _VoipStreamViewState extends State<VoipStreamView> {
           customBuilder: (context, onClicked, {closeMenu}) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: StreamVolumeSlider(stream),
+              child: StreamVolumeSlider(volumeStream),
             );
           },
         )
@@ -185,8 +196,7 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                       // Soundboard emoji burst: overlay only on the sender's
                       // avatar, timed by the real sound duration.
                       ListenableBuilder(
-                        listenable:
-                            SoundboardOverlayRegistry.instance,
+                        listenable: SoundboardOverlayRegistry.instance,
                         builder: (context, _) {
                           final entry = SoundboardOverlayRegistry.instance
                               .entryFor(user.identifier);
@@ -201,9 +211,8 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                                   'sb_${entry.soundId}_${entry.expiresAtMs}'),
                               emoji: entry.emoji,
                               durationMs: entry.overlayMs,
-                              onDone: () =>
-                                  SoundboardOverlayRegistry.instance
-                                      .clearUser(user.identifier),
+                              onDone: () => SoundboardOverlayRegistry.instance
+                                  .clearUser(user.identifier),
                             ),
                           );
                         },
@@ -246,6 +255,11 @@ class _VoipStreamViewState extends State<VoipStreamView> {
           child: widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
               const CircularProgressIndicator(),
         );
+
+      case VoipStreamType.screenshareAudio:
+        // Never a tile of its own: the call grid folds it into the screen
+        // share tile (see callGridTiles).
+        return const SizedBox.shrink();
     }
   }
 
