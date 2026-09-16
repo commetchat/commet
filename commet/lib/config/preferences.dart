@@ -504,6 +504,16 @@ class Preferences {
   DoublePreference soundboardVolume =
       DoublePreference("soundboard_volume", defaultValue: 80.0);
 
+  /// Soundboard sound played when joining a voice channel. Null = none.
+  NullableStringPreference soundboardEntranceSoundId = NullableStringPreference(
+      "soundboard_entrance_sound_id",
+      defaultValue: null);
+
+  /// Space the entrance sound is limited to. Null = every Space.
+  NullableStringPreference soundboardEntranceSpaceId = NullableStringPreference(
+      "soundboard_entrance_space_id",
+      defaultValue: null);
+
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
 

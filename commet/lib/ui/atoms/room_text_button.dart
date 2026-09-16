@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
+import 'package:commet/client/components/soundboard/entrance_sound.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
@@ -59,6 +60,18 @@ class RoomTextButton extends StatefulWidget {
             icon: Icons.tag,
             onPressed: () => EventBus.doOpenRoom(room.identifier,
                 clientId: room.client.identifier, bypassSpecialRoomType: true)),
+      if (voipRoom != null &&
+          voipRoom.canJoinCall &&
+          voipRoom.currentSession == null &&
+          preferences.soundboardEntranceSoundId.value != null)
+        ContextMenuItem(
+            text: "Join Without Entrance Sound",
+            icon: Icons.volume_off,
+            onPressed: () {
+              EntranceSoundGate.instance.requestSilentJoin(room.identifier);
+              EventBus.doOpenRoom(room.identifier,
+                  clientId: room.client.identifier);
+            }),
       if (voipRoom != null && preferences.developerMode.value)
         ContextMenuItem(
           text: "Clear Membership Status",

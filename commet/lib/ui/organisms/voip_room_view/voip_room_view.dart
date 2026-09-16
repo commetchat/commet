@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/soundboard/entrance_sound.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/debug/log.dart';
@@ -10,6 +11,7 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class VoipRoomView extends StatefulWidget {
@@ -33,6 +35,9 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     participants = widget.voip.getCurrentParticipants();
 
     subs = [
+      EntranceSoundGate.instance.onSilentJoinRequested
+          .where((id) => id == widget.voip.room.identifier)
+          .listen((_) => _takeSilentJoinRequest()),
       widget.voip.onParticipantsChanged.listen((_) {
         // when the participant list changes, the resolved focus may change
         updateCallUrl();
@@ -44,10 +49,24 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     ];
 
     updateCallUrl();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _takeSilentJoinRequest());
     widget.voip.clearStaleOwnMembership().catchError((e, s) {
       Log.onError(e, s);
     });
     super.initState();
+  }
+
+  void _takeSilentJoinRequest() {
+    if (!mounted) return;
+    // Picks up "Join Without Entrance Sound" from the room's context menu,
+    // whether this view was already open or opens because of it.
+    final gate = EntranceSoundGate.instance;
+    if (!gate.takeSilentJoinRequest(widget.voip.room.identifier)) return;
+    final inCall =
+        currentSession != null && currentSession!.state != VoipState.ended;
+    if (inCall || joining || !widget.voip.canJoinCall) return;
+    joinRoomCall(withoutEntranceSound: true);
   }
 
   void updateCallUrl() {
@@ -175,7 +194,10 @@ class _VoipRoomViewState extends State<VoipRoomView> {
             child: tiamat.Button(
               isLoading: joining,
               text: CommonStrings.promptJoin,
-              onTap: joinRoomCall,
+              // Shift+click joins without the entrance sound.
+              onTap: () => joinRoomCall(
+                  withoutEntranceSound:
+                      HardwareKeyboard.instance.isShiftPressed),
             ),
           ),
         if (!widget.voip.canJoinCall)
@@ -186,7 +208,8 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     );
   }
 
-  joinRoomCall() async {
+  joinRoomCall({bool withoutEntranceSound = false}) async {
+    final roomId = widget.voip.room.identifier;
     setState(() {
       joining = true;
     });
@@ -194,8 +217,13 @@ class _VoipRoomViewState extends State<VoipRoomView> {
     // For better UI feedback if program stutters while joining
     await Future.delayed(Duration(milliseconds: 100));
 
+    if (withoutEntranceSound) EntranceSoundGate.instance.skipNextJoin(roomId);
+
     try {
       final session = await widget.voip.joinCall();
+      if (session == null && withoutEntranceSound) {
+        EntranceSoundGate.instance.cancelSkip(roomId);
+      }
 
       if (session != null) {
         setState(() {
@@ -205,6 +233,7 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       }
     } catch (e, s) {
       Log.onError(e, s);
+      if (withoutEntranceSound) EntranceSoundGate.instance.cancelSkip(roomId);
 
       AdaptiveDialog.showError(context, e, s);
 
