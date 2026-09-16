@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -63,11 +64,9 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
 
   @override
   Map<String, dynamic> getState(String packKey) {
-    return client
-            .getMatrixClient()
-            .accountData['im.ponies.user_emotes']
-            ?.content ??
-        {};
+    // A copy, so callers can edit it before the server accepts the change
+    return _copyContent(
+        client.getMatrixClient().accountData['im.ponies.user_emotes']?.content);
   }
 
   @override
@@ -113,9 +112,7 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
 
   @override
   Map<String, dynamic> getState(String packKey) {
-    var states = getAllStates();
-    var data = states[packKey];
-    return data;
+    return _copyContent(getAllStates()[packKey]);
   }
 
   @override
@@ -123,8 +120,18 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
     var event = await room.client.setRoomStateWithKey(
         room.id, MatrixEmoticonComponent.roomEmotesStateKey, packKey, content);
 
-    var result = await room.getEventById(event);
-    room.states[MatrixEmoticonComponent.roomEmotesStateKey]![packKey] = result!;
+    // Fall back to what we sent, so a following edit (e.g. the next file of a
+    // batch upload) doesn't build on stale state before the sync arrives.
+    var result = await room.getEventById(event) ??
+        matrix.StrippedStateEvent(
+            type: MatrixEmoticonComponent.roomEmotesStateKey,
+            content: content,
+            senderId: room.client.userID!,
+            stateKey: packKey);
+
+    // The room's first pack has no state map to add to yet
+    room.states.putIfAbsent(
+        MatrixEmoticonComponent.roomEmotesStateKey, () => {})[packKey] = result;
   }
 
   @override
@@ -133,3 +140,6 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
   @override
   String get id => room.id;
 }
+
+Map<String, dynamic> _copyContent(Map<String, dynamic>? content) =>
+    content == null ? {} : jsonDecode(jsonEncode(content));

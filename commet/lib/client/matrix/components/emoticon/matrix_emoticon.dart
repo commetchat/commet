@@ -19,6 +19,9 @@ class MatrixEmoticon implements Emoticon {
   Uri emojiUrl;
 
   @override
+  Uri get url => emojiUrl;
+
+  @override
   EmoticonUsage usage;
 
   EmoticonUsage packUsage;

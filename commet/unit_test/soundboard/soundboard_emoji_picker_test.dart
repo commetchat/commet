@@ -27,6 +27,8 @@ class _Emoticon implements Emoticon {
   bool get isEmoji => true;
   @override
   bool get isSticker => false;
+  @override
+  Uri? get url => null;
 }
 
 // 1x1 transparent PNG, so custom emoticons have an image to render.

@@ -51,7 +51,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
 
   @override
   void dispose() {
-    sub?.cancel;
+    sub?.cancel();
     super.dispose();
   }
 

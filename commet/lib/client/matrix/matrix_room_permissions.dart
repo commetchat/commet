@@ -1,3 +1,4 @@
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 import '../permissions.dart';
@@ -30,7 +31,8 @@ class MatrixRoomPermissions extends Permissions {
   bool get canEnableE2EE => room.canChangeStateEvent("m.room.encryption");
 
   @override
-  bool get canEditRoomEmoticons => room.canSendDefaultStates;
+  bool get canEditRoomEmoticons =>
+      room.canChangeStateEvent(MatrixEmoticonComponent.roomEmotesStateKey);
 
   @override
   bool get canDeleteOtherUserMessages => room.canRedact;
