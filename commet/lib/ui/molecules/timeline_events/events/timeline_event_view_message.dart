@@ -6,6 +6,7 @@ import 'package:commet/client/components/url_preview/url_preview_component.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_per_message_profile.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
@@ -70,6 +71,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   late String senderName;
   late String senderId;
   late Color senderColor;
+  String? viaSenderName;
 
   late bool mentionsRoom;
   late List<String> mentions;
@@ -136,6 +138,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     return TimelineEventLayoutMessage(
       senderName: senderName,
       senderColor: senderColor,
+      viaSenderName: viaSenderName,
       senderAvatar: senderAvatar,
       showSender: showSender,
       formattedContent: formattedContent,
@@ -258,6 +261,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
 
+    applyPerMessageProfile(event);
+
     sentTime = event.originServerTs;
 
     var gifs = (widget.room ?? widget.timeline?.room)
@@ -320,6 +325,46 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
                 widget.timeline!, event) ==
             true &&
         event.getLinks(timeline: widget.timeline!)?.isEmpty == false;
+  }
+
+  void applyPerMessageProfile(TimelineEvent event) {
+    viaSenderName = null;
+
+    if (event is! TimelineEventFeaturePerMessageProfile) {
+      return;
+    }
+
+    var profile = (event as TimelineEventFeaturePerMessageProfile)
+        .getPerMessageProfile(timeline: widget.timeline);
+
+    if (profile == null) {
+      return;
+    }
+
+    if (profile.avatar != null || profile.clearAvatar) {
+      senderAvatar = profile.avatar;
+    }
+
+    if (profile.hasDisplayName) {
+      viaSenderName = senderName;
+      senderName = profile.displayName!;
+      senderColor = profile.color;
+    }
+  }
+
+  String? perMessageProfileGroupingKey(TimelineEvent event) {
+    if (event is! TimelineEventFeaturePerMessageProfile) {
+      return null;
+    }
+
+    var profile = (event as TimelineEventFeaturePerMessageProfile)
+        .getPerMessageProfile(timeline: widget.timeline);
+
+    if (profile == null) {
+      return null;
+    }
+
+    return "${profile.id} ${profile.displayName ?? ""}";
   }
 
   String timestampToString(DateTime time) {
@@ -414,7 +459,12 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
             .inMinutes >
         1) return true;
 
-    return thisEvent.senderId != prevEvent.senderId;
+    if (thisEvent.senderId != prevEvent.senderId) {
+      return true;
+    }
+
+    return perMessageProfileGroupingKey(thisEvent) !=
+        perMessageProfileGroupingKey(prevEvent);
   }
 
   markGifAsFavorite(bool favorite) async {

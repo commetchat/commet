@@ -8,6 +8,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       {super.key,
       required this.senderName,
       required this.senderColor,
+      this.viaSenderName,
       this.senderAvatar,
       this.formattedContent,
       this.attachments,
@@ -27,6 +28,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.onDoubleTapMessage});
   final String senderName;
   final Color senderColor;
+  final String? viaSenderName;
   final ImageProvider? senderAvatar;
   final Widget? formattedContent;
   final Widget? attachments;
@@ -49,6 +51,12 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   String get messageEditedMarker => Intl.message("(Edited)",
       name: "messageEditedMarker",
       desc: "Short text to mark that a message has been edited");
+
+  String messageSentViaProfile(String sender) => Intl.message("via $sender",
+      name: "messageSentViaProfile",
+      desc:
+          "Shows the real name of the account which sent a message with a per message profile",
+      args: [sender]);
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +84,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            name(),
+                            Flexible(child: name()),
                             if (timestamp != null)
                               tiamat.Text.labelLow(timestamp!),
                           ],
@@ -145,18 +153,31 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   }
 
   Widget name() {
-    return SelectionContainer.disabled(
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: onAvatarTapped,
-          child: tiamat.Text.name(
-            senderName,
-            color: senderColor,
-          ),
+    Widget result = MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onAvatarTapped,
+        child: tiamat.Text.name(
+          senderName,
+          color: senderColor,
         ),
       ),
     );
+
+    if (viaSenderName != null) {
+      result = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(child: result),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(6, 0, 0, 0),
+            child: tiamat.Text.labelLow(messageSentViaProfile(viaSenderName!)),
+          ),
+        ],
+      );
+    }
+
+    return SelectionContainer.disabled(child: result);
   }
 
   Widget avatar() {
