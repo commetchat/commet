@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
+import 'package:commet/client/components/voip/voip_session.dart';
 
 /// The user's saved choice. [soundId] null = "None"; [spaceId] null = every
 /// Space, otherwise only rooms of that Space.
@@ -31,6 +32,31 @@ SoundId? pickEntranceSound({
   // Sound ids are per-Space; one from another Space's catalog can't play here.
   if (catalog.getById(soundId) == null) return null;
   return soundId;
+}
+
+/// The entrance sound to trigger now that [session] has started, or null.
+/// Voice channels only ([isVoiceChannel], not 1:1 calls), once per session
+/// ([gate]), and only for a connected session that isn't deafened. The
+/// deafen and mute toggles outside a call only play a feedback sound, so the
+/// session's own state is the only one that counts.
+SoundId? claimEntranceSound({
+  required VoipSession session,
+  required bool isVoiceChannel,
+  required EntranceSoundChoice choice,
+  required Iterable<String> roomSpaceIds,
+  required SoundboardCatalog catalog,
+  EntranceSoundGate? gate,
+}) {
+  if (!isVoiceChannel) return null;
+  if (session.state != VoipState.connected) return null;
+  gate ??= EntranceSoundGate.instance;
+  if (!gate.claim(session, roomId: session.roomId)) return null;
+  return pickEntranceSound(
+    choice: choice,
+    roomSpaceIds: roomSpaceIds,
+    catalog: catalog,
+    deafened: session.isDeafened,
+  );
 }
 
 /// Makes the entrance sound fire at most once per call session, and carries

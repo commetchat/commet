@@ -1,7 +1,10 @@
+import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/soundboard/entrance_sound.dart';
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
+import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/main.dart';
 import 'package:test/test.dart';
 
 SoundboardSound _s(String id) => SoundboardSound(
@@ -13,6 +16,22 @@ SoundboardSound _s(String id) => SoundboardSound(
       durationMs: 1500,
       normalizedGain: 1.0,
     );
+
+class _Session implements VoipSession {
+  _Session({this.isDeafened = false, this.state = VoipState.connected});
+
+  @override
+  final bool isDeafened;
+
+  @override
+  final VoipState state;
+
+  @override
+  String get roomId => '!voice:x';
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   group('pickEntranceSound', () {
@@ -130,6 +149,47 @@ void main() {
       now = now.add(const Duration(minutes: 1));
 
       expect(gate.takeSilentJoinRequest('!voice:x'), isFalse);
+    });
+  });
+
+  group('claimEntranceSound', () {
+    final catalog = InMemorySoundboardCatalog([_s('horse')]);
+    const horse = EntranceSoundChoice(soundId: 'horse');
+
+    SoundId? claimFor(VoipSession session, {bool isVoiceChannel = true}) =>
+        claimEntranceSound(
+          session: session,
+          isVoiceChannel: isVoiceChannel,
+          choice: horse,
+          roomSpaceIds: const ['!space:x'],
+          catalog: catalog,
+          gate: EntranceSoundGate(),
+        );
+
+    test('plays when the user joins a voice channel', () {
+      expect(claimFor(_Session()), 'horse');
+    });
+
+    test('toggling deafen outside a call does not silence the next join', () {
+      // Outside a call the deafen shortcut only plays a feedback sound: the
+      // session starts undeafened, so its entrance sound plays.
+      clientManager = ClientManager();
+      addTearDown(() => clientManager = null);
+      clientManager!.callManager.toggleDeafen();
+
+      expect(claimFor(_Session()), 'horse');
+    });
+
+    test('plays nothing when the session is deafened', () {
+      expect(claimFor(_Session(isDeafened: true)), isNull);
+    });
+
+    test('plays nothing in a 1:1 call', () {
+      expect(claimFor(_Session(), isVoiceChannel: false), isNull);
+    });
+
+    test('plays nothing for a session that is not connected', () {
+      expect(claimFor(_Session(state: VoipState.connecting)), isNull);
     });
   });
 }

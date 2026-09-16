@@ -7,6 +7,10 @@
 // - 3 redirects + 15s timeout + strict allowlist mitigate SSRF/open-redirect.
 class SoundboardConstraints {
   static const int maxDurationMs = 15000;
+
+  /// Longest a sound may play. Sounds are checked against [maxDurationMs]
+  /// when imported, but any Space moderator can point a sound at any file.
+  static const int maxPlaybackMs = maxDurationMs + 5000;
   static const int maxFileBytes = 1024 * 1024; // 1 MiB
   static const int maxRedirects = 3;
   static const Duration httpTimeout = Duration(seconds: 15);

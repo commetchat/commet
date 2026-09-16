@@ -4,10 +4,14 @@
 // boosts) unlike <audio>.volume. Same semantics as MediaKitSoundboardPlayer:
 // one voice per trigger (instances of the same sound overlap), an instance
 // that ends on its own is reported through [onInstanceFinished], errors are
-// logged and swallowed.
+// logged and swallowed. Sounds come from room state that any Space moderator
+// can set, so decoded buffers are bounded in number and length (see
+// soundboard_media_limits.dart) and playback is cut like on native.
 import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
+import 'package:commet/client/components/soundboard/soundboard_media_limits.dart';
 import 'package:commet/client/components/soundboard/soundboard_normalizer.dart';
 import 'package:commet/client/matrix/components/soundboard/soundboard_player_factory.dart';
 import 'package:commet/debug/log.dart';
@@ -31,7 +35,8 @@ class WebAudioSoundboardPlayer implements PreloadingSoundboardPlayer {
   void Function(String instanceId)? onInstanceFinished;
 
   web.AudioContext? _context;
-  final Map<String, Future<web.AudioBuffer>> _buffers = {};
+  final SoundboardBufferCache<web.AudioBuffer> _buffers =
+      SoundboardBufferCache(maxEntries: SoundboardConstraints.maxCachedSounds);
   final Map<String, _Voice> _voices = {};
 
   /// Instances started but still decoding; a stop in the meantime cancels
@@ -51,24 +56,27 @@ class WebAudioSoundboardPlayer implements PreloadingSoundboardPlayer {
       .clamp(0.0, 1.5 * SoundboardNormalizer.maxGain);
 
   Future<web.AudioBuffer> _buffer(String soundId) {
-    final cached = _buffers[soundId];
-    if (cached != null) return cached;
     final sound = resolveSound(soundId);
     if (sound == null) {
       return Future.error(StateError('Unknown sound $soundId'));
     }
-    final future = () async {
+    // Keyed by file too: an admin can point a sound at a new file.
+    return _buffers.get('${sound.soundId}\n${sound.mediaUri}', () async {
       final bytes = await loadBytes(sound);
       // decodeAudioData detaches the buffer it gets; hand it a copy.
       final copy = Uint8List.fromList(bytes).buffer.toJS;
-      return _ctx.decodeAudioData(copy).toDart;
-    }();
-    _buffers[soundId] = future;
-    // A failed load is retried on the next play.
-    future.then<void>((_) {}, onError: (Object _) {
-      _buffers.remove(soundId);
+      final web.AudioBuffer buffer;
+      try {
+        buffer = await _ctx.decodeAudioData(copy).toDart;
+      } catch (e) {
+        throw SoundboardMediaRejected('not decodable audio: $e');
+      }
+      if (buffer.duration * 1000 > SoundboardConstraints.maxPlaybackMs) {
+        throw SoundboardMediaRejected(
+            '${buffer.duration.toStringAsFixed(1)} s long');
+      }
+      return buffer;
     });
-    return future;
   }
 
   @override
@@ -104,7 +112,8 @@ class WebAudioSoundboardPlayer implements PreloadingSoundboardPlayer {
         onInstanceFinished?.call(instanceId);
       }).toJS;
       _voices[instanceId] = voice;
-      source.start();
+      // Same cut as MediaKitSoundboardPlayer.maxInstanceLifetime.
+      source.start(0, 0, SoundboardConstraints.maxPlaybackMs / 1000);
     } catch (e, s) {
       Log.onError(e, s, content: 'Soundboard play failed: $soundId');
       if (_pending.remove(instanceId) || _voices.containsKey(instanceId)) {

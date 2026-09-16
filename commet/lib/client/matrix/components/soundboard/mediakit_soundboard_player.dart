@@ -64,8 +64,7 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
     Duration? maxInstanceLifetime,
   })  : createInstance = createInstance ?? _MediaKitAudioInstance.new,
         maxInstanceLifetime = maxInstanceLifetime ??
-            const Duration(
-                milliseconds: SoundboardConstraints.maxDurationMs + 5000);
+            const Duration(milliseconds: SoundboardConstraints.maxPlaybackMs);
 
   /// mpv's `volume-max` (default 130) must cover the loudest setting:
   /// user 1.5 * gain +18 dB is about 229.

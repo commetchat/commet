@@ -23,9 +23,9 @@ import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/matrix/components/soundboard/livekit_soundboard_transport.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_soundboard_emoji_image.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_todevice_soundboard_transport.dart';
+import 'package:commet/client/matrix/components/soundboard/soundboard_media_download.dart';
 import 'package:commet/client/matrix/components/soundboard/soundboard_player_factory.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_favorites.dart';
@@ -116,24 +116,18 @@ class SoundboardCallController extends ChangeNotifier {
   }
 
   SoundId? _claimEntranceSound() {
-    // Voice channels only, not 1:1 calls. The LiveKit room is already
-    // connected: the backend awaits connect() before returning the session.
     final room = session.client.getRoom(session.roomId);
-    if (room?.getComponent<VoipRoomComponent>() == null) return null;
-    if (session.state != VoipState.connected) return null;
-    if (!EntranceSoundGate.instance.claim(session, roomId: session.roomId)) {
-      return null;
-    }
-    return pickEntranceSound(
+    return claimEntranceSound(
+      session: session,
+      // The LiveKit room is already connected here: the backend awaits
+      // connect() before returning the session.
+      isVoiceChannel: room?.getComponent<VoipRoomComponent>() != null,
       choice: EntranceSoundChoice(
         soundId: preferences.soundboardEntranceSoundId.value,
         spaceId: preferences.soundboardEntranceSpaceId.value,
       ),
       roomSpaceIds: sources.map((s) => s.id),
       catalog: catalog,
-      // Deafening before joining only sets fakeDeafenToggle.
-      deafened: session.isDeafened ||
-          clientManager?.callManager.fakeDeafenToggle == true,
     );
   }
 
@@ -188,20 +182,24 @@ class SoundboardCallController extends ChangeNotifier {
       resolvePlayableUri(session.client, sound);
 
   /// Resolves mxc:// to a local cached file (fast replay, no per-click
-  /// download). MxcFileProvider handles cache + authenticated fetch.
-  /// media_kit cannot open mxc:// itself, so there is nothing to fall back to.
+  /// download). media_kit cannot open mxc:// itself, so there is nothing to
+  /// fall back to. The cache key is the one MxcFileProvider uses.
   static Future<String> resolvePlayableUri(
       Client client, SoundboardSound sound) async {
     final uri = Uri.parse(sound.mediaUri);
     if (client is! MatrixClient || uri.scheme != 'mxc') {
       throw StateError('Cannot play ${sound.mediaUri}');
     }
-    final resolved =
-        await MxcFileProviderShim(client.getMatrixClient(), uri).resolve();
-    if (resolved == null) {
+    final key = uri.toString();
+    final cached = await fileCache?.getFile(key);
+    if (cached != null) return cached.toString();
+
+    final bytes = await downloadSoundboardMedia(client.getMatrixClient(), uri);
+    final stored = await fileCache?.putFile(key, bytes);
+    if (stored == null) {
       throw StateError('Could not cache ${sound.mediaUri} for playback');
     }
-    return resolved.toString();
+    return stored.toString();
   }
 
   Future<Uint8List> _loadBytes(SoundboardSound sound) =>
@@ -214,12 +212,7 @@ class SoundboardCallController extends ChangeNotifier {
     if (client is! MatrixClient || uri.scheme != 'mxc') {
       throw StateError('Cannot play ${sound.mediaUri}');
     }
-    final bytes =
-        await MxcFileProvider(client.getMatrixClient(), uri).getFileData();
-    if (bytes == null) {
-      throw StateError('Could not download ${sound.mediaUri}');
-    }
-    return bytes;
+    return downloadSoundboardMedia(client.getMatrixClient(), uri);
   }
 
   Future<void> _preload(String soundId) async {
@@ -341,18 +334,5 @@ class _CompositeCatalog implements SoundboardCatalog {
       sub.cancel();
     }
     _changes.close();
-  }
-}
-
-/// Thin shim so the controller compiles without importing the full
-/// FileProvider graph in tests (same behavior as MxcFileProvider).
-class MxcFileProviderShim {
-  final dynamic mx;
-  final Uri uri;
-  MxcFileProviderShim(this.mx, this.uri);
-
-  Future<Uri?> resolve() async {
-    final provider = MxcFileProvider(mx, uri);
-    return provider.resolve();
   }
 }
