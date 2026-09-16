@@ -252,6 +252,12 @@ class MatrixVoipSession implements VoipSession {
     if (stream != null) {
       currentScreenshare = source;
       await stopScreenshare();
+      // The OS / browser picker can end the capture on its own (e.g.
+      // "Stop sharing" in the browser bar). Mirror what the SDK does for its
+      // own screen shares so the stream is removed and the UI updates.
+      for (final track in stream.getVideoTracks()) {
+        track.onEnded = () => stopScreenshare();
+      }
       session.addLocalStream(
           stream, matrix.SDPStreamMetadataPurpose.Screenshare);
     }
@@ -275,11 +281,15 @@ class MatrixVoipSession implements VoipSession {
     }
 
     await session.setLocalVideoMuted(false);
+    // The SDK only reports the mute change on the stream itself, so
+    // tell listeners (voice panel, call view) the session changed.
+    _onStateChanged.add(null);
   }
 
   @override
   Future<void> stopCamera() async {
     await session.setLocalVideoMuted(true);
+    _onStateChanged.add(null);
   }
 
   void initStreams() {

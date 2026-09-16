@@ -42,6 +42,9 @@ class MatrixVoipStream implements VoipStream {
       r.srcObject = stream.stream!;
 
       renderer = r;
+      // COMMET: views built before the renderer existed (e.g. the voice
+      // panel's live preview) need to know there is now something to draw.
+      _onChanged.add(());
     }
   }
 
@@ -128,20 +131,11 @@ class MatrixVoipStream implements VoipStream {
       return CircularProgressIndicator();
     }
 
-    if (fit == BoxFit.contain) {
-      return AspectRatio(
-          aspectRatio: aspectRatio ?? 1, child: RTCVideoView(renderer!));
-    } else {
-      if (renderer!.textureId != null) {
-        return RTCVideoView(
-          key: key,
-          renderer!,
-          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-        );
-      }
-    }
-
-    return null;
+    // COMMET: each view gets its own renderer instead of sharing [renderer].
+    // The same stream can be on screen twice (call view + the voice panel's
+    // live preview) and on web an RTCVideoView owns the renderer's single
+    // <video> element, so two views on one renderer fight over it.
+    return _MatrixVideoView(this, fit: fit, key: key);
   }
 
   @override
@@ -174,4 +168,74 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   double get volume => preferences.getVoipUserVolume(streamUserId);
+}
+
+/// Renders a [MatrixVoipStream] with a renderer owned by this view, mirroring
+/// how LiveKit's `VideoTrackRenderer` works. Disposed with the view.
+class _MatrixVideoView extends StatefulWidget {
+  const _MatrixVideoView(this.stream, {required this.fit, super.key});
+  final MatrixVoipStream stream;
+  final BoxFit fit;
+
+  @override
+  State<_MatrixVideoView> createState() => _MatrixVideoViewState();
+}
+
+class _MatrixVideoViewState extends State<_MatrixVideoView> {
+  RTCVideoRenderer? _renderer;
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = widget.stream.onStreamChanged.listen((_) {
+      final source = widget.stream.stream.stream;
+      if (_renderer != null && source != null) {
+        _renderer!.srcObject = source;
+      }
+      if (mounted) setState(() {});
+    });
+    _init();
+  }
+
+  Future<void> _init() async {
+    final r = RTCVideoRenderer();
+    await r.initialize();
+    if (!mounted) {
+      await r.dispose();
+      return;
+    }
+    r.srcObject = widget.stream.stream.stream;
+    setState(() => _renderer = r);
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    final r = _renderer;
+    _renderer = null;
+    if (r != null) {
+      r.srcObject = null;
+      r.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final r = _renderer;
+    if (r == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (widget.fit == BoxFit.contain) {
+      return AspectRatio(
+          aspectRatio: widget.stream.aspectRatio ?? 1, child: RTCVideoView(r));
+    }
+
+    return RTCVideoView(
+      r,
+      objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+    );
+  }
 }

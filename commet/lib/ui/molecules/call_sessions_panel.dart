@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
+import 'package:commet/ui/molecules/call_session_live_panel.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -96,15 +97,30 @@ class _CallSessionPanelState extends State<CallSessionPanel>
     super.dispose();
   }
 
+  void openRoom() {
+    EventBus.doOpenRoom(widget.session.roomId,
+        clientId: widget.session.client.identifier);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          EventBus.doOpenRoom(widget.session.roomId,
-              clientId: widget.session.client.identifier);
-        },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildControlsRow(context),
+          // Grows the panel below the button row while sharing screen /
+          // camera; renders nothing otherwise.
+          CallSessionLivePanel(session: widget.session, onOpenRoom: openRoom),
+        ],
+      ),
+    );
+  }
+
+  Widget buildControlsRow(BuildContext context) {
+    return InkWell(
+        onTap: openRoom,
         child: SizedBox(
           height: widget.height,
           child: Row(
@@ -120,25 +136,25 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                         width: widget.height,
                         child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                              child: AnimatedBuilder(
-                                animation: audioLevel,
-                                builder: (context, child) {
-                                  return Container(
-                                    child: Icon(
-                                      widget.session.isDeafened
-                                          ? Icons.volume_off_rounded
-                                          : Icons.volume_up_rounded,
-                                      color: widget.session.isDeafened
-                                          ? ColorScheme.of(context).error
-                                          : Color.lerp(
-                                              ColorScheme.of(context).onSurface,
-                                              SpeakingIndicator.color,
-                                              audioLevel.value),
-                                      size: 16,
-                                    ),
-                                  );
-                                },
-                              )),
+                            child: AnimatedBuilder(
+                              animation: audioLevel,
+                              builder: (context, child) {
+                                return Container(
+                                  child: Icon(
+                                    widget.session.isDeafened
+                                        ? Icons.volume_off_rounded
+                                        : Icons.volume_up_rounded,
+                                    color: widget.session.isDeafened
+                                        ? ColorScheme.of(context).error
+                                        : Color.lerp(
+                                            ColorScheme.of(context).onSurface,
+                                            SpeakingIndicator.color,
+                                            audioLevel.value),
+                                    size: 16,
+                                  ),
+                                );
+                              },
+                            )),
                       )),
                   tiamat.Text(widget.session.roomName),
                 ],
@@ -199,9 +215,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
               ),
             ],
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget pickAnimation({required VoipSession entry, required Widget child}) {
