@@ -39,6 +39,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     final listener = livekitRoom.createListener();
     listener.on(onTrackPublished);
     listener.on(onTrackUnpublished);
+    listener.on(onTrackSubscribed);
+    listener.on(onTrackUnsubscribed);
     listener.on(onLocalTrackPublished);
     listener.on(onLocalTrackUnpublished);
     listener.on(onTrackStreamEvent);
@@ -151,9 +153,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
     if (event.publication.track?.mediaType ==
         RTCRtpMediaType.RTCRtpMediaTypeVideo) {
-      streams.removeWhere((e) =>
-          (e as MatrixLivekitVoipStream).publication.sid ==
-          event.publication.sid);
+      _removeStreamsWithSid(event.publication.sid);
     }
 
     for (var track in streams) {
@@ -198,6 +198,36 @@ class MatrixLivekitVoipSession implements VoipSession {
     s.deafened = _deafenedIdentities.contains(event.participant.identity);
     streams.add(s);
     _stateChanged.add(());
+  }
+
+  Iterable<MatrixLivekitVoipStream> _streamsWithSid(String sid) => streams
+      .whereType<MatrixLivekitVoipStream>()
+      .where((s) => s.publication.sid == sid);
+
+  /// Removes the streams of a publication and releases what they hold.
+  void _removeStreamsWithSid(String sid) {
+    final removed = _streamsWithSid(sid).toList();
+    streams.removeWhere(removed.contains);
+    for (final stream in removed) {
+      stream.dispose();
+    }
+  }
+
+  /// LiveKit announces a remote publication (TrackPublishedEvent) before it
+  /// subscribes to it, so the stream's track, and with it the playback
+  /// volume and the speaking visualizer, only arrives here.
+  void onTrackSubscribed(lk.TrackSubscribedEvent event) {
+    for (final stream in _streamsWithSid(event.publication.sid)) {
+      stream.onTrackSubscribed();
+      stream.onStreamUpdatedEvent();
+    }
+    _stateChanged.add(());
+  }
+
+  void onTrackUnsubscribed(lk.TrackUnsubscribedEvent event) {
+    for (final stream in _streamsWithSid(event.publication.sid)) {
+      stream.onTrackUnsubscribed();
+    }
   }
 
   void onParticipantConnected(lk.ParticipantConnectedEvent event) {
@@ -276,17 +306,13 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
-    streams.removeWhere((e) =>
-        (e as MatrixLivekitVoipStream).publication.sid ==
-        event.publication.sid);
+    _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
   }
 
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
-    streams.removeWhere((e) =>
-        (e as MatrixLivekitVoipStream).publication.sid ==
-        event.publication.sid);
+    _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
   }
@@ -315,6 +341,11 @@ class MatrixLivekitVoipSession implements VoipSession {
       disconnectCall(),
       stopHeartbeat(),
     ]);
+
+    for (final stream in streams.whereType<MatrixLivekitVoipStream>()) {
+      stream.dispose();
+    }
+    streams.clear();
 
     state = VoipState.ended;
     _stateChanged.add(());

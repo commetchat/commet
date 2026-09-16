@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/list_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart';
@@ -170,6 +171,23 @@ class MatrixVoipStream implements VoipStream {
   double get volume => preferences.getVoipUserVolume(streamUserId);
 }
 
+/// Points [renderer], which belongs to a single view, at [stream] for its
+/// video only.
+///
+/// On web every renderer plays a remote stream's audio through an <audio>
+/// element of its own, and [MatrixVoipStream.renderer] already plays it, so
+/// the view's renderer is muted. The element is created by the `srcObject`
+/// setter, which is why muting comes after it. Native renderers never play
+/// audio, and their `muted` setter mutes the track itself, so they are left
+/// alone.
+void attachVideoOnly(VideoRenderer renderer, MediaStream? stream,
+    {bool isWeb = kIsWeb}) {
+  renderer.srcObject = stream;
+  if (isWeb && stream != null) {
+    renderer.muted = true;
+  }
+}
+
 /// Renders a [MatrixVoipStream] with a renderer owned by this view, mirroring
 /// how LiveKit's `VideoTrackRenderer` works. Disposed with the view.
 class _MatrixVideoView extends StatefulWidget {
@@ -191,7 +209,7 @@ class _MatrixVideoViewState extends State<_MatrixVideoView> {
     _sub = widget.stream.onStreamChanged.listen((_) {
       final source = widget.stream.stream.stream;
       if (_renderer != null && source != null) {
-        _renderer!.srcObject = source;
+        attachVideoOnly(_renderer!, source);
       }
       if (mounted) setState(() {});
     });
@@ -205,7 +223,7 @@ class _MatrixVideoViewState extends State<_MatrixVideoView> {
       await r.dispose();
       return;
     }
-    r.srcObject = widget.stream.stream.stream;
+    attachVideoOnly(r, widget.stream.stream.stream);
     setState(() => _renderer = r);
   }
 
