@@ -22,10 +22,9 @@ void main() {
     });
 
     test('two clips with different amplitudes converge', () {
-      final loud = SoundboardNormalizer.analyze(
-          List<double>.filled(1000, 0.9));
-      final quiet = SoundboardNormalizer.analyze(
-          List<double>.filled(1000, 0.1));
+      final loud = SoundboardNormalizer.analyze(List<double>.filled(1000, 0.9));
+      final quiet =
+          SoundboardNormalizer.analyze(List<double>.filled(1000, 0.1));
       final loudOut = 0.9 * loud.gain;
       final quietOut = 0.1 * quiet.gain;
       // Perceived levels much closer after normalization than before (9x).
@@ -33,8 +32,7 @@ void main() {
     });
 
     test('silence yields safe no-op gain', () {
-      final est = SoundboardNormalizer.analyze(
-          List<double>.filled(100, 0.0));
+      final est = SoundboardNormalizer.analyze(List<double>.filled(100, 0.0));
       expect(est.gain, 1.0);
     });
 
@@ -72,8 +70,7 @@ void main() {
       for (var i = 0; i < samples.length; i++) {
         bytes.setInt16(44 + i * 2, samples[i], Endian.little);
       }
-      final pcm = SoundboardNormalizer.decodeWav16(
-          bytes.buffer.asUint8List());
+      final pcm = SoundboardNormalizer.decodeWav16(bytes.buffer.asUint8List());
       expect(pcm, isNotNull);
       expect(pcm!.length, 4);
       expect(pcm[3], closeTo(0.9999, 0.001));

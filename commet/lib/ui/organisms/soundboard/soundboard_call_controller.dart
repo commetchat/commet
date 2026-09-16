@@ -34,16 +34,20 @@ class SoundboardCallController extends ChangeNotifier {
   bool _disposed = false;
   StreamSubscription? _engineSub;
 
+  /// Activations whose overlay has already been shown.
+  final Set<String> _shownEventIds = {};
+
   SoundboardCallController(this.session);
 
   Future<void> init() async {
     _resolveCatalog();
-    final engine = SoundboardEngine(
-      player: MediaKitSoundboardPlayer(
-        resolveSound: (id) => catalog.getById(id),
-        resolvePlayableUri: _resolvePlayableUri,
-      ),
+    final player = MediaKitSoundboardPlayer(
+      resolveSound: (id) => catalog.getById(id),
+      resolvePlayableUri: _resolvePlayableUri,
     );
+    final engine = SoundboardEngine(player: player);
+    // Audio completion, not the overlay timer, ends an activation.
+    player.onInstanceFinished = engine.onAudioCompleted;
     // Bridge engine activations -> avatar overlays (sender-specific).
     engine.addListener(_syncOverlays);
     _engineSub = null; // engine uses sync listeners, not streams.
@@ -139,19 +143,21 @@ class SoundboardCallController extends ChangeNotifier {
     if (_disposed) return;
     final engine = soundboard?.engine;
     if (engine == null) return;
+    _shownEventIds.retainAll(engine.active.keys);
     for (final entry in engine.active.values) {
+      if (!_shownEventIds.add(entry.eventId)) continue;
       final sound = catalog.getById(entry.soundId);
       if (sound == null) continue;
-      SoundboardOverlayRegistry.instance.show(
+      final shown = SoundboardOverlayRegistry.instance.show(
         userId: entry.senderId,
         soundId: entry.soundId,
         emoji: sound.emoji,
         overlayMs: entry.overlayMs,
       );
-      // Auto-clear after overlay window so tiles don't stick.
+      // Auto-clear after overlay window so tiles don't stick. A newer
+      // trigger by the same sender keeps its own overlay.
       Future.delayed(Duration(milliseconds: entry.overlayMs + 250), () {
-        SoundboardOverlayRegistry.instance.clearUser(entry.senderId);
-        engine.markFinished(entry.soundId);
+        SoundboardOverlayRegistry.instance.clearEntry(entry.senderId, shown);
       });
     }
     notifyListeners();

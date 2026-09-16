@@ -152,20 +152,20 @@ void main() {
     test('rejects oversized files', () {
       expect(
           () => MyInstantsResolver.validateDownload(
-            byteLength: 2 * 1024 * 1024,
-            contentType: 'audio/mpeg',
-            downloadUrl: 'https://www.myinstants.com/media/sounds/x.mp3',
-          ),
+                byteLength: 2 * 1024 * 1024,
+                contentType: 'audio/mpeg',
+                downloadUrl: 'https://www.myinstants.com/media/sounds/x.mp3',
+              ),
           throwsA(isA<MyInstantsValidationError>()));
     });
 
     test('rejects non-audio content', () {
       expect(
           () => MyInstantsResolver.validateDownload(
-            byteLength: 100,
-            contentType: 'text/html',
-            downloadUrl: 'https://www.myinstants.com/media/sounds/x.mp3',
-          ),
+                byteLength: 100,
+                contentType: 'text/html',
+                downloadUrl: 'https://www.myinstants.com/media/sounds/x.mp3',
+              ),
           throwsA(isA<MyInstantsValidationError>()));
     });
 

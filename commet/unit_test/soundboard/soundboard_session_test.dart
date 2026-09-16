@@ -18,22 +18,22 @@ class FakePlayer implements SoundboardPlayer {
   final List<String> started = [];
   final Set<String> playing = {};
   @override
-  Future<void> start(String soundId) async {
+  Future<void> start(String instanceId, String soundId) async {
     started.add(soundId);
-    playing.add(soundId);
+    playing.add(instanceId);
   }
 
   @override
-  Future<void> stop(String soundId) async {
-    playing.remove(soundId);
+  Future<void> stop(String instanceId) async {
+    playing.remove(instanceId);
   }
 
   @override
   Future<void> stopAll() async => playing.clear();
   @override
-  Future<void> setVolumeFor(String soundId, double volume) async {}
+  Future<void> setVolumeFor(String instanceId, double volume) async {}
   @override
-  bool isPlaying(String soundId) => playing.contains(soundId);
+  bool isPlaying(String instanceId) => playing.contains(instanceId);
 }
 
 SoundboardSound _s(String id) => SoundboardSound(
@@ -68,13 +68,12 @@ void main() {
     test('resolves play() hook and validates audio bytes', () async {
       final svc = SoundboardImportService(fetcher: (uri) async {
         if (uri.path.contains('instant')) {
-          return _html(
-              '<a onclick="play(\'/media/sounds/ok.mp3\')">x</a>');
+          return _html('<a onclick="play(\'/media/sounds/ok.mp3\')">x</a>');
         }
         return _audio(List.filled(5000, 1), 'audio/mpeg');
       });
-      final out = await svc.importFromPageUrl(
-          'https://www.myinstants.com/en/instant/ok-1/');
+      final out = await svc
+          .importFromPageUrl('https://www.myinstants.com/en/instant/ok-1/');
       expect(out.mimeType, 'audio/mpeg');
       expect(out.bytes.length, 5000);
     });
@@ -96,8 +95,7 @@ void main() {
         return _audio([1, 2, 3], 'text/html');
       });
       await expectLater(
-          svc.importFromPageUrl(
-              'https://www.myinstants.com/en/instant/x-1/'),
+          svc.importFromPageUrl('https://www.myinstants.com/en/instant/x-1/'),
           throwsA(anything));
     });
 
@@ -109,8 +107,7 @@ void main() {
         return _audio(List.filled(2 * 1024 * 1024, 1), 'audio/mpeg');
       });
       await expectLater(
-          svc.importFromPageUrl(
-              'https://www.myinstants.com/en/instant/big-1/'),
+          svc.importFromPageUrl('https://www.myinstants.com/en/instant/big-1/'),
           throwsA(anything));
     });
 
@@ -119,27 +116,24 @@ void main() {
         throw Exception('offline');
       });
       await expectLater(
-          svc.importFromPageUrl(
-              'https://www.myinstants.com/en/instant/x-1/'),
+          svc.importFromPageUrl('https://www.myinstants.com/en/instant/x-1/'),
           throwsA(anything));
     });
 
     test('DNS failure surfaces an actionable message', () async {
       final svc = SoundboardImportService(fetcher: (_) async {
-        throw SocketException(
-            'Failed host lookup: www.myinstants.com',
+        throw SocketException('Failed host lookup: www.myinstants.com',
             address: InternetAddress('93.184.216.34'));
       });
       await expectLater(
-          svc.importFromPageUrl(
-              'https://www.myinstants.com/en/instant/x-1/'),
-          throwsA(predicate(
-              (e) => e.toString().contains('internet connection'))));
+          svc.importFromPageUrl('https://www.myinstants.com/en/instant/x-1/'),
+          throwsA(
+              predicate((e) => e.toString().contains('internet connection'))));
     });
 
     test('bot-protection (403) surfaces a specific error', () async {
-      final svc = SoundboardImportService(
-          fetcher: (_) async => _html('blocked', 403));
+      final svc =
+          SoundboardImportService(fetcher: (_) async => _html('blocked', 403));
       await expectLater(
           svc.importFromPageUrl(
               'https://www.myinstants.com/pt/instant/faaah-63455/'),
@@ -286,10 +280,8 @@ void main() {
     test('two users firing rapidly: both sounds land on both engines',
         () async {
       InMemorySoundboardTransport.resetAll();
-      final catalogA =
-          InMemorySoundboardCatalog([_s('airhorn'), _s('risada')]);
-      final catalogB =
-          InMemorySoundboardCatalog([_s('airhorn'), _s('risada')]);
+      final catalogA = InMemorySoundboardCatalog([_s('airhorn'), _s('risada')]);
+      final catalogB = InMemorySoundboardCatalog([_s('airhorn'), _s('risada')]);
       final ea = SoundboardEngine(player: FakePlayer(), nowMs: () => 1000);
       final eb = SoundboardEngine(player: FakePlayer(), nowMs: () => 1010);
       final ta = InMemorySoundboardTransport('@a:x');
@@ -316,11 +308,12 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 50));
 
       // Polyphony: each engine holds BOTH sounds (different ids coexist).
-      expect(ea.active.keys.toSet(), {'airhorn', 'risada'});
-      expect(eb.active.keys.toSet(), {'airhorn', 'risada'});
-      // Attribution: latest author per sound is whoever sent it.
-      expect(ea.active['airhorn']!.senderId, '@a:x');
-      expect(ea.active['risada']!.senderId, '@b:x');
+      Map<String, String> senderBySound(SoundboardEngine e) => {
+            for (final a in e.active.values) a.soundId: a.senderId,
+          };
+      // Attribution: each activation belongs to whoever sent it.
+      expect(senderBySound(ea), {'airhorn': '@a:x', 'risada': '@b:x'});
+      expect(senderBySound(eb), {'airhorn': '@a:x', 'risada': '@b:x'});
 
       await sa.dispose();
       await sb.dispose();
@@ -347,7 +340,8 @@ void main() {
           soundId: 'deleted-sound', senderId: '@ghost:x', eventId: 'g1');
       await peer.send(ghostEvent);
       await Future.delayed(const Duration(milliseconds: 20));
-      expect(engine.active.containsKey('deleted-sound'), isFalse);
+      expect(engine.active.values.map((a) => a.soundId),
+          isNot(contains('deleted-sound')));
       await s.dispose();
       await peer.dispose();
       InMemorySoundboardTransport.resetAll();

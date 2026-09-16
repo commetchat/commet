@@ -64,6 +64,10 @@ class SoundboardConstraints {
   /// Max entries in dedup LRU (bounded memory).
   static const int maxDedupEntries = 200;
 
+  /// Live playback instances across all sounds; the oldest is dropped
+  /// beyond this so rapid triggers can't pile up audio players.
+  static const int maxConcurrentInstances = 8;
+
   /// Max decoded sounds held in session LRU.
   static const int maxCachedSounds = 20;
 
