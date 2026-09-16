@@ -62,19 +62,19 @@ class Log {
       }
     },
     errorCallback: (self, parent, zone, error, stackTrace) {
+      final dartIoInternal = !kIsWeb && isDartIoInternal(error, stackTrace);
       if (BuildConfig.DEBUG) {
-        parent.print(zone, "ERROR CALLBACK");
+        parent.print(
+            zone,
+            dartIoInternal
+                ? "ERROR CALLBACK (dart:io internal, see Log.isDartIoInternal)"
+                : "ERROR CALLBACK");
         parent.print(zone, error.toString());
         parent.print(zone, stackTrace?.toString() ?? "");
       }
 
-      if (!kIsWeb) {
-        if (error case HttpException e) {
-          if (e.message ==
-              "Connection closed before full header was received") {
-            return;
-          }
-        }
+      if (dartIoInternal) {
+        return null;
       }
 
       String? info =
@@ -93,6 +93,28 @@ class Log {
           LogType.error, "${error.toString()} ($info)", error, stackTrace));
     },
   );
+
+  /// Errors that dart:io passes through [Zone.errorCallback] as part of its
+  /// own bookkeeping. They show up even when every request succeeds:
+  /// - "Connection closed before full header was received": an idle
+  ///   keep-alive connection closed. package:http's top-level functions
+  ///   force-close their client after every call, and servers drop idle
+  ///   connections.
+  /// - "Failed host lookup" from `staggeredLookup`: dart:io resolves IPv4
+  ///   and IPv6 separately and connects with whichever answers, so one
+  ///   family failing (e.g. errno 11004, WSANO_DATA, when Windows returns no
+  ///   AAAA records) is harmless.
+  /// A request that really fails reports its own error to the caller.
+  static bool isDartIoInternal(Object error, StackTrace? stackTrace) {
+    if (error is HttpException) {
+      return error.message ==
+          "Connection closed before full header was received";
+    }
+    if (error is SocketException) {
+      return stackTrace.toString().contains("_NativeSocket.staggeredLookup");
+    }
+    return false;
+  }
 
   static String _formatString(String logsStr, LogType type) {
     switch (type) {

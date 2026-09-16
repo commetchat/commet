@@ -30,10 +30,13 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
     _normalizedGain[soundId] = gain;
   }
 
-  double _effectiveVolume(String soundId) {
-    final g = _normalizedGain[soundId] ?? 1.0;
-    return (_userVolume * g).clamp(0.0, 1.0);
-  }
+  double _effectiveVolume(String soundId) =>
+      mpvVolume(_userVolume, _normalizedGain[soundId] ?? 1.0);
+
+  /// media_kit takes mpv's `volume`, where 100 plays the file unchanged (and
+  /// mpv applies it cubically, so 0..1 is silence). Never boosts past 100.
+  static double mpvVolume(double userVolume, double normalizedGain) =>
+      (userVolume * normalizedGain).clamp(0.0, 1.0) * 100;
 
   @override
   Future<void> start(String soundId) async {
@@ -49,6 +52,9 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
       final sound = resolveSound(soundId);
       if (sound != null) _normalizedGain[soundId] = sound.normalizedGain;
       final player = Player();
+      // open() does not throw for unplayable media; mpv reports it here.
+      player.stream.error.listen(
+          (error) => Log.w('Soundboard player error ($soundId): $error'));
       _players[soundId] = player;
       await player.setVolume(_effectiveVolume(soundId));
       String uri;
@@ -61,6 +67,8 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
         _players.remove(soundId);
         return;
       }
+      Log.d('Soundboard: playing $soundId from $uri '
+          'at volume ${_effectiveVolume(soundId)}');
       await player.open(Media(uri), play: true);
     } catch (e, s) {
       Log.onError(e, s, content: 'Soundboard play failed: $soundId');

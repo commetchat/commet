@@ -5,10 +5,18 @@
 // Import flow: paste MyInstants URL -> resolve -> validate -> upload to MXC
 // -> store per-sound state event. Audio is then served from the homeserver,
 // never hotlinked per-click.
+import 'dart:async';
+
+import 'package:commet/client/components/soundboard/myinstants_network_probe.dart';
+import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_component.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
+import 'package:commet/client/components/soundboard/soundboard_validation.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_space_soundboard_component.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter/material.dart';
+import 'package:matrix/matrix.dart' as matrix;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceSoundboardSettingsPage extends StatefulWidget {
@@ -25,11 +33,13 @@ class _SpaceSoundboardSettingsPageState
   final _urlCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
   final _emojiCtrl = TextEditingController();
+  late final _changes = _RebuildOnChange(widget.soundboard);
   bool _busy = false;
   String? _error;
 
   @override
   void dispose() {
+    _changes.dispose();
     _urlCtrl.dispose();
     _nameCtrl.dispose();
     _emojiCtrl.dispose();
@@ -45,7 +55,7 @@ class _SpaceSoundboardSettingsPageState
       );
     }
     return ListenableBuilder(
-      listenable: _RebuildOnChange(widget.soundboard),
+      listenable: _changes,
       builder: (context, _) {
         final sounds = widget.soundboard.sounds;
         return SingleChildScrollView(
@@ -137,35 +147,71 @@ class _SpaceSoundboardSettingsPageState
       _busy = true;
       _error = null;
     });
+    final url = _urlCtrl.text;
     try {
-      final service = SoundboardImportService();
-      final fetched = await service
-          .importFromPageUrl(_urlCtrl.text.trim())
-          .timeout(const Duration(seconds: 30));
+      // Reject bad input before downloading or uploading anything.
+      final name = SoundboardValidator.sanitizeName(_nameCtrl.text);
+      final emoji = SoundboardValidator.sanitizeEmoji(_emojiCtrl.text);
+      final service = SoundboardImportService(
+          log: (line) => Log.i('Soundboard import: $line'));
+      final FetchedAudio fetched;
+      try {
+        // Each request inside is bounded by SoundboardConstraints.httpTimeout.
+        fetched = await service.importFromPageUrl(url);
+      } on MyInstantsRequestError {
+        if (!BuildConfig.WEB) unawaited(_probeNetwork(url));
+        rethrow;
+      }
       // Upload normalized bytes to the homeserver (MXC) — clients stream
       // from here, never from MyInstants per-click.
       final mx = (widget.soundboard as MatrixSpaceSoundboardComponent)
-          .client;
-      final mxc = await mx
-          .getMatrixClient()
-          .uploadContent(fetched.bytes, contentType: fetched.mimeType);
+          .client
+          .getMatrixClient();
+      final mxc =
+          await mx.uploadContent(fetched.bytes, contentType: fetched.mimeType);
+      Log.i('Soundboard import: uploaded ${fetched.bytes.length} bytes '
+          'as $mxc');
       await widget.soundboard.addSound(
-        name: _nameCtrl.text,
-        emoji: _emojiCtrl.text,
+        name: name,
+        emoji: emoji,
         mediaUri: mxc.toString(),
         mimeType: fetched.mimeType,
         durationMs: fetched.durationMs ?? 3000,
         normalizedGain: fetched.normalizedGain,
-        sourceUrl: _urlCtrl.text.trim(),
+        sourceUrl: MyInstantsResolver.normalizeUrl(url),
       );
+      Log.i('Soundboard import: added "$name"');
       _urlCtrl.clear();
       _nameCtrl.clear();
       _emojiCtrl.clear();
-    } catch (e) {
-      setState(() => _error = _friendlyError(e));
+    } on MyInstantsValidationError catch (e) {
+      Log.w('Soundboard import failed: $e');
+      if (mounted) setState(() => _error = _friendlyError(e));
+    } on SoundboardValidationError catch (e) {
+      if (mounted) setState(() => _error = _friendlyError(e));
+    } catch (e, s) {
+      Log.onError(e, s, content: 'Soundboard import failed: $e');
+      if (mounted) setState(() => _error = _friendlyError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  // TEMPORARY: see myinstants_network_probe.dart.
+  Future<void> _probeNetwork(String url) {
+    final page = Uri.tryParse(MyInstantsResolver.normalizeUrl(url));
+    final homeserver = (widget.soundboard as MatrixSpaceSoundboardComponent)
+        .client
+        .getMatrixClient()
+        .homeserver;
+    return probeNetwork([
+      if (page != null && MyInstantsResolver.isAllowedUrl(page.toString()))
+        page
+      else
+        Uri.parse('https://www.myinstants.com/'),
+      if (homeserver != null)
+        homeserver.replace(path: '/_matrix/client/versions'),
+    ], (line) => Log.i('Soundboard import $line'));
   }
 
   Future<void> _remove(String soundId) async {
@@ -215,45 +261,34 @@ class _SpaceSoundboardSettingsPageState
   }
 
   String _friendlyError(Object e) {
-    final s = e.toString();
-    if (s.contains('Only myinstants.com')) {
-      return 'Only myinstants.com links are supported.';
+    // Both validation errors carry messages written for the admin.
+    if (e is MyInstantsValidationError) return e.message;
+    if (e is SoundboardValidationError) return e.message;
+    if (e is matrix.MatrixException) {
+      if (e.error == matrix.MatrixError.M_FORBIDDEN) {
+        return 'You do not have permission to manage sounds.';
+      }
+      if (e.error == matrix.MatrixError.M_TOO_LARGE) {
+        return 'The homeserver rejected the file as too large.';
+      }
+      return 'The homeserver rejected the request: ${e.errorMessage}';
     }
-    if (s.contains('bot protection') || s.contains('refused')) {
-      return 'MyInstants blocked the request. Wait a minute and try again, '
-          'or paste the direct .mp3 URL of the sound instead.';
-    }
-    if (s.contains('Network unreachable') ||
-        s.contains('Network timeout') ||
-        s.contains('Network error') ||
-        s.contains('internet connection')) {
-      return 'Could not reach MyInstants. Check your internet connection '
-          'and try again.';
-    }
-    if (s.contains('404')) {
-      return 'MyInstants page not found. Check the link.';
-    }
-    if (s.contains('too large')) return 'Audio file too large (max 1MB).';
-    if (s.contains('too long')) return 'Audio too long (max 15 seconds).';
-    if (s.contains('Could not find audio')) {
-      return 'Could not find audio on that page. Check the link.';
-    }
-    if (s.contains('single emoji')) {
-      return 'Emoji must be a single emoji.';
-    }
-    if (s.contains('markup') || s.contains('empty') || s.contains('long')) {
-      return 'Invalid name.';
-    }
-    if (s.contains('permission') || s.contains('Permission')) {
-      return 'You do not have permission to manage sounds.';
-    }
-    return 'Could not add sound. Check the link and try again.';
+    if (e is StateError) return e.message;
+    return 'Could not add sound: $e';
   }
 }
 
 /// Bridges SpaceSoundboardComponent.onChanged (Stream) to Listenable.
 class _RebuildOnChange extends ChangeNotifier {
+  late final StreamSubscription<void> _subscription;
+
   _RebuildOnChange(SpaceSoundboardComponent soundboard) {
-    soundboard.onChanged.listen((_) => notifyListeners());
+    _subscription = soundboard.onChanged.listen((_) => notifyListeners());
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }

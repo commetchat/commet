@@ -59,7 +59,9 @@ class SoundboardSound {
         'media_uri': mediaUri,
         'mimetype': mimeType,
         'duration_ms': durationMs,
-        'normalized_gain': normalizedGain,
+        // Event content must be canonical JSON, which has no floats
+        // (homeservers answer M_BAD_JSON), so store thousandths.
+        'normalized_gain_milli': (normalizedGain * 1000).round(),
         'version': version,
       };
 
@@ -72,9 +74,17 @@ class SoundboardSound {
       mediaUri: json['media_uri'] as String,
       mimeType: (json['mimetype'] as String?) ?? 'audio/mpeg',
       durationMs: (json['duration_ms'] as num).toInt(),
-      normalizedGain: (json['normalized_gain'] as num?)?.toDouble() ?? 1.0,
+      normalizedGain: _gainFromJson(json),
       version: (json['version'] as num?)?.toInt() ?? 1,
     );
+  }
+
+  static double _gainFromJson(Map<String, dynamic> json) {
+    final milli = json['normalized_gain_milli'];
+    if (milli is num) return milli / 1000;
+    // Float written by earlier builds; only servers not enforcing canonical
+    // JSON accepted it.
+    return (json['normalized_gain'] as num?)?.toDouble() ?? 1.0;
   }
 
   SoundboardSound copyWith({
