@@ -22,6 +22,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/notification_debugger.dart';
+import 'package:commet/ui/molecules/room_timeline_widget/timeline_selection_area.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -137,6 +138,7 @@ class TimelineEventMenu {
     var photos = timeline.room.getComponent<PhotoAlbumRoom>();
     var polls = timeline.client.getComponent<PollComponent>();
     var gifs = timeline.client.getComponent<GifComponent>();
+    var selection = TimelineTextSelection.maybeOf(context);
 
     if (event.status == TimelineEventStatus.synced) {
       canEditEvent = event is TimelineEventMessage &&
@@ -399,8 +401,9 @@ class TimelineEventMenu {
             name: CommonStrings.promptCopy,
             icon: Icons.copy,
             action: (context) {
+              var body = (event as TimelineEventMessage).plainTextBody;
               Clipboard.setData(ClipboardData(
-                text: (event as TimelineEventMessage).plainTextBody,
+                text: selection?.textToCopy(body) ?? body,
               ));
             }),
       TimelineEventMenuEntry(
