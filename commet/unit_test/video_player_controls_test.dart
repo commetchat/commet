@@ -48,7 +48,8 @@ void main() {
         VideoPlayer(
           WebFileProvider(stream),
           streamUrl: stream,
-          fileName: 'A very long tweet text that used to sit next to the seeker',
+          fileName:
+              'A very long tweet text that used to sit next to the seeker',
           capabilities: VideoCapabilities.native,
         ),
       ),
@@ -63,10 +64,11 @@ void main() {
     expect(find.byIcon(Icons.fullscreen_exit_rounded), findsNothing);
 
     // The title is rendered in its own overlay, not inside the seek row.
-    final title = find.text(
-        'A very long tweet text that used to sit next to the seeker');
+    final title =
+        find.text('A very long tweet text that used to sit next to the seeker');
     expect(title, findsOneWidget);
-    final seekBar = tester.getRect(find.byKey(const ValueKey('video-seek-slider')));
+    final seekBar =
+        tester.getRect(find.byKey(const ValueKey('video-seek-slider')));
     final titleRect = tester.getRect(title);
     expect(titleRect.bottom <= seekBar.top, isTrue);
   });
@@ -98,7 +100,8 @@ void main() {
   test('formatDuration renders m:ss and h:mm:ss', () {
     expect(VideoPlayerState.formatDuration(const Duration(seconds: 5)), '0:05');
     expect(
-        VideoPlayerState.formatDuration(const Duration(minutes: 12, seconds: 3)),
+        VideoPlayerState.formatDuration(
+            const Duration(minutes: 12, seconds: 3)),
         '12:03');
     expect(
         VideoPlayerState.formatDuration(
@@ -131,7 +134,8 @@ void main() {
     expect(find.byIcon(Icons.fullscreen_rounded), findsOneWidget);
   });
 
-  testWidgets('settings sheet renders volume, speeds (0.25x - 2x), qualities, and subtitles',
+  testWidgets(
+      'settings sheet renders volume, speeds (0.25x - 2x), qualities, and subtitles',
       (tester) async {
     final stream = Uri.parse('https://example.com/video.m3u8');
     final controller = VideoPlayerController();
@@ -182,5 +186,31 @@ void main() {
     expect(find.text('Subtitles'), findsOneWidget);
     expect(find.text('Off'), findsOneWidget);
     expect(find.text('Português'), findsOneWidget);
+  });
+
+  testWidgets('a playback error offers to open the video in the browser',
+      (tester) async {
+    final stream = Uri.parse('https://example.com/video.mp4');
+    final controller = VideoPlayerController();
+    var browserOpens = 0;
+
+    await tester.pumpWidget(
+      _testApp(
+        VideoPlayer(
+          WebFileProvider(stream),
+          streamUrl: stream,
+          controller: controller,
+          onOpenInBrowser: () => browserOpens++,
+        ),
+      ),
+    );
+
+    controller.setError('Failed to recognize file format.');
+    await tester.pump();
+
+    expect(find.text('Unable to play this video'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+    await tester.tap(find.text('Open in Browser'));
+    expect(browserOpens, 1);
   });
 }

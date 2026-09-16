@@ -26,12 +26,16 @@ class UrlPreviewWidget extends StatefulWidget {
     this.onOpenLink,
     this.onOpenVideo,
     this.provider,
+    this.supportsOfficialEmbeds,
   });
 
   final UrlPreviewData? data;
   final void Function()? onOpenLink;
   final VideoPreviewOpener? onOpenVideo;
   final CompositeVideoProvider? provider;
+
+  /// Overrides [VideoPlaybackDialog.supportsOfficialEmbeds], for tests.
+  final bool? supportsOfficialEmbeds;
 
   @override
   State<UrlPreviewWidget> createState() => _UrlPreviewWidgetState();
@@ -63,6 +67,10 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
   CompositeVideoProvider get provider =>
       widget.provider ?? CompositeVideoProvider.instance;
 
+  bool get supportsOfficialEmbeds =>
+      widget.supportsOfficialEmbeds ??
+      VideoPlaybackDialog.supportsOfficialEmbeds;
+
   bool get isVideo {
     final uri = widget.data?.uri;
     return widget.data?.type == UrlDestinationType.video ||
@@ -70,8 +78,7 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
         (uri != null && provider.canHandle(uri));
   }
 
-  bool get isShortForm =>
-      widget.data?.videoEmbedInfo?.isShortForm ?? false;
+  bool get isShortForm => widget.data?.videoEmbedInfo?.isShortForm ?? false;
 
   Future<void> _openVideo({required bool autoplay}) async {
     setState(() {
@@ -82,7 +89,19 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
       final uri = widget.data?.uri;
       if (uri != null) {
         final resolved = await _resolvePlayback(uri);
-        if (resolved != null && mounted) {
+        // Nothing here can play it: either no provider knows the link (an
+        // og:video that is an HTML player page), or there is no web view to
+        // host the provider's player (issue #19). Hand it to the browser.
+        if (resolved == null ||
+            (resolved.playbackSource is OfficialVideoEmbedSource &&
+                !supportsOfficialEmbeds)) {
+          if (mounted) {
+            setState(() => isLoadingPlayback = false);
+            _openLink();
+          }
+          return;
+        }
+        if (mounted) {
           setState(() => isLoadingPlayback = false);
           final opener = widget.onOpenVideo ??
               (context, video, auto) => VideoPlaybackDialog.show(
