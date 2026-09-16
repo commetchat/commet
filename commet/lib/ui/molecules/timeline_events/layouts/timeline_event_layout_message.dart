@@ -54,7 +54,8 @@ class TimelineEventLayoutMessage extends StatelessWidget {
 
   String messageSentViaProfile(String sender) => Intl.message("via $sender",
       name: "messageSentViaProfile",
-      desc: "Shows the real name of the account which sent a message with a per message profile",
+      desc:
+          "Shows the real name of the account which sent a message with a per message profile",
       args: [sender]);
 
   @override
