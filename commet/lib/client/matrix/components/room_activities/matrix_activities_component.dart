@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/components/activities/activities_component.dart';
+import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -23,9 +25,42 @@ class MatrixActivitiesComponent
   @override
   MatrixRoom room;
 
-  MatrixActivitiesComponent(this.client, this.room) {}
+  /// Injected for tests; otherwise resolved lazily from the global
+  /// [clientManager], which is still null while rooms are first loaded.
+  final CallManager? _injectedCallManager;
 
-  StreamController _onParticipantsChanged = StreamController.broadcast();
+  MatrixActivitiesComponent(this.client, this.room, {CallManager? callManager})
+      : _injectedCallManager = callManager;
+
+  final StreamController _onParticipantsChanged = StreamController.broadcast();
+
+  CallManager? get _callManager =>
+      _injectedCallManager ?? clientManager?.callManager;
+
+  final List<StreamSubscription> _callManagerSubs = [];
+  bool _watchingCallManager = false;
+
+  /// Our own call membership is only listed while a session for this room is
+  /// registered with [CallManager] (see the filter in [getSessions]). The
+  /// membership sync usually lands before the LiveKit session is registered,
+  /// so the list must be recomputed when the session starts or ends too.
+  void _watchCallManager() {
+    if (_watchingCallManager) return;
+    final callManager = _callManager;
+    if (callManager == null) return;
+    _watchingCallManager = true;
+
+    void onSessionChanged(VoipSession session) {
+      if (session.client == client && session.roomId == room.identifier) {
+        _onParticipantsChanged.add(());
+      }
+    }
+
+    _callManagerSubs
+        .add(callManager.currentSessions.onAdd.listen(onSessionChanged));
+    _callManagerSubs
+        .add(callManager.currentSessions.onRemove.listen(onSessionChanged));
+  }
 
   static const callMemberStateEvent = "org.matrix.msc3401.call.member";
 
@@ -67,8 +102,7 @@ class MatrixActivitiesComponent
           entry.value.senderId == client.self?.identifier &&
           entry.value.content.tryGet<String>("device_id") ==
               client.matrixClient.deviceID &&
-          clientManager?.callManager.getCallInRoom(client, room.identifier) ==
-              null) {
+          _callManager?.getCallInRoom(client, room.identifier) == null) {
         continue;
       }
 
@@ -106,7 +140,10 @@ class MatrixActivitiesComponent
   }
 
   @override
-  Stream<void> get onSessionsChanged => _onParticipantsChanged.stream;
+  Stream<void> get onSessionsChanged {
+    _watchCallManager();
+    return _onParticipantsChanged.stream;
+  }
 
   @override
   onSync(JoinedRoomUpdate update) {
