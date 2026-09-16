@@ -11,6 +11,12 @@ class SoundboardConstraints {
   static const int maxRedirects = 3;
   static const Duration httpTimeout = Duration(seconds: 15);
 
+  /// Upper bound of the per-sound admin volume (200 %).
+  static const double maxSoundVolume = 2.0;
+
+  static double clampSoundVolume(double volume) =>
+      volume.clamp(0.0, maxSoundVolume);
+
   static const int maxNameLength = 64;
   static const int minNameLength = 1;
 

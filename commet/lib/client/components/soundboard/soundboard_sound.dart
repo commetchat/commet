@@ -4,6 +4,8 @@
 // implementation (Matrix state events, MXC upload, MyInstants import) stays
 // behind the seam. See docs/adr decisions inline.
 
+import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
+
 /// Stable identifier for a sound effect. Never the display name.
 typedef SoundId = String;
 
@@ -32,9 +34,14 @@ class SoundboardSound {
   final int durationMs;
 
   /// Linear gain computed once at import to normalize perceived loudness.
-  /// Applied as: output = pcm * normalizedGain * userVolume.
+  /// Applied as: output = pcm * normalizedGain * volume * userVolume.
   /// 1.0 means "no correction". Never boosts into clipping.
   final double normalizedGain;
+
+  /// Per-sound volume set by a space admin, 0..[SoundboardConstraints
+  /// .maxSoundVolume]. A human fallback for sounds normalization gets wrong;
+  /// applies to every listener. 1.0 means "as normalized".
+  final double volume;
 
   /// Schema version for forward-compatible evolution.
   final int version;
@@ -48,8 +55,12 @@ class SoundboardSound {
     required this.mimeType,
     required this.durationMs,
     required this.normalizedGain,
+    this.volume = 1.0,
     this.version = 1,
   });
+
+  /// Linear gain of this sound before the listener's own volume.
+  double get gain => normalizedGain * volume;
 
   Map<String, dynamic> toJson() => {
         'sound_id': soundId,
@@ -62,6 +73,7 @@ class SoundboardSound {
         // Event content must be canonical JSON, which has no floats
         // (homeservers answer M_BAD_JSON), so store thousandths.
         'normalized_gain_milli': (normalizedGain * 1000).round(),
+        'volume_milli': (volume * 1000).round(),
         'version': version,
       };
 
@@ -75,6 +87,7 @@ class SoundboardSound {
       mimeType: (json['mimetype'] as String?) ?? 'audio/mpeg',
       durationMs: (json['duration_ms'] as num).toInt(),
       normalizedGain: _gainFromJson(json),
+      volume: _volumeFromJson(json),
       version: (json['version'] as num?)?.toInt() ?? 1,
     );
   }
@@ -87,6 +100,14 @@ class SoundboardSound {
     return (json['normalized_gain'] as num?)?.toDouble() ?? 1.0;
   }
 
+  static double _volumeFromJson(Map<String, dynamic> json) {
+    final milli = json['volume_milli'];
+    // Absent in sounds from earlier builds; ignore junk instead of throwing,
+    // since one bad event must not hide the whole catalog.
+    if (milli is! num) return 1.0;
+    return SoundboardConstraints.clampSoundVolume(milli / 1000);
+  }
+
   SoundboardSound copyWith({
     String? name,
     String? emoji,
@@ -94,6 +115,7 @@ class SoundboardSound {
     String? mimeType,
     int? durationMs,
     double? normalizedGain,
+    double? volume,
   }) {
     return SoundboardSound(
       soundId: soundId,
@@ -104,6 +126,7 @@ class SoundboardSound {
       mimeType: mimeType ?? this.mimeType,
       durationMs: durationMs ?? this.durationMs,
       normalizedGain: normalizedGain ?? this.normalizedGain,
+      volume: volume ?? this.volume,
       version: version,
     );
   }

@@ -26,6 +26,7 @@ abstract class SpaceSoundboardComponent<R extends Client, T extends Space>
     required String mimeType,
     required int durationMs,
     required double normalizedGain,
+    double volume = 1.0,
     String? sourceUrl,
   });
 
@@ -33,6 +34,7 @@ abstract class SpaceSoundboardComponent<R extends Client, T extends Space>
     String soundId, {
     String? name,
     String? emoji,
+    double? volume,
   });
 
   Future<void> removeSound(String soundId);

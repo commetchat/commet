@@ -3,8 +3,9 @@
 // One Player per concurrent soundId (different sounds overlap; same soundId
 // restarts via seek-then-play on the existing Player — no layering, no
 // global <audio> bottleneck). Volume per Player = normalizedGain *
-// userVolume, recomputed on setVolumeFor. All errors are swallowed after
-// logging: a soundboard failure must never take down the call.
+// adminVolume * userVolume, recomputed on every start and setVolumeFor.
+// All errors are swallowed after logging: a soundboard failure must never
+// take down the call.
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/debug/log.dart';
@@ -18,7 +19,8 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
   final UriResolver resolvePlayableUri;
 
   final Map<String, Player> _players = {};
-  final Map<String, double> _normalizedGain = {};
+  // SoundboardSound.gain (normalization * admin volume) per soundId.
+  final Map<String, double> _soundGain = {};
   double _userVolume = 0.8;
 
   MediaKitSoundboardPlayer({
@@ -26,21 +28,21 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
     required this.resolvePlayableUri,
   });
 
-  void setNormalizedGain(String soundId, double gain) {
-    _normalizedGain[soundId] = gain;
-  }
-
   double _effectiveVolume(String soundId) =>
-      mpvVolume(_userVolume, _normalizedGain[soundId] ?? 1.0);
+      mpvVolume(_userVolume, _soundGain[soundId] ?? 1.0);
 
   /// media_kit takes mpv's `volume`, where 100 plays the file unchanged (and
   /// mpv applies it cubically, so 0..1 is silence). Never boosts past 100.
-  static double mpvVolume(double userVolume, double normalizedGain) =>
-      (userVolume * normalizedGain).clamp(0.0, 1.0) * 100;
+  /// [soundGain] is [SoundboardSound.gain].
+  static double mpvVolume(double userVolume, double soundGain) =>
+      (userVolume * soundGain).clamp(0.0, 1.0) * 100;
 
   @override
   Future<void> start(String soundId) async {
     try {
+      // Resolve on every start: an admin may have changed the volume since.
+      final sound = resolveSound(soundId);
+      if (sound != null) _soundGain[soundId] = sound.gain;
       final existing = _players[soundId];
       if (existing != null) {
         // Restart semantics: same sound restarts from 0, never layers.
@@ -49,8 +51,6 @@ class MediaKitSoundboardPlayer implements SoundboardPlayer {
         await existing.play();
         return;
       }
-      final sound = resolveSound(soundId);
-      if (sound != null) _normalizedGain[soundId] = sound.normalizedGain;
       final player = Player();
       // open() does not throw for unplayable media; mpv reports it here.
       player.stream.error.listen(

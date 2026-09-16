@@ -10,6 +10,7 @@
 import 'dart:async';
 
 import 'package:commet/client/components/soundboard/soundboard_component.dart';
+import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/client/components/soundboard/soundboard_validation.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -17,15 +18,13 @@ import 'package:commet/client/matrix/matrix_space.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:uuid/uuid.dart';
 
-class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
-    MatrixClient, MatrixSpace> {
-  final StreamController<void> _onChanged =
-      StreamController<void>.broadcast();
+class MatrixSpaceSoundboardComponent
+    extends SpaceSoundboardComponent<MatrixClient, MatrixSpace> {
+  final StreamController<void> _onChanged = StreamController<void>.broadcast();
   StreamSubscription? _roomStateSub;
   List<SoundboardSound> _sounds = [];
 
-  MatrixSpaceSoundboardComponent(
-      super.client, super.space) {
+  MatrixSpaceSoundboardComponent(super.client, super.space) {
     _refreshFromStates();
     _roomStateSub = matrixSpace.matrixRoom.client.onRoomState.stream
         .where((e) =>
@@ -41,8 +40,8 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
   MatrixClient get matrixClient => client;
 
   void _refreshFromStates() {
-    final map = matrixSpace.matrixRoom.states[
-        SpaceSoundboardComponent.stateEventType];
+    final map =
+        matrixSpace.matrixRoom.states[SpaceSoundboardComponent.stateEventType];
     final next = <SoundboardSound>[];
     if (map != null) {
       for (final entry in (map as Map).entries) {
@@ -80,9 +79,8 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
   Stream<void> get onChanged => _onChanged.stream;
 
   @override
-  bool get canManage =>
-      matrixSpace.matrixRoom.canChangeStateEvent(
-          SpaceSoundboardComponent.stateEventType);
+  bool get canManage => matrixSpace.matrixRoom
+      .canChangeStateEvent(SpaceSoundboardComponent.stateEventType);
 
   @override
   Future<SoundboardSound> addSound({
@@ -92,6 +90,7 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
     required String mimeType,
     required int durationMs,
     required double normalizedGain,
+    double volume = 1.0,
     String? sourceUrl,
   }) async {
     if (!canManage) throw StateError('Missing permission to manage soundboard');
@@ -109,6 +108,7 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
       mimeType: mimeType,
       durationMs: durationMs,
       normalizedGain: normalizedGain,
+      volume: SoundboardConstraints.clampSoundVolume(volume),
     );
     await matrixClient.getMatrixClient().setRoomStateWithKey(
           matrixSpace.matrixRoom.id,
@@ -125,6 +125,7 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
     String soundId, {
     String? name,
     String? emoji,
+    double? volume,
   }) async {
     if (!canManage) throw StateError('Missing permission to manage soundboard');
     final existing = getById(soundId);
@@ -132,6 +133,9 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
     final updated = existing.copyWith(
       name: name != null ? SoundboardValidator.sanitizeName(name) : null,
       emoji: emoji != null ? SoundboardValidator.sanitizeEmoji(emoji) : null,
+      volume: volume != null
+          ? SoundboardConstraints.clampSoundVolume(volume)
+          : null,
     );
     await matrixClient.getMatrixClient().setRoomStateWithKey(
           matrixSpace.matrixRoom.id,
@@ -147,11 +151,11 @@ class MatrixSpaceSoundboardComponent extends SpaceSoundboardComponent<
   Future<void> removeSound(String soundId) async {
     if (!canManage) throw StateError('Missing permission to manage soundboard');
     await matrixClient.getMatrixClient().setRoomStateWithKey(
-          matrixSpace.matrixRoom.id,
-          SpaceSoundboardComponent.stateEventType,
-          soundId,
-          {},
-        );
+      matrixSpace.matrixRoom.id,
+      SpaceSoundboardComponent.stateEventType,
+      soundId,
+      {},
+    );
     _refreshFromStates();
   }
 

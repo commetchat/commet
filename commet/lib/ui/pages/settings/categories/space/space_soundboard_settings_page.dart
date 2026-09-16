@@ -5,16 +5,22 @@
 // Import flow: paste MyInstants URL -> resolve -> validate -> upload to MXC
 // -> store per-sound state event. Audio is then served from the homeserver,
 // never hotlinked per-click.
+// Each sound has an admin volume slider (fallback for sounds normalization
+// gets wrong) with a preview at the volume a call would use.
 import 'dart:async';
 
 import 'package:commet/client/components/soundboard/myinstants_network_probe.dart';
 import 'package:commet/client/components/soundboard/myinstants_resolver.dart';
 import 'package:commet/client/components/soundboard/soundboard_component.dart';
+import 'package:commet/client/components/soundboard/soundboard_constraints.dart';
 import 'package:commet/client/components/soundboard/soundboard_import_service.dart';
 import 'package:commet/client/components/soundboard/soundboard_validation.dart';
+import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/client/matrix/components/soundboard/matrix_space_soundboard_component.dart';
+import 'package:commet/client/matrix/components/soundboard/soundboard_preview_player.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -34,11 +40,21 @@ class _SpaceSoundboardSettingsPageState
   final _nameCtrl = TextEditingController();
   final _emojiCtrl = TextEditingController();
   late final _changes = _RebuildOnChange(widget.soundboard);
+  final _preview = SoundboardPreviewPlayer(
+      userVolume: () => SoundboardCallController.userVolume);
+  double _volume = 1.0;
   bool _busy = false;
+  bool _previewBusy = false;
   String? _error;
+
+  // Audio fetched for preview, reused by "Add sound" while the link is the
+  // same so it is downloaded once.
+  FetchedAudio? _fetched;
+  String? _fetchedUrl;
 
   @override
   void dispose() {
+    _preview.dispose();
     _changes.dispose();
     _urlCtrl.dispose();
     _nameCtrl.dispose();
@@ -92,6 +108,19 @@ class _SpaceSoundboardSettingsPageState
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
+              _SoundVolumeField(
+                volume: _volume,
+                previewing: _previewBusy,
+                onChanged: (v) {
+                  setState(() => _volume = v);
+                  final fetched = _fetched;
+                  if (fetched != null) {
+                    _preview.setSoundGain(fetched.normalizedGain * v);
+                  }
+                },
+                onPreview: _busy || _previewBusy ? null : _previewNewSound,
+              ),
               if (_error != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -101,7 +130,7 @@ class _SpaceSoundboardSettingsPageState
               tiamat.Button(
                 text: 'Add sound',
                 isLoading: _busy,
-                onTap: _busy ? null : _addSound,
+                onTap: _busy || _previewBusy ? null : _addSound,
               ),
               const SizedBox(height: 16),
               tiamat.Text.labelEmphasised('Sounds (${sounds.length})'),
@@ -115,15 +144,19 @@ class _SpaceSoundboardSettingsPageState
                           horizontal: 10, vertical: 8),
                       child: Row(
                         children: [
-                          Text(s.emoji,
-                              style: const TextStyle(fontSize: 22)),
+                          Text(s.emoji, style: const TextStyle(fontSize: 22)),
                           const SizedBox(width: 10),
                           Expanded(child: tiamat.Text.label(s.name)),
+                          if (s.volume != 1.0)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: tiamat.Text.labelLow(
+                                  _SoundVolumeField.percent(s.volume)),
+                            ),
                           tiamat.IconButton(
                             icon: Icons.edit,
                             size: 16,
-                            onPressed: () => _editDialog(s.soundId, s.name,
-                                s.emoji),
+                            onPressed: () => _editDialog(s),
                           ),
                           tiamat.IconButton(
                             icon: Icons.delete,
@@ -142,6 +175,42 @@ class _SpaceSoundboardSettingsPageState
     );
   }
 
+  Future<FetchedAudio> _fetch(String url) async {
+    if (_fetched != null && _fetchedUrl == url) return _fetched!;
+    final service = SoundboardImportService(
+        log: (line) => Log.i('Soundboard import: $line'));
+    final FetchedAudio fetched;
+    try {
+      // Each request inside is bounded by SoundboardConstraints.httpTimeout.
+      fetched = await service.importFromPageUrl(url);
+    } on MyInstantsRequestError {
+      if (!BuildConfig.WEB) unawaited(_probeNetwork(url));
+      rethrow;
+    }
+    _fetched = fetched;
+    _fetchedUrl = url;
+    return fetched;
+  }
+
+  Future<void> _previewNewSound() async {
+    setState(() {
+      _previewBusy = true;
+      _error = null;
+    });
+    try {
+      final fetched = await _fetch(_urlCtrl.text);
+      await _preview.playBytes(
+          fetched.bytes, fetched.mimeType, fetched.normalizedGain * _volume);
+    } on MyInstantsValidationError catch (e) {
+      if (mounted) setState(() => _error = _friendlyError(e));
+    } catch (e, s) {
+      Log.onError(e, s, content: 'Soundboard preview failed: $e');
+      if (mounted) setState(() => _error = _friendlyError(e));
+    } finally {
+      if (mounted) setState(() => _previewBusy = false);
+    }
+  }
+
   Future<void> _addSound() async {
     setState(() {
       _busy = true;
@@ -152,16 +221,7 @@ class _SpaceSoundboardSettingsPageState
       // Reject bad input before downloading or uploading anything.
       final name = SoundboardValidator.sanitizeName(_nameCtrl.text);
       final emoji = SoundboardValidator.sanitizeEmoji(_emojiCtrl.text);
-      final service = SoundboardImportService(
-          log: (line) => Log.i('Soundboard import: $line'));
-      final FetchedAudio fetched;
-      try {
-        // Each request inside is bounded by SoundboardConstraints.httpTimeout.
-        fetched = await service.importFromPageUrl(url);
-      } on MyInstantsRequestError {
-        if (!BuildConfig.WEB) unawaited(_probeNetwork(url));
-        rethrow;
-      }
+      final fetched = await _fetch(url);
       // Upload normalized bytes to the homeserver (MXC) — clients stream
       // from here, never from MyInstants per-click.
       final mx = (widget.soundboard as MatrixSpaceSoundboardComponent)
@@ -178,12 +238,17 @@ class _SpaceSoundboardSettingsPageState
         mimeType: fetched.mimeType,
         durationMs: fetched.durationMs ?? 3000,
         normalizedGain: fetched.normalizedGain,
+        volume: _volume,
         sourceUrl: MyInstantsResolver.normalizeUrl(url),
       );
       Log.i('Soundboard import: added "$name"');
+      await _preview.stop();
       _urlCtrl.clear();
       _nameCtrl.clear();
       _emojiCtrl.clear();
+      _fetched = null;
+      _fetchedUrl = null;
+      if (mounted) setState(() => _volume = 1.0);
     } on MyInstantsValidationError catch (e) {
       Log.w('Soundboard import failed: $e');
       if (mounted) setState(() => _error = _friendlyError(e));
@@ -222,36 +287,80 @@ class _SpaceSoundboardSettingsPageState
     }
   }
 
-  Future<void> _editDialog(
-      String soundId, String name, String emoji) async {
-    final nameCtrl = TextEditingController(text: name);
-    final emojiCtrl = TextEditingController(text: emoji);
+  Future<void> _editDialog(SoundboardSound sound) async {
+    final nameCtrl = TextEditingController(text: sound.name);
+    final emojiCtrl = TextEditingController(text: sound.emoji);
+    final preview = SoundboardPreviewPlayer(
+        userVolume: () => SoundboardCallController.userVolume);
+    var volume = sound.volume;
+    var previewing = false;
+    String? previewError;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Edit sound'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            tiamat.TextInput(label: 'Name', controller: nameCtrl),
-            const SizedBox(height: 8),
-            tiamat.TextInput(label: 'Emoji', controller: emojiCtrl),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Edit sound'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              tiamat.TextInput(label: 'Name', controller: nameCtrl),
+              const SizedBox(height: 8),
+              tiamat.TextInput(label: 'Emoji', controller: emojiCtrl),
+              const SizedBox(height: 8),
+              _SoundVolumeField(
+                volume: volume,
+                previewing: previewing,
+                onChanged: (v) {
+                  setDialogState(() => volume = v);
+                  preview.setSoundGain(sound.normalizedGain * v);
+                },
+                onPreview: previewing
+                    ? null
+                    : () async {
+                        setDialogState(() {
+                          previewing = true;
+                          previewError = null;
+                        });
+                        try {
+                          final uri =
+                              await SoundboardCallController.resolvePlayableUri(
+                                  widget.soundboard.client, sound);
+                          await preview.playUri(
+                              uri, sound.normalizedGain * volume);
+                        } catch (e, s) {
+                          Log.onError(e, s,
+                              content: 'Soundboard preview failed: $e');
+                          previewError = _friendlyError(e);
+                        }
+                        if (ctx.mounted) {
+                          // Also shows previewError, set above.
+                          setDialogState(() => previewing = false);
+                        }
+                      },
+              ),
+              if (previewError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: tiamat.Text.error(previewError!),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Save')),
           ],
         ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Save')),
-        ],
       ),
     );
+    await preview.dispose();
     if (ok == true) {
       try {
-        await widget.soundboard.updateSound(soundId,
-            name: nameCtrl.text, emoji: emojiCtrl.text);
+        await widget.soundboard.updateSound(sound.soundId,
+            name: nameCtrl.text, emoji: emojiCtrl.text, volume: volume);
       } catch (e) {
         if (mounted) setState(() => _error = _friendlyError(e));
       }
@@ -275,6 +384,60 @@ class _SpaceSoundboardSettingsPageState
     }
     if (e is StateError) return e.message;
     return 'Could not add sound: $e';
+  }
+}
+
+/// "Sound volume" slider (0..200 %) with a preview button.
+class _SoundVolumeField extends StatelessWidget {
+  final double volume;
+  final bool previewing;
+  final ValueChanged<double> onChanged;
+  final VoidCallback? onPreview;
+
+  const _SoundVolumeField({
+    required this.volume,
+    required this.previewing,
+    required this.onChanged,
+    required this.onPreview,
+  });
+
+  static String percent(double volume) => '${(volume * 100).round()}%';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const tiamat.Text.labelLow('Sound volume'),
+        Row(
+          children: [
+            const Icon(Icons.volume_up, size: 18),
+            Expanded(
+              child: tiamat.Slider(
+                min: 0.0,
+                max: SoundboardConstraints.maxSoundVolume,
+                // 5 % steps.
+                divisions: (SoundboardConstraints.maxSoundVolume * 20).round(),
+                value: volume,
+                onChanged: onChanged,
+              ),
+            ),
+            SizedBox(
+              width: 48,
+              child: tiamat.Text.labelLow(percent(volume)),
+            ),
+            SizedBox(
+              width: 110,
+              child: tiamat.Button.secondary(
+                text: 'Preview',
+                isLoading: previewing,
+                onTap: onPreview,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
