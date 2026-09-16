@@ -4,11 +4,14 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
+import 'package:commet/client/matrix/components/voip_room/live_media_publisher.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
@@ -19,6 +22,7 @@ import 'package:commet/main.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:matrix/matrix.dart' show Event;
 import 'package:matrix/matrix_api_lite.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
@@ -31,6 +35,14 @@ class MatrixLivekitVoipSession implements VoipSession {
   MatrixLivekitEncryptionKeyProvider? keyProvider;
 
   final StreamController<void> _onVolumeChanged = StreamController.broadcast();
+
+  /// Lists what we publish in our call membership, so people outside the
+  /// call see our LIVE badge (issue #9).
+  late final LiveMediaPublisher _liveMediaPublisher =
+      LiveMediaPublisher(write: _writeLiveMedia);
+
+  String get _ownMembershipKey =>
+      "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 
   MatrixLivekitVoipSession(this.room, this.livekitRoom, {this.keyProvider}) {
     clientManager?.callManager.onClientSessionStarted(this);
@@ -166,6 +178,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     print("Track muted");
 
     _stateChanged.add(());
+    _publishLiveMedia();
   }
 
   void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
@@ -187,6 +200,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     _applyStreamVolume(s);
     streams.add(s);
     _stateChanged.add(());
+    _publishLiveMedia();
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
@@ -303,12 +317,49 @@ class MatrixLivekitVoipSession implements VoipSession {
     s.deafened = _isDeafened;
     streams.add(s);
     _stateChanged.add(());
+    _publishLiveMedia();
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
     _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
+    _publishLiveMedia();
+  }
+
+  /// Screen share and camera as LiveKit sees them, which also covers a
+  /// capture the OS or the browser ended.
+  Set<LiveMedia> get _localLiveMedia => {
+        if (isSharingScreen) LiveMedia.screen,
+        if (isCameraEnabled) LiveMedia.camera,
+      };
+
+  void _publishLiveMedia() {
+    if (state == VoipState.ended) return;
+    // Only with the delayed leave armed: it is what clears the membership,
+    // and the badge with it, if this client crashes while streaming.
+    _liveMediaPublisher
+        .update(heartbeatDelayId != null ? _localLiveMedia : const {});
+  }
+
+  Future<void> _writeLiveMedia(Set<LiveMedia> media) async {
+    final current =
+        room.matrixRoom.states[MatrixVoipRoomComponent.callMemberStateEvent]
+            ?[_ownMembershipKey];
+    // Never bring back a membership that was cleared (by hanging up, or by
+    // the delayed leave): it would have no dead man's switch.
+    if (current is! Event || current.content["application"] == null) {
+      throw StateError("Our call membership is not in the room state yet");
+    }
+    final joinedAt =
+        MatrixCallMembership.joinedAt(current.content, current.originServerTs)!;
+    await room.matrixRoom.client.setRoomStateWithKey(
+      room.matrixRoom.id,
+      MatrixVoipRoomComponent.callMemberStateEvent,
+      _ownMembershipKey,
+      MatrixCallMembership.withLiveMedia(current.content,
+          media: media, joinedAt: joinedAt, now: DateTime.now()),
+    );
   }
 
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
@@ -331,6 +382,10 @@ class MatrixLivekitVoipSession implements VoipSession {
   @override
   Future<void> hangUpCall() async {
     Log.i("Hanging up call");
+
+    // First, so no membership write lands after the clear below: leaving
+    // unpublishes our tracks, which would schedule one.
+    await _liveMediaPublisher.stop();
 
     keyProvider?.dispose();
     _settingsSub?.cancel();
@@ -610,15 +665,30 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     final delayId = result["delay_id"] as String;
     heartbeatDelayId = delayId;
+    _publishLiveMedia();
 
     heartbeatTimer =
         Timer.periodic(timerLength - Duration(seconds: 5), (timer) async {
       print("Sending heartbeat");
-      final result = await room.matrixRoom.client.request(RequestType.POST,
-          "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
-          contentType: "application/json",
-          data: jsonEncode({"action": "restart"}));
-      print(result);
+      try {
+        final result = await room.matrixRoom.client.request(RequestType.POST,
+            "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
+            contentType: "application/json",
+            data: jsonEncode({"action": "restart"}));
+        print(result);
+        if (heartbeatDelayId == null) {
+          heartbeatDelayId = delayId;
+          _publishLiveMedia();
+        }
+      } catch (e, s) {
+        // The delayed leave may be gone (it already fired, or the server
+        // lost it): stop advertising streams until a restart works again.
+        Log.onError(e, s, content: "Call membership heartbeat failed");
+        if (heartbeatDelayId != null) {
+          heartbeatDelayId = null;
+          _publishLiveMedia();
+        }
+      }
     });
   }
 

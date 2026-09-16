@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/room_activities/matrix_activities_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -60,6 +62,9 @@ class FakeSdkRoom implements matrix.Room {
   Map<String, Map<String, matrix.StrippedStateEvent>> states = {};
 
   @override
+  String get id => roomId;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -88,6 +93,32 @@ class FakeVoipSession implements VoipSession {
   FakeVoipSession(this.client, this.roomId, this.sessionId);
 
   @override
+  final List<VoipStream> streams = [];
+
+  final StreamController<void> _stateChanged =
+      StreamController.broadcast(sync: true);
+
+  @override
+  Stream<void> get onStateChanged => _stateChanged.stream;
+
+  void publish(String userId, VoipStreamType type) {
+    streams.add(FakeVoipStream(userId, type));
+    _stateChanged.add(null);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class FakeVoipStream implements VoipStream {
+  @override
+  final String streamUserId;
+  @override
+  final VoipStreamType type;
+
+  FakeVoipStream(this.streamUserId, this.type);
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -104,6 +135,37 @@ matrix.StrippedStateEvent callMembership(String userId, String deviceId) {
     },
   );
 }
+
+/// A membership as it arrives from sync: a full event with a timestamp.
+matrix.Event callMemberEvent(
+  FakeMatrixRoom room,
+  String userId,
+  String deviceId, {
+  List<Object?>? streams,
+  DateTime? sentAt,
+  Map<String, Object?> extra = const {},
+}) {
+  return matrix.Event(
+    type: MatrixActivitiesComponent.callMemberStateEvent,
+    eventId: "\$member-$userId-$deviceId",
+    senderId: userId,
+    stateKey: "_${userId}_${deviceId}_m.call",
+    originServerTs: sentAt ?? DateTime.now(),
+    room: room.matrixRoom,
+    content: {
+      "application": "m.call",
+      "call_id": "",
+      "device_id": deviceId,
+      "scope": "m.room",
+      "expires": 14400000,
+      if (streams != null) "chat.commet.streams": streams,
+      ...extra,
+    },
+  );
+}
+
+RoomActivitySession callSession(MatrixActivitiesComponent component) =>
+    component.getSessions().singleWhere((s) => s.application == "m.call");
 
 Set<String> callParticipants(MatrixActivitiesComponent component) {
   final call =
@@ -182,6 +244,115 @@ void main() {
 
       expect(changes, isEmpty);
       expect(callParticipants(component), equals({otherUserId}));
+    });
+  });
+
+  group("Live badges (issue #9)", () {
+    const thirdUserId = "@third:example.org";
+
+    void setMemberships(List<matrix.StrippedStateEvent> memberships) {
+      room.matrixRoom.states[MatrixActivitiesComponent.callMemberStateEvent] = {
+        for (final m in memberships) m.stateKey!: m,
+      };
+    }
+
+    test("a member who reports a screen share is live", () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", streams: ["screen"]),
+      ]);
+
+      expect(callSession(component).liveMedia[otherUserId], {LiveMedia.screen});
+    });
+
+    test("a member's devices are combined", () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "PHONE", streams: ["camera"]),
+        callMemberEvent(room, otherUserId, "LAPTOP", streams: ["screen"]),
+      ]);
+
+      expect(callSession(component).liveMedia[otherUserId],
+          {LiveMedia.screen, LiveMedia.camera});
+    });
+
+    test("streams in stripped state, which never expires, are ignored", () {
+      final stripped = callMembership(otherUserId, "DEVICEB")
+        ..content["chat.commet.streams"] = ["screen"];
+      setMemberships([stripped]);
+
+      expect(callParticipants(component), {otherUserId});
+      expect(callSession(component).liveMedia[otherUserId], isNull);
+    });
+
+    test("an expired membership is not listed, counted from its join time", () {
+      // Rewritten a minute ago, but joined five hours ago with a 4 h window.
+      final joined = DateTime.now().subtract(const Duration(hours: 5));
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB",
+            streams: ["screen"],
+            sentAt: DateTime.now().subtract(const Duration(minutes: 1)),
+            extra: {"created_ts": joined.millisecondsSinceEpoch}),
+      ]);
+
+      expect(callParticipants(component), isEmpty);
+    });
+
+    test("in our call, LiveKit decides who is live", () {
+      setMemberships([
+        callMemberEvent(room, selfUserId, selfDeviceId, streams: []),
+        // Stopped sharing a moment ago; the membership hasn't caught up.
+        callMemberEvent(room, otherUserId, "DEVICEB", streams: ["screen"]),
+        // Not in our LiveKit room (e.g. another SFU): state is all we have.
+        callMemberEvent(room, thirdUserId, "DEVICEC", streams: ["camera"]),
+      ]);
+      final session = FakeVoipSession(client, roomId, "session-1")
+        ..publish(otherUserId, VoipStreamType.audio)
+        ..publish(selfUserId, VoipStreamType.screenshare)
+        ..publish(selfUserId, VoipStreamType.video);
+      clientManager.callManager.currentSessions.add(session);
+
+      final live = callSession(component).liveMedia;
+      expect(live[selfUserId], {LiveMedia.screen, LiveMedia.camera});
+      expect(live[otherUserId], isEmpty);
+      expect(live[thirdUserId], {LiveMedia.camera});
+    });
+
+    test("the list refreshes when a stream in our call starts", () async {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", streams: []),
+      ]);
+      final session = FakeVoipSession(client, roomId, "session-1");
+      clientManager.callManager.currentSessions.add(session);
+
+      final changes = <void>[];
+      final sub = component.onSessionsChanged.listen(changes.add);
+      addTearDown(sub.cancel);
+
+      session.publish(otherUserId, VoipStreamType.screenshare);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(changes, isNotEmpty);
+      expect(callSession(component).liveMedia[otherUserId], {LiveMedia.screen});
+    });
+
+    test("a membership that arrives as state refreshes the list", () async {
+      // A limited sync delivers state changes outside the timeline.
+      final changes = <void>[];
+      final sub = component.onSessionsChanged.listen(changes.add);
+      addTearDown(sub.cancel);
+
+      component.onSync(matrix.JoinedRoomUpdate(state: [
+        matrix.MatrixEvent(
+          type: MatrixActivitiesComponent.callMemberStateEvent,
+          content: const {},
+          senderId: otherUserId,
+          stateKey: "_${otherUserId}_DEVICEB_m.call",
+          eventId: r"$left",
+          originServerTs: DateTime.now(),
+        ),
+      ]));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(changes, hasLength(1));
     });
   });
 }

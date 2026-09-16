@@ -4,8 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
@@ -38,28 +40,42 @@ class MatrixActivitiesComponent
       _injectedCallManager ?? clientManager?.callManager;
 
   final List<StreamSubscription> _callManagerSubs = [];
+  final Map<VoipSession, StreamSubscription> _sessionSubs = {};
   bool _watchingCallManager = false;
+
+  bool _isOurCall(VoipSession session) =>
+      session.client == client && session.roomId == room.identifier;
 
   /// Our own call membership is only listed while a session for this room is
   /// registered with [CallManager] (see the filter in [getSessions]). The
   /// membership sync usually lands before the LiveKit session is registered,
-  /// so the list must be recomputed when the session starts or ends too.
+  /// so the list must be recomputed when the session starts or ends too, and
+  /// whenever its streams change (live badges, see [_applyCallStreams]).
   void _watchCallManager() {
     if (_watchingCallManager) return;
     final callManager = _callManager;
     if (callManager == null) return;
     _watchingCallManager = true;
 
-    void onSessionChanged(VoipSession session) {
-      if (session.client == client && session.roomId == room.identifier) {
-        _onParticipantsChanged.add(());
-      }
+    void watch(VoipSession session) {
+      _sessionSubs[session] ??=
+          session.onStateChanged.listen((_) => _onParticipantsChanged.add(()));
     }
 
-    _callManagerSubs
-        .add(callManager.currentSessions.onAdd.listen(onSessionChanged));
-    _callManagerSubs
-        .add(callManager.currentSessions.onRemove.listen(onSessionChanged));
+    for (final session in callManager.currentSessions.where(_isOurCall)) {
+      watch(session);
+    }
+
+    _callManagerSubs.add(callManager.currentSessions.onAdd.listen((session) {
+      if (!_isOurCall(session)) return;
+      watch(session);
+      _onParticipantsChanged.add(());
+    }));
+    _callManagerSubs.add(callManager.currentSessions.onRemove.listen((session) {
+      if (!_isOurCall(session)) return;
+      _sessionSubs.remove(session)?.cancel();
+      _onParticipantsChanged.add(());
+    }));
   }
 
   static const callMemberStateEvent = "org.matrix.msc3401.call.member";
@@ -72,6 +88,7 @@ class MatrixActivitiesComponent
     }
 
     List<RoomActivitySession> activities = List.empty(growable: true);
+    final now = DateTime.now();
 
     for (var entry in state.entries) {
       if (entry.value.content.isEmpty) continue;
@@ -81,18 +98,11 @@ class MatrixActivitiesComponent
       var activity =
           activities.firstWhereOrNull((i) => i.application == application);
 
-      var expires = entry.value.content.tryGet<int>("expires");
-
-      if (expires != null) {
-        if (entry.value case Event ev) {
-          var expire = ev.originServerTs.add(Duration(milliseconds: expires));
-
-          if (DateTime.now().millisecondsSinceEpoch >
-              expire.millisecondsSinceEpoch) {
-            Log.i("Membership state is expired, skipping");
-            continue;
-          }
-        }
+      final event = entry.value;
+      final sentAt = event is Event ? event.originServerTs : null;
+      if (MatrixCallMembership.isExpired(event.content, sentAt, now)) {
+        Log.i("Membership state is expired, skipping");
+        continue;
       }
 
       // A call membership written by this device is only real while this
@@ -134,9 +144,45 @@ class MatrixActivitiesComponent
       }
 
       activity.participants.add(entry.value.senderId);
+
+      // Only full events: stripped state has no timestamp, so it never
+      // expires and a stale LIVE badge would stay forever.
+      if (application == "m.call" && event is Event) {
+        final media = MatrixCallMembership.liveMediaOf(event.content);
+        if (media.isNotEmpty) {
+          activity.liveMedia
+              .putIfAbsent(event.senderId, () => {})
+              .addAll(media);
+        }
+      }
+    }
+
+    final call = activities.firstWhereOrNull((a) => a.application == "m.call");
+    final session = _callManager?.getCallInRoom(client, room.identifier);
+    if (call != null && session != null) {
+      _applyCallStreams(call, session);
     }
 
     return activities;
+  }
+
+  /// For people in our own call, LiveKit is right away what their
+  /// memberships only say after a debounced write and a sync.
+  static void _applyCallStreams(RoomActivitySession call, VoipSession session) {
+    final inCall = <String, Set<LiveMedia>>{};
+    for (final stream in session.streams) {
+      final media = inCall.putIfAbsent(stream.streamUserId, () => {});
+      switch (stream.type) {
+        case VoipStreamType.screenshare:
+          media.add(LiveMedia.screen);
+        case VoipStreamType.video:
+          media.add(LiveMedia.camera);
+        case VoipStreamType.audio:
+        case VoipStreamType.screenshareAudio:
+          break;
+      }
+    }
+    call.liveMedia.addAll(inCall);
   }
 
   @override
@@ -147,14 +193,10 @@ class MatrixActivitiesComponent
 
   @override
   onSync(JoinedRoomUpdate update) {
-    if (update.timeline?.events == null) {
-      return;
-    }
-
-    for (var event in update.timeline!.events!) {
-      if (event.type == callMemberStateEvent) {
-        _onParticipantsChanged.add(());
-      }
+    // A limited sync delivers state changes in `state`, not the timeline.
+    final events = [...?update.state, ...?update.timeline?.events];
+    if (events.any((event) => event.type == callMemberStateEvent)) {
+      _onParticipantsChanged.add(());
     }
   }
 

@@ -3,8 +3,16 @@ import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/utils/image_or_icon.dart';
 
+/// Media a participant is publishing that the room list shows (issue #9).
+enum LiveMedia { screen, camera }
+
 class RoomActivitySession {
   Set<String> participants;
+
+  /// What each participant is publishing, for those who reported it or are
+  /// in our own call. Participants without an entry publish nothing we know
+  /// of.
+  final Map<String, Set<LiveMedia>> liveMedia = {};
 
   String application;
 
