@@ -6,7 +6,7 @@ import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-import '../generated/l10n.dart';
+import 'package:commet/generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

@@ -5,7 +5,7 @@ import 'package:integration_test/integration_test.dart';
 
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
-import '../generated/l10n.dart';
+import 'package:commet/generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

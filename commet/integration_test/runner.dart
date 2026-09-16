@@ -3,7 +3,7 @@
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:integration_test/integration_test.dart';
-import 'generated/l10n.dart';
+import 'package:commet/generated/l10n.dart';
 import 'matrix/login_test.dart' as login_test;
 import 'matrix/key_verification_test.dart' as key_verification_test;
 import 'matrix/create_space_test.dart' as create_space_test;

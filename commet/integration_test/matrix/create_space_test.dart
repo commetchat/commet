@@ -9,7 +9,7 @@ import 'package:integration_test/integration_test.dart';
 import '../extensions/common_flows.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-import '../generated/l10n.dart';
+import 'package:commet/generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +33,7 @@ void main() {
         client.spaces
             .firstWhere((element) => element.displayName == spaceName)
             .visibility,
-        equals(RoomVisibility.invite));
+        equals(RoomVisibilityPrivate()));
 
     await app.clientManager.close();
     await tester.clean();
@@ -58,49 +58,50 @@ void main() {
         client.spaces
             .firstWhere((element) => element.displayName == spaceName)
             .visibility,
-        equals(RoomVisibility.public));
+        equals(RoomVisibilityPublic()));
 
     await app.clientManager.close();
     await tester.clean();
   });
 }
 
+// The space creation flow is the generic "get or create room" dialog: the
+// sidebar's add button opens it with only the Space creator, "Next" opens the
+// form (name, topic, visibility), "Create Room!" creates the space.
+
 Future<void> _confirmCreateSpace(WidgetTester tester) async {
   await tester.tap(find
-      .widgetWithText(tiamat.Button, T.current.promptConfirmSpaceCreation)
+      .widgetWithText(tiamat.Button, T.current.promptConfirmRoomCreation)
       .first);
 
   await tester.pumpAndSettle();
 }
 
 Future<void> _setSpaceName(WidgetTester tester, String spaceName) async {
-  await tester.enterText(
-      find.widgetWithText(
-        tiamat.TextInput,
-        T.current.promptSpaceName,
-      ),
-      spaceName);
+  // The name field is the first text field of the form, the topic the second.
+  await tester.enterText(find.byType(TextField).first, spaceName);
+  await tester.pumpAndSettle();
 }
 
 Future<void> _setPrivate(WidgetTester tester) async {
-  await tester.tap(find.byType(tiamat.DropdownSelector<RoomVisibility>));
+  await tester.tap(find.byType(tiamat.DropdownSelector<RoomVisibility?>));
 
   await tester.pumpAndSettle();
 
   await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.spaceVisibilityPrivateExplanation)
+      .widgetWithText(tiamat.Text, T.current.roomVisibilityPrivateExplanation)
       .last);
 
   await tester.pumpAndSettle();
 }
 
 Future<void> _setPublic(WidgetTester tester) async {
-  await tester.tap(find.byType(tiamat.DropdownSelector<RoomVisibility>));
+  await tester.tap(find.byType(tiamat.DropdownSelector<RoomVisibility?>));
 
   await tester.pumpAndSettle();
 
   await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.spaceVisibilityPublicExplanation)
+      .widgetWithText(tiamat.Text, T.current.roomVisibilityPublicExplanation)
       .last);
 
   await tester.pumpAndSettle();
@@ -122,8 +123,10 @@ Future<void> _openMenu(WidgetTester tester, App app) async {
 
   await tester.pumpAndSettle();
 
+  // Only the Space creator is offered, so the dialog shows it directly with
+  // a Next button that opens the form.
   await tester
-      .tap(find.widgetWithText(InkWell, T.current.promptCreateNewSpace));
+      .tap(find.widgetWithText(tiamat.Button, T.current.promptNext).first);
 
   await tester.pumpAndSettle();
 }
