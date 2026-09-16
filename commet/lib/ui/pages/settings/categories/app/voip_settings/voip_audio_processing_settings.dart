@@ -10,6 +10,12 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 /// Noise suppression, input sensitivity and far-end ducking controls.
 /// Lives inside the Audio Settings panel of the VoIP settings page.
+///
+/// The level meter is live during a call. Outside a call the user can start
+/// a microphone test, which captures the microphone through the DSP (and
+/// optionally plays it back) so the meter and the noise suppression can be
+/// checked without anyone else on the line. Leaving this page stops the
+/// test.
 class VoipAudioProcessingSettings extends StatefulWidget {
   const VoipAudioProcessingSettings({super.key});
 
@@ -21,6 +27,9 @@ class VoipAudioProcessingSettings extends StatefulWidget {
 class _VoipAudioProcessingSettingsState
     extends State<VoipAudioProcessingSettings> {
   StreamSubscription? _sub;
+  StreamSubscription? _stateSub;
+  bool _starting = false;
+  bool _startFailed = false;
 
   String get labelVoipNoiseSuppression => Intl.message("Noise suppression",
       name: "labelVoipNoiseSuppression",
@@ -68,26 +77,110 @@ class _VoipAudioProcessingSettingsState
       desc:
           "Shown instead of the audio processing settings on platforms without the voice DSP");
 
-  String get labelVoipInputMeterIdle =>
-      Intl.message("Join a voice call to see your live input level.",
-          name: "labelVoipInputMeterIdle",
-          desc: "Shown under the microphone level meter when not in a call");
+  String get labelVoipInputMeterIdle => Intl.message(
+      "Start a microphone test or join a voice call to see your live input level.",
+      name: "labelVoipInputMeterIdle",
+      desc: "Shown under the microphone level meter when nothing is captured");
+
+  String get labelVoipInputMeterInCall =>
+      Intl.message("Live from your current call.",
+          name: "labelVoipInputMeterInCall",
+          desc: "Shown under the microphone level meter during a call");
+
+  String get labelVoipMicTestStart => Intl.message("Test microphone",
+      name: "labelVoipMicTestStart",
+      desc: "Button that starts capturing the microphone for a test");
+
+  String get labelVoipMicTestStop => Intl.message("Stop test",
+      name: "labelVoipMicTestStop",
+      desc: "Button that stops the microphone test");
+
+  String get labelVoipMicTestFailed => Intl.message(
+      "Could not start the microphone test. Check that a microphone is connected and allowed.",
+      name: "labelVoipMicTestFailed",
+      desc: "Shown when the microphone test could not start");
+
+  String get labelVoipMicTestMonitor => Intl.message("Hear myself",
+      name: "labelVoipMicTestMonitor",
+      desc:
+          "Toggle that plays the processed microphone back during the microphone test");
+
+  String get labelVoipMicTestMonitorDescription => Intl.message(
+      "Plays your microphone back through your speakers, exactly as others would hear it, so you can compare noise suppression on and off. Use headphones.",
+      name: "labelVoipMicTestMonitorDescription",
+      desc: "Describes the hear myself toggle of the microphone test");
+
+  String get labelVoipDspNoAudio => Intl.message(
+      "The audio processor is attached but no microphone audio is reaching it.",
+      name: "labelVoipDspNoAudio",
+      desc:
+          "Diagnostic shown when the voice DSP is installed but not receiving frames");
+
+  String labelVoipDspStatus(String rate, String suppression, String gate) =>
+      Intl.message("Processing $rate audio. Noise suppression $suppression. $gate",
+          args: [rate, suppression, gate],
+          name: "labelVoipDspStatus",
+          desc:
+              "Diagnostic line under the level meter: sample rate, whether noise suppression is running, gate state");
+
+  String get labelVoipDspOn => Intl.message("on",
+      name: "labelVoipDspOn", desc: "Noise suppression state in the status line");
+
+  String get labelVoipDspOff => Intl.message("off",
+      name: "labelVoipDspOff",
+      desc: "Noise suppression state in the status line");
+
+  String get labelVoipDspGateOpen => Intl.message("Transmitting.",
+      name: "labelVoipDspGateOpen",
+      desc: "Gate state in the status line when the microphone is being sent");
+
+  String get labelVoipDspGateClosed => Intl.message("Muted by the input gate.",
+      name: "labelVoipDspGateClosed",
+      desc: "Gate state in the status line when the input gate is closed");
 
   AudioDspReport? _report;
 
   @override
   void initState() {
     super.initState();
-    _sub = AudioProcessingManager.instance.onReport.listen((r) {
+    final manager = AudioProcessingManager.instance;
+    _report = manager.lastReport;
+    _sub = manager.onReport.listen((r) {
       if (!mounted) return;
       setState(() => _report = r);
+    });
+    _stateSub = manager.onStateChanged.listen((_) {
+      if (!mounted) return;
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
     _sub?.cancel();
+    _stateSub?.cancel();
+    final manager = AudioProcessingManager.instance;
+    if (manager.isTesting) manager.stopMicTest();
     super.dispose();
+  }
+
+  Future<void> _toggleTest() async {
+    final manager = AudioProcessingManager.instance;
+    if (manager.isTesting) {
+      await manager.stopMicTest();
+      if (mounted) setState(() {});
+      return;
+    }
+    setState(() {
+      _starting = true;
+      _startFailed = false;
+    });
+    final ok = await manager.startMicTest();
+    if (!mounted) return;
+    setState(() {
+      _starting = false;
+      _startFailed = !ok;
+    });
   }
 
   @override
@@ -101,6 +194,8 @@ class _VoipAudioProcessingSettingsState
     }
 
     final auto = preferences.voipInputSensitivityAuto.value;
+    final active = manager.isActive;
+    final report = active ? _report : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +222,7 @@ class _VoipAudioProcessingSettingsState
               if (!auto)
                 tiamat.Text.labelLow(labelVoipInputSensitivityDescription),
               InputLevelMeter(
-                report: manager.isActive ? _report : null,
+                report: report,
                 thresholdDb:
                     auto ? null : preferences.voipInputSensitivityDb.value,
               ),
@@ -153,8 +248,8 @@ class _VoipAudioProcessingSettingsState
                     ),
                   ],
                 ),
-              if (!manager.isActive)
-                tiamat.Text.labelLow(labelVoipInputMeterIdle),
+              _statusLine(manager, report),
+              if (!manager.isInCall) _testControls(manager),
             ],
           ),
         ),
@@ -162,6 +257,69 @@ class _VoipAudioProcessingSettingsState
           preference: preferences.voipFarEndDucking,
           title: labelVoipFarEndDucking,
           description: labelVoipFarEndDuckingDescription,
+        ),
+      ],
+    );
+  }
+
+  Widget _statusLine(AudioProcessingManager manager, AudioDspReport? report) {
+    if (!manager.isActive) {
+      return tiamat.Text.labelLow(labelVoipInputMeterIdle);
+    }
+    if (!manager.isProcessing || report == null) {
+      // Installed, but the frame counter is not moving: nothing is being
+      // captured, or the hook is not wired. Say so instead of a dead bar.
+      return tiamat.Text.error(labelVoipDspNoAudio);
+    }
+    final rate = "${(report.sampleRate / 1000).toStringAsFixed(0)} kHz";
+    final status = labelVoipDspStatus(
+      rate,
+      report.noiseSuppressionActive ? labelVoipDspOn : labelVoipDspOff,
+      report.gateOpen ? labelVoipDspGateOpen : labelVoipDspGateClosed,
+    );
+    return tiamat.Text.labelLow(
+        manager.isInCall ? "$labelVoipInputMeterInCall $status" : status);
+  }
+
+  Widget _testControls(AudioProcessingManager manager) {
+    final testing = manager.isTesting;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Row(
+          spacing: 12,
+          children: [
+            testing
+                ? tiamat.Button.secondary(
+                    text: labelVoipMicTestStop,
+                    onTap: _starting ? null : _toggleTest,
+                  )
+                : tiamat.Button(
+                    text: labelVoipMicTestStart,
+                    isLoading: _starting,
+                    onTap: _starting ? null : _toggleTest,
+                  ),
+            if (_startFailed)
+              Expanded(child: tiamat.Text.error(labelVoipMicTestFailed)),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  tiamat.Text.labelEmphasised(labelVoipMicTestMonitor),
+                  tiamat.Text.labelLow(labelVoipMicTestMonitorDescription),
+                ],
+              ),
+            ),
+            tiamat.Switch(
+              state: manager.micTestMonitor,
+              onChanged: (v) => manager.setMicTestMonitor(v),
+            ),
+          ],
         ),
       ],
     );

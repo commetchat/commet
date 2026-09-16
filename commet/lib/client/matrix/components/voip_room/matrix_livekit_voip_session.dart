@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
@@ -51,6 +53,14 @@ class MatrixLivekitVoipSession implements VoipSession {
       _onVolumeChanged.add(());
     });
 
+    _dspNoiseSuppression = preferences.voipNoiseSuppression.value;
+    _settingsSub = preferences.onSettingChanged.listen((_) {
+      final now = preferences.voipNoiseSuppression.value;
+      if (now == _dspNoiseSuppression) return;
+      _dspNoiseSuppression = now;
+      _reapplyNoiseSuppression();
+    });
+
     keyProvider?.init(livekitRoom.localParticipant!.identity, livekitRoom);
 
     startHeartbeat();
@@ -59,6 +69,37 @@ class MatrixLivekitVoipSession implements VoipSession {
   StreamController _stateChanged = StreamController.broadcast();
   final StreamController<VoipState> _onConnectionChanged =
       StreamController.broadcast();
+
+  StreamSubscription? _settingsSub;
+  bool _dspNoiseSuppression = false;
+
+  /// The WebRTC / browser noise suppressor is a capture option fixed when
+  /// the microphone track is created (off while our DSP suppresses, see
+  /// MatrixLivekitBackend.join). Toggling our suppressor mid-call therefore
+  /// has to recreate the track with the opposite option, otherwise the user
+  /// ends up with both or neither.
+  Future<void> _reapplyNoiseSuppression() async {
+    final dsp = AudioProcessingManager.instance;
+    if (!dsp.isSupported) return;
+    final participant = livekitRoom.localParticipant;
+    if (participant == null) return;
+    final pub = participant.audioTrackPublications.firstOrNull;
+    final track = pub?.track;
+    if (pub == null || track is! lk.LocalAudioTrack || pub.muted) return;
+
+    final wantWebrtcSuppression = !_dspNoiseSuppression;
+    if (track.currentOptions.noiseSuppression == wantWebrtcSuppression) {
+      return;
+    }
+    try {
+      await track.restartTrack(track.currentOptions
+          .copyWith(noiseSuppression: wantWebrtcSuppression));
+      Log.i("Voice DSP: restarted the microphone, WebRTC noise suppression "
+          "${wantWebrtcSuppression ? "on" : "off"}");
+    } catch (e, s) {
+      Log.onError(e, s, content: "Voice DSP: could not restart microphone");
+    }
+  }
 
   @override
   Stream<VoipState> get onConnectionStateChanged => _onConnectionChanged.stream;
@@ -266,6 +307,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     Log.i("Hanging up call");
 
     keyProvider?.dispose();
+    _settingsSub?.cancel();
+    _settingsSub = null;
 
     await Future.wait([
       clearRoomCallState(),

@@ -64,6 +64,8 @@
       node.connect(dest);
 
       const farEnd = new Map();
+      // Microphone test: the processed signal can also go to the speakers.
+      let monitoring = false;
       let readyResolve;
       const ready = new Promise((res) => (readyResolve = res));
 
@@ -91,6 +93,15 @@
             farEnd.delete(t.id);
           }
         },
+        setMonitor(enabled) {
+          enabled = !!enabled;
+          if (enabled === monitoring) return;
+          monitoring = enabled;
+          try {
+            if (enabled) node.connect(ctx.destination);
+            else node.disconnect(ctx.destination);
+          } catch (e) {}
+        },
         resume() {
           return ctx.resume();
         },
@@ -98,6 +109,7 @@
           return ctx.state;
         },
         async destroy() {
+          monitoring = false;
           try { source.disconnect(); } catch (e) {}
           try { node.disconnect(); } catch (e) {}
           for (const s of farEnd.values()) {

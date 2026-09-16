@@ -15,6 +15,15 @@ class UnsupportedAudioProcessingManager extends AudioProcessingManager {
   bool get isActive => false;
 
   @override
+  bool get isInCall => false;
+
+  @override
+  bool get isTesting => false;
+
+  @override
+  bool get micTestMonitor => false;
+
+  @override
   Future<void> onSessionStarted(VoipSession session) async {}
 
   @override
@@ -25,4 +34,13 @@ class UnsupportedAudioProcessingManager extends AudioProcessingManager {
 
   @override
   Future<void> applySettings(AudioDspSettings settings) async {}
+
+  @override
+  Future<bool> startMicTest() async => false;
+
+  @override
+  Future<void> stopMicTest() async {}
+
+  @override
+  Future<void> setMicTestMonitor(bool enabled) async {}
 }

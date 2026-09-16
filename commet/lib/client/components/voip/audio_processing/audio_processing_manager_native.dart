@@ -7,8 +7,10 @@ import 'package:commet/client/components/voip/audio_processing/audio_processing_
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager_stub.dart'
     show UnsupportedAudioProcessingManager;
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:livekit_client/livekit_client.dart' as lk;
 import 'package:path/path.dart' as p;
 
@@ -144,6 +146,12 @@ class _Bindings {
 /// Linux and Windows: hooks rust/audio_dsp (shipped inside
 /// librust_lib_commet) into WebRTC's audio processing module via the
 /// vendored LiveKit plugin.
+///
+/// The hook is process-global: it sees whatever the audio device module
+/// captures. Outside a call nothing is captured, so the microphone test
+/// runs a local loopback pair of peer connections; that makes WebRTC start
+/// recording (through the APM and our hook) and lets us play the result
+/// back.
 class NativeAudioProcessingManager extends AudioProcessingManager {
   _Bindings? _bindings;
   bool _loadAttempted = false;
@@ -154,6 +162,12 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   Pointer<DspReport>? _report;
   Timer? _pollTimer;
   bool _installed = false;
+  bool _inCall = false;
+
+  _MicLoopback? _loopback;
+  bool _monitor = false;
+  // Start/stop/restart are serialized so a fast toggle cannot interleave.
+  Future<void> _testOps = Future.value();
 
   static const _pollInterval = Duration(milliseconds: 100);
 
@@ -218,7 +232,34 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   bool get isActive => _installed;
 
   @override
+  bool get isInCall => _inCall;
+
+  @override
+  bool get isTesting => _loopback != null;
+
+  @override
+  bool get micTestMonitor => _monitor;
+
+  @override
   Future<void> onSessionStarted(VoipSession session) async {
+    // The loopback holds the microphone; the call needs it.
+    if (isTesting) {
+      Log.i("Voice DSP: stopping the microphone test, a call started");
+      await stopMicTest();
+    }
+    _inCall = true;
+    await _install();
+    notifyStateChanged();
+  }
+
+  @override
+  Future<void> onSessionEnded() async {
+    _inCall = false;
+    if (!isTesting) await _uninstall();
+    notifyStateChanged();
+  }
+
+  Future<void> _install() async {
     final b = bindings;
     if (b == null) return;
     if (_installed) return;
@@ -249,8 +290,7 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
     _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
   }
 
-  @override
-  Future<void> onSessionEnded() async {
+  Future<void> _uninstall() async {
     if (!_installed) return;
     _installed = false;
     _pollTimer?.cancel();
@@ -289,6 +329,73 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
     b.setParams(_handle!, _params!);
   }
 
+  @override
+  Future<void> onNoiseSuppressionChanged(bool enabled) async {
+    // The WebRTC suppressor is chosen when the capture starts: restart the
+    // test capture so what the user hears matches the setting.
+    if (!isTesting) return;
+    _testOps = _testOps.then((_) async {
+      final lb = _loopback;
+      if (lb == null) return;
+      await lb.dispose();
+      _loopback = null;
+      await _startLoopback();
+      notifyStateChanged();
+    });
+    await _testOps;
+  }
+
+  @override
+  Future<bool> startMicTest() async {
+    if (!isSupported || _inCall) return false;
+    if (isTesting) return true;
+    var started = false;
+    _testOps = _testOps.then((_) async {
+      if (_inCall || isTesting) return;
+      await _install();
+      if (!_installed) return;
+      started = await _startLoopback();
+      if (!started) await _uninstall();
+      notifyStateChanged();
+    });
+    await _testOps;
+    return started;
+  }
+
+  Future<bool> _startLoopback() async {
+    try {
+      final lb = await _MicLoopback.start(
+          noiseSuppression: !settings.noiseSuppression, monitor: _monitor);
+      _loopback = lb;
+      Log.i("Voice DSP: microphone test running");
+      return true;
+    } catch (e, s) {
+      Log.onError(e, s, content: "Voice DSP: microphone test failed to start");
+      return false;
+    }
+  }
+
+  @override
+  Future<void> stopMicTest() async {
+    _testOps = _testOps.then((_) async {
+      final lb = _loopback;
+      if (lb == null) return;
+      _loopback = null;
+      await lb.dispose();
+      if (!_inCall) await _uninstall();
+      Log.i("Voice DSP: microphone test stopped");
+      notifyStateChanged();
+    });
+    await _testOps;
+  }
+
+  @override
+  Future<void> setMicTestMonitor(bool enabled) async {
+    _monitor = enabled;
+    _loopback?.setMonitor(enabled);
+    notifyStateChanged();
+  }
+
   void _writeParams(AudioDspSettings s) {
     final params = _params!.ref;
     params.noiseSuppression = s.noiseSuppression ? 1 : 0;
@@ -317,5 +424,128 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
       frames: r.frames,
       flags: r.flags,
     ));
+  }
+}
+
+/// Two peer connections on the same machine: the microphone goes out of one
+/// and comes back in the other. WebRTC only records while a sending audio
+/// stream exists, so this is what pushes microphone audio through the APM
+/// (and our hook) without a call. The received track plays through the
+/// speakers when [setMonitor] is on; otherwise it is disabled and silent.
+class _MicLoopback {
+  final webrtc.RTCPeerConnection send;
+  final webrtc.RTCPeerConnection recv;
+  final webrtc.MediaStream mic;
+  webrtc.MediaStreamTrack? _remote;
+  bool _monitor;
+
+  _MicLoopback._(this.send, this.recv, this.mic, this._monitor);
+
+  static Future<_MicLoopback> start(
+      {required bool noiseSuppression, required bool monitor}) async {
+    final config = <String, dynamic>{
+      'iceServers': <Map<String, dynamic>>[],
+      'sdpSemantics': 'unified-plan',
+    };
+    final send = await webrtc.createPeerConnection(config);
+    final recv = await webrtc.createPeerConnection(config);
+
+    // Same options as a call (MatrixLivekitBackend.join): WebRTC's own
+    // suppressor only when ours is off.
+    final constraints = <String, dynamic>{
+      'echoCancellation': true,
+      'noiseSuppression': noiseSuppression,
+      'autoGainControl': true,
+    };
+    final deviceId = await WebrtcDefaultDevices.getDefaultMicrophoneId();
+    if (deviceId != null) {
+      constraints['deviceId'] = {'exact': deviceId};
+    }
+
+    webrtc.MediaStream? mic;
+    try {
+      mic = await webrtc.navigator.mediaDevices
+          .getUserMedia({'audio': constraints, 'video': false});
+      final lb = _MicLoopback._(send, recv, mic, monitor);
+
+      // Candidates can fire before the other side has its remote
+      // description; hold them until the handshake is done.
+      final pendingToRecv = <webrtc.RTCIceCandidate>[];
+      final pendingToSend = <webrtc.RTCIceCandidate>[];
+      var handshakeDone = false;
+      send.onIceCandidate = (c) {
+        if (handshakeDone) {
+          recv.addCandidate(c);
+        } else {
+          pendingToRecv.add(c);
+        }
+      };
+      recv.onIceCandidate = (c) {
+        if (handshakeDone) {
+          send.addCandidate(c);
+        } else {
+          pendingToSend.add(c);
+        }
+      };
+      recv.onTrack = (event) {
+        final track = event.track;
+        if (track.kind != 'audio') return;
+        lb._remote = track;
+        track.enabled = lb._monitor;
+      };
+
+      for (final track in mic.getAudioTracks()) {
+        await send.addTrack(track, mic);
+      }
+
+      final offer = await send.createOffer({});
+      await send.setLocalDescription(offer);
+      await recv.setRemoteDescription(offer);
+      final answer = await recv.createAnswer({});
+      await recv.setLocalDescription(answer);
+      await send.setRemoteDescription(answer);
+
+      handshakeDone = true;
+      for (final c in pendingToRecv) {
+        await recv.addCandidate(c);
+      }
+      for (final c in pendingToSend) {
+        await send.addCandidate(c);
+      }
+      return lb;
+    } catch (_) {
+      await _closeAll(send, recv, mic);
+      rethrow;
+    }
+  }
+
+  void setMonitor(bool enabled) {
+    _monitor = enabled;
+    final remote = _remote;
+    if (remote != null) remote.enabled = enabled;
+  }
+
+  Future<void> dispose() => _closeAll(send, recv, mic);
+
+  static Future<void> _closeAll(webrtc.RTCPeerConnection send,
+      webrtc.RTCPeerConnection recv, webrtc.MediaStream? mic) async {
+    Future<void> guard(Future<void> Function() f) async {
+      try {
+        await f();
+      } catch (e, s) {
+        Log.onError(e, s, content: "Voice DSP: microphone test cleanup");
+      }
+    }
+
+    await guard(() => send.close());
+    await guard(() => recv.close());
+    if (mic != null) {
+      for (final track in mic.getTracks()) {
+        await guard(() => track.stop());
+      }
+      await guard(() => mic.dispose());
+    }
+    await guard(() => send.dispose());
+    await guard(() => recv.dispose());
   }
 }

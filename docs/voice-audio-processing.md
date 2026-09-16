@@ -32,6 +32,26 @@ point this was a null virtual call. The host now installs one long-lived
 no-op proxy per slot exactly once and swaps the Rust callbacks inside it
 (`shared_cpp/commet_external_audio_processing.h`).
 
+Investigation (2026-09-15, Windows, "no audible difference" report): the
+wiring is complete end to end (LiveKit session → `CallManager` →
+`NativeAudioProcessingManager` → APM hook → Rust; `noiseSuppression`
+constraint → `RTCAudioOptions` → libwebrtc), and the four Windows crash
+dumps in `%LOCALAPPDATA%\CrashDumps` are all `flutter_inappwebview` /
+DirectComposition, not the DSP. Two real reasons the toggle felt like
+nothing:
+
+- Nobody can hear their own microphone in a call, and with ours off the
+  WebRTC suppressor takes over, so an A/B needs a second listener or a
+  playback path. The settings page now has a microphone test with "Hear
+  myself" for exactly this.
+- The WebRTC suppressor is chosen when the track is created. Toggling ours
+  mid-call used to leave it as it was (both on, or neither).
+  `MatrixLivekitVoipSession` now restarts the microphone track with the
+  opposite option when the preference flips.
+
+The level meter only moved during a call because nothing captures the
+microphone outside one; see "Microphone test" below.
+
 ## Decisions
 
 | Question | Decision |
@@ -101,6 +121,28 @@ entry points never allocate after construction (there is a test for it).
 RNNoise does very little against pure full-band white noise; real noise is
 coloured and the fixtures reflect that.
 
+### Microphone test
+
+`AudioProcessingManager.startMicTest()` captures the microphone through the
+DSP without a call so Settings → VoIP can show the live meter and let the
+user hear the result ("Hear myself", `setMicTestMonitor`). Joining a call
+stops the test; leaving the settings page stops it too.
+
+- Native: WebRTC only records while a sending audio stream exists, so the
+  test builds two local peer connections (`_MicLoopback`) and sends the
+  microphone from one to the other. That drives the ADM → APM → hook path
+  identically to a call. The received track is `enabled` only while
+  monitoring, otherwise it is silent.
+- Web: `getUserMedia` → the same worklet graph; monitoring connects the
+  worklet node to `ctx.destination` (`graph.setMonitor`).
+- Both capture with the same constraints as a call (browser/WebRTC
+  suppressor off when ours is on) and restart the capture when the noise
+  suppression preference flips during the test.
+
+The status line under the meter reports the sample rate, whether RNNoise is
+running and the gate state, or says explicitly that the DSP is attached but
+receiving no frames. That is the first thing to read when the meter is dead.
+
 ## Files
 
 | Path | Role |
@@ -143,9 +185,11 @@ After changing `pubspec.yaml` (LiveKit is now a path dependency) run
 
 Ordered by how badly it hurts if wrong.
 
-1. **Linux hook receives frames.** Join a voice room, watch the log for
-   "Voice DSP: installed", open Settings → VoIP and confirm the meter moves.
-   The report's `sampleRate` should be 48000 with a 48 kHz device.
+1. **Hook receives frames (Linux and Windows).** Open Settings → VoIP and
+   press "Test microphone": the meter must move and the status line must
+   read "Processing 48 kHz audio" (or 16/32 kHz). "attached but no
+   microphone audio is reaching it" means the APM hook is not being called.
+   Then toggle noise suppression with "Hear myself" on and listen.
 2. **Web mic switch keeps the filter.** `setProcessor` now calls
    `replaceTrack(processedTrack)`; switch microphones mid-call and record the
    remote side.

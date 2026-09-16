@@ -32,6 +32,7 @@ extension type _DspGraph._(JSObject _) implements JSObject {
   external void setParams(JSAny? params);
   external void addFarEnd(web.MediaStreamTrack track);
   external void removeFarEnd(web.MediaStreamTrack track);
+  external void setMonitor(bool enabled);
   external JSPromise<JSAny?> resume();
   external JSPromise<JSAny?> destroy();
   external set onReport(JSFunction? f);
@@ -40,16 +41,34 @@ extension type _DspGraph._(JSObject _) implements JSObject {
 
 /// Browser: the DSP runs in an AudioWorklet (web/audio_dsp.worklet.js) fed by
 /// the raw microphone track; LiveKit publishes the worklet's output.
+///
+/// The microphone test builds the same graph from a `getUserMedia` track
+/// and, when monitoring, connects the worklet to the speakers.
 class WebAudioProcessingManager extends AudioProcessingManager {
   CommetWebTrackProcessor? _current;
   lk.EventsListener<lk.RoomEvent>? _roomListener;
   lk.Room? _room;
+  bool _inCall = false;
+
+  _DspGraph? _testGraph;
+  web.MediaStream? _testStream;
+  bool _monitor = false;
+  Future<void> _testOps = Future.value();
 
   @override
   bool get isSupported => _commetAudioDsp?.isSupported ?? false;
 
   @override
-  bool get isActive => _current?.graph != null;
+  bool get isActive => _current?.graph != null || _testGraph != null;
+
+  @override
+  bool get isInCall => _inCall;
+
+  @override
+  bool get isTesting => _testGraph != null;
+
+  @override
+  bool get micTestMonitor => _monitor;
 
   @override
   lk.TrackProcessor<lk.AudioProcessorOptions>? createTrackProcessor() {
@@ -60,18 +79,143 @@ class WebAudioProcessingManager extends AudioProcessingManager {
 
   @override
   Future<void> onSessionStarted(VoipSession session) async {
-    if (session is! MatrixLivekitVoipSession) return;
-    _attachRoom(session.livekitRoom);
+    if (isTesting) {
+      Log.i("Voice DSP: stopping the microphone test, a call started");
+      await stopMicTest();
+    }
+    _inCall = true;
+    if (session is MatrixLivekitVoipSession) {
+      _attachRoom(session.livekitRoom);
+    }
+    notifyStateChanged();
   }
 
   @override
   Future<void> onSessionEnded() async {
+    _inCall = false;
     _detachRoom();
+    notifyStateChanged();
   }
 
   @override
   Future<void> applySettings(AudioDspSettings settings) async {
-    _current?.graph?.setParams(settings.toMap().jsify());
+    final params = settings.toMap().jsify();
+    _current?.graph?.setParams(params);
+    _testGraph?.setParams(params);
+  }
+
+  @override
+  Future<void> onNoiseSuppressionChanged(bool enabled) async {
+    // The browser suppressor is a getUserMedia constraint: restart the test
+    // capture so what the user hears matches the setting.
+    if (!isTesting) return;
+    _testOps = _testOps.then((_) async {
+      if (!isTesting) return;
+      await _destroyTest();
+      await _createTest();
+      notifyStateChanged();
+    });
+    await _testOps;
+  }
+
+  @override
+  Future<bool> startMicTest() async {
+    if (!isSupported || _inCall) return false;
+    if (isTesting) return true;
+    var started = false;
+    _testOps = _testOps.then((_) async {
+      if (_inCall || isTesting) return;
+      started = await _createTest();
+      notifyStateChanged();
+    });
+    await _testOps;
+    return started;
+  }
+
+  @override
+  Future<void> stopMicTest() async {
+    _testOps = _testOps.then((_) async {
+      if (!isTesting) return;
+      await _destroyTest();
+      Log.i("Voice DSP: microphone test stopped");
+      notifyStateChanged();
+    });
+    await _testOps;
+  }
+
+  @override
+  Future<void> setMicTestMonitor(bool enabled) async {
+    _monitor = enabled;
+    _testGraph?.setMonitor(enabled);
+    notifyStateChanged();
+  }
+
+  Future<bool> _createTest() async {
+    final api = _commetAudioDsp;
+    if (api == null) return false;
+    try {
+      // Same constraints as a call: the browser suppressor only when ours
+      // is off.
+      final constraints = web.MediaStreamConstraints(
+        audio: {
+          'echoCancellation': true,
+          'noiseSuppression': !settings.noiseSuppression,
+          'autoGainControl': true,
+        }.jsify()!,
+      );
+      final stream = await web.window.navigator.mediaDevices
+          .getUserMedia(constraints)
+          .toDart;
+      final tracks = stream.getAudioTracks().toDart;
+      if (tracks.isEmpty) {
+        Log.w("Voice DSP: microphone test got no audio track");
+        return false;
+      }
+      _testStream = stream;
+      final g = await api.create(tracks.first, settings.toMap().jsify()).toDart;
+      g.onReport = ((JSObject r) {
+        publishReport(_reportFromJs(r));
+      }).toJS;
+      g.onError = ((JSString message) {
+        Log.e("Voice DSP worklet error: ${message.toDart}");
+      }).toJS;
+      _testGraph = g;
+      g.setMonitor(_monitor);
+      if (g.state != "running") {
+        await g.resume().toDart;
+      }
+      final ready = (await g.ready.toDart).toDart;
+      if (!ready) {
+        Log.e("Voice DSP: worklet failed to start for the microphone test");
+        await _destroyTest();
+        return false;
+      }
+      Log.i("Voice DSP: microphone test running");
+      return true;
+    } catch (e, s) {
+      Log.onError(e, s, content: "Voice DSP: microphone test failed to start");
+      await _destroyTest();
+      return false;
+    }
+  }
+
+  Future<void> _destroyTest() async {
+    final g = _testGraph;
+    _testGraph = null;
+    if (g != null) {
+      try {
+        await g.destroy().toDart;
+      } catch (e, s) {
+        Log.onError(e, s, content: "Voice DSP: error tearing down test graph");
+      }
+    }
+    final stream = _testStream;
+    _testStream = null;
+    if (stream != null) {
+      for (final track in stream.getTracks().toDart) {
+        track.stop();
+      }
+    }
   }
 
   // Far-end level for ducking: every remote audio track is also fed into the
@@ -127,13 +271,28 @@ class WebAudioProcessingManager extends AudioProcessingManager {
     if (processor != _current) return;
     _farEndTracks.clear();
     _farEndChanged();
+    notifyStateChanged();
   }
 
   void onGraphDestroyed(CommetWebTrackProcessor processor) {
     if (processor == _current) {
       _farEndTracks.clear();
     }
+    notifyStateChanged();
   }
+}
+
+AudioDspReport _reportFromJs(JSObject r) {
+  final m = r.dartify() as Map;
+  return AudioDspReport(
+    levelDb: (m["levelDb"] as num).toDouble(),
+    vad: (m["vad"] as num).toDouble(),
+    farLevelDb: (m["farLevelDb"] as num).toDouble(),
+    gainDb: (m["gainDb"] as num).toDouble(),
+    sampleRate: (m["sampleRate"] as num).toInt(),
+    frames: (m["frames"] as num).toInt(),
+    flags: (m["flags"] as num).toInt(),
+  );
 }
 
 /// LiveKit track processor wrapping the Web Audio graph.
@@ -165,16 +324,7 @@ class CommetWebTrackProcessor
           .create(track.jsTrack, manager.settings.toMap().jsify())
           .toDart;
       g.onReport = ((JSObject r) {
-        final m = r.dartify() as Map;
-        manager.publishReport(AudioDspReport(
-          levelDb: (m["levelDb"] as num).toDouble(),
-          vad: (m["vad"] as num).toDouble(),
-          farLevelDb: (m["farLevelDb"] as num).toDouble(),
-          gainDb: (m["gainDb"] as num).toDouble(),
-          sampleRate: (m["sampleRate"] as num).toInt(),
-          frames: (m["frames"] as num).toInt(),
-          flags: (m["flags"] as num).toInt(),
-        ));
+        manager.publishReport(_reportFromJs(r));
       }).toJS;
       g.onError = ((JSString message) {
         Log.e("Voice DSP worklet error: ${message.toDart}");
