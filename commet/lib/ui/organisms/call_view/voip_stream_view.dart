@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/member.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
+import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_emoji_overlay.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_overlay_registry.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -97,11 +100,21 @@ class _VoipStreamViewState extends State<VoipStreamView> {
     if (value != speaking) setState(() => speaking = value);
   }
 
+  bool hovering = false;
+
   @override
   Widget build(BuildContext context) {
+    final audioStream = widget.audioStream;
+    // Only while the stream plays: an unwatched screen share has no audio.
+    final showVolumeControl =
+        audioStream?.direction == VoipStreamDirection.incoming &&
+            widget.stream.isWatching;
     return Material(
       color: Colors.transparent,
-      child: Stack(
+      child: MouseRegion(
+        onEnter: (_) => setState(() => hovering = true),
+        onExit: (_) => setState(() => hovering = false),
+        child: Stack(
         alignment: Alignment.topRight,
         children: [
           AdaptiveContextMenu(
@@ -166,8 +179,25 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                   ),
                 ),
             ],
-          )
+          ),
+          if (showVolumeControl)
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: IgnorePointer(
+                ignoring: !(hovering || MediaQuery.of(context).mobile),
+                child: AnimatedOpacity(
+                  opacity: hovering || MediaQuery.of(context).mobile ? 1 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: StreamVolumeControl(audioStream!,
+                        key: ValueKey(audioStream.streamId)),
+                  ),
+                ),
+              ),
+            ),
         ],
+      ),
       ),
     );
   }
@@ -363,6 +393,10 @@ class _VoipStreamViewState extends State<VoipStreamView> {
   }
 }
 
+/// Highest playback volume a stream can be set to. Web plays remote audio
+/// through audio elements, which stop at 100%; native WebRTC can boost.
+double get maxStreamVolume => kIsWeb ? 1.0 : 2.5;
+
 class StreamVolumeSlider extends StatefulWidget {
   const StreamVolumeSlider(this.stream, {super.key});
 
@@ -381,8 +415,8 @@ class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
         Expanded(
           child: tiamat.Slider(
             min: 0.0,
-            max: 2.5,
-            value: widget.stream.volume,
+            max: maxStreamVolume,
+            value: widget.stream.volume.clamp(0.0, maxStreamVolume),
             onChanged: (value) {
               print(value);
               setState(() {
@@ -392,6 +426,82 @@ class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Mute button and slider drawn over a screen share, like a video player's.
+/// Drives only [stream] (the screen share audio), not the sharer's mic.
+class StreamVolumeControl extends StatefulWidget {
+  const StreamVolumeControl(this.stream, {super.key});
+
+  final VoipStream stream;
+
+  @override
+  State<StreamVolumeControl> createState() => _StreamVolumeControlState();
+}
+
+class _StreamVolumeControlState extends State<StreamVolumeControl> {
+  /// Volume to go back to when unmuting. Muting saves 0 as the volume, so
+  /// after a restart there is nothing to go back to and unmuting picks 100%.
+  double? _volumeBeforeMute;
+
+  Future<void> setVolume(double volume) async {
+    await widget.stream.setVolume(volume);
+    if (mounted) setState(() {});
+  }
+
+  void toggleMute() {
+    final volume = widget.stream.volume;
+    if (volume > 0) {
+      _volumeBeforeMute = volume;
+      setVolume(0);
+    } else {
+      setVolume(_volumeBeforeMute ?? 1.0);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final volume = widget.stream.volume.clamp(0.0, maxStreamVolume);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(4, 4, 12, 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            tiamat.IconButton(
+              icon: volume == 0
+                  ? Icons.volume_off_rounded
+                  : volume < 0.5
+                      ? Icons.volume_down_rounded
+                      : Icons.volume_up_rounded,
+              iconColor: Colors.white,
+              size: 20,
+              onPressed: toggleMute,
+            ),
+            SizedBox(
+              width: 90,
+              child: SliderTheme(
+                data: VideoPlayerState.compactSliderTheme(context),
+                child: Slider(
+                  value: volume,
+                  min: 0,
+                  max: maxStreamVolume,
+                  onChanged: setVolume,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text("${(volume * 100).round()}%",
+                style: const TextStyle(color: Colors.white, fontSize: 12)),
+          ],
+        ),
+      ),
     );
   }
 }

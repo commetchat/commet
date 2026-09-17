@@ -565,6 +565,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
   void _applyStreamVolume(MatrixLivekitVoipStream stream) {
     if (stream.direction == VoipStreamDirection.incoming) {
+      stream.listenerDeafened = _isDeafened;
       stream.applyVolume(_isDeafened ? 0.0 : stream.volume);
     }
   }

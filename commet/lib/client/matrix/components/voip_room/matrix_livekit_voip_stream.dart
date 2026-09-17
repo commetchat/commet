@@ -8,12 +8,13 @@ import 'package:commet/client/matrix/components/voip_room/screen_share_watch_lis
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:livekit_client/livekit_client.dart';
 
-/// Sets the playback volume of one WebRTC track.
+/// Sets the playback volume of one audio track.
 typedef TrackVolumeSetter = Future<void> Function(
-    double volume, MediaStreamTrack track);
+    double volume, AudioTrack track);
 
 typedef AudioVisualizerFactory = AudioVisualizer Function(AudioTrack track);
 
@@ -53,10 +54,10 @@ class MatrixLivekitVoipStream implements VoipStream {
       {this.watching,
       TrackVolumeSetter? setTrackVolume,
       AudioVisualizerFactory? createAudioVisualizer})
-      : _setTrackVolume = setTrackVolume ?? Helper.setVolume,
+      : _setTrackVolume = setTrackVolume ?? _setPlaybackVolume,
         _createAudioVisualizer = createAudioVisualizer ?? _speakingVisualizer {
     if (publication.track case AudioTrack t) {
-      _setTrackVolume(volume, t.mediaStreamTrack);
+      _setTrackVolume(volume, t);
       _startVisualizer(t);
     }
     if (publication is RemoteTrackPublication &&
@@ -114,6 +115,18 @@ class MatrixLivekitVoipStream implements VoipStream {
     }
   }
 
+  /// On web, [Helper.setVolume] only puts a volume constraint on the track,
+  /// which browsers ignore. Remote audio plays through LiveKit's audio
+  /// elements there, so the volume goes on the element instead.
+  static Future<void> _setPlaybackVolume(
+      double volume, AudioTrack track) async {
+    if (kIsWeb) {
+      if (track is RemoteAudioTrack) track.setVolume(volume);
+      return;
+    }
+    await Helper.setVolume(volume, track.mediaStreamTrack);
+  }
+
   static AudioVisualizer _speakingVisualizer(AudioTrack track) =>
       // Several bands so the loudest one can be picked: a single band averages
       // the whole spectrum and buries quiet speech under the empty highs.
@@ -158,7 +171,7 @@ class MatrixLivekitVoipStream implements VoipStream {
     }
     if (publication.track case AudioTrack t) {
       _startVisualizer(t);
-      _setTrackVolume(_playbackVolume ?? volume, t.mediaStreamTrack);
+      _setTrackVolume(_playbackVolume ?? volume, t);
     }
   }
 
@@ -311,8 +324,12 @@ class MatrixLivekitVoipStream implements VoipStream {
     } else {
       preferences.setVoipUserVolume(userId, volume);
     }
-    applyVolume(volume);
+    applyVolume(listenerDeafened ? 0.0 : volume);
   }
+
+  /// Whether the local user is deafened. Set by the owning session, so a
+  /// volume change made while deafened is saved but stays silent.
+  bool listenerDeafened = false;
 
   /// Sets the playback volume without changing the saved preference. The
   /// session uses this to silence the stream while deafened. A track that
@@ -320,7 +337,7 @@ class MatrixLivekitVoipStream implements VoipStream {
   void applyVolume(double volume) {
     _playbackVolume = volume;
     if (publication.track case AudioTrack track) {
-      _setTrackVolume(volume, track.mediaStreamTrack);
+      _setTrackVolume(volume, track);
     }
   }
 
