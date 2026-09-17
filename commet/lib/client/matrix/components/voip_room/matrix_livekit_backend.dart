@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:commet/client/matrix/components/voip_room/call_membership_writes.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
@@ -205,6 +206,10 @@ class MatrixLivekitBackend {
       {required void Function() onMembershipWritten}) async {
     await lkRoom.prepareConnection(sfuUrl, jwt);
 
+    // A clear from the previous call may still be in flight, and would
+    // erase what we write now (issue #48).
+    await CallMembershipWrites.settled(_ownMembershipKey);
+
     onMembershipWritten();
     await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
         MatrixVoipRoomComponent.callMemberStateEvent, _ownMembershipKey, {
@@ -259,7 +264,9 @@ class MatrixLivekitBackend {
       return null;
     });
 
+    final session =
+        MatrixLivekitVoipSession(room, lkRoom, keyProvider: provider);
     livekitRoom = lkRoom;
-    return MatrixLivekitVoipSession(room, lkRoom, keyProvider: provider);
+    return session;
   }
 }

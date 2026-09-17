@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:flutter/material.dart';
+import 'package:commet/main.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 class _ScreenAudio implements VoipStream {
@@ -11,6 +13,9 @@ class _ScreenAudio implements VoipStream {
   double volume;
 
   _ScreenAudio(this.volume);
+
+  @override
+  String get streamUserId => "@alice:example.org";
 
   final StreamController<void> _changed = StreamController.broadcast();
 
@@ -35,6 +40,12 @@ Future<void> pumpControl(WidgetTester tester, VoipStream stream) {
 }
 
 void main() {
+  setUp(() async {
+    // The volume to unmute to is saved, so every control agrees on it.
+    SharedPreferences.setMockInitialValues({});
+    await preferences.init();
+  });
+
   testWidgets('follows a volume changed from another control', (tester) async {
     final stream = _ScreenAudio(0.6);
     await pumpControl(tester, stream);
@@ -67,6 +78,23 @@ void main() {
     await tester.tap(find.byIcon(Icons.volume_off_rounded));
     await tester.pump();
     expect(stream.volume, 0.6);
+  });
+
+  testWidgets('unmuting uses the level saved by another control',
+      (tester) async {
+    final stream = _ScreenAudio(0.4);
+    await pumpControl(tester, stream);
+
+    // Muted from the tile, unmuted from a control built later (fullscreen).
+    await tester.tap(find.byIcon(Icons.volume_down_rounded));
+    await tester.pump();
+    expect(stream.volume, 0);
+
+    await pumpControl(tester, _ScreenAudio(0));
+    await tester.tap(find.byIcon(Icons.volume_off_rounded));
+    await tester.pump();
+
+    expect(find.text('40%'), findsOneWidget);
   });
 
   testWidgets('unmuting a volume saved as 0 goes to 100%', (tester) async {

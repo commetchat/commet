@@ -184,10 +184,11 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   /// Releases what the stream holds. The session calls this once the stream
   /// has left its stream list.
-  Future<void> dispose() {
+  Future<void> dispose() async {
     _stallTimer?.cancel();
     _stallTimer = null;
-    return _stopVisualizer();
+    await _stopVisualizer();
+    await _onChanged.close();
   }
 
   // Loudest visualizer band (0..1, dB scaled so -100 dB is 0) above which a
@@ -279,6 +280,9 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   String get streamUserId => userId;
+
+  @override
+  String get streamOwnerId => publication.participant.identity;
 
   @override
   VoipStreamType get type => typeOf(publication.kind, publication.source);

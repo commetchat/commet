@@ -252,6 +252,19 @@ class Preferences {
     return _preferences?.getDouble("call_screen_share_volume:${userId}") ?? 1.0;
   }
 
+  /// Volume to go back to when a screen share is unmuted. Saved, because
+  /// muting saves 0 as the volume and every control (tile, fullscreen,
+  /// context menu) has to unmute to the same level.
+  Future<void> setVoipScreenSharePremuteVolume(
+      String userId, double volume) async {
+    _preferences!.setDouble("call_screen_share_premute:${userId}", volume);
+  }
+
+  double getVoipScreenSharePremuteVolume(String userId) {
+    return _preferences?.getDouble("call_screen_share_premute:${userId}") ??
+        1.0;
+  }
+
   String _acceptedCapabilitiesKey(String clientId, String widgetNamespace) =>
       "accepted_widget_capabilities:${clientId}:${widgetNamespace}";
 

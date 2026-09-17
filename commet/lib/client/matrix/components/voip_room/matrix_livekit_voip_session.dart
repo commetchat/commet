@@ -11,6 +11,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
+import 'package:commet/client/matrix/components/voip_room/call_membership_writes.dart';
 import 'package:commet/client/matrix/components/voip_room/live_media_publisher.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
@@ -79,6 +80,8 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     listener.on(onParticipantDisconnected);
     listener.on(onDataReceived);
     listener.on(onRoomReconnected);
+    listener.on(onRoomConnected);
+    listener.on(onRoomDisconnected);
     listener.on(onSubscriptionPermissionChanged);
 
     _volumeTimer = Timer.periodic(Duration(milliseconds: 200), (timer) {
@@ -153,18 +156,27 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       }
     }
 
+    // Auto-watch first, for every participant: the subscriptions below are
+    // decided from the watch list, and a screen share's audio can come
+    // before its video.
+    for (var entry in livekitRoom.remoteParticipants.entries) {
+      for (var publication in entry.value.trackPublications.values) {
+        if (publication.source == lk.TrackSource.screenShareVideo) {
+          _watchList.onScreenSharePublished(entry.value.identity);
+        }
+      }
+    }
+
     for (var entry in livekitRoom.remoteParticipants.entries) {
       for (var stream in entry.value.trackPublications.entries) {
         // Before the muted check: a muted camera still has to be subscribed
         // for when it unmutes.
+        _syncSubscription(stream.value);
         if (stream.value.source == lk.TrackSource.screenShareVideo) {
           _watchList.onScreenSharePublished(entry.value.identity);
         }
-        _syncSubscription(stream.value);
 
-        if (stream.value.kind == lk.TrackType.VIDEO && stream.value.muted) {
-          continue;
-        }
+        if (_hiddenWhileMuted(stream.value)) continue;
 
         String userId = entry.key;
         userId = userId.split(":").getRange(0, 2).join(":");
@@ -193,8 +205,10 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
     // LiveKit only reports a mute for a publication that has its track. One
-    // muted while unsubscribed is dealt with in [onTrackSubscribed].
-    if (event.publication.kind == lk.TrackType.VIDEO) {
+    // muted while unsubscribed is dealt with in [onTrackSubscribed]. A muted
+    // screen share keeps its tile: it hosts the volume control of the system
+    // audio, which keeps playing.
+    if (_hiddenWhileMuted(event.publication)) {
       _removeStreamsWithSid(event.publication.sid);
     }
 
@@ -237,8 +251,11 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
-    if (event.publication.source == lk.TrackSource.screenShareVideo) {
-      _watchList.onScreenSharePublished(event.participant.identity);
+    if (event.publication.source == lk.TrackSource.screenShareVideo &&
+        _watchList.onScreenSharePublished(event.participant.identity)) {
+      // Auto-watch started watching now: the screen audio may have been
+      // announced before the video, when nothing was watched yet.
+      _syncScreenShare(event.participant);
     }
     _syncSubscription(event.publication);
 
@@ -291,6 +308,11 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     // unsubscribe() ignores publications without a track.
     if (!_watchList.shouldSubscribe(
         event.participant.identity, event.publication.source)) {
+      // Silent until it is gone: the audio element plays at full volume
+      // until the unsubscribe lands, a round trip away.
+      for (final stream in _streamsWithSid(event.publication.sid)) {
+        stream.applyVolume(0);
+      }
       _syncSubscription(event.publication);
       return;
     }
@@ -377,6 +399,21 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   void onRoomReconnected(lk.RoomReconnectedEvent event) =>
       _resyncRemoteStreams();
 
+  /// Emitted again after a reconnect rebuilt the participants, which is the
+  /// point at which their publications can be seen. RoomReconnectedEvent
+  /// alone can arrive while that rebuild is still running.
+  void onRoomConnected(lk.RoomConnectedEvent event) => _resyncRemoteStreams();
+
+  /// LiveKit gave up: it ran out of reconnect attempts, or the server closed
+  /// the room. Nothing else noticed, so the call stayed on screen with no
+  /// audio, and the heartbeat kept us listed as a participant (issue #48).
+  void onRoomDisconnected(lk.RoomDisconnectedEvent event) {
+    if (event.reason == lk.DisconnectReason.clientInitiated) return;
+    if (state == VoipState.ended) return;
+    Log.w("Livekit room disconnected (${event.reason}), ending the call");
+    hangUpCall();
+  }
+
   /// A sharer allowed us to subscribe after refusing: LiveKit ignored the
   /// subscribe() sent while it was refused.
   void onSubscriptionPermissionChanged(
@@ -393,6 +430,16 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       }
     }
 
+    final hasRemoteStreams = streams
+        .whereType<MatrixLivekitVoipStream>()
+        .any((s) => s.publication is lk.RemoteTrackPublication);
+    // The rebuild has not happened yet: dropping everything now would leave
+    // the call empty, with nothing left to announce the participants again.
+    if (current.isEmpty && hasRemoteStreams) {
+      Log.w("Skipped a resync: livekit has no remote participants yet");
+      return;
+    }
+
     // Streams of publications that are gone or were rebuilt.
     final outdated = streams
         .whereType<MatrixLivekitVoipStream>()
@@ -405,10 +452,37 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       stream.dispose();
     }
 
-    // A share that ended meanwhile needs opting in again next time.
-    _watchList.retainWhere((identity) => current.values.any((p) =>
-        p.participant.identity == identity &&
-        p.source == lk.TrackSource.screenShareVideo));
+    // Local publications are rebuilt too, and LiveKit republishes them
+    // without announcing that the old ones are gone.
+    final localPublications =
+        livekitRoom.localParticipant?.trackPublications ?? const {};
+    final staleLocal = streams
+        .whereType<MatrixLivekitVoipStream>()
+        .where((s) =>
+            s.publication is lk.LocalTrackPublication &&
+            !identical(localPublications[s.publication.sid], s.publication))
+        .toList();
+    streams.removeWhere(staleLocal.contains);
+    for (final stream in staleLocal) {
+      stream.dispose();
+    }
+
+    // A share that ended needs opting in again next time. Only for people we
+    // can see: someone missing from the rebuild may still be sharing.
+    _watchList.retainWhere((identity) =>
+        !livekitRoom.remoteParticipants.containsKey(identity) ||
+        current.values.any((p) =>
+            p.participant.identity == identity &&
+            p.source == lk.TrackSource.screenShareVideo));
+
+    // Auto-watch shares that started while we were away, before subscribing.
+    for (final participant in livekitRoom.remoteParticipants.values) {
+      for (final publication in participant.trackPublications.values) {
+        if (publication.source == lk.TrackSource.screenShareVideo) {
+          _watchList.onScreenSharePublished(participant.identity);
+        }
+      }
+    }
 
     for (final participant in livekitRoom.remoteParticipants.values) {
       for (final publication in participant.trackPublications.values) {
@@ -420,6 +494,15 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     }
     _stateChanged.add(());
   }
+
+  /// Brings every screen share publication of [participant] in line with the
+  /// watch list.
+  Future<void> _syncScreenShare(lk.RemoteParticipant participant) =>
+      Future.wait([
+        for (final publication in participant.trackPublications.values)
+          if (ScreenShareWatchList.isScreenShareSource(publication.source))
+            _syncSubscription(publication),
+      ]);
 
   /// Subscribes to or unsubscribes from a remote publication, as
   /// [_watchList] wants.
@@ -453,11 +536,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
     final participant = livekitRoom.remoteParticipants[participantIdentity];
     if (participant != null) {
-      await Future.wait([
-        for (final publication in participant.trackPublications.values)
-          if (ScreenShareWatchList.isScreenShareSource(publication.source))
-            _syncSubscription(publication),
-      ]);
+      await _syncScreenShare(participant);
     }
 
     for (final stream in streams.whereType<MatrixLivekitVoipStream>()) {
@@ -537,6 +616,10 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
+    // Republished after a reconnect: LiveKit clears its publications without
+    // announcing it, so the old stream would stay next to the new one.
+    _removeStreamsWithSid(event.publication.sid);
+
     final s = MatrixLivekitVoipStream(event.publication, participant);
     s.deafened = _isDeafened;
     streams.add(s);
@@ -589,9 +672,17 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
     _removeStreamsWithSid(event.publication.sid);
 
-    if (event.publication.source == lk.TrackSource.screenShareVideo) {
-      final identity = event.participant.identity;
-      _watchList.onScreenShareEnded(identity);
+    _subscriptionRetries.remove(event.publication.sid);
+
+    // Only once no share is left: LiveKit announces the replacement before
+    // it retires the old publication, and a sharer that reconnects
+    // republishes with new sids. Ending the watch there would stop a share
+    // nobody asked to stop (issue #50).
+    if (event.publication.source == lk.TrackSource.screenShareVideo &&
+        event.participant
+                .getTrackPublicationBySource(lk.TrackSource.screenShareVideo) ==
+            null) {
+      _watchList.onScreenShareEnded(event.participant.identity);
       // Screen audio unpublished after the video must not keep playing.
       for (final publication in event.participant.trackPublications.values) {
         _syncSubscription(publication);
@@ -618,21 +709,28 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   /// refresh): a second one used to cancel the same delayed leave again and
   /// fail, and ended the session twice.
   @override
-  Future<void> hangUpCall() => _hangUp ??= _doHangUp();
+  Future<void> hangUpCall() {
+    // A failed hang up is not cached: it would be handed to every later
+    // caller, and the session could never end (issue #48).
+    return _hangUp ??= _doHangUp().catchError((Object e, StackTrace s) {
+      _hangUp = null;
+      Log.onError(e, s, content: "Could not hang up the call");
+    });
+  }
 
   Future<void> _doHangUp() async {
     if (state == VoipState.ended) return;
     Log.i("Hanging up call");
 
-    // First, so no membership write lands after the clear below: leaving
-    // unpublishes our tracks, which would schedule one.
-    await _liveMediaPublisher.stop();
-
-    keyProvider?.dispose();
-    _settingsSub?.cancel();
-    _settingsSub = null;
-
     try {
+      // First, so no membership write lands after the clear below: leaving
+      // unpublishes our tracks, which would schedule one.
+      await _liveMediaPublisher.stop();
+
+      keyProvider?.dispose();
+      _settingsSub?.cancel();
+      _settingsSub = null;
+
       // Bounded: these hang when the network is what broke, and the session
       // still has to end and release LiveKit. The delayed leave, or
       // clearStaleOwnMembership, takes care of a membership left behind.
@@ -880,8 +978,12 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     final stateKey =
         "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 
-    await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
-        MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {});
+    // Registered so a rejoin waits for it: this request can outlive the
+    // session, and landing after the next join would erase its membership.
+    await CallMembershipWrites.clearing(
+        stateKey,
+        room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
+            MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {}));
 
     Log.i("Cleared call state");
   }

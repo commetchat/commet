@@ -143,6 +143,10 @@ class MatrixVoipRoomComponent
 
   @override
   Future<VoipSession?> joinCall() async {
+    // Leaving is memoised, so this only waits for a hang up already running:
+    // two overlapping sessions fought over the membership state (issue #48).
+    await currentSession?.hangUpCall();
+
     currentSession = await backend.join();
     currentSession?.onStateChanged.listen(onStateChanged);
     return currentSession;

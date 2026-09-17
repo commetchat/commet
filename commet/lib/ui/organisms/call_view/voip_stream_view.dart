@@ -400,13 +400,29 @@ mixin _FollowsStreamVolume<T extends StatefulWidget> on State<T> {
   VoipStream get volumeStream;
 
   StreamSubscription? _volumeSub;
+  VoipStream? _listeningTo;
+
+  void _listen() {
+    _listeningTo = volumeStream;
+    _volumeSub = volumeStream.onStreamChanged.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _volumeSub = volumeStream.onStreamChanged.listen((_) {
-      if (mounted) setState(() {});
-    });
+    _listen();
+  }
+
+  @override
+  void didUpdateWidget(T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The session replaces a publication's stream object after a reconnect,
+    // and the widget keeps its key because the sid is the same.
+    if (identical(_listeningTo, volumeStream)) return;
+    _volumeSub?.cancel();
+    _listen();
   }
 
   @override
@@ -438,16 +454,16 @@ class _StreamVolumeSliderState extends State<StreamVolumeSlider>
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        tiamat.Text.labelLow("${(widget.stream.volume * 100).round()}%"),
+        tiamat.Text.labelLow(
+            "${(widget.stream.volume.clamp(0.0, maxStreamVolume) * 100).round()}%"),
         Expanded(
           child: tiamat.Slider(
             min: 0.0,
             max: maxStreamVolume,
             value: widget.stream.volume.clamp(0.0, maxStreamVolume),
             onChanged: (value) {
-              setState(() {
-                widget.stream.setVolume(value);
-              });
+              widget.stream.setVolume(value);
+              setState(() {});
             },
           ),
         ),
@@ -472,10 +488,6 @@ class _StreamVolumeControlState extends State<StreamVolumeControl>
   @override
   VoipStream get volumeStream => widget.stream;
 
-  /// Volume to go back to when unmuting. Muting saves 0 as the volume, so
-  /// after a restart there is nothing to go back to and unmuting picks 100%.
-  double? _volumeBeforeMute;
-
   Future<void> setVolume(double volume) async {
     await widget.stream.setVolume(volume);
     if (mounted) setState(() {});
@@ -483,11 +495,15 @@ class _StreamVolumeControlState extends State<StreamVolumeControl>
 
   void toggleMute() {
     final volume = widget.stream.volume;
+    // Saved, not held in this widget: the tile, the fullscreen view and the
+    // context menu all mute the same stream and have to agree.
     if (volume > 0) {
-      _volumeBeforeMute = volume;
+      preferences.setVoipScreenSharePremuteVolume(
+          widget.stream.streamUserId, volume);
       setVolume(0);
     } else {
-      setVolume(_volumeBeforeMute ?? 1.0);
+      setVolume(preferences
+          .getVoipScreenSharePremuteVolume(widget.stream.streamUserId));
     }
   }
 

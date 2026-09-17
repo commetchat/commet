@@ -44,12 +44,19 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
 
   @override
   Widget build(BuildContext context) {
-    final audioStream = callGridTiles(widget.session.streams)
-        // By id: the session replaces the stream object of a publication
-        // when its video is muted and unmuted.
+    // By id, not the stream we were opened with: the session replaces the
+    // stream object of a publication when its video is muted and unmuted, or
+    // after a reconnect, and the old one is disposed (issue #47).
+    final tile = callGridTiles(widget.session.streams)
         .where((tile) => tile.stream.streamId == widget.stream.streamId)
-        .firstOrNull
-        ?.audioStream;
+        .firstOrNull;
+    final stream = tile?.stream;
+    final audioStream = tile?.audioStream;
+
+    if (stream == null) {
+      // The stream is gone (the share ended, or the sharer left).
+      return const Center(child: CircularProgressIndicator());
+    }
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -57,7 +64,7 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
           builder: (context, constraints) {
             return MouseRegion(
               child: VoipStreamView(
-                widget.stream,
+                stream,
                 widget.session,
                 audioStream: audioStream,
                 canFullscreen: false,

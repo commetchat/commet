@@ -58,8 +58,8 @@ class InMemorySoundboardTransport implements SoundboardTransport {
     for (final p in List.of(_peers)) {
       if (identical(p, this)) continue;
       p.receivedAt.add(DateTime.now().millisecondsSinceEpoch);
-      p._controller.add(TransportIncoming(event,
-          authenticatedSenderId: event.senderId));
+      p._controller
+          .add(TransportIncoming(event, authenticatedSenderId: event.senderId));
     }
   }
 

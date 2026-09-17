@@ -36,10 +36,10 @@ class ScreenShareWatchList {
   bool stopWatching(String identity) => _watching.remove(identity);
 
   /// [identity] started sharing their screen. With auto-watch on, it plays
-  /// straight away, the behaviour from before issue #50.
-  void onScreenSharePublished(String identity) {
-    if (_autoWatch()) _watching.add(identity);
-  }
+  /// straight away, the behaviour from before issue #50. Returns whether
+  /// watching started now.
+  bool onScreenSharePublished(String identity) =>
+      _autoWatch() && _watching.add(identity);
 
   /// Stops watching everyone [stillSharing] is false for.
   void retainWhere(bool Function(String identity) stillSharing) =>

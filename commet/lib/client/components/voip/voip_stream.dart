@@ -24,6 +24,11 @@ abstract class VoipStream {
 
   String get streamUserId;
 
+  /// Who published this stream, telling two devices of the same account
+  /// apart. [streamUserId] is what the volume preference is keyed by, so it
+  /// stays per user.
+  String get streamOwnerId;
+
   String get label;
 
   String get streamId;

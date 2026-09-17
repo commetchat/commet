@@ -51,19 +51,32 @@ void main() {
   test('gives up after a few recoveries that bring no frame', () {
     expect(sample(0), VideoStallAction.none);
     expect(sample(6), VideoStallAction.recover);
-    detector.trackChanged();
-    expect(sample(8), VideoStallAction.none);
-    expect(sample(14), VideoStallAction.recover);
-    detector.trackChanged();
-    expect(sample(16), VideoStallAction.none);
-    expect(sample(22), VideoStallAction.recover);
-    detector.trackChanged();
+    // Each attempt is given the full wait again before the next one.
+    expect(sample(12), VideoStallAction.none);
+    expect(sample(18), VideoStallAction.recover);
     expect(sample(24), VideoStallAction.none);
+    expect(sample(30), VideoStallAction.recover);
+    // Out of attempts: a track that can never be decoded is left alone.
+    expect(sample(36), VideoStallAction.none);
     expect(sample(60), VideoStallAction.none);
   });
 
-  test('a new track is watched from scratch and a frame resets the budget',
-      () {
+  test('a replaced track gets the recovery budget back', () {
+    sample(0);
+    for (final seconds in [6, 18, 30]) {
+      expect(sample(seconds), VideoStallAction.recover);
+      expect(sample(seconds + 6), VideoStallAction.none);
+    }
+    expect(sample(42), VideoStallAction.none);
+
+    // A tile that spent its budget while it had no size on screen still
+    // recovers once a new track arrives (issue #47).
+    detector.trackChanged();
+    expect(sample(44), VideoStallAction.none);
+    expect(sample(50), VideoStallAction.recover);
+  });
+
+  test('a new track is watched from scratch and a frame resets the budget', () {
     sample(0);
     sample(6);
     detector.trackChanged();

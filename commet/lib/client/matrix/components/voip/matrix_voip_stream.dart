@@ -66,6 +66,9 @@ class MatrixVoipStream implements VoipStream {
   String get streamUserId => stream.participant.userId;
 
   @override
+  String get streamOwnerId => stream.participant.userId;
+
+  @override
   String get label => stream.stream?.getTracks().first.label ?? "";
 
   @override

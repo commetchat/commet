@@ -10,12 +10,16 @@ class FakeVoipStream implements VoipStream {
   @override
   final VoipStreamType type;
   @override
+  final String streamOwnerId;
+  @override
   final VoipStreamDirection direction;
 
   FakeVoipStream(this.streamId,
       {required this.streamUserId,
       required this.type,
-      this.direction = VoipStreamDirection.incoming});
+      String? streamOwnerId,
+      this.direction = VoipStreamDirection.incoming})
+      : streamOwnerId = streamOwnerId ?? streamUserId;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -34,9 +38,13 @@ void main() {
           type: VoipStreamType.screenshare,
           direction: VoipStreamDirection.outgoing);
       final otherDeviceScreen = FakeVoipStream("other-screen",
-          streamUserId: alice, type: VoipStreamType.screenshare);
+          streamUserId: alice,
+          streamOwnerId: "$alice:OTHER",
+          type: VoipStreamType.screenshare);
       final otherDeviceAudio = FakeVoipStream("other-audio",
-          streamUserId: alice, type: VoipStreamType.screenshareAudio);
+          streamUserId: alice,
+          streamOwnerId: "$alice:OTHER",
+          type: VoipStreamType.screenshareAudio);
 
       final tiles =
           callGridTiles([ownScreen, otherDeviceScreen, otherDeviceAudio]);

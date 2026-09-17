@@ -50,6 +50,7 @@ class CompositeVideoProvider {
   }) async {
     final provider = findProvider(uri);
     if (provider == null) return null;
-    return await provider.resolve(uri, fetchPlayback: fetchPlayback, client: client);
+    return await provider.resolve(uri,
+        fetchPlayback: fetchPlayback, client: client);
   }
 }

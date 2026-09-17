@@ -117,6 +117,13 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
     var reportedOffline = false;
     if (!kIsWeb && !lkPlatformIsTest()) {
       _connectivityResult = await Connectivity().checkConnectivity();
+      // COMMET: a connect that was in flight while the room was disposed
+      // would install a subscription nobody cancels, which is the leak that
+      // made rejoining fail (issue #48).
+      if (isDisposed) {
+        throw ConnectException('signal client was disposed',
+            reason: ConnectionErrorReason.InternalError);
+      }
       await _connectivitySubscription?.cancel();
       _connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
         // COMMET: compare contents, lists never compare equal with !=.

@@ -34,14 +34,13 @@ class MatrixToDeviceSoundboardTransport implements SoundboardTransport {
         if (content['room_id'] != roomId) return;
         final payload = content['payload'];
         if (payload is! Map) return;
-        final event = SoundboardEvent.tryParse(
-            Map<String, dynamic>.from(payload));
+        final event =
+            SoundboardEvent.tryParse(Map<String, dynamic>.from(payload));
         if (event == null) return;
-        _controller.add(TransportIncoming(event,
-            authenticatedSenderId: e.sender));
+        _controller
+            .add(TransportIncoming(event, authenticatedSenderId: e.sender));
       } catch (err, s) {
-        Log.onError(err, s,
-            content: 'Soundboard to-device parse failed');
+        Log.onError(err, s, content: 'Soundboard to-device parse failed');
       }
     });
   }
@@ -71,13 +70,11 @@ class MatrixToDeviceSoundboardTransport implements SoundboardTransport {
           final stateEv = ev;
           if (stateEv.content.isEmpty) continue;
           final sender = stateEv.senderId;
-          final device =
-              (stateEv.content['device_id'] as String?) ?? '';
+          final device = (stateEv.content['device_id'] as String?) ?? '';
           if (sender.isEmpty || sender == mx.userID) continue;
           userIds.add(sender);
           if (device.isNotEmpty) {
-            final dk =
-                mx.userDeviceKeys[sender]?.deviceKeys[device];
+            final dk = mx.userDeviceKeys[sender]?.deviceKeys[device];
             if (dk != null) deviceKeys.add(dk);
           }
         }

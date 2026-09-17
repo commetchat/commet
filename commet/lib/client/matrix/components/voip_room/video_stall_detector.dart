@@ -66,9 +66,12 @@ class VideoStallDetector {
     return VideoStallAction.recover;
   }
 
-  /// A new track replaced the old one: its frame counter starts over.
+  /// A new track replaced the old one: its frame counter starts over, and so
+  /// does its recovery budget. Without that, a tile that was resubscribed
+  /// three times without ever being on screen could never recover again.
   void trackChanged() {
     _waitingSince = null;
     _sawFrame = false;
+    _recoveries = 0;
   }
 }
