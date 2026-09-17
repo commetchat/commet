@@ -4,6 +4,7 @@ import 'package:commet/client/alert.dart';
 import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_aggregator.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
@@ -241,7 +242,14 @@ class ClientManager {
     }
     _clientSubscriptions.clear();
 
-    await Future.wait(_clients.values.map((client) => client.close()));
+    // One account failing to close must not take the others down with it
+    await Future.wait(_clients.values.map((client) async {
+      try {
+        await client.close();
+      } catch (e, s) {
+        Log.onError(e, s, content: "Failed to close client");
+      }
+    }));
   }
 
   void _synced() {

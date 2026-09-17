@@ -34,6 +34,16 @@ class AppRefresh {
   static bool _refreshing = false;
 
   static Room? _selectedRoom;
+  static String? _selectedSpaceId;
+  static String? _restoredSpaceId;
+
+  /// The space that was open when the app refreshed, for the new main page
+  /// to open again. Only handed out once.
+  static String? takeRestoredSpace() {
+    final id = _restoredSpaceId;
+    _restoredSpaceId = null;
+    return id;
+  }
 
   static bool _initialized = false;
 
@@ -43,6 +53,8 @@ class AppRefresh {
 
     EventBus.onSelectedRoomChanged.stream
         .listen((room) => _selectedRoom = room);
+    EventBus.onSelectedSpaceChanged.stream
+        .listen((space) => _selectedSpaceId = space?.identifier);
 
     // Ctrl+R already reloads the page in a browser.
     if (!BuildConfig.WEB) {
@@ -82,6 +94,7 @@ class AppRefresh {
 
     try {
       final room = _selectedRoom;
+      _restoredSpaceId = _selectedSpaceId;
       final theme = await preferences.resolveTheme();
 
       // Replacing the root drops the whole tree, including the navigator and
@@ -90,9 +103,14 @@ class AppRefresh {
       await WidgetsBinding.instance.endOfFrame;
 
       await _leaveCalls(oldManager);
-      await oldManager.close();
+      // Bounded: closing waits for the sync in flight, which may be exactly
+      // what hangs when someone refreshes. A closed client never syncs again.
+      await oldManager.close().timeout(const Duration(seconds: 5),
+          onTimeout: () => Log.w("Closing the old clients timed out"));
       _removeConnectionTasks();
 
+      // Nothing may keep using the closed clients if loading fails below
+      clientManager = null;
       clientManager = await ClientManager.init();
       NeedsPostLoginInit.doPostLoginInit();
       onRefreshed.add(null);
@@ -120,7 +138,8 @@ class AppRefresh {
         final leave = session.state == VoipState.incoming
             ? session.declineCall()
             : session.hangUpCall();
-        await leave.timeout(const Duration(seconds: 5));
+        // hangUpCall bounds its own network requests, this is a backstop
+        await leave.timeout(const Duration(seconds: 10));
       } catch (error, stacktrace) {
         Log.onError(error, stacktrace,
             content: "Failed to leave call before refreshing");
