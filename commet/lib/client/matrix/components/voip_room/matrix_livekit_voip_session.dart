@@ -4,11 +4,14 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
+import 'package:commet/client/matrix/components/voip_room/live_media_publisher.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
@@ -19,6 +22,7 @@ import 'package:commet/main.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:matrix/matrix.dart' show Event;
 import 'package:matrix/matrix_api_lite.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
@@ -32,6 +36,14 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
+  /// Lists what we publish in our call membership, so people outside the
+  /// call see our LIVE badge (issue #9).
+  late final LiveMediaPublisher _liveMediaPublisher =
+      LiveMediaPublisher(write: _writeLiveMedia);
+
+  String get _ownMembershipKey =>
+      "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+
   MatrixLivekitVoipSession(this.room, this.livekitRoom, {this.keyProvider}) {
     clientManager?.callManager.onClientSessionStarted(this);
     addInitialStreams();
@@ -39,6 +51,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     final listener = livekitRoom.createListener();
     listener.on(onTrackPublished);
     listener.on(onTrackUnpublished);
+    listener.on(onTrackSubscribed);
+    listener.on(onTrackUnsubscribed);
     listener.on(onLocalTrackPublished);
     listener.on(onLocalTrackUnpublished);
     listener.on(onTrackStreamEvent);
@@ -151,9 +165,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
     if (event.publication.track?.mediaType ==
         RTCRtpMediaType.RTCRtpMediaTypeVideo) {
-      streams.removeWhere((e) =>
-          (e as MatrixLivekitVoipStream).publication.sid ==
-          event.publication.sid);
+      _removeStreamsWithSid(event.publication.sid);
     }
 
     for (var track in streams) {
@@ -166,6 +178,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     print("Track muted");
 
     _stateChanged.add(());
+    _publishLiveMedia();
   }
 
   void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
@@ -187,6 +200,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     _applyStreamVolume(s);
     streams.add(s);
     _stateChanged.add(());
+    _publishLiveMedia();
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
@@ -198,6 +212,36 @@ class MatrixLivekitVoipSession implements VoipSession {
     s.deafened = _deafenedIdentities.contains(event.participant.identity);
     streams.add(s);
     _stateChanged.add(());
+  }
+
+  Iterable<MatrixLivekitVoipStream> _streamsWithSid(String sid) => streams
+      .whereType<MatrixLivekitVoipStream>()
+      .where((s) => s.publication.sid == sid);
+
+  /// Removes the streams of a publication and releases what they hold.
+  void _removeStreamsWithSid(String sid) {
+    final removed = _streamsWithSid(sid).toList();
+    streams.removeWhere(removed.contains);
+    for (final stream in removed) {
+      stream.dispose();
+    }
+  }
+
+  /// LiveKit announces a remote publication (TrackPublishedEvent) before it
+  /// subscribes to it, so the stream's track, and with it the playback
+  /// volume and the speaking visualizer, only arrives here.
+  void onTrackSubscribed(lk.TrackSubscribedEvent event) {
+    for (final stream in _streamsWithSid(event.publication.sid)) {
+      stream.onTrackSubscribed();
+      stream.onStreamUpdatedEvent();
+    }
+    _stateChanged.add(());
+  }
+
+  void onTrackUnsubscribed(lk.TrackUnsubscribedEvent event) {
+    for (final stream in _streamsWithSid(event.publication.sid)) {
+      stream.onTrackUnsubscribed();
+    }
   }
 
   void onParticipantConnected(lk.ParticipantConnectedEvent event) {
@@ -273,20 +317,53 @@ class MatrixLivekitVoipSession implements VoipSession {
     s.deafened = _isDeafened;
     streams.add(s);
     _stateChanged.add(());
+    _publishLiveMedia();
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
-    streams.removeWhere((e) =>
-        (e as MatrixLivekitVoipStream).publication.sid ==
-        event.publication.sid);
+    _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
+    _publishLiveMedia();
+  }
+
+  /// Screen share and camera as LiveKit sees them, which also covers a
+  /// capture the OS or the browser ended.
+  Set<LiveMedia> get _localLiveMedia => {
+        if (isSharingScreen) LiveMedia.screen,
+        if (isCameraEnabled) LiveMedia.camera,
+      };
+
+  void _publishLiveMedia() {
+    if (state == VoipState.ended) return;
+    // Only with the delayed leave armed: it is what clears the membership,
+    // and the badge with it, if this client crashes while streaming.
+    _liveMediaPublisher
+        .update(heartbeatDelayId != null ? _localLiveMedia : const {});
+  }
+
+  Future<void> _writeLiveMedia(Set<LiveMedia> media) async {
+    final current =
+        room.matrixRoom.states[MatrixVoipRoomComponent.callMemberStateEvent]
+            ?[_ownMembershipKey];
+    // Never bring back a membership that was cleared (by hanging up, or by
+    // the delayed leave): it would have no dead man's switch.
+    if (current is! Event || current.content["application"] == null) {
+      throw StateError("Our call membership is not in the room state yet");
+    }
+    final joinedAt =
+        MatrixCallMembership.joinedAt(current.content, current.originServerTs)!;
+    await room.matrixRoom.client.setRoomStateWithKey(
+      room.matrixRoom.id,
+      MatrixVoipRoomComponent.callMemberStateEvent,
+      _ownMembershipKey,
+      MatrixCallMembership.withLiveMedia(current.content,
+          media: media, joinedAt: joinedAt, now: DateTime.now()),
+    );
   }
 
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
-    streams.removeWhere((e) =>
-        (e as MatrixLivekitVoipStream).publication.sid ==
-        event.publication.sid);
+    _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
   }
@@ -306,6 +383,10 @@ class MatrixLivekitVoipSession implements VoipSession {
   Future<void> hangUpCall() async {
     Log.i("Hanging up call");
 
+    // First, so no membership write lands after the clear below: leaving
+    // unpublishes our tracks, which would schedule one.
+    await _liveMediaPublisher.stop();
+
     keyProvider?.dispose();
     _settingsSub?.cancel();
     _settingsSub = null;
@@ -315,6 +396,11 @@ class MatrixLivekitVoipSession implements VoipSession {
       disconnectCall(),
       stopHeartbeat(),
     ]);
+
+    for (final stream in streams.whereType<MatrixLivekitVoipStream>()) {
+      stream.dispose();
+    }
+    streams.clear();
 
     state = VoipState.ended;
     _stateChanged.add(());
@@ -329,12 +415,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   bool get isDeafened => _isDeafened;
 
   void _applyStreamVolume(MatrixLivekitVoipStream stream) {
-    if (stream.publication.track is lk.AudioTrack &&
-        stream.direction == VoipStreamDirection.incoming) {
-      final track = stream.publication.track as lk.AudioTrack;
-      final volume =
-          _isDeafened ? 0.0 : preferences.getVoipUserVolume(stream.userId);
-      Helper.setVolume(volume, track.mediaStreamTrack);
+    if (stream.direction == VoipStreamDirection.incoming) {
+      stream.applyVolume(_isDeafened ? 0.0 : stream.volume);
     }
   }
 
@@ -449,7 +531,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     );
 
     final tracks = source.captureAudio
-        ? await lk.LocalVideoTrack.createScreenShareTracksWithAudio(captureOptions)
+        ? await lk.LocalVideoTrack.createScreenShareTracksWithAudio(
+            captureOptions)
         : [await lk.LocalVideoTrack.createScreenShareTrack(captureOptions)];
 
     for (final track in tracks) {
@@ -463,7 +546,8 @@ class MatrixLivekitVoipSession implements VoipSession {
                   maxFramerate: framerate.toInt(), maxBitrate: bitrate),
               videoCodec: preferences.streamCodec.value,
             ));
-        track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+        track.setDegradationPreference(
+            lk.DegradationPreference.maintainFramerate);
       } else if (track is lk.LocalAudioTrack) {
         await livekitRoom.localParticipant?.publishAudioTrack(track);
       }
@@ -581,22 +665,40 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     final delayId = result["delay_id"] as String;
     heartbeatDelayId = delayId;
+    _publishLiveMedia();
 
     heartbeatTimer =
         Timer.periodic(timerLength - Duration(seconds: 5), (timer) async {
       print("Sending heartbeat");
-      final result = await room.matrixRoom.client.request(RequestType.POST,
-          "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
-          contentType: "application/json",
-          data: jsonEncode({"action": "restart"}));
-      print(result);
+      try {
+        final result = await room.matrixRoom.client.request(RequestType.POST,
+            "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
+            contentType: "application/json",
+            data: jsonEncode({"action": "restart"}));
+        print(result);
+        if (heartbeatDelayId == null) {
+          heartbeatDelayId = delayId;
+          _publishLiveMedia();
+        }
+      } catch (e, s) {
+        // The delayed leave may be gone (it already fired, or the server
+        // lost it): stop advertising streams until a restart works again.
+        Log.onError(e, s, content: "Call membership heartbeat failed");
+        if (heartbeatDelayId != null) {
+          heartbeatDelayId = null;
+          _publishLiveMedia();
+        }
+      }
     });
   }
 
   @override
   double get generalAudioLevel {
-    double result =
-        streams.fold(0.0, (value, stream) => max(value, stream.audiolevel));
+    // Shared screen audio is not someone talking, so it must not light up
+    // the call indicator.
+    double result = streams
+        .where((stream) => stream.type != VoipStreamType.screenshareAudio)
+        .fold(0.0, (value, stream) => max(value, stream.audiolevel));
     return result;
   }
 

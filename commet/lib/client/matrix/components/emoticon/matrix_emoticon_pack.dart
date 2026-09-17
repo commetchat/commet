@@ -24,14 +24,12 @@ class MatrixEmoticonPack implements EmoticonPack {
       return List.empty();
     }
 
-    return images.entries.map((e) {
+    return images.entries
+        .where((e) => e.value.tryGet<String>("url") != null)
+        .map((e) {
       final shortCode = e.key;
-      final url = e.value.tryGet<String>("url");
+      final url = e.value.tryGet<String>("url")!;
       final usages = e.value.tryGetList<String>("usage");
-
-      if (url == null) {
-        throw UnimplementedError;
-      }
 
       final usage = usagesArrayToUsage(usages);
 

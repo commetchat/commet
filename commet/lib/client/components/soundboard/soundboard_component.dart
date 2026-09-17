@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
 import 'package:commet/client/components/soundboard/soundboard_sound.dart';
 import 'package:commet/client/components/space_component.dart';
 
@@ -21,18 +22,20 @@ abstract class SpaceSoundboardComponent<R extends Client, T extends Space>
 
   Future<SoundboardSound> addSound({
     required String name,
-    required String emoji,
+    required SoundboardEmoji emoji,
     required String mediaUri,
     required String mimeType,
     required int durationMs,
     required double normalizedGain,
+    double volume = 1.0,
     String? sourceUrl,
   });
 
   Future<SoundboardSound> updateSound(
     String soundId, {
     String? name,
-    String? emoji,
+    SoundboardEmoji? emoji,
+    double? volume,
   });
 
   Future<void> removeSound(String soundId);

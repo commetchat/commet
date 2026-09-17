@@ -2,25 +2,26 @@
 // so unit tests run with `dart test`. The real audio sink is injected via
 // [SoundboardPlayer]; UI subscribes to [activeSounds] snapshots.
 //
-// Semantics (spec):
-// - Different sounds: polyphonic (coexist in [active]).
-// - Same soundId: restart — previous instance stops, new one starts at 0.
-// - Same soundId from another user: still restart; author becomes latest.
+// Semantics (spec, Discord-like):
+// - Every trigger is an independent instance keyed by its eventId, so the
+//   same sound from one or several users overlaps; nothing is interrupted.
 // - Local optimistic play: caller plays immediately, then sends; echo of own
 //   eventId is ignored via [ownEventIds] (no double-play).
-// - No global `currentSound`; [active] is a Map keyed by soundId.
+// - No global `currentSound`; [active] is a Map keyed by eventId.
 import 'soundboard_constraints.dart';
 import 'soundboard_dedup.dart';
 import 'soundboard_event.dart';
 
 /// Minimal audio sink seam. Production adapter wraps media_kit Players;
 /// tests use a fake recording calls.
+/// Instances are keyed by [instanceId] (the trigger's eventId); one sound
+/// may have several live instances.
 abstract class SoundboardPlayer {
-  Future<void> start(String soundId);
-  Future<void> stop(String soundId);
+  Future<void> start(String instanceId, String soundId);
+  Future<void> stop(String instanceId);
   Future<void> stopAll();
-  Future<void> setVolumeFor(String soundId, double volume);
-  bool isPlaying(String soundId);
+  Future<void> setVolumeFor(String instanceId, double volume);
+  bool isPlaying(String instanceId);
 }
 
 /// One visible/audible activation (drives emoji overlay).
@@ -47,7 +48,8 @@ class SoundboardEngine {
   final SoundboardDedup dedup;
   final NowMs nowMs;
 
-  /// soundId -> ActiveSound. Never a single global currentSound.
+  /// eventId -> ActiveSound, in start order. Never a single global
+  /// currentSound.
   final Map<String, ActiveSound> active = {};
 
   /// EventIds produced locally; echoes arriving via transport are dropped.
@@ -140,14 +142,12 @@ class SoundboardEngine {
     required int now,
     int? soundDurationMs,
   }) {
-    // Same-sound restart: stop previous instance first (no layering of the
-    // same soundId, matching MyInstants behavior).
-    if (active.containsKey(soundId)) {
-      player.stop(soundId);
+    while (active.length >= SoundboardConstraints.maxConcurrentInstances) {
+      markFinished(active.keys.first, stopAudio: true);
     }
-    player.setVolumeFor(soundId, _userVolume);
-    player.start(soundId);
-    active[soundId] = ActiveSound(
+    // Record before starting: the player may report the instance finished
+    // synchronously (e.g. unknown sound).
+    active[eventId] = ActiveSound(
       soundId: soundId,
       senderId: senderId,
       eventId: eventId,
@@ -155,22 +155,24 @@ class SoundboardEngine {
       overlayMs: clampOverlayMs(soundDurationMs),
     );
     _notify();
+    player.setVolumeFor(eventId, _userVolume);
+    player.start(eventId, soundId);
   }
 
   /// Called by audio completion / overlay timer.
-  void markFinished(String soundId, {bool stopAudio = false}) {
-    if (stopAudio) player.stop(soundId);
-    if (active.remove(soundId) != null) _notify();
+  void markFinished(String eventId, {bool stopAudio = false}) {
+    if (stopAudio) player.stop(eventId);
+    if (active.remove(eventId) != null) _notify();
   }
 
   /// Sound finished naturally (audio ended). Overlay may linger briefly;
   /// UI decides via [ActiveSound.startedAtMs]/[overlayMs].
-  void onAudioCompleted(String soundId) => markFinished(soundId);
+  void onAudioCompleted(String eventId) => markFinished(eventId);
 
   static int clampOverlayMs(int? soundDurationMs) {
     final d = soundDurationMs ?? SoundboardConstraints.minOverlayMs;
-    return d.clamp(SoundboardConstraints.minOverlayMs,
-        SoundboardConstraints.maxOverlayMs);
+    return d.clamp(
+        SoundboardConstraints.minOverlayMs, SoundboardConstraints.maxOverlayMs);
   }
 
   Future<void> dispose() async {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:commet/cache/file_provider.dart';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -100,7 +101,8 @@ class MxcFileProvider implements FileProvider {
       bytes = file.bytes;
     } else {
       try {
-        var response = await client.getContent(uri.authority, uri.path);
+        // uri.path would be "/<mediaId>", which the SDK encodes as %2F....
+        var response = await client.getContentFromUri(uri);
         bytes = response.data;
       } catch (e, t) {
         Log.onError(e, t, content: "Failed to get mxc file content");

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:io';
 
 import 'package:commet/client/components/voip/audio_processing/audio_dsp_settings.dart';
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
@@ -9,10 +8,10 @@ import 'package:commet/client/components/voip/audio_processing/audio_processing_
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/config/rust_library.dart';
 import 'package:commet/debug/log.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:livekit_client/livekit_client.dart' as lk;
-import 'package:path/path.dart' as p;
 
 AudioProcessingManager createAudioProcessingManager() {
   if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
@@ -155,7 +154,6 @@ class _Bindings {
 class NativeAudioProcessingManager extends AudioProcessingManager {
   _Bindings? _bindings;
   bool _loadAttempted = false;
-  String? _loadError;
 
   Pointer<Void>? _handle;
   Pointer<DspParams>? _params;
@@ -174,11 +172,8 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   _Bindings? get bindings {
     if (_loadAttempted) return _bindings;
     _loadAttempted = true;
-    final lib = _openLibrary();
-    if (lib == null) {
-      Log.w("Voice DSP: could not load the Rust library: $_loadError");
-      return null;
-    }
+    final lib = openRustLibrary();
+    if (lib == null) return null;
     try {
       final b = _Bindings(lib);
       final abi = b.abiVersion();
@@ -197,32 +192,6 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
       return null;
     }
     return _bindings;
-  }
-
-  DynamicLibrary? _openLibrary() {
-    final name =
-        Platform.isWindows ? 'rust_lib_commet.dll' : 'librust_lib_commet.so';
-    final exeDir = p.dirname(Platform.resolvedExecutable);
-    final candidates = [
-      // packaged builds and `flutter run` bundles
-      p.join(exeDir, 'lib', name),
-      p.join(exeDir, name),
-      // already loaded by the runner / flutter_rust_bridge
-      name,
-      // flutter_rust_bridge's dev location
-      p.join('..', 'rust', 'rust', 'target', 'release', name),
-      p.join('rust', 'rust', 'target', 'release', name),
-    ];
-    final errors = <String>[];
-    for (final candidate in candidates) {
-      try {
-        return DynamicLibrary.open(candidate);
-      } catch (e) {
-        errors.add("$candidate: $e");
-      }
-    }
-    _loadError = errors.join("; ");
-    return null;
   }
 
   @override

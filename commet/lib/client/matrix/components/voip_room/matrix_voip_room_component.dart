@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
@@ -59,18 +60,12 @@ class MatrixVoipRoomComponent
     return deviceId == client.matrixClient.deviceID;
   }
 
-  /// A membership whose `expires` window (relative to when it was sent) has
+  /// A membership whose `expires` window, counted from its join time, has
   /// already elapsed. Only full [Event]s carry a timestamp; stripped state is
   /// assumed live.
-  static bool isMembershipExpired(StrippedStateEvent entry) {
-    final expires = entry.content.tryGet<int>("expires");
-    if (expires == null) return false;
-    if (entry case Event ev) {
-      final expiry = ev.originServerTs.add(Duration(milliseconds: expires));
-      return DateTime.now().isAfter(expiry);
-    }
-    return false;
-  }
+  static bool isMembershipExpired(StrippedStateEvent entry) =>
+      MatrixCallMembership.isExpired(entry.content,
+          entry is Event ? entry.originServerTs : null, DateTime.now());
 
   @override
   List<String> getCurrentParticipants() {
@@ -129,7 +124,8 @@ class MatrixVoipRoomComponent
       return;
     }
 
-    Log.i("Clearing ${stale.length} stale call membership(s) in ${room.identifier}");
+    Log.i(
+        "Clearing ${stale.length} stale call membership(s) in ${room.identifier}");
 
     await Future.wait([
       for (var stateKey in stale)

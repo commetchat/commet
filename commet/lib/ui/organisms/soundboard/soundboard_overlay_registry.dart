@@ -3,17 +3,22 @@
 // Written by the call's SoundboardSession (via engine listeners), read by
 // every VoipStreamView. Keyed by Matrix userId so the emoji appears ONLY on
 // the sender's avatar — never broadcast to all tiles.
-import 'package:flutter/foundation.dart';
+import 'package:commet/client/components/soundboard/soundboard_emoji.dart';
+import 'package:flutter/widgets.dart';
 
 class SoundboardOverlayEntry {
   final String soundId;
-  final String emoji;
+  final SoundboardEmoji emoji;
+
+  /// Image of a custom [emoji], resolved by the caller that has a client.
+  final ImageProvider? image;
   final int expiresAtMs;
   final int overlayMs;
 
   const SoundboardOverlayEntry({
     required this.soundId,
     required this.emoji,
+    this.image,
     required this.expiresAtMs,
     required this.overlayMs,
   });
@@ -36,20 +41,27 @@ class SoundboardOverlayRegistry extends ChangeNotifier {
     return e;
   }
 
-  void show({
+  SoundboardOverlayEntry show({
     required String userId,
     required String soundId,
-    required String emoji,
+    required SoundboardEmoji emoji,
+    ImageProvider? image,
     required int overlayMs,
   }) {
-    _byUser[userId] = SoundboardOverlayEntry(
+    final entry = _byUser[userId] = SoundboardOverlayEntry(
       soundId: soundId,
       emoji: emoji,
+      image: image,
       overlayMs: overlayMs,
-      expiresAtMs:
-          DateTime.now().millisecondsSinceEpoch + overlayMs + 200,
+      expiresAtMs: DateTime.now().millisecondsSinceEpoch + overlayMs + 200,
     );
     notifyListeners();
+    return entry;
+  }
+
+  /// Clears [userId]'s overlay only if it is still [entry].
+  void clearEntry(String userId, SoundboardOverlayEntry entry) {
+    if (identical(_byUser[userId], entry)) clearUser(userId);
   }
 
   void clearUser(String userId) {

@@ -29,6 +29,7 @@ class VideoPlayer extends StatefulWidget {
     this.showProgressBar = true,
     this.capabilities = VideoCapabilities.native,
     this.isFullscreen = false,
+    this.onOpenInBrowser,
   });
 
   final FileProvider videoFile;
@@ -49,6 +50,9 @@ class VideoPlayer extends StatefulWidget {
   /// affects which fullscreen icon is shown; the host owns the transition
   /// through [onFullscreen].
   final bool isFullscreen;
+
+  /// Offered next to Retry when playback fails.
+  final VoidCallback? onOpenInBrowser;
 
   @override
   State<VideoPlayer> createState() => VideoPlayerState();
@@ -121,8 +125,7 @@ class VideoPlayerState extends State<VideoPlayer> {
           length = total;
           if (updateSlider && total.inMilliseconds > 0) {
             videoProgress = clampDouble(
-              event.inMilliseconds.toDouble() /
-                  total.inMilliseconds.toDouble(),
+              event.inMilliseconds.toDouble() / total.inMilliseconds.toDouble(),
               0,
               1,
             );
@@ -209,10 +212,23 @@ class VideoPlayerState extends State<VideoPlayer> {
                 style: TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: retry,
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: retry,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Retry'),
+                  ),
+                  if (widget.onOpenInBrowser != null)
+                    OutlinedButton.icon(
+                      onPressed: widget.onOpenInBrowser,
+                      icon: const Icon(Icons.open_in_new_rounded),
+                      label: const Text('Open in Browser'),
+                    ),
+                ],
               ),
             ],
           ),

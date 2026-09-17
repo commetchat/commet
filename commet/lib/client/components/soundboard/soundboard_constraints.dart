@@ -7,9 +7,19 @@
 // - 3 redirects + 15s timeout + strict allowlist mitigate SSRF/open-redirect.
 class SoundboardConstraints {
   static const int maxDurationMs = 15000;
+
+  /// Longest a sound may play. Sounds are checked against [maxDurationMs]
+  /// when imported, but any Space moderator can point a sound at any file.
+  static const int maxPlaybackMs = maxDurationMs + 5000;
   static const int maxFileBytes = 1024 * 1024; // 1 MiB
   static const int maxRedirects = 3;
   static const Duration httpTimeout = Duration(seconds: 15);
+
+  /// Upper bound of the per-sound admin volume (200 %).
+  static const double maxSoundVolume = 2.0;
+
+  static double clampSoundVolume(double volume) =>
+      volume.clamp(0.0, maxSoundVolume);
 
   static const int maxNameLength = 64;
   static const int minNameLength = 1;
@@ -57,6 +67,10 @@ class SoundboardConstraints {
 
   /// Max entries in dedup LRU (bounded memory).
   static const int maxDedupEntries = 200;
+
+  /// Live playback instances across all sounds; the oldest is dropped
+  /// beyond this so rapid triggers can't pile up audio players.
+  static const int maxConcurrentInstances = 8;
 
   /// Max decoded sounds held in session LRU.
   static const int maxCachedSounds = 20;

@@ -3,8 +3,12 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/anchored_popover.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
+import 'package:commet/ui/molecules/call_session_live_panel.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_button.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -66,10 +70,12 @@ class _CallSessionPanelState extends State<CallSessionPanel>
   Timer? statUpdateTimer;
   late AnimationController audioLevel;
   Room? room;
+  late final SoundboardCallController soundboard;
 
   @override
   void initState() {
     room = widget.session.client.getRoom(widget.session.roomId);
+    soundboard = SoundboardCallController.acquire(widget.session);
 
     audioLevel = AnimationController(
         vsync: this, duration: CallView.volumeAnimationDuration);
@@ -93,33 +99,50 @@ class _CallSessionPanelState extends State<CallSessionPanel>
       sub.cancel();
     }
     statUpdateTimer?.cancel();
+    soundboard.release();
     super.dispose();
+  }
+
+  void openRoom() {
+    EventBus.doOpenRoom(widget.session.roomId,
+        clientId: widget.session.client.identifier);
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          EventBus.doOpenRoom(widget.session.roomId,
-              clientId: widget.session.client.identifier);
-        },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildControlsRow(context),
+          // Grows the panel below the button row while sharing screen /
+          // camera; renders nothing otherwise.
+          CallSessionLivePanel(session: widget.session, onOpenRoom: openRoom),
+        ],
+      ),
+    );
+  }
+
+  Widget buildControlsRow(BuildContext context) {
+    return InkWell(
+        onTap: openRoom,
         child: SizedBox(
           height: widget.height,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  pickAnimation(
-                      entry: widget.session,
-                      child: SizedBox(
-                        height: widget.height,
-                        width: widget.height,
-                        child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    pickAnimation(
+                        entry: widget.session,
+                        child: SizedBox(
+                          height: widget.height,
+                          width: widget.height,
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: AnimatedBuilder(
                                 animation: audioLevel,
                                 builder: (context, child) {
@@ -139,9 +162,13 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                                   );
                                 },
                               )),
-                      )),
-                  tiamat.Text(widget.session.roomName),
-                ],
+                        )),
+                    Flexible(
+                      child: tiamat.Text(widget.session.roomName,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                  ],
+                ),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -186,6 +213,22 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                   SizedBox(
                     width: widget.height,
                     height: widget.height,
+                    child: SoundboardButton(
+                      controller: soundboard,
+                      deafened: widget.session.isDeafened,
+                      alignment: PopoverAlignment.start,
+                      builder: (context, onPressed) => tiamat.IconButton(
+                        onPressed: onPressed,
+                        iconColor: onPressed == null
+                            ? Theme.of(context).disabledColor
+                            : null,
+                        icon: Icons.surround_sound_rounded,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: widget.height,
+                    height: widget.height,
                     child: AspectRatio(
                         aspectRatio: 1.0,
                         child: tiamat.IconButton(
@@ -199,9 +242,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
               ),
             ],
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget pickAnimation({required VoipSession entry, required Widget child}) {

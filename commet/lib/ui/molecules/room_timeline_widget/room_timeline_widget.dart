@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
+import 'package:commet/ui/molecules/room_timeline_widget/timeline_selection_area.dart';
 import 'package:flutter/material.dart';
 
 class RoomTimelineWidget extends StatefulWidget {
@@ -87,12 +88,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     );
 
     if (MediaQuery.of(context).desktop) {
-      result = SelectionArea(
-        child: result,
-        contextMenuBuilder: (context, selectableRegionState) {
-          return Container();
-        },
-      );
+      result = TimelineSelectionArea(child: result);
     }
 
     return result;

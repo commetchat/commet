@@ -26,6 +26,11 @@ class VideoPlaybackDialog extends StatefulWidget {
   final VideoEmbedInfo video;
   final bool autoplay;
 
+  /// Whether this platform can render an [OfficialVideoEmbedSource] in the
+  /// dialog. flutter_inappwebview has no Linux implementation, and the web
+  /// build has no iframe path yet, so those open the link in the browser.
+  static bool get supportsOfficialEmbeds => !kIsWeb && !Platform.isLinux;
+
   static Future<void> show(
     BuildContext context, {
     required VideoEmbedInfo video,
@@ -197,6 +202,7 @@ class _VideoPlaybackDialogState extends State<VideoPlaybackDialog> {
                                       onFullscreen: toggleFullscreen,
                                       isFullscreen: isFullscreen,
                                       capabilities: capabilities,
+                                      onOpenInBrowser: openInBrowser,
                                     ),
                                   OfficialVideoEmbedSource() =>
                                     _OfficialVideoEmbed(
@@ -364,15 +370,7 @@ class _OfficialVideoEmbedState extends State<_OfficialVideoEmbed> {
   HttpServer? pageServer;
   Uri? pageServerUri;
 
-  bool get supportsInAppWebView {
-    if (kIsWeb) return false;
-    // flutter_inappwebview is supported on Android, iOS, Windows, macOS.
-    // On Linux desktop, flutter_inappwebview plugin is not registered.
-    if (!kIsWeb && Platform.isLinux) {
-      return false;
-    }
-    return true;
-  }
+  bool get supportsInAppWebView => VideoPlaybackDialog.supportsOfficialEmbeds;
 
   /// WebView2 (Windows) loads in-memory HTML with `NavigateToString`, which
   /// ignores `baseUrl` and gives the page an opaque origin. Frames inside it

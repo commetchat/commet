@@ -242,6 +242,16 @@ class Preferences {
     return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
   }
 
+  /// Volume of the system audio a member sends with their screen share, kept
+  /// apart from their mic volume like Discord's stream volume.
+  Future<void> setVoipScreenShareVolume(String userId, double volume) async {
+    _preferences!.setDouble("call_screen_share_volume:${userId}", volume);
+  }
+
+  double getVoipScreenShareVolume(String userId) {
+    return _preferences?.getDouble("call_screen_share_volume:${userId}") ?? 1.0;
+  }
+
   String _acceptedCapabilitiesKey(String clientId, String widgetNamespace) =>
       "accepted_widget_capabilities:${clientId}:${widgetNamespace}";
 
@@ -493,6 +503,20 @@ class Preferences {
   /// never sent to other participants. 0 = mute.
   DoublePreference soundboardVolume =
       DoublePreference("soundboard_volume", defaultValue: 80.0);
+
+  /// Favorite soundboard sound ids, oldest first. Local-only.
+  StringListPreference soundboardFavorites =
+      StringListPreference("soundboard_favorites", defaultValue: []);
+
+  /// Soundboard sound played when joining a voice channel. Null = none.
+  NullableStringPreference soundboardEntranceSoundId = NullableStringPreference(
+      "soundboard_entrance_sound_id",
+      defaultValue: null);
+
+  /// Space the entrance sound is limited to. Null = every Space.
+  NullableStringPreference soundboardEntranceSpaceId = NullableStringPreference(
+      "soundboard_entrance_space_id",
+      defaultValue: null);
 
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);

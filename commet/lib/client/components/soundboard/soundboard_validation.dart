@@ -1,5 +1,6 @@
 // Validation for admin-provided name/emoji. Pure Dart (unit-testable).
 import 'soundboard_constraints.dart';
+import 'soundboard_emoji.dart';
 
 class SoundboardValidationError implements Exception {
   final String message;
@@ -52,6 +53,34 @@ class SoundboardValidator {
     }
     return emoji;
   }
+
+  /// Validates a sound's emoji. Unicode goes through [sanitizeEmoji]; a
+  /// custom emoticon needs a well-formed `mxc://server/media-id` and a
+  /// `:shortcode:` (colons are added when missing). Event content can be
+  /// written by any client, so this is checked even for picker output.
+  static SoundboardEmoji sanitizeSoundEmoji(SoundboardEmoji emoji) {
+    final mxc = emoji.mxc;
+    if (mxc == null) {
+      return SoundboardEmoji.unicode(sanitizeEmoji(emoji.unicode));
+    }
+    if (!_mxcPattern.hasMatch(mxc)) {
+      throw const SoundboardValidationError('Invalid custom emoji image');
+    }
+    var name = (emoji.shortcode ?? '').trim();
+    if (name.length >= 2 && name.startsWith(':') && name.endsWith(':')) {
+      name = name.substring(1, name.length - 1);
+    }
+    if (!_shortcodePattern.hasMatch(name)) {
+      throw const SoundboardValidationError('Invalid custom emoji name');
+    }
+    return SoundboardEmoji.custom(mxc: mxc, shortcode: ':$name:');
+  }
+
+  // Matrix spec: server name (hostname, IPv4 or [IPv6], optional port) and
+  // an opaque media ID of [A-Za-z0-9_-].
+  static final _mxcPattern = RegExp(
+      r'^mxc://([A-Za-z0-9.\-]+|\[[0-9A-Fa-f:.]+\])(:[0-9]{1,5})?/[A-Za-z0-9_\-]+$');
+  static final _shortcodePattern = RegExp(r'^[^\s:<>]{1,100}$');
 
   static List<String> _splitGraphemes(String s) {
     // Minimal extended-grapheme approximation sufficient for emoji:

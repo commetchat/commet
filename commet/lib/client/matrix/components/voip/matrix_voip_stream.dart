@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/list_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart';
@@ -42,6 +43,9 @@ class MatrixVoipStream implements VoipStream {
       r.srcObject = stream.stream!;
 
       renderer = r;
+      // COMMET: views built before the renderer existed (e.g. the voice
+      // panel's live preview) need to know there is now something to draw.
+      _onChanged.add(());
     }
   }
 
@@ -128,20 +132,11 @@ class MatrixVoipStream implements VoipStream {
       return CircularProgressIndicator();
     }
 
-    if (fit == BoxFit.contain) {
-      return AspectRatio(
-          aspectRatio: aspectRatio ?? 1, child: RTCVideoView(renderer!));
-    } else {
-      if (renderer!.textureId != null) {
-        return RTCVideoView(
-          key: key,
-          renderer!,
-          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-        );
-      }
-    }
-
-    return null;
+    // COMMET: each view gets its own renderer instead of sharing [renderer].
+    // The same stream can be on screen twice (call view + the voice panel's
+    // live preview) and on web an RTCVideoView owns the renderer's single
+    // <video> element, so two views on one renderer fight over it.
+    return _MatrixVideoView(this, fit: fit, key: key);
   }
 
   @override
@@ -174,4 +169,91 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   double get volume => preferences.getVoipUserVolume(streamUserId);
+}
+
+/// Points [renderer], which belongs to a single view, at [stream] for its
+/// video only.
+///
+/// On web every renderer plays a remote stream's audio through an <audio>
+/// element of its own, and [MatrixVoipStream.renderer] already plays it, so
+/// the view's renderer is muted. The element is created by the `srcObject`
+/// setter, which is why muting comes after it. Native renderers never play
+/// audio, and their `muted` setter mutes the track itself, so they are left
+/// alone.
+void attachVideoOnly(VideoRenderer renderer, MediaStream? stream,
+    {bool isWeb = kIsWeb}) {
+  renderer.srcObject = stream;
+  if (isWeb && stream != null) {
+    renderer.muted = true;
+  }
+}
+
+/// Renders a [MatrixVoipStream] with a renderer owned by this view, mirroring
+/// how LiveKit's `VideoTrackRenderer` works. Disposed with the view.
+class _MatrixVideoView extends StatefulWidget {
+  const _MatrixVideoView(this.stream, {required this.fit, super.key});
+  final MatrixVoipStream stream;
+  final BoxFit fit;
+
+  @override
+  State<_MatrixVideoView> createState() => _MatrixVideoViewState();
+}
+
+class _MatrixVideoViewState extends State<_MatrixVideoView> {
+  RTCVideoRenderer? _renderer;
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = widget.stream.onStreamChanged.listen((_) {
+      final source = widget.stream.stream.stream;
+      if (_renderer != null && source != null) {
+        attachVideoOnly(_renderer!, source);
+      }
+      if (mounted) setState(() {});
+    });
+    _init();
+  }
+
+  Future<void> _init() async {
+    final r = RTCVideoRenderer();
+    await r.initialize();
+    if (!mounted) {
+      await r.dispose();
+      return;
+    }
+    attachVideoOnly(r, widget.stream.stream.stream);
+    setState(() => _renderer = r);
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    final r = _renderer;
+    _renderer = null;
+    if (r != null) {
+      r.srcObject = null;
+      r.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final r = _renderer;
+    if (r == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (widget.fit == BoxFit.contain) {
+      return AspectRatio(
+          aspectRatio: widget.stream.aspectRatio ?? 1, child: RTCVideoView(r));
+    }
+
+    return RTCVideoView(
+      r,
+      objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+    );
+  }
 }

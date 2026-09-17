@@ -4,7 +4,7 @@ import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
-import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
@@ -49,14 +49,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
   @override
   List<EmoticonPack> get availablePacks {
-    List<EmoticonPack> packs = List.from(ownedPacks, growable: true);
-
-    for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
-      var component = space.getComponent<SpaceEmoticonComponent>();
-      if (component == null) continue;
-      packs.addAll(component.ownedPacks);
-    }
+    List<EmoticonPack> packs = _spacePacks();
+    packs.addAll(ownedPacks.where((e) => !packs.contains(e)));
 
     var component = room.client.getComponent<EmoticonComponent>();
 
@@ -132,15 +126,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   }
 
   List<EmoticonPack> _getAvailablePacks({bool includeUnicode = false}) {
-    var result = List<EmoticonPack>.of(ownedPacks);
-
-    for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
-      var component = space.getComponent<MatrixSpaceEmoticonComponent>();
-      if (component != null) {
-        result.addAll(component.ownedPacks.where((e) => !result.contains(e)));
-      }
-    }
+    var result = _spacePacks();
+    result.addAll(ownedPacks.where((e) => !result.contains(e)));
 
     var globalComponent = room.client.getComponent<EmoticonComponent>();
     if (globalComponent != null) {
@@ -159,6 +146,25 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
 
     return result;
+  }
+
+  /// Packs of every space the room is in, including through subspaces, so
+  /// server emoji come first in the picker.
+  List<EmoticonPack> _spacePacks() {
+    final result = List<EmoticonPack>.empty(growable: true);
+    for (final space
+        in room.client.spaces.where((space) => _spaceContainsRoom(space, {}))) {
+      final component = space.getComponent<SpaceEmoticonComponent>();
+      if (component == null) continue;
+      result.addAll(component.ownedPacks.where((e) => !result.contains(e)));
+    }
+    return result;
+  }
+
+  bool _spaceContainsRoom(Space space, Set<String> visited) {
+    if (!visited.add(space.identifier)) return false;
+    if (space.containsRoom(room.identifier)) return true;
+    return space.subspaces.any((sub) => _spaceContainsRoom(sub, visited));
   }
 
   @override

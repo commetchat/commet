@@ -14,6 +14,10 @@ abstract class Emoticon {
   String? get shortcode;
   String get key;
 
+  /// Where a custom emoticon's image lives (an `mxc://` URI on Matrix), or
+  /// null for Unicode emoji.
+  Uri? get url => null;
+
   EmoticonUsage get usage;
 
   bool get isSticker =>

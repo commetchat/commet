@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
+import 'package:commet/client/components/soundboard/entrance_sound.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/live_media_indicator.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
@@ -59,6 +61,18 @@ class RoomTextButton extends StatefulWidget {
             icon: Icons.tag,
             onPressed: () => EventBus.doOpenRoom(room.identifier,
                 clientId: room.client.identifier, bypassSpecialRoomType: true)),
+      if (voipRoom != null &&
+          voipRoom.canJoinCall &&
+          voipRoom.currentSession == null &&
+          preferences.soundboardEntranceSoundId.value != null)
+        ContextMenuItem(
+            text: "Join Without Entrance Sound",
+            icon: Icons.volume_off,
+            onPressed: () {
+              EntranceSoundGate.instance.requestSilentJoin(room.identifier);
+              EventBus.doOpenRoom(room.identifier,
+                  clientId: room.client.identifier);
+            }),
       if (voipRoom != null && preferences.developerMode.value)
         ContextMenuItem(
           text: "Clear Membership Status",
@@ -316,7 +330,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                   ),
                 for (var participant in activity.participants)
                   buildCallMember(participant,
-                      showActivityIcons: activity.thirdparty == false),
+                      showActivityIcons: activity.thirdparty == false,
+                      liveMedia: activity.liveMedia[participant] ?? const {}),
               ],
             ),
           ),
@@ -354,7 +369,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  Widget buildCallMember(String identifier, {bool showActivityIcons = true}) {
+  Widget buildCallMember(String identifier,
+      {bool showActivityIcons = true, Set<LiveMedia> liveMedia = const {}}) {
     var color = Theme.of(context).colorScheme.secondary;
 
     final member = widget.room.getMemberOrFallback(identifier);
@@ -374,6 +390,11 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                 child: Row(
                   children: [
+                    if (liveMedia.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                        child: LiveMediaIndicator(liveMedia),
+                      ),
                     for (var i in activitySessions!.where((i) =>
                         i.thirdparty == true &&
                         i.participants.contains(identifier)))

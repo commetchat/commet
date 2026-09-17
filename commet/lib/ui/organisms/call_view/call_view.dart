@@ -5,10 +5,11 @@ import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
+import 'package:commet/ui/organisms/call_view/call_grid_tiles.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
-import 'package:commet/ui/organisms/soundboard/soundboard_panel.dart';
+import 'package:commet/ui/organisms/soundboard/soundboard_button.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/animation/ripple.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ class _CallViewState extends State<CallView> {
   VoipStream? mainStream;
   late Room room;
   SoundboardCallController? _soundboard;
+  bool _soundboardOpen = false;
 
   @override
   void initState() {
@@ -66,17 +68,14 @@ class _CallViewState extends State<CallView> {
     statTimer = Timer.periodic(const Duration(milliseconds: 200), timer);
 
     // Soundboard: preload catalog audio on call join for instant click->play.
-    _soundboard = SoundboardCallController(widget.currentSession);
-    _soundboard!.init().then((_) {
-      if (mounted) setState(() {});
-    });
+    _soundboard = SoundboardCallController.acquire(widget.currentSession);
   }
 
   @override
   void dispose() {
     statTimer?.cancel();
     sub?.cancel();
-    _soundboard?.dispose();
+    _soundboard?.release();
     _soundboard = null;
     super.dispose();
   }
@@ -141,7 +140,12 @@ class _CallViewState extends State<CallView> {
         children: [
           child,
           AnimatedOpacity(
-            opacity: MediaQuery.of(context).mobile || isMouseHovering ? 1 : 0,
+            // Stay visible while the soundboard popover is anchored here.
+            opacity: MediaQuery.of(context).mobile ||
+                    isMouseHovering ||
+                    _soundboardOpen
+                ? 1
+                : 0,
             duration: const Duration(milliseconds: 200),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -200,10 +204,20 @@ class _CallViewState extends State<CallView> {
                           : widget.pickCamera,
                     ),
                   if (canHangUp && _soundboard != null)
-                    tiamat.CircleButton(
-                      radius: buttonRadius,
-                      icon: Icons.surround_sound,
-                      onPressed: () => _openSoundboard(context),
+                    SoundboardButton(
+                      controller: _soundboard!,
+                      deafened: widget.currentSession.isDeafened,
+                      onOpenChanged: (open) {
+                        if (mounted) setState(() => _soundboardOpen = open);
+                      },
+                      builder: (context, onPressed) => tiamat.CircleButton(
+                        radius: buttonRadius,
+                        icon: Icons.surround_sound,
+                        iconColor: onPressed == null
+                            ? Theme.of(context).disabledColor
+                            : null,
+                        onPressed: onPressed,
+                      ),
                     ),
                   if (canHangUp)
                     tiamat.CircleButton(
@@ -244,27 +258,8 @@ class _CallViewState extends State<CallView> {
         ));
   }
 
-  void _openSoundboard(BuildContext context) {
-    final ctrl = _soundboard;
-    if (ctrl == null) return;
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: ListenableBuilder(
-          listenable: ctrl,
-          builder: (context, _) => SoundboardPanel(
-            catalog: ctrl.catalog,
-            session: ctrl.soundboard,
-            volume01: ctrl.volume01,
-            onVolumeChanged: (v) => ctrl.setVolume01(v),
-          ),
-        ),
-      ),
-    );
-  }
-
   List<Widget> generateLayout() {
+    final tiles = callGridTiles(widget.currentSession.streams);
     return [
       if (mainStream != null)
         Flexible(
@@ -282,6 +277,10 @@ class _CallViewState extends State<CallView> {
                 child: VoipStreamView(
                   mainStream!,
                   widget.currentSession,
+                  audioStream: tiles
+                      .where((tile) => tile.stream == mainStream)
+                      .firstOrNull
+                      ?.audioStream,
                   borderColor: Colors.white,
                   onFullscreen: () {
                     Lightbox.show(context,
@@ -303,31 +302,33 @@ class _CallViewState extends State<CallView> {
         fit: FlexFit.tight,
         flex: 75,
         child: Center(
-          child: BentoLayout(widget.currentSession.streams
-              .where((element) => element != mainStream)
-              .map((e) => GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      mainStream = e;
-                    });
+          child: BentoLayout(
+              tiles.where((tile) => tile.stream != mainStream).map((tile) {
+            final e = tile.stream;
+            return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    mainStream = e;
+                  });
+                },
+                child: VoipStreamView(
+                  key: ValueKey("callView__${e.streamId}"),
+                  e,
+                  audioStream: tile.audioStream,
+                  fit: e.type == VoipStreamType.screenshare
+                      ? BoxFit.contain
+                      : BoxFit.cover,
+                  widget.currentSession,
+                  onFullscreen: () {
+                    Lightbox.show(context,
+                        aspectRatio: e.aspectRatio,
+                        customWidget: VoipFullscreenStreamView(
+                          session: widget.currentSession,
+                          stream: e,
+                        ));
                   },
-                  child: VoipStreamView(
-                    key: ValueKey("callView__${e.streamId}"),
-                    e,
-                    fit: e.type == VoipStreamType.screenshare
-                        ? BoxFit.contain
-                        : BoxFit.cover,
-                    widget.currentSession,
-                    onFullscreen: () {
-                      Lightbox.show(context,
-                          aspectRatio: e.aspectRatio,
-                          customWidget: VoipFullscreenStreamView(
-                            session: widget.currentSession,
-                            stream: e,
-                          ));
-                    },
-                  )))
-              .toList()),
+                ));
+          }).toList()),
         ),
       )
     ];

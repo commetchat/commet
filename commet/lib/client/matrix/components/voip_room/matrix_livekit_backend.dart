@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/client/components/voip/audio_processing/audio_dsp_settings.dart';
@@ -62,7 +63,11 @@ class MatrixLivekitBackend {
     }
 
     final values = states.values.map((event) => event as Event).toList();
-    values.sort((a, b) => a.originServerTs.compareTo(b.originServerTs));
+    // By join time: our own memberships are rewritten when streams change
+    // (issue #9), which must not move them down the oldest_membership order.
+    DateTime joinedAt(Event e) =>
+        MatrixCallMembership.joinedAt(e.content, e.originServerTs)!;
+    values.sort((a, b) => joinedAt(a).compareTo(joinedAt(b)));
 
     for (var entry in values) {
       final focusActive =
@@ -186,7 +191,9 @@ class MatrixLivekitBackend {
         "focus_selection": "oldest_membership",
         "type": "livekit"
       },
-      "scope": "m.room"
+      "scope": "m.room",
+      // Rewritten while we share our screen or camera (issue #9).
+      MatrixCallMembership.liveMediaKey: <String>[],
     });
 
     await lkRoom.connect(sfuUrl, jwt);

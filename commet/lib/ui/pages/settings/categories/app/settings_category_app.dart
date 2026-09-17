@@ -8,6 +8,7 @@ import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page
 import 'package:commet/ui/pages/settings/categories/app/experiments_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/shortcut_settings/shortcut_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/soundboard_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notification_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
@@ -60,6 +61,15 @@ class SettingsCategoryApp implements SettingsCategory {
       name: "labelSettingsCategoryVoiceAndVideo",
       desc: "Label for the settings category related to voice and video calls");
 
+  String get labelSettingsAppSoundboard => Intl.message("Soundboard",
+      name: "labelSettingsAppSoundboard",
+      desc: "Label for the App soundboard settings page");
+
+  bool get hasVoip =>
+      clientManager?.clients
+          .any((e) => e.getComponent<VoipComponent>() != null) ==
+      true;
+
   @override
   String get title => labelSettingsCategoryApp;
 
@@ -77,14 +87,19 @@ class SettingsCategoryApp implements SettingsCategory {
             pageBuilder: (context) {
               return const AppearanceSettingsPage();
             }),
-        if (clientManager?.clients
-                .any((e) => e.getComponent<VoipComponent>() != null) ==
-            true)
+        if (hasVoip)
           SettingsTab(
               label: labelSettingsCategoryVoiceAndVideo,
               icon: m.Icons.call,
               pageBuilder: (context) {
                 return const VoipSettingsPage();
+              }),
+        if (hasVoip)
+          SettingsTab(
+              label: labelSettingsAppSoundboard,
+              icon: m.Icons.speaker,
+              pageBuilder: (context) {
+                return const SoundboardSettingsPage();
               }),
         if (PlatformUtils.isLinux || PlatformUtils.isWindows)
           SettingsTab(
