@@ -44,7 +44,8 @@ class RemoteAudioTrack extends RemoteTrack with AudioTrack, RemoteAudioManagemen
     if (didStart) {
       try {
         // web support
-        await audio.startAudio(getCid(), mediaStreamTrack);
+        // COMMET: with the chosen volume from the first sample on.
+        await audio.startAudio(getCid(), mediaStreamTrack, volume: _volume);
         if (_deviceId != null) {
           audio.setSinkId(getCid(), _deviceId!);
         }

@@ -41,6 +41,10 @@ class ScreenShareWatchList {
     if (_autoWatch()) _watching.add(identity);
   }
 
+  /// Stops watching everyone [stillSharing] is false for.
+  void retainWhere(bool Function(String identity) stillSharing) =>
+      _watching.retainWhere(stillSharing);
+
   /// [identity] stopped sharing their screen: their next share needs opting
   /// in again. Also called when they leave the call, which unpublishes it.
   void onScreenShareEnded(String identity) => _watching.remove(identity);

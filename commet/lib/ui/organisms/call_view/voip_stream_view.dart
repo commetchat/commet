@@ -243,15 +243,18 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                   text: labelWatchStream,
                   icon: Icons.visibility,
                   onPressed: stream.watch),
-        tiamat.ContextMenuItem(
-          text: "Volume",
-          customBuilder: (context, onClicked, {closeMenu}) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: StreamVolumeSlider(volumeStream),
-            );
-          },
-        )
+        // A screen share without audio has nothing to turn down, and its
+        // slider would save the sharer's voice volume instead.
+        if (stream.type != VoipStreamType.screenshare || audioStream != null)
+          tiamat.ContextMenuItem(
+            text: "Volume",
+            customBuilder: (context, onClicked, {closeMenu}) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                child: StreamVolumeSlider(volumeStream),
+              );
+            },
+          )
       ]
     ];
   }
@@ -388,8 +391,28 @@ class _VoipStreamViewState extends State<VoipStreamView> {
   }
 
   void onStreamChanged(void event) {
-    print("Stream state changed!");
     setState(() {});
+  }
+}
+
+/// Rebuilds when the stream's volume is changed from another control.
+mixin _FollowsStreamVolume<T extends StatefulWidget> on State<T> {
+  VoipStream get volumeStream;
+
+  StreamSubscription? _volumeSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _volumeSub = volumeStream.onStreamChanged.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _volumeSub?.cancel();
+    super.dispose();
   }
 }
 
@@ -405,20 +428,23 @@ class StreamVolumeSlider extends StatefulWidget {
   State<StreamVolumeSlider> createState() => _StreamVolumeSliderState();
 }
 
-class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
+class _StreamVolumeSliderState extends State<StreamVolumeSlider>
+    with _FollowsStreamVolume<StreamVolumeSlider> {
+  @override
+  VoipStream get volumeStream => widget.stream;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        tiamat.Text.labelLow("${(widget.stream.volume * 100).toInt()}%"),
+        tiamat.Text.labelLow("${(widget.stream.volume * 100).round()}%"),
         Expanded(
           child: tiamat.Slider(
             min: 0.0,
             max: maxStreamVolume,
             value: widget.stream.volume.clamp(0.0, maxStreamVolume),
             onChanged: (value) {
-              print(value);
               setState(() {
                 widget.stream.setVolume(value);
               });
@@ -441,7 +467,11 @@ class StreamVolumeControl extends StatefulWidget {
   State<StreamVolumeControl> createState() => _StreamVolumeControlState();
 }
 
-class _StreamVolumeControlState extends State<StreamVolumeControl> {
+class _StreamVolumeControlState extends State<StreamVolumeControl>
+    with _FollowsStreamVolume<StreamVolumeControl> {
+  @override
+  VoipStream get volumeStream => widget.stream;
+
   /// Volume to go back to when unmuting. Muting saves 0 as the volume, so
   /// after a restart there is nothing to go back to and unmuting picks 100%.
   double? _volumeBeforeMute;

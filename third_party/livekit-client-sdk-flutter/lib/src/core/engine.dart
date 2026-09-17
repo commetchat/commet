@@ -214,6 +214,11 @@ class Engine extends Disposable with EventsEmittable<EngineEvent> {
       await cleanUp();
       await events.dispose();
       await _signalListener.dispose();
+      // COMMET: nothing else disposes the signal client, and only its dispose
+      // cancels the connectivity_plus subscription. Every call left one
+      // behind, which is what made connectivity_plus report `none` on the
+      // next join (issue #48).
+      await this.signalClient.dispose();
       _reliableReceivedState.dispose();
     });
   }
@@ -1075,7 +1080,9 @@ class Engine extends Disposable with EventsEmittable<EngineEvent> {
         // normal retry policy.
         try {
           await signalClient.events.waitFor<SignalConnectivityChangedEvent>(
-            duration: connectOptions.timeouts.connection,
+            // Short: while connectivity_plus is wrong no event ever comes,
+            // and media stays frozen for the whole wait on every attempt.
+            duration: const Duration(seconds: 2),
             filter: (event) => !event.state.contains(ConnectivityResult.none),
           );
         } catch (_) {

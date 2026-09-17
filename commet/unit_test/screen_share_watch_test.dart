@@ -69,6 +69,17 @@ class _Watching implements ScreenShareWatching {
 }
 
 void main() {
+  test('a reconnect keeps watching only the shares that are still running', () {
+    final list = ScreenShareWatchList();
+    list.watch("@alice:example.org:DEVICE");
+    list.watch("@bob:example.org:DEVICE");
+
+    list.retainWhere((identity) => identity.startsWith("@alice"));
+
+    expect(list.isWatching("@alice:example.org:DEVICE"), true);
+    expect(list.isWatching("@bob:example.org:DEVICE"), false);
+  });
+
   const alice = '@alice:example.org:DEVICE';
   const bob = '@bob:example.org:DEVICE';
 

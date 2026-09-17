@@ -27,6 +27,26 @@ void main() {
 
   group("callGridTiles", () {
     test(
+        "our own screen share does not pick up the audio of our other device's share",
+        () {
+      final ownScreen = FakeVoipStream("own-screen",
+          streamUserId: alice,
+          type: VoipStreamType.screenshare,
+          direction: VoipStreamDirection.outgoing);
+      final otherDeviceScreen = FakeVoipStream("other-screen",
+          streamUserId: alice, type: VoipStreamType.screenshare);
+      final otherDeviceAudio = FakeVoipStream("other-audio",
+          streamUserId: alice, type: VoipStreamType.screenshareAudio);
+
+      final tiles =
+          callGridTiles([ownScreen, otherDeviceScreen, otherDeviceAudio]);
+
+      expect(tiles.firstWhere((t) => t.stream == ownScreen).audioStream, null);
+      expect(tiles.firstWhere((t) => t.stream == otherDeviceScreen).audioStream,
+          otherDeviceAudio);
+    });
+
+    test(
         "a member sharing their screen with audio gets one avatar tile and one screen share tile",
         () {
       final mic = FakeVoipStream("mic",

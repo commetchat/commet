@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +12,16 @@ class _ScreenAudio implements VoipStream {
 
   _ScreenAudio(this.volume);
 
+  final StreamController<void> _changed = StreamController.broadcast();
+
   @override
-  Future<void> setVolume(double volume) async => this.volume = volume;
+  Stream<void> get onStreamChanged => _changed.stream;
+
+  @override
+  Future<void> setVolume(double volume) async {
+    this.volume = volume;
+    _changed.add(null);
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -25,6 +35,18 @@ Future<void> pumpControl(WidgetTester tester, VoipStream stream) {
 }
 
 void main() {
+  testWidgets('follows a volume changed from another control', (tester) async {
+    final stream = _ScreenAudio(0.6);
+    await pumpControl(tester, stream);
+
+    // What the context menu slider does while the overlay is on screen.
+    await stream.setVolume(0.3);
+    await tester.pump();
+
+    expect(find.text('30%'), findsOneWidget);
+    expect(find.byIcon(Icons.volume_down_rounded), findsOneWidget);
+  });
+
   testWidgets('shows the screen share volume', (tester) async {
     await pumpControl(tester, _ScreenAudio(0.6));
 

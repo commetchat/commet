@@ -45,7 +45,9 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
   @override
   Widget build(BuildContext context) {
     final audioStream = callGridTiles(widget.session.streams)
-        .where((tile) => tile.stream == widget.stream)
+        // By id: the session replaces the stream object of a publication
+        // when its video is muted and unmuted.
+        .where((tile) => tile.stream.streamId == widget.stream.streamId)
         .firstOrNull
         ?.audioStream;
     return Stack(

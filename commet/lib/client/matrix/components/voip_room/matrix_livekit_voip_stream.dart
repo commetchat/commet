@@ -104,9 +104,13 @@ class MatrixLivekitVoipStream implements VoipStream {
         case VideoStallAction.firstFrame:
           onStreamUpdatedEvent();
         case VideoStallAction.recover:
+          // Not a share the user just stopped watching, nor a stream that is
+          // gone: resubscribing waits a moment before it subscribes.
+          bool stillWanted() => _stallTimer != null && isWatching;
+          if (!stillWanted()) break;
           Log.w("Remote video ${pub.sid} decoded no frames, subscribing again "
               "(attempt ${_stallDetector.recoveries})");
-          await pub.resubscribe();
+          await pub.resubscribe(stillWanted: stillWanted);
       }
     } catch (e, s) {
       Log.onError(e, s, content: "Could not check remote video ${pub.sid}");
@@ -325,6 +329,9 @@ class MatrixLivekitVoipStream implements VoipStream {
       preferences.setVoipUserVolume(userId, volume);
     }
     applyVolume(listenerDeafened ? 0.0 : volume);
+    // Other controls showing this volume (tile overlay, context menu,
+    // fullscreen) follow.
+    onStreamUpdatedEvent();
   }
 
   /// Whether the local user is deafened. Set by the owning session, so a

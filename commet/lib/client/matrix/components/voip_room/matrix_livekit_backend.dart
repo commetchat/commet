@@ -172,15 +172,17 @@ class MatrixLivekitBackend {
     livekitRoom = null;
     final lkRoom = lk.Room(roomOptions: roomOptions);
 
-    _wroteMembership = false;
+    // Local, not a field: two joins can overlap (two views of one room).
+    var wroteMembership = false;
     try {
-      return await _connect(lkRoom, sfuUrl, jwt, fociUrl, provider);
+      return await _connect(lkRoom, sfuUrl, jwt, fociUrl, provider,
+          onMembershipWritten: () => wroteMembership = true);
     } catch (_) {
       // Don't leave a membership for a call we never got into, nor a room
       // that keeps its connectivity listener and timers alive (issue #48).
+      // The membership first: it is what other people see.
       provider?.dispose();
-      await lkRoom.dispose();
-      if (_wroteMembership) {
+      if (wroteMembership) {
         try {
           await room.matrixRoom.client.setRoomStateWithKey(
               room.matrixRoom.id,
@@ -190,6 +192,7 @@ class MatrixLivekitBackend {
           Log.onError(e, s, content: "Could not clear call membership");
         }
       }
+      await lkRoom.dispose();
       rethrow;
     }
   }
@@ -197,13 +200,12 @@ class MatrixLivekitBackend {
   String get _ownMembershipKey =>
       "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 
-  bool _wroteMembership = false;
-
   Future<VoipSession> _connect(lk.Room lkRoom, String sfuUrl, String jwt,
-      List<Uri> fociUrl, MatrixLivekitEncryptionKeyProvider? provider) async {
+      List<Uri> fociUrl, MatrixLivekitEncryptionKeyProvider? provider,
+      {required void Function() onMembershipWritten}) async {
     await lkRoom.prepareConnection(sfuUrl, jwt);
 
-    _wroteMembership = true;
+    onMembershipWritten();
     await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
         MatrixVoipRoomComponent.callMemberStateEvent, _ownMembershipKey, {
       "application": "m.call",
@@ -238,16 +240,24 @@ class MatrixLivekitBackend {
     final dsp = AudioProcessingManager.instance;
     final dspSettings = AudioDspSettings.fromPreferences();
 
-    lkRoom.localParticipant?.setMicrophoneEnabled(true,
-        audioCaptureOptions: lk.AudioCaptureOptions(
-          deviceId: device,
-          // Our suppressor replaces the WebRTC / browser one when it is on,
-          // running both makes voices sound hollow.
-          noiseSuppression: !(dsp.isSupported && dspSettings.noiseSuppression),
-          // Web only: routes the mic through the AudioWorklet. Native
-          // platforms hook into WebRTC's pipeline instead and return null.
-          processor: dsp.createTrackProcessor(),
-        ));
+    lkRoom.localParticipant
+        ?.setMicrophoneEnabled(true,
+            audioCaptureOptions: lk.AudioCaptureOptions(
+              deviceId: device,
+              // Our suppressor replaces the WebRTC / browser one when it is on,
+              // running both makes voices sound hollow.
+              noiseSuppression:
+                  !(dsp.isSupported && dspSettings.noiseSuppression),
+              // Web only: routes the mic through the AudioWorklet. Native
+              // platforms hook into WebRTC's pipeline instead and return null.
+              processor: dsp.createTrackProcessor(),
+            ))
+        .catchError((Object e, StackTrace s) {
+      // Not awaited on purpose (joining muted is still joining), but a
+      // denied microphone must not end up as an unhandled error.
+      Log.onError(e, s, content: "Could not enable the microphone");
+      return null;
+    });
 
     livekitRoom = lkRoom;
     return MatrixLivekitVoipSession(room, lkRoom, keyProvider: provider);
