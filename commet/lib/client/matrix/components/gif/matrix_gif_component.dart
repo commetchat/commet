@@ -69,7 +69,9 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
     var page =
         await _request("search", {"q": query, if (pos != null) "pos": pos});
-    return page ?? GifSearchPage.empty;
+    // A proxy that rejects search is broken, not out of results
+    if (page == null) throw Exception("Gif proxy rejected the search request");
+    return page;
   }
 
   // COMMET: proxies that only allow search reject this, remember so we don't
@@ -84,7 +86,9 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     }
 
     var page = await _request("featured", {if (pos != null) "pos": pos});
-    if (page == null) {
+    // Only when the first page is rejected: a later page failing says
+    // nothing about the endpoint
+    if (page == null && pos == null) {
       _trendingUnsupportedProxy = preferences.proxyUrl.value;
     }
 
@@ -134,7 +138,11 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
       Room room, GifSearchResult gif, TimelineEvent? inReplyTo) async {
     var matrixRoom = (room as MatrixRoom).matrixRoom;
     var response = await matrixRoom.client.httpClient.get(gif.fullResUrl);
-    if (response.statusCode == 200) {
+    // Throw so the picker can tell the user, instead of closing as if it sent
+    if (response.statusCode != 200) {
+      throw Exception("Could not download gif (${response.statusCode})");
+    }
+    {
       var data = response.bodyBytes;
 
       matrix.Event? replyingTo;
@@ -165,14 +173,12 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
               : matrix.EventTypes.Sticker,
           inReplyTo: replyingTo);
 
-      if (id != null) {
-        var event = await matrixRoom.getEventById(id);
-        return room.convertEvent(event!,
-            timeline: (room.timeline as MatrixTimeline).matrixTimeline);
-      }
-    }
+      if (id == null) throw Exception("Gif was not sent");
 
-    return null;
+      var event = await matrixRoom.getEventById(id);
+      return room.convertEvent(event!,
+          timeline: (room.timeline as MatrixTimeline).matrixTimeline);
+    }
   }
 
   GifSearchResult parseTenorResult(Map<String, dynamic> result) {

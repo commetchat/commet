@@ -78,6 +78,12 @@ class GifPicker extends StatefulWidget {
         name: "labelGifPickerError",
       );
 
+  static String get labelGifPickerSendFailed => Intl.message(
+        "Couldn't send the GIF",
+        desc: "Shown when sending a gif from the gif picker failed",
+        name: "labelGifPickerSendFailed",
+      );
+
   static String get promptGifPickerRetry => Intl.message(
         "Retry",
         desc: "Button to retry loading gifs after an error",
@@ -114,8 +120,9 @@ class _GifPickerState extends State<GifPicker> {
   void initState() {
     _textController.addListener(onTextChanged);
 
+    // Not on mobile: the keyboard would cover most of the panel
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (MediaQuery.of(context).desktop) {
+      if (mounted && MediaQuery.of(context).desktop) {
         widget.focus?.requestFocus();
       }
     });
@@ -143,11 +150,16 @@ class _GifPickerState extends State<GifPicker> {
     prevText = text;
 
     if (text.isNotEmpty) {
-      var feed = _GifFeed(text)..loading = true;
-      setState(() {
+      // Keep showing the previous results until the debounce fires, so the
+      // grid does not flash to a spinner on every keystroke
+      debouce.run(() {
+        if (!mounted) return;
+        var feed = _GifFeed(text);
         searchFeed = feed;
+        if (_scrollController.hasClients) _scrollController.jumpTo(0);
+        load(feed);
       });
-      debouce.run(() => load(feed));
+      return;
     } else {
       debouce.cancel();
       setState(() {
@@ -164,6 +176,7 @@ class _GifPickerState extends State<GifPicker> {
     if (more && (feed.next == null || feed.loading || feed.loadingMore)) {
       return;
     }
+    if (!mounted) return;
 
     setState(() {
       if (more) {
@@ -229,7 +242,10 @@ class _GifPickerState extends State<GifPicker> {
         }
         return KeyEventResult.ignored;
       },
-      child: Stack(children: [
+      // Clicking the grid or the scrollbar must not unfocus the search field:
+      // escape and typing only reach the picker through it
+      child: TextFieldTapRegion(
+          child: Stack(children: [
         buildContent(context),
         IgnorePointer(
           ignoring: !sending,
@@ -251,7 +267,7 @@ class _GifPickerState extends State<GifPicker> {
             ),
           ),
         ),
-      ]),
+      ])),
     );
   }
 
@@ -301,6 +317,21 @@ class _GifPickerState extends State<GifPicker> {
         if (hasFavorites) slivers.add(header(GifPicker.labelGifPickerTrending));
         slivers
             .add(grid(feed.results.length, (i) => resultTile(feed.results[i])));
+      }
+
+      if (hasFavorites && !hasTrending) {
+        // Below the favorites, so a failed trending request can be retried
+        if (feed.loading) {
+          slivers.add(const SliverToBoxAdapter(
+              child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Center(
+                child: SizedBox(
+                    width: 24, height: 24, child: CircularProgressIndicator())),
+          )));
+        } else if (feed.error != null) {
+          slivers.add(SliverToBoxAdapter(child: errorView(feed)));
+        }
       }
 
       if (!hasFavorites && !hasTrending) {
@@ -465,6 +496,10 @@ class _GifPickerState extends State<GifPicker> {
       await doSend();
     } catch (e, s) {
       Log.onError(e, s, content: "Failed to send gif");
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+            SnackBar(content: Text(GifPicker.labelGifPickerSendFailed)));
+      }
     } finally {
       if (mounted) {
         setState(() {

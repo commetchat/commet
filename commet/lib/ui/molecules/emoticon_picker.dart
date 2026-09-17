@@ -69,19 +69,27 @@ class _EmoticonPickerState extends State<EmoticonPicker>
   List<FavoriteGif> favorites = [];
   StreamSubscription? sub;
 
+  int get tabCount =>
+      1 +
+      (widget.stickers.isNotEmpty ? 1 : 0) +
+      (widget.allowGifSearch && widget.gifComponent != null ? 1 : 0);
+
+  @override
+  void didUpdateWidget(EmoticonPicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Gif search can be enabled while the picker is open: the controller
+    // has to match the number of tabs or TabBarView asserts
+    if (tabCount != controller.length) {
+      var index = controller.index.clamp(0, tabCount - 1);
+      controller.dispose();
+      controller =
+          TabController(length: tabCount, vsync: this, initialIndex: index);
+    }
+  }
+
   @override
   void initState() {
-    int tabs = 1;
-
-    if (widget.stickers.isNotEmpty) {
-      tabs += 1;
-    }
-
-    if (widget.allowGifSearch) {
-      tabs += 1;
-    }
-
-    controller = TabController(length: tabs, vsync: this);
+    controller = TabController(length: tabCount, vsync: this);
 
     favorites = widget.gifComponent?.favorites ?? [];
 
@@ -97,6 +105,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
   @override
   void dispose() {
     sub?.cancel();
+    controller.dispose();
     super.dispose();
   }
 
