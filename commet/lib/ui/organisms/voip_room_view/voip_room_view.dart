@@ -235,11 +235,19 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       Log.onError(e, s);
       if (withoutEntranceSound) EntranceSoundGate.instance.cancelSkip(roomId);
 
-      AdaptiveDialog.showError(context, e, s);
-
+      if (!mounted) return;
       setState(() {
         joining = false;
       });
+
+      final retry = await AdaptiveDialog.confirmation(context,
+          title: "Could not join the call",
+          prompt: e.toString(),
+          confirmationText: "Retry",
+          cancelText: "Close");
+      if (retry == true && mounted && !joining) {
+        joinRoomCall(withoutEntranceSound: withoutEntranceSound);
+      }
     }
   }
 

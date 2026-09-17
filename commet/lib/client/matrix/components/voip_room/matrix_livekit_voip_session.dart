@@ -49,6 +49,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     addInitialStreams();
 
     final listener = livekitRoom.createListener();
+    _roomListener = listener;
     listener.on(onTrackPublished);
     listener.on(onTrackUnpublished);
     listener.on(onTrackSubscribed);
@@ -62,7 +63,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onParticipantDisconnected);
     listener.on(onDataReceived);
 
-    Timer.periodic(Duration(milliseconds: 200), (timer) {
+    _volumeTimer = Timer.periodic(Duration(milliseconds: 200), (timer) {
       if (state == VoipState.ended) timer.cancel();
       _onVolumeChanged.add(());
     });
@@ -86,6 +87,9 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   StreamSubscription? _settingsSub;
   bool _dspNoiseSuppression = false;
+
+  lk.EventsListener<lk.RoomEvent>? _roomListener;
+  Timer? _volumeTimer;
 
   /// The WebRTC / browser noise suppressor is a capture option fixed when
   /// the microphone track is created (off while our DSP suppresses, see
@@ -381,6 +385,7 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> hangUpCall() async {
+    if (state == VoipState.ended) return;
     Log.i("Hanging up call");
 
     // First, so no membership write lands after the clear below: leaving
@@ -391,22 +396,34 @@ class MatrixLivekitVoipSession implements VoipSession {
     _settingsSub?.cancel();
     _settingsSub = null;
 
-    await Future.wait([
-      clearRoomCallState(),
-      disconnectCall(),
-      stopHeartbeat(),
-    ]);
+    try {
+      await Future.wait([
+        clearRoomCallState(),
+        disconnectCall(),
+        stopHeartbeat(),
+      ]);
+    } finally {
+      // Even if one of the requests above failed: a session left half open
+      // kept the old LiveKit room alive, and rejoining could fail with
+      // "no internet connection" until the app restarted (issue #48).
+      for (final stream in streams.whereType<MatrixLivekitVoipStream>()) {
+        stream.dispose();
+      }
+      streams.clear();
 
-    for (final stream in streams.whereType<MatrixLivekitVoipStream>()) {
-      stream.dispose();
+      state = VoipState.ended;
+      _volumeTimer?.cancel();
+      _volumeTimer = null;
+      _stateChanged.add(());
+      _onConnectionChanged.add(state);
+
+      clientManager?.callManager.onSessionEnded(this);
+
+      await _roomListener?.dispose();
+      _roomListener = null;
+      await livekitRoom.dispose();
+      Log.i("Disposed livekit room");
     }
-    streams.clear();
-
-    state = VoipState.ended;
-    _stateChanged.add(());
-    _onConnectionChanged.add(state);
-
-    clientManager?.callManager.onSessionEnded(this);
   }
 
   bool _isDeafened = false;

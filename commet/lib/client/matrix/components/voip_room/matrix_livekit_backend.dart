@@ -168,14 +168,44 @@ class MatrixLivekitBackend {
                   (preferences.streamAudioBitrate.value * 1000).toInt()),
         ));
 
+    // The previous call's room is disposed when it hangs up.
+    livekitRoom = null;
     final lkRoom = lk.Room(roomOptions: roomOptions);
 
-    await lkRoom.prepareConnection(sfuUrl, jwt);
-    final stateKey =
-        "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+    _wroteMembership = false;
+    try {
+      return await _connect(lkRoom, sfuUrl, jwt, fociUrl, provider);
+    } catch (_) {
+      // Don't leave a membership for a call we never got into, nor a room
+      // that keeps its connectivity listener and timers alive (issue #48).
+      provider?.dispose();
+      await lkRoom.dispose();
+      if (_wroteMembership) {
+        try {
+          await room.matrixRoom.client.setRoomStateWithKey(
+              room.matrixRoom.id,
+              MatrixVoipRoomComponent.callMemberStateEvent,
+              _ownMembershipKey, {});
+        } catch (e, s) {
+          Log.onError(e, s, content: "Could not clear call membership");
+        }
+      }
+      rethrow;
+    }
+  }
 
+  String get _ownMembershipKey =>
+      "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+
+  bool _wroteMembership = false;
+
+  Future<VoipSession> _connect(lk.Room lkRoom, String sfuUrl, String jwt,
+      List<Uri> fociUrl, MatrixLivekitEncryptionKeyProvider? provider) async {
+    await lkRoom.prepareConnection(sfuUrl, jwt);
+
+    _wroteMembership = true;
     await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
-        MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {
+        MatrixVoipRoomComponent.callMemberStateEvent, _ownMembershipKey, {
       "application": "m.call",
       "call_id": "",
       "device_id": room.matrixRoom.client.deviceID!,
