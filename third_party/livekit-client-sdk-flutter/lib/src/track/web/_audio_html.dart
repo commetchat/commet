@@ -99,3 +99,11 @@ void setSinkId(String id, String deviceId) {
     }
   }
 }
+
+// COMMET: per-track playback volume. Audio elements only take 0..1.
+void setVolume(String id, double volume) {
+  final el = web.document.getElementById(audioPrefix + id);
+  if (el != null && el.instanceOfString('HTMLAudioElement')) {
+    (el as web.HTMLAudioElement).volume = volume.clamp(0.0, 1.0);
+  }
+}

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:commet/client/components/rtc_screen_share_annotation/rtc_screen_share_annotation_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/ui/organisms/call_view/call_grid_tiles.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:flutter/material.dart';
 
@@ -20,17 +23,31 @@ class VoipFullscreenStreamView extends StatefulWidget {
 class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
   RTCScreenShareAnnotationSession? annotationSession;
   RTCScreenShareAnnotationComponent? component;
+  StreamSubscription? sub;
+
   @override
   void initState() {
     component =
         widget.session.client.getComponent<RTCScreenShareAnnotationComponent>();
 
     annotationSession = component?.getExistingSession(widget.session);
+    // Screen share audio can be published after the fullscreen view opened.
+    sub = widget.session.onStateChanged.listen((_) => setState(() {}));
     super.initState();
   }
 
   @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final audioStream = callGridTiles(widget.session.streams)
+        .where((tile) => tile.stream == widget.stream)
+        .firstOrNull
+        ?.audioStream;
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -40,6 +57,7 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
               child: VoipStreamView(
                 widget.stream,
                 widget.session,
+                audioStream: audioStream,
                 canFullscreen: false,
               ),
               onHover: (event) {

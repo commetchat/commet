@@ -53,6 +53,10 @@ class RemoteAudioTrack extends RemoteTrack with AudioTrack, RemoteAudioManagemen
           events.emit(AudioPlaybackFailed(track: this));
         }
       }
+      // COMMET: the audio element is created above, keep the chosen volume.
+      if (_volume != null) {
+        audio.setVolume(getCid(), _volume!);
+      }
     }
     return didStart;
   }
@@ -70,6 +74,15 @@ class RemoteAudioTrack extends RemoteTrack with AudioTrack, RemoteAudioManagemen
   void setSinkId(String deviceId) {
     audio.setSinkId(getCid(), deviceId);
     _deviceId = deviceId;
+  }
+
+  // COMMET: playback volume of the web audio element (0..1). Native playback
+  // volume goes through Helper.setVolume instead.
+  double? _volume;
+
+  void setVolume(double volume) {
+    audio.setVolume(getCid(), volume);
+    _volume = volume;
   }
 
   AudioReceiverStats? prevStats;
