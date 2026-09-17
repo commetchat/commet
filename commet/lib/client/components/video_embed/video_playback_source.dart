@@ -20,8 +20,7 @@ final class NativeVideoSource extends VideoPlaybackSource {
   final VideoCapabilities? customCapabilities;
 
   @override
-  VideoCapabilities get capabilities =>
-      customCapabilities ?? VideoCapabilities.native;
+  VideoCapabilities get capabilities => customCapabilities ?? VideoCapabilities.native;
 }
 
 enum OfficialVideoProvider {

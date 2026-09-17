@@ -13,7 +13,8 @@ abstract class SoundboardCatalog {
 /// In-memory catalog for tests / previews.
 class InMemorySoundboardCatalog implements SoundboardCatalog {
   final List<SoundboardSound> _sounds;
-  final StreamController<void> _controller = StreamController<void>.broadcast();
+  final StreamController<void> _controller =
+      StreamController<void>.broadcast();
 
   InMemorySoundboardCatalog([List<SoundboardSound>? initial])
       : _sounds = List.of(initial ?? []);

@@ -122,8 +122,7 @@ class FakeVoipStream implements VoipStream {
 
 void main() {
   group("VoipSession Deafen Contract", () {
-    test("Deafening mutes microphone and silences all incoming audio streams",
-        () async {
+    test("Deafening mutes microphone and silences all incoming audio streams", () async {
       final session = FakeVoipSession();
       final stream1 = FakeVoipStream(
         direction: VoipStreamDirection.incoming,
@@ -146,8 +145,7 @@ void main() {
       expect(stream1.userConfiguredVolume, equals(0.8));
     });
 
-    test("Undeafening restores microphone and incoming stream volume",
-        () async {
+    test("Undeafening restores microphone and incoming stream volume", () async {
       final session = FakeVoipSession();
       final stream1 = FakeVoipStream(
         direction: VoipStreamDirection.incoming,
@@ -168,8 +166,7 @@ void main() {
       expect(stream1.currentPlayingVolume, equals(0.75));
     });
 
-    test("Incoming audio streams added while deafened are immediately silenced",
-        () async {
+    test("Incoming audio streams added while deafened are immediately silenced", () async {
       final session = FakeVoipSession();
       await session.setDeafened(true);
 
@@ -188,9 +185,7 @@ void main() {
       expect(stream2.currentPlayingVolume, equals(1.0));
     });
 
-    test(
-        "Unmuting microphone while deafened automatically cancels deafen (Discord rule)",
-        () async {
+    test("Unmuting microphone while deafened automatically cancels deafen (Discord rule)", () async {
       final session = FakeVoipSession();
       final stream1 = FakeVoipStream(
         direction: VoipStreamDirection.incoming,
@@ -239,9 +234,7 @@ void main() {
       expect(callManager.isDeafened, isFalse);
     });
 
-    test(
-        "CallManager unmute() and toggleMute() un-deafens when deafened (Discord rule)",
-        () {
+    test("CallManager unmute() and toggleMute() un-deafens when deafened (Discord rule)", () {
       final clientManager = ClientManager();
       final callManager = CallManager(clientManager);
       final session = FakeVoipSession();
@@ -262,8 +255,7 @@ void main() {
       expect(callManager.isDeafened, isTrue);
       expect(session.isMicrophoneMuted, isTrue);
 
-      callManager
-          .toggleMute(); // Estava mutado por deafen -> deve desmutar e des-ensurdecer
+      callManager.toggleMute(); // Estava mutado por deafen -> deve desmutar e des-ensurdecer
       expect(callManager.isDeafened, isFalse);
       expect(session.isDeafened, isFalse);
       expect(session.isMicrophoneMuted, isFalse);

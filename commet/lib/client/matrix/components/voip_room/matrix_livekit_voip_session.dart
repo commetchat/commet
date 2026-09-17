@@ -172,9 +172,6 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
         // Before the muted check: a muted camera still has to be subscribed
         // for when it unmutes.
         _syncSubscription(stream.value);
-        if (stream.value.source == lk.TrackSource.screenShareVideo) {
-          _watchList.onScreenSharePublished(entry.value.identity);
-        }
 
         if (_hiddenWhileMuted(stream.value)) continue;
 

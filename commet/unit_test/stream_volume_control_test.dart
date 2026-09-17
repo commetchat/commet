@@ -42,6 +42,7 @@ Future<void> pumpControl(WidgetTester tester, VoipStream stream) {
 void main() {
   setUp(() async {
     // The volume to unmute to is saved, so every control agrees on it.
+    // ignore: invalid_use_of_visible_for_testing_member
     SharedPreferences.setMockInitialValues({});
     await preferences.init();
   });

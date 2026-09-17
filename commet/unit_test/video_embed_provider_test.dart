@@ -54,8 +54,7 @@ void main() {
 
     test('canHandle detects standard YouTube URLs', () {
       expect(
-        provider.canHandle(
-            Uri.parse('https://www.youtube.com/watch?v=dQw4w9WgXcQ')),
+        provider.canHandle(Uri.parse('https://www.youtube.com/watch?v=dQw4w9WgXcQ')),
         isTrue,
       );
       expect(
@@ -63,22 +62,19 @@ void main() {
         isTrue,
       );
       expect(
-        provider.canHandle(
-            Uri.parse('https://m.youtube.com/watch?v=dQw4w9WgXcQ&t=42s')),
+        provider.canHandle(Uri.parse('https://m.youtube.com/watch?v=dQw4w9WgXcQ&t=42s')),
         isTrue,
       );
     });
 
     test('canHandle detects YouTube Shorts URLs with parameters', () {
       expect(
-        provider
-            .canHandle(Uri.parse('https://www.youtube.com/shorts/3f5e0jP8hK8')),
+        provider.canHandle(Uri.parse('https://www.youtube.com/shorts/3f5e0jP8hK8')),
         isTrue,
       );
       expect(
         provider.canHandle(
-          Uri.parse(
-              'https://youtube.com/shorts/3f5e0jP8hK8?feature=share&si=test'),
+          Uri.parse('https://youtube.com/shorts/3f5e0jP8hK8?feature=share&si=test'),
         ),
         isTrue,
       );
@@ -86,22 +82,15 @@ void main() {
 
     test('canHandle rejects malicious / spoofed domains', () {
       expect(
-        provider.canHandle(
-            Uri.parse('https://youtube.com.attacker.com/watch?v=123')),
+        provider.canHandle(Uri.parse('https://youtube.com.attacker.com/watch?v=123')),
         isFalse,
       );
-      expect(
-          provider.canHandle(Uri.parse('https://notyoutube.com/watch?v=123')),
-          isFalse);
-      expect(
-          provider.canHandle(Uri.parse('https://example.com/video')), isFalse);
+      expect(provider.canHandle(Uri.parse('https://notyoutube.com/watch?v=123')), isFalse);
+      expect(provider.canHandle(Uri.parse('https://example.com/video')), isFalse);
     });
 
-    test(
-        'extracts video ID and distinguishes Shorts (9:16) from normal videos (16:9)',
-        () {
-      final regularUri =
-          Uri.parse('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s');
+    test('extracts video ID and distinguishes Shorts (9:16) from normal videos (16:9)', () {
+      final regularUri = Uri.parse('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s');
       expect(provider.extractVideoId(regularUri), 'dQw4w9WgXcQ');
       expect(provider.isShorts(regularUri), isFalse);
 
@@ -110,9 +99,7 @@ void main() {
       expect(provider.isShorts(shortsUri), isTrue);
     });
 
-    test(
-        'resolves Shorts using official privacy-enhanced embed (youtube-nocookie.com)',
-        () async {
+    test('resolves Shorts using official privacy-enhanced embed (youtube-nocookie.com)', () async {
       final mockClient = MockClient((_) async {
         return http.Response(
           '{"title":"Awesome Short","author_name":"Creator",'
@@ -147,37 +134,24 @@ void main() {
     final provider = TwitterProvider();
 
     test('canHandle detects Twitter and X status URLs', () {
-      expect(
-          provider.canHandle(Uri.parse('https://twitter.com/jack/status/20')),
-          isTrue);
-      expect(provider.canHandle(Uri.parse('https://x.com/jack/status/20?s=20')),
-          isTrue);
-      expect(
-          provider.canHandle(Uri.parse(
-              'https://fxtwitter.com/crubielson/status/2099241162825470403')),
-          isTrue);
-      expect(provider.canHandle(Uri.parse('https://fixupx.com/jack/status/20')),
-          isTrue);
-      expect(
-          provider.canHandle(Uri.parse('https://vxtwitter.com/jack/status/20')),
-          isTrue);
-      expect(
-          provider.canHandle(Uri.parse('https://fxtwitter.com/jack')), isFalse);
-    });
-
-    test('canHandle rejects non-status Twitter/X URLs and attacker domains',
-        () {
-      expect(provider.canHandle(Uri.parse('https://x.com/home')), isFalse);
-      expect(provider.canHandle(Uri.parse('https://twitter.com/settings')),
-          isFalse);
+      expect(provider.canHandle(Uri.parse('https://twitter.com/jack/status/20')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://x.com/jack/status/20?s=20')), isTrue);
       expect(
           provider.canHandle(
-              Uri.parse('https://x.com.attacker.org/jack/status/20')),
-          isFalse);
+              Uri.parse('https://fxtwitter.com/crubielson/status/2099241162825470403')),
+          isTrue);
+      expect(provider.canHandle(Uri.parse('https://fixupx.com/jack/status/20')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://vxtwitter.com/jack/status/20')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://fxtwitter.com/jack')), isFalse);
     });
 
-    test('differentiates tweet with video from tweet with only text/image',
-        () async {
+    test('canHandle rejects non-status Twitter/X URLs and attacker domains', () {
+      expect(provider.canHandle(Uri.parse('https://x.com/home')), isFalse);
+      expect(provider.canHandle(Uri.parse('https://twitter.com/settings')), isFalse);
+      expect(provider.canHandle(Uri.parse('https://x.com.attacker.org/jack/status/20')), isFalse);
+    });
+
+    test('differentiates tweet with video from tweet with only text/image', () async {
       // Mock tweet with ONLY images (no video)
       final textOnlyClient = MockClient((_) async {
         return http.Response(
@@ -211,8 +185,7 @@ void main() {
       );
 
       expect(videoResult, isNotNull);
-      expect(videoResult!.streamUrl,
-          Uri.parse('https://video.twimg.com/ext_tw_video/123.mp4'));
+      expect(videoResult!.streamUrl, Uri.parse('https://video.twimg.com/ext_tw_video/123.mp4'));
       expect(videoResult.isShortForm, isTrue); // 1080/1920 < 0.85 => vertical
       expect(videoResult.playbackSource, isA<NativeVideoSource>());
       expect(videoResult.effectiveCapabilities.supportsVolume, isTrue);
@@ -224,32 +197,18 @@ void main() {
     final provider = InstagramProvider();
 
     test('canHandle detects Instagram reels and posts', () {
-      expect(
-          provider.canHandle(
-              Uri.parse('https://www.instagram.com/reel/C3bV8Uyrk8q/')),
-          isTrue);
-      expect(
-          provider.canHandle(Uri.parse('https://instagram.com/p/C3bV8Uyrk8q/')),
-          isTrue);
-      expect(
-          provider
-              .canHandle(Uri.parse('https://instagram.com/tv/C3bV8Uyrk8q/')),
-          isTrue);
+      expect(provider.canHandle(Uri.parse('https://www.instagram.com/reel/C3bV8Uyrk8q/')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://instagram.com/p/C3bV8Uyrk8q/')), isTrue);
+      expect(provider.canHandle(Uri.parse('https://instagram.com/tv/C3bV8Uyrk8q/')), isTrue);
     });
 
     test('canHandle rejects profile and general pages', () {
-      expect(
-          provider.canHandle(Uri.parse('https://www.instagram.com/explore/')),
-          isFalse);
-      expect(
-          provider
-              .canHandle(Uri.parse('https://instagram.com/accounts/login/')),
-          isFalse);
+      expect(provider.canHandle(Uri.parse('https://www.instagram.com/explore/')), isFalse);
+      expect(provider.canHandle(Uri.parse('https://instagram.com/accounts/login/')), isFalse);
     });
 
     test('extracts shortcode and marks Reel as 9:16 aspect ratio', () async {
-      final reelUri =
-          Uri.parse('https://www.instagram.com/reel/C3bV8Uyrk8q/?igsh=abc==');
+      final reelUri = Uri.parse('https://www.instagram.com/reel/C3bV8Uyrk8q/?igsh=abc==');
       final result = await provider.resolve(reelUri, fetchPlayback: true);
 
       expect(result, isNotNull);
@@ -278,10 +237,8 @@ void main() {
     });
 
     test('rejects non-video extensions', () {
-      expect(provider.canHandle(Uri.parse('https://example.com/photo.png')),
-          isFalse);
-      expect(provider.canHandle(Uri.parse('https://example.com/index.html')),
-          isFalse);
+      expect(provider.canHandle(Uri.parse('https://example.com/photo.png')), isFalse);
+      expect(provider.canHandle(Uri.parse('https://example.com/index.html')), isFalse);
     });
   });
 
@@ -290,12 +247,9 @@ void main() {
 
     test('delegates canHandle across providers', () {
       expect(composite.canHandle(Uri.parse('https://youtu.be/123')), isTrue);
-      expect(composite.canHandle(Uri.parse('https://x.com/user/status/456')),
-          isTrue);
-      expect(composite.canHandle(Uri.parse('https://instagram.com/reel/789/')),
-          isTrue);
-      expect(composite.canHandle(Uri.parse('https://example.com/video.webm')),
-          isTrue);
+      expect(composite.canHandle(Uri.parse('https://x.com/user/status/456')), isTrue);
+      expect(composite.canHandle(Uri.parse('https://instagram.com/reel/789/')), isTrue);
+      expect(composite.canHandle(Uri.parse('https://example.com/video.webm')), isTrue);
       expect(composite.canHandle(Uri.parse('https://github.com')), isFalse);
     });
   });
