@@ -1069,13 +1069,18 @@ class Engine extends Disposable with EventsEmittable<EngineEvent> {
 
       if (await signalClient.networkIsAvailable() == false) {
         logger.fine('no internet connection, waiting...');
-        await signalClient.events.waitFor<SignalConnectivityChangedEvent>(
-          duration: connectOptions.timeouts.connection * 10,
-          filter: (event) => !event.state.contains(ConnectivityResult.none),
-          onTimeout: () => throw ConnectException(
-              'attemptReconnect: Timed out waiting for SignalConnectivityChangedEvent',
-              reason: ConnectionErrorReason.Timeout),
-        );
+        // COMMET: connectivity_plus can report `none` wrongly on desktop and
+        // then never sends a change event. Wait a while for the network to
+        // come back, then try anyway: a failed attempt goes through the
+        // normal retry policy.
+        try {
+          await signalClient.events.waitFor<SignalConnectivityChangedEvent>(
+            duration: connectOptions.timeouts.connection,
+            filter: (event) => !event.state.contains(ConnectivityResult.none),
+          );
+        } catch (_) {
+          logger.warning('attemptReconnect: connectivity still reported as none, reconnecting anyway');
+        }
       }
 
       if (fullReconnectOnNext) {
