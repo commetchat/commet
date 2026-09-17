@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/voip_room/video_stall_detector.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,6 +46,59 @@ class MatrixLivekitVoipStream implements VoipStream {
       _setTrackVolume(volume, t.mediaStreamTrack);
       _startVisualizer(t);
     }
+    if (publication is RemoteTrackPublication &&
+        publication.kind == TrackType.VIDEO) {
+      _stallTimer = Timer.periodic(_stallCheckInterval, (_) => _checkVideo());
+    }
+  }
+
+  static const Duration _stallCheckInterval = Duration(seconds: 2);
+
+  /// Watches remote video for a track that never shows a frame. Runs for the
+  /// stream's whole life, so it also notices a resubscribe that went nowhere.
+  Timer? _stallTimer;
+  final VideoStallDetector _stallDetector = VideoStallDetector();
+  bool _checkingVideo = false;
+
+  Future<void> _checkVideo() async {
+    final pub = publication;
+    if (_checkingVideo || pub is! RemoteTrackPublication) return;
+    final track = pub.track;
+
+    // Adaptive stream pauses video nobody looks at, so only a track with a
+    // renderer on screen is expected to decode frames.
+    final watching = track is RemoteVideoTrack &&
+        !pub.muted &&
+        // ignore: invalid_use_of_internal_member
+        track.viewKeys.isNotEmpty;
+
+    _checkingVideo = true;
+    try {
+      num? framesDecoded;
+      if (watching) {
+        framesDecoded = (await track.getReceiverStats())?.framesDecoded;
+      }
+      // The track changed or the stream went away while stats were read.
+      if (_stallTimer == null || !identical(pub.track, track)) return;
+
+      switch (_stallDetector.sample(
+          watching: watching,
+          framesDecoded: framesDecoded,
+          now: DateTime.now())) {
+        case VideoStallAction.none:
+          break;
+        case VideoStallAction.firstFrame:
+          onStreamUpdatedEvent();
+        case VideoStallAction.recover:
+          Log.w("Remote video ${pub.sid} decoded no frames, subscribing again "
+              "(attempt ${_stallDetector.recoveries})");
+          await pub.resubscribe();
+      }
+    } catch (e, s) {
+      Log.onError(e, s, content: "Could not check remote video ${pub.sid}");
+    } finally {
+      _checkingVideo = false;
+    }
   }
 
   static AudioVisualizer _speakingVisualizer(AudioTrack track) =>
@@ -86,6 +140,9 @@ class MatrixLivekitVoipStream implements VoipStream {
   /// LiveKit attached the publication's track: listen to it and give it the
   /// playback volume chosen so far.
   void onTrackSubscribed() {
+    if (publication.track is VideoTrack) {
+      _stallDetector.trackChanged();
+    }
     if (publication.track case AudioTrack t) {
       _startVisualizer(t);
       _setTrackVolume(_playbackVolume ?? volume, t.mediaStreamTrack);
@@ -97,7 +154,11 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   /// Releases what the stream holds. The session calls this once the stream
   /// has left its stream list.
-  Future<void> dispose() => _stopVisualizer();
+  Future<void> dispose() {
+    _stallTimer?.cancel();
+    _stallTimer = null;
+    return _stopVisualizer();
+  }
 
   // Loudest visualizer band (0..1, dB scaled so -100 dB is 0) above which a
   // frame counts as audio. Quiet speech (-50 dBFS) lands near 0.47; a mic
@@ -166,8 +227,10 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   Widget? buildVideoRenderer(BoxFit fit, Key key) {
-    if (publication.track is VideoTrack) {
-      return VideoTrackRenderer(publication.track as VideoTrack);
+    if (publication.track case VideoTrack track) {
+      // Keyed by the track so a resubscribed track gets a fresh renderer
+      // instead of one still bound to the old media stream.
+      return VideoTrackRenderer(track, key: ObjectKey(track));
     }
 
     return null;

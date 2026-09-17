@@ -259,7 +259,15 @@ class _CallViewState extends State<CallView> {
   }
 
   List<Widget> generateLayout() {
-    final tiles = callGridTiles(widget.currentSession.streams);
+    final streams = widget.currentSession.streams;
+    // The session can replace a stream object for the same publication (a
+    // video muted and unmuted): keep the focused one pointing at the live
+    // object, or drop it once the stream is gone.
+    final focusedId = mainStream?.streamId;
+    mainStream = focusedId == null
+        ? null
+        : streams.where((s) => s.streamId == focusedId).firstOrNull;
+    final tiles = callGridTiles(streams);
     return [
       if (mainStream != null)
         Flexible(

@@ -58,6 +58,20 @@ class _VoipStreamViewState extends State<VoipStreamView> {
   }
 
   @override
+  void didUpdateWidget(covariant VoipStreamView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Tiles are keyed by stream id, so a stream recreated for the same
+    // publication lands on this state: follow the new object's changes.
+    if (!identical(oldWidget.stream, widget.stream)) {
+      subs.first.cancel();
+      subs.first = widget.stream.onStreamChanged.listen(onStreamChanged);
+      user = widget.session.client
+          .getRoom(widget.session.roomId)!
+          .getMemberOrFallback(widget.stream.streamUserId);
+    }
+  }
+
+  @override
   void dispose() {
     for (var sub in subs) sub.cancel();
     super.dispose();
