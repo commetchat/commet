@@ -115,89 +115,89 @@ class _VoipStreamViewState extends State<VoipStreamView> {
         onEnter: (_) => setState(() => hovering = true),
         onExit: (_) => setState(() => hovering = false),
         child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          AdaptiveContextMenu(
-            items: streamContextMenuItems(widget.stream, user,
-                audioStream: widget.audioStream),
-            child: Container(
-                clipBehavior: Clip.antiAlias,
-                foregroundDecoration: widget.borderColor != null
-                    ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: widget.borderColor!,
-                            width: 2,
-                            strokeAlign: BorderSide.strokeAlignCenter))
-                    : null,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                child: buildDefault()),
-          ),
-          if (preferences.developerMode.value)
-            Align(
-              alignment: AlignmentGeometry.topLeft,
+          alignment: Alignment.topRight,
+          children: [
+            AdaptiveContextMenu(
+              items: streamContextMenuItems(widget.stream, user,
+                  audioStream: widget.audioStream),
               child: Container(
-                decoration: BoxDecoration(
-                  color: ColorScheme.of(context).surfaceContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow(widget.stream.stats),
+                  clipBehavior: Clip.antiAlias,
+                  foregroundDecoration: widget.borderColor != null
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: widget.borderColor!,
+                              width: 2,
+                              strokeAlign: BorderSide.strokeAlignCenter))
+                      : null,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                  child: buildDefault()),
+            ),
+            if (preferences.developerMode.value)
+              Align(
+                alignment: AlignmentGeometry.topLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorScheme.of(context).surfaceContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: tiamat.Text.labelLow(widget.stream.stats),
+                  ),
                 ),
               ),
-            ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.stream.requiresWatching && widget.stream.isWatching)
-                Tooltip(
-                  message: labelStopWatchingStream,
-                  child: SizedBox(
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.stream.requiresWatching && widget.stream.isWatching)
+                  Tooltip(
+                    message: labelStopWatchingStream,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: tiamat.IconButton(
+                        key: const ValueKey("voipStreamView_stopWatching"),
+                        icon: Icons.visibility_off,
+                        size: 20,
+                        onPressed: widget.stream.stopWatching,
+                      ),
+                    ),
+                  ),
+                if (widget.canFullscreen &&
+                    widget.stream.isWatching &&
+                    (widget.stream.type == VoipStreamType.video ||
+                        widget.stream.type == VoipStreamType.screenshare))
+                  SizedBox(
                     width: 40,
                     height: 40,
                     child: tiamat.IconButton(
-                      key: const ValueKey("voipStreamView_stopWatching"),
-                      icon: Icons.visibility_off,
+                      icon: Icons.fullscreen,
                       size: 20,
-                      onPressed: widget.stream.stopWatching,
+                      onPressed: widget.onFullscreen,
+                    ),
+                  ),
+              ],
+            ),
+            if (showVolumeControl)
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: IgnorePointer(
+                  ignoring: !(hovering || MediaQuery.of(context).mobile),
+                  child: AnimatedOpacity(
+                    opacity: hovering || MediaQuery.of(context).mobile ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: StreamVolumeControl(audioStream!,
+                          key: ValueKey(audioStream.streamId)),
                     ),
                   ),
                 ),
-              if (widget.canFullscreen &&
-                  widget.stream.isWatching &&
-                  (widget.stream.type == VoipStreamType.video ||
-                      widget.stream.type == VoipStreamType.screenshare))
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: tiamat.IconButton(
-                    icon: Icons.fullscreen,
-                    size: 20,
-                    onPressed: widget.onFullscreen,
-                  ),
-                ),
-            ],
-          ),
-          if (showVolumeControl)
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: IgnorePointer(
-                ignoring: !(hovering || MediaQuery.of(context).mobile),
-                child: AnimatedOpacity(
-                  opacity: hovering || MediaQuery.of(context).mobile ? 1 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: StreamVolumeControl(audioStream!,
-                        key: ValueKey(audioStream.streamId)),
-                  ),
-                ),
               ),
-            ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
