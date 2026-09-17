@@ -7,6 +7,7 @@ import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/app_refresh/app_refresh.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
@@ -135,9 +136,22 @@ class LinuxNotifier implements Notifier {
       flutterLocalNotificationsPlugin = null;
     }
 
-    clientManager!.directMessages.highlightedRoomsList.onListUpdated
-        .listen((_) => updateBadgeCount());
-    clientManager!.onSpaceUpdated.stream.listen((_) => updateBadgeCount());
+    _watchBadgeCount();
+    AppRefresh.onRefreshed.stream.listen((_) => _watchBadgeCount());
+  }
+
+  List<StreamSubscription> _badgeSubscriptions = [];
+
+  void _watchBadgeCount() {
+    for (final sub in _badgeSubscriptions) {
+      sub.cancel();
+    }
+
+    _badgeSubscriptions = [
+      clientManager!.directMessages.highlightedRoomsList.onListUpdated
+          .listen((_) => updateBadgeCount()),
+      clientManager!.onSpaceUpdated.stream.listen((_) => updateBadgeCount()),
+    ];
 
     updateBadgeCount();
   }
