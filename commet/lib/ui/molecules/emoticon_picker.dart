@@ -178,7 +178,9 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                         ),
                         if (widget.stickers.isNotEmpty)
                           Tab(text: labelEmojiPickerStickerTab),
-                        if (widget.allowGifSearch)
+                        // Same condition as the tab view and the controller
+                        if (widget.allowGifSearch &&
+                            widget.gifComponent != null)
                           Tab(text: labelEmojiPickerGifTab)
                       ]),
                 ),

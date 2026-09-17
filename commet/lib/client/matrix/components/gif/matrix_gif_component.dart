@@ -329,13 +329,12 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
             : matrix.EventTypes.Sticker,
         inReplyTo: replyingTo);
 
-    if (id != null) {
-      var event = await matrixRoom.getEventById(id);
-      return room.convertEvent(event!,
-          timeline: (room.timeline as MatrixTimeline).matrixTimeline);
-    }
+    // Throw so the picker can tell the user, like sendGif
+    if (id == null) throw Exception("Gif was not sent");
 
-    return null;
+    var event = await matrixRoom.getEventById(id);
+    return room.convertEvent(event!,
+        timeline: (room.timeline as MatrixTimeline).matrixTimeline);
   }
 
   @override

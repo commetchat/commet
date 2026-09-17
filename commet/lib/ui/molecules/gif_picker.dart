@@ -107,6 +107,9 @@ class _GifFeed {
 class _GifPickerState extends State<GifPicker> {
   bool sending = false;
 
+  // Shown inside the picker: the chat has no Scaffold for a snack bar
+  bool sendFailed = false;
+
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   Debouncer debouce = Debouncer(delay: const Duration(milliseconds: 500));
@@ -187,6 +190,7 @@ class _GifPickerState extends State<GifPicker> {
       }
     });
 
+    var failed = false;
     try {
       var pos = more ? feed.next : null;
       var page = feed.query.isEmpty
@@ -207,8 +211,12 @@ class _GifPickerState extends State<GifPicker> {
       feed.next = added == 0 ? null : page.next;
     } catch (e, s) {
       Log.onError(e, s, content: "Failed to load gifs");
-      if (!more) feed.error = e;
-      feed.next = null;
+      failed = true;
+      // A failed next page keeps its cursor: scrolling again retries it
+      if (!more) {
+        feed.error = e;
+        feed.next = null;
+      }
     }
 
     feed.loading = false;
@@ -216,6 +224,9 @@ class _GifPickerState extends State<GifPicker> {
 
     if (!mounted) return;
     setState(() {});
+
+    // Not after a failure, that would retry in a loop while offline
+    if (failed) return;
 
     // Keep loading if the first page doesn't fill the view
     WidgetsBinding.instance.addPostFrameCallback((_) => maybeLoadMore());
@@ -273,10 +284,34 @@ class _GifPickerState extends State<GifPicker> {
 
   Widget buildContent(BuildContext context) {
     if (BuildConfig.MOBILE) {
-      return Column(children: [buildSearchBar(), buildResults(context)]);
+      return Column(children: [
+        buildSearchBar(),
+        if (sendFailed) buildSendError(),
+        buildResults(context)
+      ]);
     } else {
-      return Column(children: [buildResults(context), buildSearchBar()]);
+      return Column(children: [
+        buildResults(context),
+        if (sendFailed) buildSendError(),
+        buildSearchBar()
+      ]);
     }
+  }
+
+  Widget buildSendError() {
+    return Padding(
+      key: const ValueKey("gifPicker_sendError"),
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+      child: Row(
+        spacing: 8,
+        children: [
+          Icon(Icons.error_outline,
+              size: 16, color: ColorScheme.of(context).error),
+          Expanded(
+              child: tiamat.Text.labelLow(GifPicker.labelGifPickerSendFailed)),
+        ],
+      ),
+    );
   }
 
   Widget buildSearchBar() {
@@ -490,16 +525,14 @@ class _GifPickerState extends State<GifPicker> {
 
     setState(() {
       sending = true;
+      sendFailed = false;
     });
 
     try {
       await doSend();
     } catch (e, s) {
       Log.onError(e, s, content: "Failed to send gif");
-      if (mounted) {
-        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-            SnackBar(content: Text(GifPicker.labelGifPickerSendFailed)));
-      }
+      sendFailed = true;
     } finally {
       if (mounted) {
         setState(() {

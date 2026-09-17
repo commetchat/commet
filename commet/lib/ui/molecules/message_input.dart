@@ -1143,6 +1143,8 @@ class MessageInputState extends State<MessageInput> {
 
     if (MediaQuery.of(context).desktop) {
       gifTooltipController.hideTooltip();
+      // Back to typing, as when the picker is dismissed by clicking outside
+      textFocus.requestFocus();
     } else {
       setState(() {
         clearKeyboardOverride(debounce: false);
