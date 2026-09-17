@@ -54,6 +54,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onTrackUnpublished);
     listener.on(onTrackSubscribed);
     listener.on(onTrackUnsubscribed);
+    listener.on(onTrackSubscriptionException);
     listener.on(onLocalTrackPublished);
     listener.on(onLocalTrackUnpublished);
     listener.on(onTrackStreamEvent);
@@ -167,8 +168,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
-    if (event.publication.track?.mediaType ==
-        RTCRtpMediaType.RTCRtpMediaTypeVideo) {
+    // By kind, not by track: an unsubscribed publication has no track.
+    if (event.publication.kind == lk.TrackType.VIDEO) {
       _removeStreamsWithSid(event.publication.sid);
     }
 
@@ -208,14 +209,19 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
-    final participant =
-        event.participant.identity.split(":").getRange(0, 2).join(":");
-
-    final s = MatrixLivekitVoipStream(event.publication, participant);
-    _applyStreamVolume(s);
-    s.deafened = _deafenedIdentities.contains(event.participant.identity);
-    streams.add(s);
+    _addRemoteStream(event.participant, event.publication);
     _stateChanged.add(());
+  }
+
+  MatrixLivekitVoipStream _addRemoteStream(
+      lk.RemoteParticipant participant, lk.RemoteTrackPublication publication) {
+    final userId = participant.identity.split(":").getRange(0, 2).join(":");
+
+    final s = MatrixLivekitVoipStream(publication, userId);
+    _applyStreamVolume(s);
+    s.deafened = _deafenedIdentities.contains(participant.identity);
+    streams.add(s);
+    return s;
   }
 
   Iterable<MatrixLivekitVoipStream> _streamsWithSid(String sid) => streams
@@ -234,17 +240,53 @@ class MatrixLivekitVoipSession implements VoipSession {
   /// LiveKit announces a remote publication (TrackPublishedEvent) before it
   /// subscribes to it, so the stream's track, and with it the playback
   /// volume and the speaking visualizer, only arrives here.
+  ///
+  /// A publication can also have lost its stream by then (a video muted and
+  /// unmuted while unsubscribed), so a subscribed track always gets one.
   void onTrackSubscribed(lk.TrackSubscribedEvent event) {
-    for (final stream in _streamsWithSid(event.publication.sid)) {
+    final existing = _streamsWithSid(event.publication.sid).toList();
+    if (existing.isEmpty && !event.publication.muted) {
+      _addRemoteStream(event.participant, event.publication);
+    }
+    for (final stream in existing) {
       stream.onTrackSubscribed();
       stream.onStreamUpdatedEvent();
     }
+    _subscriptionRetries.remove(event.publication.sid);
     _stateChanged.add(());
   }
 
   void onTrackUnsubscribed(lk.TrackUnsubscribedEvent event) {
     for (final stream in _streamsWithSid(event.publication.sid)) {
       stream.onTrackUnsubscribed();
+      stream.onStreamUpdatedEvent();
+    }
+    _stateChanged.add(());
+  }
+
+  static const int _maxSubscriptionRetries = 3;
+  final Map<String, int> _subscriptionRetries = {};
+
+  /// LiveKit gave up attaching a track (usually its metadata came too late).
+  /// Nothing else asks for it again, so the tile would stay empty.
+  Future<void> onTrackSubscriptionException(
+      lk.TrackSubscriptionExceptionEvent event) async {
+    Log.w("Track subscription failed: $event");
+    final sid = event.sid;
+    if (sid == null) return;
+
+    final retries = _subscriptionRetries[sid] ?? 0;
+    if (retries >= _maxSubscriptionRetries) return;
+    _subscriptionRetries[sid] = retries + 1;
+
+    await Future.delayed(Duration(seconds: 1 << retries));
+    if (state == VoipState.ended) return;
+    final publication = event.participant?.getTrackPublicationBySid(sid);
+    if (publication == null || publication.subscribed) return;
+    try {
+      await publication.resubscribe();
+    } catch (e, s) {
+      Log.onError(e, s, content: "Could not subscribe to track $sid again");
     }
   }
 
