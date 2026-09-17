@@ -9,6 +9,7 @@ import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
@@ -67,6 +68,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   @override
   void dispose() {
     videoController?.pause();
+    videoController?.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -205,62 +208,150 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     }
   }
 
-  Future<PendingFileAttachment> processFile() async {
-    late PendingFileAttachment processedFile;
-
-    if (Mime.imageTypes.contains(widget.attachment.mimeType)) {
-      processedFile = await processImage();
-    } else if (Mime.videoTypes.contains(widget.attachment.mimeType)) {
-      processedFile = await processVideo();
+  /// Helper to resolve MIME type using dynamic magic-number stream reads
+  static Future<String> _resolveMimeType(
+      PendingFileAttachment attachment) async {
+    var mimeType = attachment.mimeType?.toLowerCase();
+    if ((mimeType == null || mimeType.isEmpty) && attachment.path != null) {
+      try {
+        final file = File(attachment.path!);
+        if (await file.exists()) {
+          final stream = file.openRead(0, Mime.magicNumbersMaxLength);
+          final headerBytes = (await stream.first) as Uint8List;
+          mimeType = Mime.lookupType(
+            attachment.path!,
+            data: headerBytes,
+          )?.toLowerCase();
+        }
+      } catch (_) {
+        mimeType = Mime.lookupType(attachment.path!)?.toLowerCase();
+      }
     }
+    return mimeType ?? "";
+  }
 
-    return processedFile;
+  Future<PendingFileAttachment> processFile() async {
+    final mimeType = await _resolveMimeType(widget.attachment);
+
+    if (Mime.imageTypes.contains(mimeType)) return await processImage();
+    if (Mime.videoTypes.contains(mimeType)) return await processVideo();
+
+    return widget.attachment;
   }
 
   Future<PendingFileAttachment> processImage() async {
-    return await compute((PendingFileAttachment attachment) async {
-      var data = attachment.data ?? await File(attachment.path!).readAsBytes();
+    var mimeType = await _resolveMimeType(widget.attachment);
 
-      var decoder = img.findDecoderForData(data);
-      var image = decoder!.decode(data)!;
+    final bool supportsNativeCompress = !kIsWeb &&
+        (Platform.isAndroid ||
+            Platform.isIOS ||
+            Platform.isMacOS ||
+            Platform.isLinux);
 
-      image.exif.clear();
+    final format = switch (mimeType) {
+      'image/jpeg' || 'image/jpg' => CompressFormat.jpeg,
+      'image/png' => CompressFormat.png,
+      'image/webp' => CompressFormat.webp,
+      _ => null,
+    };
 
+    if (!supportsNativeCompress || format == null) {
+      return await compute(_fallbackProcessImage,
+          (attachment: widget.attachment, mimeType: mimeType));
+    }
+
+    try {
       Uint8List? processedData;
-      String? name = attachment.name;
-      String mime = attachment.mimeType!;
-      if (attachment.name != null) {
-        processedData = img.encodeNamedImage(attachment.name!, image);
+
+      if (widget.attachment.path != null) {
+        processedData = await FlutterImageCompress.compressWithFile(
+          widget.attachment.path!,
+          keepExif: false,
+          quality: 100,
+          format: format,
+        );
+      } else if (widget.attachment.data != null) {
+        processedData = await FlutterImageCompress.compressWithList(
+          widget.attachment.data!,
+          keepExif: false,
+          quality: 100,
+          format: format,
+        );
       }
 
-      if (processedData == null) {
-        processedData = img.encodePng(image);
-        mime = "image/png";
-        var fileName = attachment.name ?? "untitled.png";
-        var rawName = path.basenameWithoutExtension(fileName);
-        name = "$rawName.png";
-      }
-
-      return PendingFileAttachment(
-          name: name,
+      if (processedData != null) {
+        return PendingFileAttachment(
+          name: widget.attachment.name,
           data: processedData,
           size: processedData.lengthInBytes,
-          mimeType: mime);
-    }, widget.attachment);
+          mimeType: mimeType,
+        );
+      }
+    } catch (_) {}
+
+    // Fallback if native compression returned null or threw an error
+    return await compute(_fallbackProcessImage,
+        (attachment: widget.attachment, mimeType: mimeType));
+  }
+
+  /// Pure-Dart fallback isolate worker for Windows / Linux
+  static Future<PendingFileAttachment> _fallbackProcessImage(
+      ({PendingFileAttachment attachment, String mimeType}) args) async {
+    img.Image? image;
+
+    final attachment = args.attachment;
+    String mime = args.mimeType.isEmpty ? "image/png" : args.mimeType;
+
+    if (attachment.path != null) {
+      image = await img.decodeImageFile(attachment.path!);
+    } else if (attachment.data != null) {
+      image = img.decodeImage(attachment.data!);
+    }
+
+    if (image == null) throw Exception("Unable to decode image file.");
+
+    image.exif.clear();
+
+    Uint8List? processedData;
+    String? name = attachment.name;
+
+    if (attachment.name != null) {
+      processedData = img.encodeNamedImage(attachment.name!, image);
+    }
+
+    if (processedData == null) {
+      processedData = img.encodePng(image);
+      mime = "image/png";
+      var fileName = attachment.name ?? "untitled.png";
+      var rawName = path.basenameWithoutExtension(fileName);
+      name = "$rawName.png";
+    }
+
+    return PendingFileAttachment(
+      name: name,
+      data: processedData,
+      size: processedData.lengthInBytes,
+      mimeType: mime,
+    );
   }
 
   Future<PendingFileAttachment> processVideo() async {
-    var file = widget.attachment;
+    final file = widget.attachment;
 
-    if (videoController != null) {
+    if (videoController == null) return file;
+
+    try {
       file.thumbnailFile = await videoController!.screenshot();
       if (file.thumbnailFile != null) {
-        file.thumbnailMime = Mime.lookupType("", data: file.thumbnailFile);
+        file.thumbnailMime =
+            Mime.lookupType("", data: file.thumbnailFile) ?? "image/png";
       }
-    }
 
-    file.length = await videoController!.getLength();
-    file.dimensions = await videoController!.getSize();
+      file.length = await videoController!.getLength();
+      file.dimensions = await videoController!.getSize();
+    } catch (_) {
+      // Safe fallback: continue sending video even if thumbnail/metadata extraction fails
+    }
 
     return file;
   }
