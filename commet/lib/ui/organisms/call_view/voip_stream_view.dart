@@ -10,6 +10,7 @@ import 'package:commet/ui/atoms/speaking_indicator.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_emoji_overlay.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_overlay_registry.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -37,6 +38,20 @@ class VoipStreamView extends StatefulWidget {
 }
 
 class _VoipStreamViewState extends State<VoipStreamView> {
+  static String get labelWatchStream => Intl.message("Watch stream",
+      name: "labelWatchStream",
+      desc: "Button that starts playing someone's screen share");
+
+  static String get labelStopWatchingStream => Intl.message("Stop watching",
+      name: "labelStopWatchingStream",
+      desc: "Button that stops playing someone's screen share");
+
+  static String labelUserIsSharingScreen(String user) =>
+      Intl.message("$user is sharing their screen",
+          name: "labelUserIsSharingScreen",
+          args: [user],
+          desc: "Shown on a screen share tile you are not watching");
+
   late Member user;
 
   bool speaking = false;
@@ -120,18 +135,38 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                 ),
               ),
             ),
-          if (widget.canFullscreen &&
-                  widget.stream.type == VoipStreamType.video ||
-              widget.stream.type == VoipStreamType.screenshare)
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: tiamat.IconButton(
-                icon: Icons.fullscreen,
-                size: 20,
-                onPressed: widget.onFullscreen,
-              ),
-            )
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.stream.requiresWatching && widget.stream.isWatching)
+                Tooltip(
+                  message: labelStopWatchingStream,
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: tiamat.IconButton(
+                      key: const ValueKey("voipStreamView_stopWatching"),
+                      icon: Icons.visibility_off,
+                      size: 20,
+                      onPressed: widget.stream.stopWatching,
+                    ),
+                  ),
+                ),
+              if (widget.canFullscreen &&
+                  widget.stream.isWatching &&
+                  (widget.stream.type == VoipStreamType.video ||
+                      widget.stream.type == VoipStreamType.screenshare))
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: tiamat.IconButton(
+                    icon: Icons.fullscreen,
+                    size: 20,
+                    onPressed: widget.onFullscreen,
+                  ),
+                ),
+            ],
+          )
         ],
       ),
     );
@@ -168,6 +203,16 @@ class _VoipStreamViewState extends State<VoipStreamView> {
             );
           },
         ),
+        if (stream.requiresWatching)
+          stream.isWatching
+              ? tiamat.ContextMenuItem(
+                  text: labelStopWatchingStream,
+                  icon: Icons.visibility_off,
+                  onPressed: stream.stopWatching)
+              : tiamat.ContextMenuItem(
+                  text: labelWatchStream,
+                  icon: Icons.visibility,
+                  onPressed: stream.watch),
         tiamat.ContextMenuItem(
           text: "Volume",
           customBuilder: (context, onClicked, {closeMenu}) {
@@ -266,6 +311,7 @@ class _VoipStreamViewState extends State<VoipStreamView> {
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
+        if (!widget.stream.isWatching) return buildNotWatching();
         return Center(
           child: widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
               const CircularProgressIndicator(),
@@ -276,6 +322,39 @@ class _VoipStreamViewState extends State<VoipStreamView> {
         // share tile (see callGridTiles).
         return const SizedBox.shrink();
     }
+  }
+
+  /// A screen share the user hasn't opted in to: nothing is downloaded until
+  /// they click the button.
+  Widget buildNotWatching() {
+    return tiamat.Tile.low(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                tiamat.Avatar(
+                    radius: 24,
+                    image: user.avatar,
+                    placeholderColor: user.defaultColor,
+                    placeholderText: user.displayName),
+                tiamat.Text.labelLow(
+                  labelUserIsSharingScreen(user.displayName),
+                ),
+                tiamat.Button(
+                  key: const ValueKey("voipStreamView_watchStream"),
+                  text: labelWatchStream,
+                  onTap: widget.stream.watch,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void onStreamChanged(void event) {

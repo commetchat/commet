@@ -66,6 +66,17 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       name: "labelVoipUseSimulcastDescription",
       desc: "description for setting toggle to enable use of Simulcast");
 
+  String get labelVoipAutoWatchScreenShares => Intl.message(
+      "Automatically watch screen shares",
+      name: "labelVoipAutoWatchScreenShares",
+      desc: "label for setting toggle to play screen shares without opting in");
+
+  String get labelVoipAutoWatchScreenSharesDescription => Intl.message(
+      "Plays other people's screen shares and their audio as soon as they start, instead of waiting for you to click Watch stream. This uses more bandwidth.",
+      name: "labelVoipAutoWatchScreenSharesDescription",
+      desc:
+          "description for setting toggle to play screen shares without opting in");
+
   String get labelVoipStreamMaximumBitrate => Intl.message(
       "Stream Maximum Bitrate",
       name: "labelVoipStreamMaximumBitrate",
@@ -191,6 +202,10 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
                       preference: preferences.doSimulcast,
                       title: labelVoipUseSimulcast,
                       description: labelVoipUseSimulcastDescription),
+                  BooleanPreferenceToggle(
+                      preference: preferences.voipAutoWatchScreenShares,
+                      title: labelVoipAutoWatchScreenShares,
+                      description: labelVoipAutoWatchScreenSharesDescription),
                   DoublePreferenceSlider(
                     preference: preferences.streamBitrate,
                     min: 1,

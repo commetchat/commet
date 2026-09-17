@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/video_stall_detector.dart';
+import 'package:commet/client/matrix/components/voip_room/screen_share_watch_list.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +16,14 @@ typedef TrackVolumeSetter = Future<void> Function(
     double volume, MediaStreamTrack track);
 
 typedef AudioVisualizerFactory = AudioVisualizer Function(AudioTrack track);
+
+/// Who decides whether remote screen shares play: the session, which owns
+/// the subscriptions (issue #50).
+abstract class ScreenShareWatching {
+  bool isWatchingScreenShare(String participantIdentity);
+
+  Future<void> setWatchingScreenShare(String participantIdentity, bool watch);
+}
 
 class MatrixLivekitVoipStream implements VoipStream {
   TrackPublication publication;
@@ -29,6 +38,9 @@ class MatrixLivekitVoipStream implements VoipStream {
   /// it subscribes to it, so the track is often still null here.
   double? _playbackVolume;
 
+  /// Null for streams that always play (tests, local streams).
+  final ScreenShareWatching? watching;
+
   final TrackVolumeSetter _setTrackVolume;
   final AudioVisualizerFactory _createAudioVisualizer;
 
@@ -38,7 +50,8 @@ class MatrixLivekitVoipStream implements VoipStream {
   Stream<void> get onStreamChanged => _onChanged.stream;
 
   MatrixLivekitVoipStream(this.publication, this.userId,
-      {TrackVolumeSetter? setTrackVolume,
+      {this.watching,
+      TrackVolumeSetter? setTrackVolume,
       AudioVisualizerFactory? createAudioVisualizer})
       : _setTrackVolume = setTrackVolume ?? Helper.setVolume,
         _createAudioVisualizer = createAudioVisualizer ?? _speakingVisualizer {
@@ -309,6 +322,31 @@ class MatrixLivekitVoipStream implements VoipStream {
     if (publication.track case AudioTrack track) {
       _setTrackVolume(volume, track.mediaStreamTrack);
     }
+  }
+
+  @override
+  bool get requiresWatching =>
+      watching != null &&
+      direction == VoipStreamDirection.incoming &&
+      ScreenShareWatchList.isScreenShareSource(publication.source);
+
+  @override
+  bool get isWatching =>
+      !requiresWatching ||
+      watching!.isWatchingScreenShare(publication.participant.identity);
+
+  @override
+  Future<void> watch() async {
+    if (!requiresWatching) return;
+    await watching!
+        .setWatchingScreenShare(publication.participant.identity, true);
+  }
+
+  @override
+  Future<void> stopWatching() async {
+    if (!requiresWatching) return;
+    await watching!
+        .setWatchingScreenShare(publication.participant.identity, false);
   }
 
   @override
