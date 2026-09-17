@@ -19,6 +19,7 @@ import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/poll_creator.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
+import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
@@ -32,6 +33,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:pasteboard/pasteboard.dart';
@@ -147,9 +149,41 @@ class MessageInputState extends State<MessageInput> {
   FocusNode emojiSearchFocus = FocusNode();
   FocusNode stickerSearchFocus = FocusNode();
   FocusNode gifSearchFocus = FocusNode();
+  FocusNode gifPickerSearchFocus = FocusNode();
 
   late TextEditingController controller;
   late JustTheController emojiOverlayController = JustTheController();
+  JustTheController gifTooltipController = JustTheController();
+
+  // COMMET: on mobile the picker panel shows the gif picker instead of emoji
+  bool showGifPickerPanel = false;
+
+  bool get canSendGifs =>
+      widget.showGifSearch &&
+      widget.gifComponent != null &&
+      widget.sendGif != null;
+
+  String get tooltipGifButton => Intl.message("GIF",
+      desc: "Tooltip for the button that opens the gif picker",
+      name: "tooltipGifButton");
+
+  String get labelEnableGifSearchTitle => Intl.message("Enable GIF search?",
+      desc:
+          "Title of the prompt shown when opening the gif picker while gif search is disabled",
+      name: "labelEnableGifSearchTitle");
+
+  String labelEnableGifSearchPrompt(proxyUrl, serviceName) => Intl.message(
+      "GIF search is provided by $serviceName. Your searches will be sent through $proxyUrl. You can change this later in Settings.",
+      desc: "Explains what enabling gif search does",
+      args: [proxyUrl, serviceName],
+      name: "labelEnableGifSearchPrompt");
+
+  String get promptEnableGifSearch => Intl.message("Enable",
+      desc: "Confirms enabling gif search", name: "promptEnableGifSearch");
+
+  String get promptCancelEnableGifSearch => Intl.message("Cancel",
+      desc: "Cancels enabling gif search", name: "promptCancelEnableGifSearch");
+
   StreamSubscription? keyboardFocusSubscription;
   StreamSubscription? setInputTextSubscription;
   StreamSubscription? onScopePopInvoked;
@@ -344,13 +378,17 @@ class MessageInputState extends State<MessageInput> {
 
   bool get isInEmojiPicker => showEmotePicker && !textFocus.hasFocus;
 
-  Future<void> toggleEmojiOverlay() async {
+  Future<void> toggleEmojiOverlay({bool gif = false}) async {
     var keyboardOpen = await isKeyboardOpen();
     print("Keyboard open: $keyboardOpen");
 
     setState(() {
       if (MediaQuery.of(context).mobile) {
-        if (showEmotePicker && !keyboardOpen) {
+        if (showEmotePicker && !keyboardOpen && showGifPickerPanel != gif) {
+          // Panel is already open on the other picker, just switch
+          showGifPickerPanel = gif;
+          emotePickerActive = true;
+        } else if (showEmotePicker && !keyboardOpen) {
           // STUPID: since we use android api to dismiss keyboard,
           // requesting focus normally doesnt work, but if we do this
           // we can get the onscreen keyboard back
@@ -361,6 +399,7 @@ class MessageInputState extends State<MessageInput> {
           emotePickerActive = false;
           clearKeyboardOverride();
         } else {
+          showGifPickerPanel = gif;
           showEmotePicker = true;
           emotePickerActive = true;
           keyboardAdaptorController.keepCurrentSize?.call();
@@ -675,10 +714,16 @@ class MessageInputState extends State<MessageInput> {
             child: KeyboardAdaptor(
               enabled: widget.enableKeyboardAdapter,
               paddingContent: (MediaQuery.of(context).mobile && showEmotePicker)
-                  ? buildEmojiPicker()
+                  ? (showGifPickerPanel && canSendGifs
+                      ? buildGifPicker()
+                      : buildEmojiPicker())
                   : Container(),
               shouldPushContent: () {
                 if (emojiSearchFocus.hasFocus) {
+                  return true;
+                }
+
+                if (gifPickerSearchFocus.hasFocus) {
                   return true;
                 }
 
@@ -728,6 +773,8 @@ class MessageInputState extends State<MessageInput> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       textInput(context),
+                                      if (widget.enabled && canSendGifs)
+                                        toggleGifButton(),
                                       if (widget.enabled) toggleEmojiButton(),
                                     ],
                                   ),
@@ -980,7 +1027,7 @@ class MessageInputState extends State<MessageInput> {
             onTap: toggleEmojiOverlay,
             toggled: MediaQuery.of(context).mobile
                 ? (emojiTooltipController.value == TooltipStatus.isShowing ||
-                    (emotePickerActive == true))
+                    (emotePickerActive == true && !showGifPickerPanel))
                 : false));
 
     if (MediaQuery.of(context).mobile) return button;
@@ -1012,6 +1059,122 @@ class MessageInputState extends State<MessageInput> {
           ),
           child: button,
         ));
+  }
+
+  Widget toggleGifButton() {
+    Widget buildButton(bool toggled) => SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: Tooltip(
+            message: tooltipGifButton,
+            child: tiamat.IconButton(
+              icon: Icons.gif_box_outlined,
+              size: widget.size * widget.iconScale * 1.3,
+              iconColor: toggled ? Theme.of(context).colorScheme.primary : null,
+              onPressed: onGifButtonPressed,
+            ),
+          ),
+        );
+
+    if (MediaQuery.of(context).mobile) {
+      return buildButton(emotePickerActive && showGifPickerPanel);
+    }
+
+    return JustTheTooltip(
+      isModal: true,
+      preferredDirection: AxisDirection.up,
+      controller: gifTooltipController,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      onDismiss: () {
+        if (MediaQuery.of(context).desktop) {
+          textFocus.requestFocus();
+        }
+      },
+      content: ClipRRect(
+        borderRadius: BorderRadiusGeometry.circular(8),
+        child: Material(
+          child: Container(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            child: SizedBox(
+              height: 500,
+              width: 450,
+              child: buildGifPicker(),
+            ),
+          ),
+        ),
+      ),
+      child: ValueListenableBuilder(
+        valueListenable: gifTooltipController,
+        builder: (context, value, _) =>
+            buildButton(value == TooltipStatus.isShowing),
+      ),
+    );
+  }
+
+  Future<void> onGifButtonPressed() async {
+    if (MediaQuery.of(context).desktop &&
+        gifTooltipController.value == TooltipStatus.isShowing) {
+      closeGifPicker();
+      return;
+    }
+
+    if (!preferences.tenorGifSearchEnabled.value) {
+      var enable = await AdaptiveDialog.confirmation(context,
+          title: labelEnableGifSearchTitle,
+          prompt:
+              labelEnableGifSearchPrompt(preferences.proxyUrl.value, "KLIPY"),
+          confirmationText: promptEnableGifSearch,
+          cancelText: promptCancelEnableGifSearch);
+
+      if (enable != true || !mounted) return;
+      await preferences.tenorGifSearchEnabled.set(true);
+      if (!mounted) return;
+    }
+
+    if (MediaQuery.of(context).desktop) {
+      gifTooltipController.showTooltip(autoClose: false);
+    } else {
+      await toggleEmojiOverlay(gif: true);
+    }
+  }
+
+  void closeGifPicker() {
+    if (!mounted) return;
+
+    if (MediaQuery.of(context).desktop) {
+      gifTooltipController.hideTooltip();
+      // Back to typing, as when the picker is dismissed by clicking outside
+      textFocus.requestFocus();
+    } else {
+      setState(() {
+        clearKeyboardOverride(debounce: false);
+      });
+    }
+  }
+
+  Widget buildGifPicker() {
+    var gifs = widget.gifComponent!;
+
+    return StreamBuilder(
+      stream: gifs.onFavoritesChanged,
+      builder: (context, _) => GifPicker(
+        focus: gifPickerSearchFocus,
+        favorites: gifs.favorites,
+        search: gifs.search,
+        trending: gifs.trending,
+        placeholderText: gifs.searchPlaceholder,
+        onDismiss: closeGifPicker,
+        gifPicked: (gif) async {
+          await widget.sendGif?.call(gif);
+          closeGifPicker();
+        },
+        favoritePicked: (gif) async {
+          await widget.sendFavoriteGif?.call(gif);
+          closeGifPicker();
+        },
+        onUnfavoriteGif: (gif) => gifs.removeFavorite(gif),
+      ),
+    );
   }
 
   Expanded textInput(BuildContext context) {

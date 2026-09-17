@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/member.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
+import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_emoji_overlay.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_overlay_registry.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -37,6 +41,20 @@ class VoipStreamView extends StatefulWidget {
 }
 
 class _VoipStreamViewState extends State<VoipStreamView> {
+  static String get labelWatchStream => Intl.message("Watch stream",
+      name: "labelWatchStream",
+      desc: "Button that starts playing someone's screen share");
+
+  static String get labelStopWatchingStream => Intl.message("Stop watching",
+      name: "labelStopWatchingStream",
+      desc: "Button that stops playing someone's screen share");
+
+  static String labelUserIsSharingScreen(String user) =>
+      Intl.message("$user is sharing their screen",
+          name: "labelUserIsSharingScreen",
+          args: [user],
+          desc: "Shown on a screen share tile you are not watching");
+
   late Member user;
 
   bool speaking = false;
@@ -58,6 +76,20 @@ class _VoipStreamViewState extends State<VoipStreamView> {
   }
 
   @override
+  void didUpdateWidget(covariant VoipStreamView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Tiles are keyed by stream id, so a stream recreated for the same
+    // publication lands on this state: follow the new object's changes.
+    if (!identical(oldWidget.stream, widget.stream)) {
+      subs.first.cancel();
+      subs.first = widget.stream.onStreamChanged.listen(onStreamChanged);
+      user = widget.session.client
+          .getRoom(widget.session.roomId)!
+          .getMemberOrFallback(widget.stream.streamUserId);
+    }
+  }
+
+  @override
   void dispose() {
     for (var sub in subs) sub.cancel();
     super.dispose();
@@ -68,57 +100,104 @@ class _VoipStreamViewState extends State<VoipStreamView> {
     if (value != speaking) setState(() => speaking = value);
   }
 
+  bool hovering = false;
+
   @override
   Widget build(BuildContext context) {
+    final audioStream = widget.audioStream;
+    // Only while the stream plays: an unwatched screen share has no audio.
+    final showVolumeControl =
+        audioStream?.direction == VoipStreamDirection.incoming &&
+            widget.stream.isWatching;
     return Material(
       color: Colors.transparent,
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          AdaptiveContextMenu(
-            items: streamContextMenuItems(widget.stream, user,
-                audioStream: widget.audioStream),
-            child: Container(
-                clipBehavior: Clip.antiAlias,
-                foregroundDecoration: widget.borderColor != null
-                    ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: widget.borderColor!,
-                            width: 2,
-                            strokeAlign: BorderSide.strokeAlignCenter))
-                    : null,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                child: buildDefault()),
-          ),
-          if (preferences.developerMode.value)
-            Align(
-              alignment: AlignmentGeometry.topLeft,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => hovering = true),
+        onExit: (_) => setState(() => hovering = false),
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            AdaptiveContextMenu(
+              items: streamContextMenuItems(widget.stream, user,
+                  audioStream: widget.audioStream),
               child: Container(
-                decoration: BoxDecoration(
-                  color: ColorScheme.of(context).surfaceContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow(widget.stream.stats),
-                ),
-              ),
+                  clipBehavior: Clip.antiAlias,
+                  foregroundDecoration: widget.borderColor != null
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: widget.borderColor!,
+                              width: 2,
+                              strokeAlign: BorderSide.strokeAlignCenter))
+                      : null,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                  child: buildDefault()),
             ),
-          if (widget.canFullscreen &&
-                  widget.stream.type == VoipStreamType.video ||
-              widget.stream.type == VoipStreamType.screenshare)
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: tiamat.IconButton(
-                icon: Icons.fullscreen,
-                size: 20,
-                onPressed: widget.onFullscreen,
+            if (preferences.developerMode.value)
+              Align(
+                alignment: AlignmentGeometry.topLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorScheme.of(context).surfaceContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: tiamat.Text.labelLow(widget.stream.stats),
+                  ),
+                ),
               ),
-            )
-        ],
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.stream.requiresWatching && widget.stream.isWatching)
+                  Tooltip(
+                    message: labelStopWatchingStream,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: tiamat.IconButton(
+                        key: const ValueKey("voipStreamView_stopWatching"),
+                        icon: Icons.visibility_off,
+                        size: 20,
+                        onPressed: widget.stream.stopWatching,
+                      ),
+                    ),
+                  ),
+                if (widget.canFullscreen &&
+                    widget.stream.isWatching &&
+                    (widget.stream.type == VoipStreamType.video ||
+                        widget.stream.type == VoipStreamType.screenshare))
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: tiamat.IconButton(
+                      icon: Icons.fullscreen,
+                      size: 20,
+                      onPressed: widget.onFullscreen,
+                    ),
+                  ),
+              ],
+            ),
+            if (showVolumeControl)
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: IgnorePointer(
+                  ignoring: !(hovering || MediaQuery.of(context).mobile),
+                  child: AnimatedOpacity(
+                    opacity: hovering || MediaQuery.of(context).mobile ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: StreamVolumeControl(audioStream!,
+                          key: ValueKey(audioStream.streamId)),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -154,15 +233,28 @@ class _VoipStreamViewState extends State<VoipStreamView> {
             );
           },
         ),
-        tiamat.ContextMenuItem(
-          text: "Volume",
-          customBuilder: (context, onClicked, {closeMenu}) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: StreamVolumeSlider(volumeStream),
-            );
-          },
-        )
+        if (stream.requiresWatching)
+          stream.isWatching
+              ? tiamat.ContextMenuItem(
+                  text: labelStopWatchingStream,
+                  icon: Icons.visibility_off,
+                  onPressed: stream.stopWatching)
+              : tiamat.ContextMenuItem(
+                  text: labelWatchStream,
+                  icon: Icons.visibility,
+                  onPressed: stream.watch),
+        // A screen share without audio has nothing to turn down, and its
+        // slider would save the sharer's voice volume instead.
+        if (stream.type != VoipStreamType.screenshare || audioStream != null)
+          tiamat.ContextMenuItem(
+            text: "Volume",
+            customBuilder: (context, onClicked, {closeMenu}) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                child: StreamVolumeSlider(volumeStream),
+              );
+            },
+          )
       ]
     ];
   }
@@ -252,6 +344,7 @@ class _VoipStreamViewState extends State<VoipStreamView> {
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
+        if (!widget.stream.isWatching) return buildNotWatching();
         return Center(
           child: widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
               const CircularProgressIndicator(),
@@ -264,11 +357,84 @@ class _VoipStreamViewState extends State<VoipStreamView> {
     }
   }
 
+  /// A screen share the user hasn't opted in to: nothing is downloaded until
+  /// they click the button.
+  Widget buildNotWatching() {
+    return tiamat.Tile.low(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                tiamat.Avatar(
+                    radius: 24,
+                    image: user.avatar,
+                    placeholderColor: user.defaultColor,
+                    placeholderText: user.displayName),
+                tiamat.Text.labelLow(
+                  labelUserIsSharingScreen(user.displayName),
+                ),
+                tiamat.Button(
+                  key: const ValueKey("voipStreamView_watchStream"),
+                  text: labelWatchStream,
+                  onTap: widget.stream.watch,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void onStreamChanged(void event) {
-    print("Stream state changed!");
     setState(() {});
   }
 }
+
+/// Rebuilds when the stream's volume is changed from another control.
+mixin _FollowsStreamVolume<T extends StatefulWidget> on State<T> {
+  VoipStream get volumeStream;
+
+  StreamSubscription? _volumeSub;
+  VoipStream? _listeningTo;
+
+  void _listen() {
+    _listeningTo = volumeStream;
+    _volumeSub = volumeStream.onStreamChanged.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _listen();
+  }
+
+  @override
+  void didUpdateWidget(T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The session replaces a publication's stream object after a reconnect,
+    // and the widget keeps its key because the sid is the same.
+    if (identical(_listeningTo, volumeStream)) return;
+    _volumeSub?.cancel();
+    _listen();
+  }
+
+  @override
+  void dispose() {
+    _volumeSub?.cancel();
+    super.dispose();
+  }
+}
+
+/// Highest playback volume a stream can be set to. Web plays remote audio
+/// through audio elements, which stop at 100%; native WebRTC can boost.
+double get maxStreamVolume => kIsWeb ? 1.0 : 2.5;
 
 class StreamVolumeSlider extends StatefulWidget {
   const StreamVolumeSlider(this.stream, {super.key});
@@ -278,27 +444,110 @@ class StreamVolumeSlider extends StatefulWidget {
   State<StreamVolumeSlider> createState() => _StreamVolumeSliderState();
 }
 
-class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
+class _StreamVolumeSliderState extends State<StreamVolumeSlider>
+    with _FollowsStreamVolume<StreamVolumeSlider> {
+  @override
+  VoipStream get volumeStream => widget.stream;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        tiamat.Text.labelLow("${(widget.stream.volume * 100).toInt()}%"),
+        tiamat.Text.labelLow(
+            "${(widget.stream.volume.clamp(0.0, maxStreamVolume) * 100).round()}%"),
         Expanded(
           child: tiamat.Slider(
             min: 0.0,
-            max: 2.5,
-            value: widget.stream.volume,
+            max: maxStreamVolume,
+            value: widget.stream.volume.clamp(0.0, maxStreamVolume),
             onChanged: (value) {
-              print(value);
-              setState(() {
-                widget.stream.setVolume(value);
-              });
+              widget.stream.setVolume(value);
+              setState(() {});
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Mute button and slider drawn over a screen share, like a video player's.
+/// Drives only [stream] (the screen share audio), not the sharer's mic.
+class StreamVolumeControl extends StatefulWidget {
+  const StreamVolumeControl(this.stream, {super.key});
+
+  final VoipStream stream;
+
+  @override
+  State<StreamVolumeControl> createState() => _StreamVolumeControlState();
+}
+
+class _StreamVolumeControlState extends State<StreamVolumeControl>
+    with _FollowsStreamVolume<StreamVolumeControl> {
+  @override
+  VoipStream get volumeStream => widget.stream;
+
+  Future<void> setVolume(double volume) async {
+    await widget.stream.setVolume(volume);
+    if (mounted) setState(() {});
+  }
+
+  void toggleMute() {
+    final volume = widget.stream.volume;
+    // Saved, not held in this widget: the tile, the fullscreen view and the
+    // context menu all mute the same stream and have to agree.
+    if (volume > 0) {
+      preferences.setVoipScreenSharePremuteVolume(
+          widget.stream.streamUserId, volume);
+      setVolume(0);
+    } else {
+      setVolume(preferences
+          .getVoipScreenSharePremuteVolume(widget.stream.streamUserId));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final volume = widget.stream.volume.clamp(0.0, maxStreamVolume);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(4, 4, 12, 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            tiamat.IconButton(
+              icon: volume == 0
+                  ? Icons.volume_off_rounded
+                  : volume < 0.5
+                      ? Icons.volume_down_rounded
+                      : Icons.volume_up_rounded,
+              iconColor: Colors.white,
+              size: 20,
+              onPressed: toggleMute,
+            ),
+            SizedBox(
+              width: 90,
+              child: SliderTheme(
+                data: VideoPlayerState.compactSliderTheme(context),
+                child: Slider(
+                  value: volume,
+                  min: 0,
+                  max: maxStreamVolume,
+                  onChanged: setVolume,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text("${(volume * 100).round()}%",
+                style: const TextStyle(color: Colors.white, fontSize: 12)),
+          ],
+        ),
+      ),
     );
   }
 }

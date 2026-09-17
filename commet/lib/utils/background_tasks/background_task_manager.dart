@@ -22,10 +22,14 @@ class BackgroundTaskManager {
 
   void onStatusChanged(BackgroundTask task) {
     if (task.shouldRemoveTask) {
-      subscriptions[task]?.cancel();
-      tasks.remove(task);
-      task.dispose();
+      removeTask(task);
     }
+  }
+
+  void removeTask(BackgroundTask task) {
+    subscriptions.remove(task)?.cancel();
+    tasks.remove(task);
+    task.dispose();
   }
 }
 

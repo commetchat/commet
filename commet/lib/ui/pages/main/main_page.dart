@@ -22,6 +22,7 @@ import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
+import 'package:commet/utils/app_refresh/app_refresh.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
@@ -79,6 +80,10 @@ class MainPageState extends State<MainPage> {
   StreamSubscription? onClientRemovedSubscription;
   StreamSubscription? onClientAddedSubscription;
 
+  // Cancelled on dispose: an app refresh replaces this page, and the old one
+  // must not keep reacting to the event bus with its dead clients
+  final List<StreamSubscription> _eventBusSubscriptions = [];
+
   StreamController onFilterClientChanged = StreamController.broadcast();
 
   MainPageSubView get currentView => _currentView;
@@ -117,6 +122,19 @@ class MainPageState extends State<MainPage> {
       client = clientManager.clients
           .where((element) => element.getRoom(widget.initialRoom!) != null)
           .firstOrNull;
+    }
+
+    // Before the room, and whether or not one was open: selecting a space
+    // clears the room selection, and the user may have been on a space with
+    // no room open at all.
+    var restoredSpaceId = AppRefresh.takeRestoredSpace();
+    if (restoredSpaceId != null) {
+      var space = clientManager.clients
+          .where((c) => filterClient == null || c == filterClient)
+          .map((c) => c.getSpace(restoredSpaceId))
+          .whereType<Space>()
+          .firstOrNull;
+      if (space != null) selectSpace(space);
     }
 
     if (client != null && widget.initialRoom != null) {
@@ -181,16 +199,15 @@ class MainPageState extends State<MainPage> {
       setState(() {});
     });
 
-    EventBus.openRoom.stream.listen(onOpenRoomSignal);
-
-    EventBus.openHomeScreen.stream.listen((_) {
-      clearRoomSelection();
-      clearSpaceSelection();
-    });
-
-    EventBus.setFilterClient.stream.listen(setFilterClient);
-
-    EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);
+    _eventBusSubscriptions.addAll([
+      EventBus.openRoom.stream.listen(onOpenRoomSignal),
+      EventBus.openHomeScreen.stream.listen((_) {
+        clearRoomSelection();
+        clearSpaceSelection();
+      }),
+      EventBus.setFilterClient.stream.listen(setFilterClient),
+      EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal),
+    ]);
 
     onClientRemovedSubscription =
         clientManager.onClientRemoved.stream.listen(onClientRemoved);
@@ -206,7 +223,10 @@ class MainPageState extends State<MainPage> {
 
   void onFirstFrame(Duration timeStamp) async {
     if (widget.clientManager.isLoggedIn()) {
-      var menus = FirstTimeSetup.postLogin;
+      // Taken out of the list: an app refresh builds a new main page, which
+      // must not show the same setup again
+      var menus = FirstTimeSetup.postLogin.toList();
+      FirstTimeSetup.postLogin.clear();
       if (menus.isNotEmpty) {
         await NavigationUtils.navigateTo(context, SetupPage(menus));
       }
@@ -239,6 +259,9 @@ class MainPageState extends State<MainPage> {
     onCallStartedSubscription?.cancel();
     onClientRemovedSubscription?.cancel();
     onClientAddedSubscription?.cancel();
+    for (final sub in _eventBusSubscriptions) {
+      sub.cancel();
+    }
     ServicesBinding.instance.keyboard.removeHandler(_onKeyPressed);
     super.dispose();
   }
@@ -288,7 +311,11 @@ class MainPageState extends State<MainPage> {
   void selectSpace(Space? space) {
     if (space == currentSpace) return;
 
-    if (space != null && !space.fullyLoaded) space.loadExtra();
+    if (space != null && !space.fullyLoaded) {
+      space.loadExtra().catchError((Object e, StackTrace s) {
+        Log.onError(e, s, content: "Could not load the space");
+      });
+    }
     clearRoomSelection();
 
     if (space?.avatar is LODImageProvider) {

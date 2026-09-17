@@ -2,11 +2,14 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
+import 'package:commet/utils/app_refresh/app_refresh.dart';
 import 'package:commet/utils/update_checker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class GeneralSettingsPage extends StatefulWidget {
   const GeneralSettingsPage({super.key});
@@ -100,6 +103,24 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       "Toggle previewing of images, videos, stickers and urls in public chat rooms",
       desc: "Label describing toggle of media previews for public rooms",
       name: "labelMediaPreviewPublicRoomsToggleDescription");
+
+  String get labelRefreshApp => Intl.message("Refresh app",
+      desc: "Header and label for the setting that refreshes the app",
+      name: "labelRefreshApp");
+
+  String get labelRefreshAppDescription => Intl.message(
+      "Reloads your accounts and the interface, leaving any call you are in. Use it when something gets stuck",
+      desc: "Explains what refreshing the app does",
+      name: "labelRefreshAppDescription");
+
+  String labelRefreshAppShortcut(String shortcut) =>
+      Intl.message("Shortcut: $shortcut",
+          desc: "Tells the user the keyboard shortcut that refreshes the app",
+          args: [shortcut],
+          name: "labelRefreshAppShortcut");
+
+  String get promptRefreshApp => Intl.message("Refresh",
+      desc: "Button that refreshes the app", name: "promptRefreshApp");
 
   @override
   void initState() {
@@ -212,6 +233,42 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               ),
             ],
           ]),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Panel(
+          header: labelRefreshApp,
+          mode: TileType.surfaceContainerLow,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised(labelRefreshApp),
+                      tiamat.Text.labelLow(labelRefreshAppDescription),
+                      if (!MediaQuery.of(context).mobile)
+                        tiamat.Text.labelLow(labelRefreshAppShortcut(
+                            defaultTargetPlatform == TargetPlatform.macOS
+                                ? "Cmd+R"
+                                : "Ctrl+R")),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
+                  child: tiamat.Button.secondary(
+                    text: promptRefreshApp,
+                    onTap: AppRefresh.refresh,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

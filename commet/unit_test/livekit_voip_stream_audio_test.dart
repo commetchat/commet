@@ -1,6 +1,8 @@
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
+import 'package:commet/main.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as rtc;
 import 'package:livekit_client/livekit_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 
 class _MediaTrack implements rtc.MediaStreamTrack {
@@ -26,6 +28,8 @@ class _AudioTrack implements RemoteAudioTrack {
 /// A remote publication whose track arrives when LiveKit subscribes to it,
 /// after the publication was announced.
 class _Publication implements RemoteTrackPublication<RemoteTrack> {
+  _Publication([this.source = TrackSource.microphone]);
+
   @override
   final String sid = 'TR_bob_mic';
 
@@ -33,7 +37,7 @@ class _Publication implements RemoteTrackPublication<RemoteTrack> {
   final TrackType kind = TrackType.AUDIO;
 
   @override
-  final TrackSource source = TrackSource.microphone;
+  final TrackSource source;
 
   @override
   RemoteTrack? track;
@@ -66,7 +70,8 @@ void main() {
     stream = MatrixLivekitVoipStream(
       publication,
       '@bob:example.org',
-      setTrackVolume: (volume, track) async => volumes.add((volume, track.id)),
+      setTrackVolume: (volume, track) async =>
+          volumes.add((volume, track.mediaStreamTrack.id)),
       createAudioVisualizer: (track) {
         final visualizer = _Visualizer();
         visualizers.add(visualizer);
@@ -126,5 +131,62 @@ void main() {
     expect(visualizers, hasLength(2));
     expect(visualizers.first.stops, 1);
     expect(visualizers.last.starts, 1);
+  });
+
+  group('saved volume', () {
+    late MatrixLivekitVoipStream screenAudio;
+
+    setUp(() async {
+      // ignore: invalid_use_of_visible_for_testing_member
+      SharedPreferences.setMockInitialValues({});
+      await preferences.init();
+
+      screenAudio = MatrixLivekitVoipStream(
+        _Publication(TrackSource.screenShareAudio)
+          ..track = _AudioTrack('bob-screen'),
+        '@bob:example.org',
+        setTrackVolume: (volume, track) async =>
+            volumes.add((volume, track.mediaStreamTrack.id)),
+        createAudioVisualizer: (_) => _Visualizer(),
+      );
+    });
+
+    test('screen share volume is kept apart from the voice volume', () async {
+      await screenAudio.setVolume(0.2);
+      await stream.setVolume(1.5);
+
+      expect(screenAudio.volume, 0.2);
+      expect(stream.volume, 1.5);
+      expect(preferences.getVoipScreenShareVolume('@bob:example.org'), 0.2);
+      expect(preferences.getVoipUserVolume('@bob:example.org'), 1.5);
+    });
+
+    test('a later screen share from the same user gets the saved volume',
+        () async {
+      await screenAudio.setVolume(0.4);
+      volumes.clear();
+
+      MatrixLivekitVoipStream(
+        _Publication(TrackSource.screenShareAudio)
+          ..track = _AudioTrack('bob-screen-2'),
+        '@bob:example.org',
+        setTrackVolume: (volume, track) async =>
+            volumes.add((volume, track.mediaStreamTrack.id)),
+        createAudioVisualizer: (_) => _Visualizer(),
+      );
+
+      expect(volumes, [(0.4, 'bob-screen-2')]);
+    });
+
+    test('changing the volume while deafened is saved but stays silent',
+        () async {
+      screenAudio.listenerDeafened = true;
+      volumes.clear();
+
+      await screenAudio.setVolume(0.8);
+
+      expect(screenAudio.volume, 0.8);
+      expect(volumes, [(0.0, 'bob-screen')]);
+    });
   });
 }

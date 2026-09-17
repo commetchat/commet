@@ -15,7 +15,11 @@ abstract class FavoriteGif {
 }
 
 abstract class GifComponent<T extends Client> implements Component<T> {
-  Future<List<GifSearchResult>> search(String query);
+  /// Throws if the request fails, returns an empty page if there are no results
+  Future<GifSearchPage> search(String query, {String? pos});
+
+  /// Trending gifs, empty if the service or proxy does not support it
+  Future<GifSearchPage> trending({String? pos});
 
   Future<TimelineEvent?> sendGif(
       Room room, GifSearchResult gif, TimelineEvent? inReplyTo);

@@ -10,12 +10,16 @@ class FakeVoipStream implements VoipStream {
   @override
   final VoipStreamType type;
   @override
+  final String streamOwnerId;
+  @override
   final VoipStreamDirection direction;
 
   FakeVoipStream(this.streamId,
       {required this.streamUserId,
       required this.type,
-      this.direction = VoipStreamDirection.incoming});
+      String? streamOwnerId,
+      this.direction = VoipStreamDirection.incoming})
+      : streamOwnerId = streamOwnerId ?? streamUserId;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -26,6 +30,30 @@ void main() {
   const bob = "@bob:example.org";
 
   group("callGridTiles", () {
+    test(
+        "our own screen share does not pick up the audio of our other device's share",
+        () {
+      final ownScreen = FakeVoipStream("own-screen",
+          streamUserId: alice,
+          type: VoipStreamType.screenshare,
+          direction: VoipStreamDirection.outgoing);
+      final otherDeviceScreen = FakeVoipStream("other-screen",
+          streamUserId: alice,
+          streamOwnerId: "$alice:OTHER",
+          type: VoipStreamType.screenshare);
+      final otherDeviceAudio = FakeVoipStream("other-audio",
+          streamUserId: alice,
+          streamOwnerId: "$alice:OTHER",
+          type: VoipStreamType.screenshareAudio);
+
+      final tiles =
+          callGridTiles([ownScreen, otherDeviceScreen, otherDeviceAudio]);
+
+      expect(tiles.firstWhere((t) => t.stream == ownScreen).audioStream, null);
+      expect(tiles.firstWhere((t) => t.stream == otherDeviceScreen).audioStream,
+          otherDeviceAudio);
+    });
+
     test(
         "a member sharing their screen with audio gets one avatar tile and one screen share tile",
         () {

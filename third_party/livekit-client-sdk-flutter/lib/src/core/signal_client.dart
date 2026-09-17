@@ -15,7 +15,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, listEquals;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fixnum/fixnum.dart';
@@ -80,6 +80,13 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
     return _connectivityResult.isNotEmpty && !_connectivityResult.contains(ConnectivityResult.none);
   }
 
+  // COMMET: connectivity_plus reports `none` wrongly on desktop (after its
+  // change subscription is re-created on every connect, and with VPNs or
+  // virtual adapters), which made rejoining a voice room fail until the app
+  // restarted. `none` is only a hint now, the socket decides.
+  bool _connectivityReportedNone() =>
+      _connectivityResult.isEmpty || _connectivityResult.contains(ConnectivityResult.none);
+
   @internal
   SignalClient(WebSocketConnector wsConnector) : _wsConnector = wsConnector {
     events.listen((event) {
@@ -106,11 +113,21 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
     bool reconnect = false,
     lk_models.ReconnectReason? reconnectReason,
   }) async {
+    // COMMET: see _connectivityReportedNone.
+    var reportedOffline = false;
     if (!kIsWeb && !lkPlatformIsTest()) {
       _connectivityResult = await Connectivity().checkConnectivity();
+      // COMMET: a connect that was in flight while the room was disposed
+      // would install a subscription nobody cancels, which is the leak that
+      // made rejoining fail (issue #48).
+      if (isDisposed) {
+        throw ConnectException('signal client was disposed',
+            reason: ConnectionErrorReason.InternalError);
+      }
       await _connectivitySubscription?.cancel();
       _connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
-        if (_connectivityResult != result) {
+        // COMMET: compare contents, lists never compare equal with !=.
+        if (!listEquals(_connectivityResult, result)) {
           if (result.contains(ConnectivityResult.none)) {
             logger.warning('lost connectivity');
           } else {
@@ -124,9 +141,10 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
         }
       });
 
-      if (_connectivityResult.contains(ConnectivityResult.none)) {
-        logger.warning('no internet connection');
-        throw ConnectException('no internet connection', reason: ConnectionErrorReason.InternalError, statusCode: 503);
+      // COMMET: don't hard-fail, try the socket anyway.
+      if (_connectivityReportedNone()) {
+        reportedOffline = true;
+        logger.warning('connectivity reported ${_connectivityResult}, connecting anyway');
       }
     }
 
@@ -175,6 +193,8 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
 
       // Attempt Validation
       var finalError = socketError;
+      // COMMET: whether the server answered the validation request.
+      var reachedServer = false;
       try {
         // Re-build same uri for validate mode
         final validateUri = await Utils.buildUri(
@@ -192,6 +212,7 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
             'Authorization': 'Bearer $token',
           },
         );
+        reachedServer = true;
         if (validateResponse.statusCode != 200) {
           finalError = ConnectException(validateResponse.body,
               reason: validateResponse.statusCode >= 400
@@ -205,6 +226,11 @@ class SignalClient extends Disposable with EventsEmittable<SignalEvent> {
         }
       } finally {
         events.emit(SignalDisconnectedEvent(reason: DisconnectReason.signalingConnectionFailure));
+        // COMMET: only blame the network once the connection really failed.
+        if (reportedOffline && !reachedServer) {
+          logger.warning('no internet connection');
+          throw ConnectException('no internet connection', reason: ConnectionErrorReason.InternalError, statusCode: 503);
+        }
         throw finalError;
       }
     }

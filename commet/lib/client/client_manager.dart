@@ -4,6 +4,7 @@ import 'package:commet/client/alert.dart';
 import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_aggregator.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
@@ -233,10 +234,25 @@ class ClientManager {
     return _clients.values.any((element) => element.isLoggedIn());
   }
 
-  Future<void> close() async {
-    for (var client in _clients.values) {
-      client.close();
+  Future<void> close({bool closeDatabases = true}) async {
+    for (var subs in _clientSubscriptions.values) {
+      for (var sub in subs) {
+        sub.cancel();
+      }
     }
+    _clientSubscriptions.clear();
+
+    // Native players hold audio devices, and nothing else owns them
+    callManager.dispose();
+
+    // One account failing to close must not take the others down with it
+    await Future.wait(_clients.values.map((client) async {
+      try {
+        await client.close(closeDatabase: closeDatabases);
+      } catch (e, s) {
+        Log.onError(e, s, content: "Failed to close client");
+      }
+    }));
   }
 
   void _synced() {

@@ -104,8 +104,10 @@ class CallManager {
   }
 
   void onSessionEnded(VoipSession event) {
-    currentSessions
-        .removeWhere((element) => element.sessionId == event.sessionId);
+    // By identity: LiveKit sessions all report an empty sessionId, so a late
+    // hang up used to de-register the call the user had just rejoined
+    // (issue #48).
+    currentSessions.removeWhere((element) => identical(element, event));
 
     if (currentSessions.isEmpty) {
       AudioProcessingManager.instance.onSessionEnded();
@@ -273,6 +275,16 @@ class CallManager {
     player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/left_call.ogg"));
     player?.setPlaylistMode(PlaylistMode.none);
+  }
+
+  /// Releases the sound players. The client manager calls this when it is
+  /// closed, which an app refresh does on every refresh.
+  void dispose() {
+    stopRingtone();
+    muteSoundPlayer?.dispose();
+    muteSoundPlayer = null;
+    unmuteSoundPlayer?.dispose();
+    unmuteSoundPlayer = null;
   }
 
   void stopRingtone() {

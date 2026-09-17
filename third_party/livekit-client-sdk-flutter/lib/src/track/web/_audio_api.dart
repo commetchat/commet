@@ -14,7 +14,8 @@
 
 import 'package:flutter_webrtc/flutter_webrtc.dart' as rtc;
 
-Future<dynamic> startAudio(String id, rtc.MediaStreamTrack stream) async {
+// COMMET: volume, see _audio_html.dart
+Future<dynamic> startAudio(String id, rtc.MediaStreamTrack stream, {double? volume}) async {
   // do nothing
 }
 
@@ -27,5 +28,10 @@ Future<bool> startAllAudioElement() async {
 }
 
 void setSinkId(String id, String deviceId) {
+  // do nothing
+}
+
+// COMMET
+void setVolume(String id, double volume) {
   // do nothing
 }

@@ -153,6 +153,7 @@ receiving no frames. That is the first thing to read when the meter is dead.
 | `third_party/livekit-client-sdk-flutter/{linux,windows}/livekit_plugin.cpp` | `commetSetExternalAudioProcessing` / `commetClearExternalAudioProcessing` |
 | `third_party/livekit-client-sdk-flutter/lib/src/support/native.dart` | Dart side of those methods (`Native.setExternalAudioProcessing`) |
 | `third_party/livekit-client-sdk-flutter/lib/src/track/local/local.dart` | `replaceTrack` after a processor is set, restore on stop |
+| `third_party/livekit-client-sdk-flutter/lib/src/track/remote/audio.dart`, `track/web/_audio_{html,api}.dart` | `RemoteAudioTrack.setVolume`: per-track playback volume on web (audio element, 0..1) |
 | `commet/lib/client/components/voip/audio_processing/` | manager (stub, native, web), settings and report models |
 | `commet/lib/ui/pages/settings/categories/app/voip_settings/voip_audio_processing_settings.dart` | toggles and level meter |
 | `commet/web/audio_dsp.js`, `commet/web/audio_dsp.worklet.js` | browser glue |

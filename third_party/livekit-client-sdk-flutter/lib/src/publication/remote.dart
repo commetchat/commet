@@ -299,6 +299,29 @@ class RemoteTrackPublication<T extends RemoteTrack> extends TrackPublication<T> 
     _sendUpdateSubscription(subscribed: true);
   }
 
+  // COMMET: ask the server for the track again. [unsubscribe] does nothing
+  // when no track is attached, which is exactly the case after a failed
+  // subscription or a track that never delivered a frame, and [subscribe]
+  // alone is a no-op for the server, which still counts us as subscribed.
+  //
+  // [stillWanted] is asked after the delay, so a track nobody wants any more
+  // (stopped watching, call ended) is not subscribed to again.
+  Future<void> resubscribe({
+    Duration delay = const Duration(seconds: 1),
+    bool Function()? stillWanted,
+  }) async {
+    if (!_subscriptionAllowed) return;
+    if (track != null) {
+      await unsubscribe();
+    } else {
+      _sendUpdateSubscription(subscribed: false);
+    }
+    await Future.delayed(delay);
+    if (stillWanted != null && !stillWanted()) return;
+    if (super.subscribed || !_subscriptionAllowed) return;
+    _sendUpdateSubscription(subscribed: true);
+  }
+
   Future<void> unsubscribe() async {
     if (!super.subscribed || !_subscriptionAllowed) {
       logger.fine('ignoring unsubscribe() request...');

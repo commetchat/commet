@@ -27,7 +27,9 @@ const audioPrefix = 'livekit_audio_';
 web.AudioContext _audioContext = web.AudioContext();
 Map<String, web.Element> _audioElements = {};
 
-Future<dynamic> startAudio(String id, rtc.MediaStreamTrack track) async {
+// COMMET: [volume] is set before playback starts, so a muted or deafened
+// listener does not hear the first moments at full volume.
+Future<dynamic> startAudio(String id, rtc.MediaStreamTrack track, {double? volume}) async {
   if (track is! MediaStreamTrackWeb) {
     return;
   }
@@ -48,6 +50,9 @@ Future<dynamic> startAudio(String id, rtc.MediaStreamTrack track) async {
   final audioStream = web.MediaStream();
   audioStream.addTrack(track.jsTrack);
   audioElement.srcObject = audioStream;
+  if (volume != null) {
+    audio.volume = volume.clamp(0.0, 1.0);
+  }
   return audio.play().toDart;
 }
 
@@ -97,5 +102,13 @@ void setSinkId(String id, String deviceId) {
     if (audio.hasProperty('setSinkId'.toJS).toDart) {
       audio.setSinkId(deviceId);
     }
+  }
+}
+
+// COMMET: per-track playback volume. Audio elements only take 0..1.
+void setVolume(String id, double volume) {
+  final el = web.document.getElementById(audioPrefix + id);
+  if (el != null && el.instanceOfString('HTMLAudioElement')) {
+    (el as web.HTMLAudioElement).volume = volume.clamp(0.0, 1.0);
   }
 }
