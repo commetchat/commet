@@ -15,6 +15,7 @@ import 'package:commet/client/matrix/components/voip_room/matrix_call_membership
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
+import 'package:commet/client/matrix/components/voip_room/screen_share_watch_list.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
@@ -26,7 +27,7 @@ import 'package:matrix/matrix.dart' show Event;
 import 'package:matrix/matrix_api_lite.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
-class MatrixLivekitVoipSession implements VoipSession {
+class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   MatrixRoom room;
   lk.Room livekitRoom;
   Timer? heartbeatTimer;
@@ -40,6 +41,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   /// call see our LIVE badge (issue #9).
   late final LiveMediaPublisher _liveMediaPublisher =
       LiveMediaPublisher(write: _writeLiveMedia);
+
+  /// The session connects with auto-subscribe off and subscribes itself,
+  /// leaving out screen shares nobody opted in to watch (issue #50).
+  final ScreenShareWatchList _watchList = ScreenShareWatchList(
+      autoWatch: () => preferences.voipAutoWatchScreenShares.value);
 
   String get _ownMembershipKey =>
       "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
@@ -133,6 +139,13 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     for (var entry in livekitRoom.remoteParticipants.entries) {
       for (var stream in entry.value.trackPublications.entries) {
+        // Before the muted check: a muted camera still has to be subscribed
+        // for when it unmutes.
+        if (stream.value.source == lk.TrackSource.screenShareVideo) {
+          _watchList.onScreenSharePublished(entry.value.identity);
+        }
+        _syncSubscription(stream.value);
+
         if (stream.value.kind == lk.TrackType.VIDEO && stream.value.muted) {
           continue;
         }
@@ -140,7 +153,7 @@ class MatrixLivekitVoipSession implements VoipSession {
         String userId = entry.key;
         userId = userId.split(":").getRange(0, 2).join(":");
 
-        final s = MatrixLivekitVoipStream(stream.value, userId);
+        final s = MatrixLivekitVoipStream(stream.value, userId, watching: this);
         _applyStreamVolume(s);
         streams.add(s);
       }
@@ -163,8 +176,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
-    if (event.publication.track?.mediaType ==
-        RTCRtpMediaType.RTCRtpMediaTypeVideo) {
+    // By kind, not by track: a screen share nobody watches has no track.
+    if (event.publication.kind == lk.TrackType.VIDEO) {
       _removeStreamsWithSid(event.publication.sid);
     }
 
@@ -196,7 +209,8 @@ class MatrixLivekitVoipSession implements VoipSession {
       return;
     }
 
-    final s = MatrixLivekitVoipStream(event.publication, participant);
+    final s = MatrixLivekitVoipStream(event.publication, participant,
+        watching: event.publication is lk.RemoteTrackPublication ? this : null);
     _applyStreamVolume(s);
     streams.add(s);
     _stateChanged.add(());
@@ -207,7 +221,13 @@ class MatrixLivekitVoipSession implements VoipSession {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
-    final s = MatrixLivekitVoipStream(event.publication, participant);
+    if (event.publication.source == lk.TrackSource.screenShareVideo) {
+      _watchList.onScreenSharePublished(event.participant.identity);
+    }
+    _syncSubscription(event.publication);
+
+    final s =
+        MatrixLivekitVoipStream(event.publication, participant, watching: this);
     _applyStreamVolume(s);
     s.deafened = _deafenedIdentities.contains(event.participant.identity);
     streams.add(s);
@@ -231,6 +251,14 @@ class MatrixLivekitVoipSession implements VoipSession {
   /// subscribes to it, so the stream's track, and with it the playback
   /// volume and the speaking visualizer, only arrives here.
   void onTrackSubscribed(lk.TrackSubscribedEvent event) {
+    // Stop watching was clicked while the subscription was still on its way:
+    // unsubscribe() ignores publications without a track.
+    if (!_watchList.shouldSubscribe(
+        event.participant.identity, event.publication.source)) {
+      _syncSubscription(event.publication);
+      return;
+    }
+
     for (final stream in _streamsWithSid(event.publication.sid)) {
       stream.onTrackSubscribed();
       stream.onStreamUpdatedEvent();
@@ -241,7 +269,56 @@ class MatrixLivekitVoipSession implements VoipSession {
   void onTrackUnsubscribed(lk.TrackUnsubscribedEvent event) {
     for (final stream in _streamsWithSid(event.publication.sid)) {
       stream.onTrackUnsubscribed();
+      stream.onStreamUpdatedEvent();
     }
+    _stateChanged.add(());
+  }
+
+  /// Subscribes to or unsubscribes from a remote publication, as
+  /// [_watchList] wants.
+  Future<void> _syncSubscription(lk.RemoteTrackPublication publication) async {
+    final subscribe = _watchList.shouldSubscribe(
+        publication.participant.identity, publication.source);
+    if (subscribe == publication.subscribed) return;
+    try {
+      if (subscribe) {
+        await publication.subscribe();
+      } else {
+        await publication.unsubscribe();
+      }
+    } catch (e, s) {
+      Log.onError(e, s,
+          content: "Could not update the subscription to ${publication.sid}");
+    }
+  }
+
+  @override
+  bool isWatchingScreenShare(String participantIdentity) =>
+      _watchList.isWatching(participantIdentity);
+
+  @override
+  Future<void> setWatchingScreenShare(
+      String participantIdentity, bool watch) async {
+    final changed = watch
+        ? _watchList.watch(participantIdentity)
+        : _watchList.stopWatching(participantIdentity);
+    if (!changed) return;
+
+    final participant = livekitRoom.remoteParticipants[participantIdentity];
+    if (participant != null) {
+      await Future.wait([
+        for (final publication in participant.trackPublications.values)
+          if (ScreenShareWatchList.isScreenShareSource(publication.source))
+            _syncSubscription(publication),
+      ]);
+    }
+
+    for (final stream in streams.whereType<MatrixLivekitVoipStream>()) {
+      if (stream.publication.participant.identity == participantIdentity) {
+        stream.onStreamUpdatedEvent();
+      }
+    }
+    _stateChanged.add(());
   }
 
   void onParticipantConnected(lk.ParticipantConnectedEvent event) {
@@ -364,6 +441,15 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
     _removeStreamsWithSid(event.publication.sid);
+
+    if (event.publication.source == lk.TrackSource.screenShareVideo) {
+      final identity = event.participant.identity;
+      _watchList.onScreenShareEnded(identity);
+      // Screen audio unpublished after the video must not keep playing.
+      for (final publication in event.participant.trackPublications.values) {
+        _syncSubscription(publication);
+      }
+    }
 
     _stateChanged.add(());
   }

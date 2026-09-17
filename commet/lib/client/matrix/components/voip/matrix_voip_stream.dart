@@ -169,6 +169,19 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   double get volume => preferences.getVoipUserVolume(streamUserId);
+
+  // A 1:1 call has one remote party, whose screen share always plays.
+  @override
+  bool get requiresWatching => false;
+
+  @override
+  bool get isWatching => true;
+
+  @override
+  Future<void> watch() async {}
+
+  @override
+  Future<void> stopWatching() async {}
 }
 
 /// Points [renderer], which belongs to a single view, at [stream] for its

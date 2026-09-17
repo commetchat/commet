@@ -588,6 +588,11 @@ class Preferences {
   BoolPreference voipFarEndDucking =
       BoolPreference("voip_far_end_ducking", defaultValue: true);
 
+  /// Play other people's screen shares as soon as they start, instead of
+  /// waiting for "Watch stream" (issue #50).
+  BoolPreference voipAutoWatchScreenShares =
+      BoolPreference("voip_auto_watch_screen_shares", defaultValue: false);
+
   NullableStringPreference filterClient =
       NullableStringPreference("filter_client_id", defaultValue: null);
 

@@ -196,7 +196,10 @@ class MatrixLivekitBackend {
       MatrixCallMembership.liveMediaKey: <String>[],
     });
 
-    await lkRoom.connect(sfuUrl, jwt);
+    // The session subscribes to tracks itself, so screen shares only play
+    // for people who opt in to watching them (issue #50).
+    await lkRoom.connect(sfuUrl, jwt,
+        connectOptions: const lk.ConnectOptions(autoSubscribe: false));
 
     var device = await WebrtcDefaultDevices.getDefaultMicrophoneId();
 
