@@ -144,6 +144,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                       focus: widget.gifSearchFocus,
                       favorites: widget.gifComponent?.favorites ?? [],
                       search: widget.gifComponent!.search,
+                      trending: widget.gifComponent!.trending,
                       placeholderText: widget.gifComponent!.searchPlaceholder,
                       favoritePicked: widget.onFavoritePicked,
                       gifPicked: widget.onGifPressed,
