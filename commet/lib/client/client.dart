@@ -209,7 +209,9 @@ abstract class Client {
   Future<void> setDisplayName(String name);
 
   /// End the current session and prepare for disposal
-  Future<void> close();
+  /// [closeDatabase] false leaves the database open, for an app refresh
+  /// where the next client connects to the same cached handle.
+  Future<void> close({bool closeDatabase = true});
 
   /// Find all the rooms which could be added to a given space
   Iterable<Room> getEligibleRoomsForSpace(Space space);

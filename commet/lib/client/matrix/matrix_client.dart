@@ -627,8 +627,8 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<void> close() async {
-    await _matrixClient.dispose();
+  Future<void> close({bool closeDatabase = true}) async {
+    await _matrixClient.dispose(closeDatabase: closeDatabase);
   }
 
   @override

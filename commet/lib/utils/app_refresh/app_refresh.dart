@@ -100,17 +100,26 @@ class AppRefresh {
       // Replacing the root drops the whole tree, including the navigator and
       // any open call view, before the clients it uses go away.
       runApp(_RefreshingView(theme: theme));
-      await WidgetsBinding.instance.endOfFrame;
+      // Bounded: a minimized window produces no frame, and the refresh would
+      // never get past "Refreshing…".
+      await WidgetsBinding.instance.endOfFrame
+          .timeout(const Duration(seconds: 1), onTimeout: () {});
 
       await _leaveCalls(oldManager);
       // Bounded: closing waits for the sync in flight, which may be exactly
       // what hangs when someone refreshes. A closed client never syncs again.
-      await oldManager.close().timeout(const Duration(seconds: 5),
+      // Keeping the databases open: they are cached per file, so the new
+      // clients connect to the very same handle, and a close landing late
+      // would pull it out from under them.
+      await oldManager.close(closeDatabases: false).timeout(
+          const Duration(seconds: 5),
           onTimeout: () => Log.w("Closing the old clients timed out"));
       _removeConnectionTasks();
 
-      // Nothing may keep using the closed clients if loading fails below
-      clientManager = null;
+      // An empty manager, not null: notifications, the badge count and the
+      // update check read the global without checking, and it must not point
+      // at the closed clients either.
+      clientManager = ClientManager();
       clientManager = await ClientManager.init();
       NeedsPostLoginInit.doPostLoginInit();
       onRefreshed.add(null);
@@ -126,6 +135,8 @@ class AppRefresh {
       runApp(FatalErrorPage(error, stacktrace));
     } finally {
       _refreshing = false;
+      // Not held past the refresh: it belongs to a closed client.
+      _selectedRoom = null;
     }
   }
 

@@ -234,7 +234,7 @@ class ClientManager {
     return _clients.values.any((element) => element.isLoggedIn());
   }
 
-  Future<void> close() async {
+  Future<void> close({bool closeDatabases = true}) async {
     for (var subs in _clientSubscriptions.values) {
       for (var sub in subs) {
         sub.cancel();
@@ -242,10 +242,13 @@ class ClientManager {
     }
     _clientSubscriptions.clear();
 
+    // Native players hold audio devices, and nothing else owns them
+    callManager.dispose();
+
     // One account failing to close must not take the others down with it
     await Future.wait(_clients.values.map((client) async {
       try {
-        await client.close();
+        await client.close(closeDatabase: closeDatabases);
       } catch (e, s) {
         Log.onError(e, s, content: "Failed to close client");
       }

@@ -124,16 +124,24 @@ class MainPageState extends State<MainPage> {
           .firstOrNull;
     }
 
+    // Before the room, and whether or not one was open: selecting a space
+    // clears the room selection, and the user may have been on a space with
+    // no room open at all.
+    var restoredSpaceId = AppRefresh.takeRestoredSpace();
+    if (restoredSpaceId != null) {
+      var space = clientManager.clients
+          .where((c) => filterClient == null || c == filterClient)
+          .map((c) => c.getSpace(restoredSpaceId))
+          .whereType<Space>()
+          .firstOrNull;
+      if (space != null) selectSpace(space);
+    }
+
     if (client != null && widget.initialRoom != null) {
       var room = client.getRoom(widget.initialRoom!);
 
       if (filterClient == null || room?.client == filterClient) {
         if (room != null) {
-          // Before the room: selecting a space clears the room selection
-          var spaceId = AppRefresh.takeRestoredSpace();
-          var space = spaceId != null ? client.getSpace(spaceId) : null;
-          if (space != null) selectSpace(space);
-
           selectRoom(room);
         }
       }
@@ -303,7 +311,11 @@ class MainPageState extends State<MainPage> {
   void selectSpace(Space? space) {
     if (space == currentSpace) return;
 
-    if (space != null && !space.fullyLoaded) space.loadExtra();
+    if (space != null && !space.fullyLoaded) {
+      space.loadExtra().catchError((Object e, StackTrace s) {
+        Log.onError(e, s, content: "Could not load the space");
+      });
+    }
     clearRoomSelection();
 
     if (space?.avatar is LODImageProvider) {

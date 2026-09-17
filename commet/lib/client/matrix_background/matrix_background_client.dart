@@ -128,7 +128,7 @@ class MatrixBackgroundClient implements Client {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close({bool closeDatabase = true}) {
     throw UnimplementedError();
   }
 
