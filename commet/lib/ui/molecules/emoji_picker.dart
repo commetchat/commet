@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
@@ -52,12 +53,20 @@ class _EmojiPickerState extends State<EmojiPicker> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       if (MediaQuery.of(context).desktop) {
         widget.focus?.requestFocus();
       }
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    textController.dispose();
+    super.dispose();
   }
 
   List<Emoticon> getEmoticonList(EmoticonPack pack) {
@@ -83,6 +92,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
   }
 
   void jumpToPack(int packIndex) {
+    if (!controller.hasClients) return;
     if (packIndex == 0) {
       controller.jumpTo(0);
       return;
@@ -206,87 +216,91 @@ class _EmojiPickerState extends State<EmojiPicker> {
     return Expanded(
         key: key,
         child: LayoutBuilder(builder: (context, constraints) {
-          var count = (constraints.maxWidth / widget.size).toInt();
+          var count = math.max(1, (constraints.maxWidth / widget.size).toInt());
           if (count != crossAxisCount) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
               setState(() {
                 crossAxisCount = count;
               });
             });
           }
 
-          return CustomScrollView(
+          return Scrollbar(
             controller: controller,
-            slivers: [
-              if (widget.searchDelegate != null)
-                SliverList(
-                    delegate: SliverChildListDelegate([
-                  SizedBox(
-                      height: searchBarSize,
-                      child: Container(
-                        color:
-                            Theme.of(context).colorScheme.surfaceContainerLow,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                            child: TextField(
-                              focusNode: widget.focus,
-                              autofocus: MediaQuery.of(context).desktop,
-                              controller: textController,
-                              onChanged: onSearchTextChanged,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: CommonStrings.promptSearch,
-                                  icon: Icon(Icons.search)),
-                            ),
-                          ),
-                        ),
-                      ))
-                ])),
-              if (searchResults?.isEmpty == true)
-                SliverList(
-                    delegate: SliverChildListDelegate([
-                  SizedBox(
-                    height: 50,
-                    child: Center(
-                        child: tiamat.Text.labelLow("No results found :(")),
-                  ),
-                ])),
-              if (searchResults?.isNotEmpty == true)
-                SliverGrid.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount),
-                  itemCount: searchResults!.length,
-                  itemBuilder: (context, index) {
-                    var emote = searchResults![index].emoticon;
-                    return buildEmoticon(emote);
-                  },
-                ),
-              if (searchResults == null)
-                for (var pack in widget.packs) ...[
+            child: CustomScrollView(
+              controller: controller,
+              slivers: [
+                if (widget.searchDelegate != null)
                   SliverList(
                       delegate: SliverChildListDelegate([
                     SizedBox(
-                      height: headerSize,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Align(
-                            alignment: AlignmentGeometry.centerLeft,
-                            child: Text(pack.displayName)),
-                      ),
+                        height: searchBarSize,
+                        child: Container(
+                          color:
+                              Theme.of(context).colorScheme.surfaceContainerLow,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                              child: TextField(
+                                focusNode: widget.focus,
+                                autofocus: MediaQuery.of(context).desktop,
+                                controller: textController,
+                                onChanged: onSearchTextChanged,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: CommonStrings.promptSearch,
+                                    icon: Icon(Icons.search)),
+                              ),
+                            ),
+                          ),
+                        ))
+                  ])),
+                if (searchResults?.isEmpty == true)
+                  SliverList(
+                      delegate: SliverChildListDelegate([
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                          child: tiamat.Text.labelLow("No results found :(")),
                     ),
                   ])),
+                if (searchResults?.isNotEmpty == true)
                   SliverGrid.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount),
-                    itemCount: getEmoticonList(pack).length,
+                    itemCount: searchResults!.length,
                     itemBuilder: (context, index) {
-                      var emote = getEmoticonList(pack)[index];
+                      var emote = searchResults![index].emoticon;
                       return buildEmoticon(emote);
                     },
-                  )
-                ],
-            ],
+                  ),
+                if (searchResults == null)
+                  for (var pack in widget.packs) ...[
+                    SliverList(
+                        delegate: SliverChildListDelegate([
+                      SizedBox(
+                        height: headerSize,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Align(
+                              alignment: AlignmentGeometry.centerLeft,
+                              child: Text(pack.displayName)),
+                        ),
+                      ),
+                    ])),
+                    SliverGrid.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount),
+                      itemCount: getEmoticonList(pack).length,
+                      itemBuilder: (context, index) {
+                        var emote = getEmoticonList(pack)[index];
+                        return buildEmoticon(emote);
+                      },
+                    )
+                  ],
+              ],
+            ),
           );
         }));
   }
