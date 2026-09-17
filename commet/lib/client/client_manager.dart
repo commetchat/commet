@@ -234,9 +234,14 @@ class ClientManager {
   }
 
   Future<void> close() async {
-    for (var client in _clients.values) {
-      client.close();
+    for (var subs in _clientSubscriptions.values) {
+      for (var sub in subs) {
+        sub.cancel();
+      }
     }
+    _clientSubscriptions.clear();
+
+    await Future.wait(_clients.values.map((client) => client.close()));
   }
 
   void _synced() {
