@@ -40,6 +40,9 @@ class _CustomSafeAreaState extends State<CustomSafeArea> {
   }
 
   void onTextFieldFocused(bool event) {
+    // Focus events arrive over a stream and can land after this widget is
+    // gone (page torn down while a field still had focus).
+    if (!mounted) return;
     if (event != isTextFieldFocused) {
       setState(() {
         isTextFieldFocused = event;

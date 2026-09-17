@@ -1,3 +1,4 @@
+import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'dart:async';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
@@ -46,6 +47,8 @@ class _UserPanelSettingsState extends State<UserPanelSettings> {
               width: height,
               height: height,
               child: tiamat.IconButton(
+                // Integration tests find the settings entry by this key.
+                key: SideNavigationBar.settingsKey,
                 icon: Icons.settings,
                 size: iconHeight,
                 onPressed: () {

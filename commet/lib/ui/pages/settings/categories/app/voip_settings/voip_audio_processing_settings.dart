@@ -358,6 +358,9 @@ class InputLevelMeter extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: FractionallySizedBox(
                   widthFactor: fraction(level),
+                  // Align hands down loose constraints; a childless ColoredBox
+                  // would otherwise take zero height and never be visible.
+                  heightFactor: 1,
                   child: ColoredBox(
                     color: open ? scheme.primary : scheme.outline,
                   ),

@@ -5,7 +5,6 @@ import 'package:integration_test/integration_test.dart';
 
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
-import 'package:commet/generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +27,7 @@ void main() {
   });
 
   testWidgets('Test Matrix Login Invalid', (WidgetTester tester) async {
-    var hs =
-        const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+    var hs = tester.homeserver;
     var username = "invalidUser";
     var password = "InvalidPassword!";
 
@@ -44,6 +42,7 @@ void main() {
 
     await tester.enterText(inputs.at(0), hs);
     await tester.pumpAndSettle();
+    await tester.waitForLoginFields();
     await tester.enterText(inputs.at(1), username);
     await tester.pumpAndSettle();
     await tester.enterText(inputs.at(2), password);
@@ -52,10 +51,10 @@ void main() {
     var button = find.widgetWithText(ElevatedButton, "Login");
 
     await tester.tap(button);
-    await tester.waitFor(
-        () => find.text(T.current.messageLoginFailed).evaluate().isNotEmpty,
-        skipPumpAndSettle: false,
-        timeout: const Duration(seconds: 5));
+    // Any failed login (wrong password is reported as a server error, not
+    // as LoginResultFailed) ends in the "Login failed" dialog.
+    await tester.waitFor(() => find.text("Login failed").evaluate().isNotEmpty,
+        skipPumpAndSettle: false, timeout: const Duration(seconds: 5));
     await tester.pumpFrames(app, const Duration(seconds: 1));
     expect(app.clientManager.isLoggedIn(), equals(false));
 

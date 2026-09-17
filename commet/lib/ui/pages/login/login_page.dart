@@ -176,7 +176,11 @@ class LoginPageState extends State<LoginPage> {
       isServerValid = false;
     });
 
-    var uri = Uri.https(input);
+    // An explicit scheme wins (plain-http homeservers on a LAN or in tests);
+    // otherwise assume https like every other client.
+    var uri = input.startsWith('http://') || input.startsWith('https://')
+        ? Uri.parse(input)
+        : Uri.https(input);
     var result = await loginClient!.setHomeserver(uri);
 
     setState(() {

@@ -200,14 +200,19 @@ WidgetsBinding ensureBindingInit() {
   return WidgetsFlutterBinding.ensureInitialized();
 }
 
+bool _rustLibReady = false;
+
 /// Initializes the bare necessities for the app to run in headless mode
 Future<void> initNecessary() async {
   sqfliteFfiInit();
   await preferences.init();
   await initDatabaseServer();
 
-  if (PlatformUtils.isWindows || PlatformUtils.isLinux) {
+  // Integration tests call initNecessary once per test; the bridge only
+  // initializes once per process.
+  if ((PlatformUtils.isWindows || PlatformUtils.isLinux) && !_rustLibReady) {
     await RustLib.init();
+    _rustLibReady = true;
   }
 
   fileCache = FileCache.getFileCacheInstance();

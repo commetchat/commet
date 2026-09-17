@@ -46,7 +46,7 @@ class LinuxNotifier implements Notifier {
 
   static int notificationId = 0;
 
-  late LinuxServerCapabilities capabilities;
+  LinuxServerCapabilities? capabilities;
 
   final service = LauncherEntryService(
       appUri: 'application://chat.commet.commetapp.desktop');
@@ -120,11 +120,20 @@ class LinuxNotifier implements Notifier {
     const LinuxInitializationSettings initializationSettingsLinux =
         LinuxInitializationSettings(defaultActionName: 'Open notification');
 
-    await flutterLocalNotificationsPlugin?.initialize(
-        initializationSettingsLinux,
-        onDidReceiveNotificationResponse: notificationResponse);
+    // Talks to the desktop over the D-Bus session bus. Headless sessions
+    // (CI, containers) have none; the app must still start, just without
+    // desktop notifications.
+    try {
+      await flutterLocalNotificationsPlugin?.initialize(
+          initializationSettingsLinux,
+          onDidReceiveNotificationResponse: notificationResponse);
 
-    capabilities = await flutterLocalNotificationsPlugin!.getCapabilities();
+      capabilities = await flutterLocalNotificationsPlugin!.getCapabilities();
+    } catch (e, s) {
+      Log.onError(e, s,
+          content: "Desktop notifications unavailable (no session bus?)");
+      flutterLocalNotificationsPlugin = null;
+    }
 
     clientManager!.directMessages.highlightedRoomsList.onListUpdated
         .listen((_) => updateBadgeCount());
@@ -193,7 +202,7 @@ class LinuxNotifier implements Notifier {
           channels: 4)),
       defaultActionName: openRoom,
       actions: [
-        if (capabilities.otherCapabilities.contains("inline-reply"))
+        if (capabilities?.otherCapabilities.contains("inline-reply") == true)
           LinuxNotificationAction(key: "inline-reply", label: "Reply")
       ],
       customHints: [

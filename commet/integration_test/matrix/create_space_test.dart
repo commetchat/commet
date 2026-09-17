@@ -123,8 +123,14 @@ Future<void> _openMenu(WidgetTester tester, App app) async {
 
   await tester.pumpAndSettle();
 
-  // Only the Space creator is offered, so the dialog shows it directly with
-  // a Next button that opens the form.
+  // The dialog opens on "Join Room"; pick the Space creator from the list,
+  // then Next opens its form.
+  await tester.tap(find
+      .widgetWithText(tiamat.TextButton, T.current.labelRoomTypeSpace)
+      .first);
+
+  await tester.pumpAndSettle();
+
   await tester
       .tap(find.widgetWithText(tiamat.Button, T.current.promptNext).first);
 

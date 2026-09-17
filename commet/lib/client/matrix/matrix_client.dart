@@ -230,7 +230,11 @@ class MatrixClient extends Client {
 
   static Future<void> _checkSystem(ClientManager clientManager) async {
     try {
-      await vod.init(wasmPath: './assets/assets/vodozemac/');
+      // Once per process: a second init throws, and the integration tests
+      // build a client manager per test.
+      if (!vod.isInitialized()) {
+        await vod.init(wasmPath: './assets/assets/vodozemac/');
+      }
       if (!vod.isInitialized()) {
         throw Exception("Vodozemac failed to initialize!");
       }
@@ -276,9 +280,15 @@ class MatrixClient extends Client {
       }
     }
 
-    _matrixClient.getConfig().then((value) {
-      config = value;
-    });
+    // Fire and forget, so its failure must not become an uncaught error:
+    // a registered client whose login never completed has no homeserver.
+    if (_matrixClient.isLogged()) {
+      _matrixClient.getConfig().then((value) {
+        config = value;
+      }).catchError((error, trace) {
+        Log.onError(error, trace, content: "Could not fetch server config");
+      });
+    }
 
     _updateRoomslist();
     _updateSpacesList();

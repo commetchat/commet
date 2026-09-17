@@ -12,8 +12,13 @@ import 'package:path_provider/path_provider.dart';
 import 'wait_for.dart';
 
 extension CommonFlows on WidgetTester {
-  String get homeserver =>
-      const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+  /// The test homeserver speaks plain http, and the login page assumes
+  /// https unless the address carries a scheme.
+  String get homeserver {
+    const hs = String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+    return hs.contains("://") ? hs : "http://$hs";
+  }
+
   String get username =>
       const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
   String get password => const String.fromEnvironment('USER1_PW',
@@ -54,10 +59,19 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<App> setupApp() async {
+    // A failed test skips clean(); do not inherit its registered accounts.
+    if (preferences.isInit) await preferences.clear();
     await clearUserData();
     await initNecessary();
     await initGuiRequirements();
     return App(clientManager: clientManager!);
+  }
+
+  /// The username and password fields only exist once the homeserver has
+  /// been checked (debounced, then a network round trip).
+  Future<void> waitForLoginFields() async {
+    await waitFor(() => find.byType(TextField).evaluate().length >= 3);
+    await pumpAndSettle();
   }
 
   Future<void> login(App app) async {
@@ -72,6 +86,7 @@ extension CommonFlows on WidgetTester {
 
     await enterText(inputs.at(0), homeserver);
     await pumpAndSettle();
+    await waitForLoginFields();
     await enterText(inputs.at(1), username);
     await pumpAndSettle();
     await enterText(inputs.at(2), password);
@@ -95,6 +110,7 @@ extension CommonFlows on WidgetTester {
 
     await enterText(inputs.at(0), homeserver);
     await pumpAndSettle();
+    await waitForLoginFields();
     await enterText(inputs.at(1), userTwoName);
     await pumpAndSettle();
     await enterText(inputs.at(2), userTwoPassword);
@@ -137,9 +153,10 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<void> openSettings(App app) async {
-    await dragUntilVisible(find.byKey(SideNavigationBar.settingsKey),
-        find.byType(SideNavigationBar), const Offset(0, 20));
-
+    // The settings button sits in the user panel at the bottom of the
+    // navigation column, always on screen on desktop.
+    await waitFor(
+        () => find.byKey(SideNavigationBar.settingsKey).evaluate().isNotEmpty);
     await tap(find.byKey(SideNavigationBar.settingsKey));
 
     await pumpAndSettle();
