@@ -62,28 +62,68 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
   StreamController _changedController = StreamController.broadcast();
 
   @override
-  Future<List<GifSearchResult>> search(String query) async {
+  Future<GifSearchPage> search(String query, {String? pos}) async {
     // The ui should never actually let the user search if this is disabled, so this *shouldn't* be neccessary
     // but just to be safe!
-    if (!preferences.tenorGifSearchEnabled.value) return [];
+    if (!preferences.tenorGifSearchEnabled.value) return GifSearchPage.empty;
 
+    var page =
+        await _request("search", {"q": query, if (pos != null) "pos": pos});
+    return page ?? GifSearchPage.empty;
+  }
+
+  // COMMET: proxies that only allow search reject this, remember so we don't
+  // ask again every time the picker opens
+  String? _trendingUnsupportedProxy;
+
+  @override
+  Future<GifSearchPage> trending({String? pos}) async {
+    if (!preferences.tenorGifSearchEnabled.value) return GifSearchPage.empty;
+    if (_trendingUnsupportedProxy == preferences.proxyUrl.value) {
+      return GifSearchPage.empty;
+    }
+
+    var page = await _request("featured", {if (pos != null) "pos": pos});
+    if (page == null) {
+      _trendingUnsupportedProxy = preferences.proxyUrl.value;
+    }
+
+    return page ?? GifSearchPage.empty;
+  }
+
+  // Returns null if the proxy does not allow this endpoint
+  Future<GifSearchPage?> _request(
+      String endpoint, Map<String, String> params) async {
     var uri = Uri.https(
-        preferences.proxyUrl.value, "/proxy/klipy/api/v2/search", {"q": query});
-
-    // var uri =
-    //     Uri.http("localhost:8788", "/proxy/klipy/api/v2/search", {"q": query});
+        preferences.proxyUrl.value, "/proxy/klipy/api/v2/$endpoint", params);
 
     var result = await http.get(uri);
-    if (result.statusCode == 200) {
-      var data = jsonDecode(result.body) as Map<String, dynamic>;
-      var results = data['results'] as List?;
+    if (const [401, 403, 404].contains(result.statusCode)) {
+      return null;
+    }
 
-      if (results != null) {
-        return results.map((e) => parseTenorResult(e)).toList();
+    if (result.statusCode != 200) {
+      throw Exception("Gif request failed (${result.statusCode})");
+    }
+
+    var data = jsonDecode(result.body) as Map<String, dynamic>;
+    var results = data['results'] as List? ?? [];
+
+    var parsed = <GifSearchResult>[];
+    for (var e in results) {
+      try {
+        parsed.add(parseTenorResult(e as Map<String, dynamic>));
+      } catch (_) {
+        // skip results with missing formats rather than failing the page
       }
     }
 
-    return [];
+    // A proxy that drops `pos` hands back the same cursor forever
+    var next = data['next'];
+    return GifSearchPage(parsed,
+        next: next is String && next.isNotEmpty && next != params["pos"]
+            ? next
+            : null);
   }
 
   @override
@@ -152,13 +192,14 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
       fullRes = formats['mediumgif'];
     }
 
-    if (formats["webp"]['size'] < fullRes['size']) {
-      fullRes = formats["webp"];
+    var webp = formats["webp"];
+    if (webp != null && webp['size'] < fullRes['size']) {
+      fullRes = webp;
       mimeType = "image/webp";
     }
 
-    if (formats["webp"]['size'] < preview['size']) {
-      preview = formats["webp"];
+    if (webp != null && webp['size'] < preview['size']) {
+      preview = webp;
     }
 
     List<dynamic> dimensions = fullRes['dims']! as List<dynamic>;
@@ -166,9 +207,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     return GifSearchResult(
         convertUrl(preview['url']),
         convertUrl(fullRes['url']),
-        (dimensions[0] as int).roundToDouble(),
-        (dimensions[1] as int).roundToDouble(),
-        mimeType);
+        (dimensions[0] as num).roundToDouble(),
+        (dimensions[1] as num).roundToDouble(),
+        mimeType,
+        id: result['id']?.toString());
   }
 
   Uri convertUrl(String url) {
