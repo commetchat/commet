@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-windows:
-    runs-on: windows-2022
+    runs-on: blacksmith-4vcpu-windows-2025
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
           flutter build windows --release --dart-define PLATFORM=windows
 
   build-android:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -100,7 +100,7 @@ jobs:
           flutter build apk --debug --dart-define PLATFORM=android
 
   build-android-google-services:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -163,7 +163,7 @@ jobs:
           flutter build apk --debug --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -196,7 +196,7 @@ jobs:
           ldd $PROJECT_PATH/build/linux/x64/release/bundle/commet
 
   build-web:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout
         uses: actions/checkout@v2
