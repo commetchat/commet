@@ -897,6 +897,10 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       // First, so no membership write lands after the clear below: leaving
       // unpublishes our tracks, which would schedule one.
       await _membershipPublisher.stop();
+      // Likewise a heartbeat that is restoring our membership.
+      heartbeatTimer?.cancel();
+      await _heartbeatInFlight?.timeout(const Duration(seconds: 5),
+          onTimeout: () {});
 
       keyProvider?.dispose();
       _settingsSub?.cancel();
@@ -1269,20 +1273,47 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     Log.i("Cleared call state");
   }
 
+  /// How long the server waits for a heartbeat before its delayed leave
+  /// clears our membership, and how often we send one. Several heartbeats
+  /// fit in one window, so one slow or lost request no longer drops us from
+  /// everyone's call list while we are still in the call.
+  static const _delayedLeaveTimeout = Duration(seconds: 30);
+  static const _heartbeatInterval = Duration(seconds: 10);
+
+  /// The delayed leave the heartbeat restarts. Unlike [heartbeatDelayId],
+  /// kept while restarts fail, so the next heartbeat retries it.
+  String? _delayedLeaveId;
+
+  /// The heartbeat in progress; a hang up waits for it, so a membership it
+  /// restores cannot land after the hang up clears ours.
+  Future<void>? _heartbeatInFlight;
+
+  /// Our membership as last seen in the room state, and when we joined, to
+  /// write back if the delayed leave cleared it while we were in the call.
+  Map<String, Object?>? _lastMembership;
+  DateTime? _joinedAt;
+
+  DateTime? _lastMembershipRestore;
+  DateTime? _lastExpiryRefresh;
+
+  bool get _leaving => state == VoipState.ended || _hangUp != null;
+
   Future<void> stopHeartbeat() async {
     heartbeatTimer?.cancel();
     heartbeatTimer = null;
 
-    if (heartbeatDelayId == null) {
+    final delayId = _delayedLeaveId ?? heartbeatDelayId;
+    _delayedLeaveId = null;
+    heartbeatDelayId = null;
+    if (delayId == null) {
       return;
     }
 
     await room.matrixRoom.client.request(RequestType.POST,
-        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(heartbeatDelayId!)}",
+        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
         contentType: "application/json",
         data: jsonEncode({"action": "cancel"}));
 
-    heartbeatDelayId = null;
     Log.i("Stopped heartbeat");
   }
 
@@ -1294,46 +1325,145 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       return;
     }
 
-    final stateKey =
-        "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+    await _armDelayedLeave();
+    if (_leaving) {
+      // Hung up while it was being armed, after the hang up cancelled
+      // nothing: left alone it would fire into a rejoin and clear the new
+      // membership.
+      await stopHeartbeat();
+      return;
+    }
 
-    final timerLength = Duration(seconds: 30);
+    heartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
+      if (_heartbeatInFlight != null || _leaving) return;
+      final beat = _heartbeat();
+      _heartbeatInFlight = beat;
+      beat.whenComplete(() => _heartbeatInFlight = null);
+    });
+  }
 
+  /// Schedules a delayed leave: the server clears our membership once
+  /// [_delayedLeaveTimeout] passes without a heartbeat.
+  Future<void> _armDelayedLeave() async {
     final result = await room.matrixRoom.client.request(RequestType.PUT,
-        "/client/v3/rooms/${Uri.encodeComponent(room.matrixRoom.id)}/state/${Uri.encodeComponent(MatrixVoipRoomComponent.callMemberStateEvent)}/${Uri.encodeComponent(stateKey)}",
+        "/client/v3/rooms/${Uri.encodeComponent(room.matrixRoom.id)}/state/${Uri.encodeComponent(MatrixVoipRoomComponent.callMemberStateEvent)}/${Uri.encodeComponent(_ownMembershipKey)}",
         contentType: "application/json",
         data: "{}",
         query: {
-          "org.matrix.msc4140.delay": timerLength.inMilliseconds.toString()
+          "org.matrix.msc4140.delay":
+              _delayedLeaveTimeout.inMilliseconds.toString()
         });
 
     final delayId = result["delay_id"] as String;
+    _delayedLeaveId = delayId;
     heartbeatDelayId = delayId;
     _publishMembershipState();
+  }
 
-    heartbeatTimer =
-        Timer.periodic(timerLength - Duration(seconds: 5), (timer) async {
-      print("Sending heartbeat");
+  Future<void> _heartbeat() async {
+    final delayId = _delayedLeaveId;
+    if (delayId == null) return;
+
+    try {
       try {
-        final result = await room.matrixRoom.client.request(RequestType.POST,
+        await room.matrixRoom.client.request(RequestType.POST,
             "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
             contentType: "application/json",
             data: jsonEncode({"action": "restart"}));
-        print(result);
         if (heartbeatDelayId == null) {
           heartbeatDelayId = delayId;
           _publishMembershipState();
         }
-      } catch (e, s) {
-        // The delayed leave may be gone (it already fired, or the server
-        // lost it): stop advertising streams until a restart works again.
-        Log.onError(e, s, content: "Call membership heartbeat failed");
-        if (heartbeatDelayId != null) {
-          heartbeatDelayId = null;
-          _publishMembershipState();
-        }
+      } on MatrixException catch (e) {
+        // It fired (a heartbeat came too late) or the server lost it. Either
+        // way nothing is left to restart: arm a new one, and put back the
+        // membership the old one may have cleared.
+        if (e.error != MatrixError.M_NOT_FOUND) rethrow;
+        Log.w("Our delayed leave is gone, arming a new one");
+        await _armDelayedLeave();
       }
-    });
+
+      await _restoreMembershipIfCleared();
+      await _refreshMembershipExpiry();
+    } catch (e, s) {
+      // Stop advertising streams until a heartbeat works again: without the
+      // delayed leave, nothing would clear them if this client died.
+      Log.onError(e, s, content: "Call membership heartbeat failed");
+      if (heartbeatDelayId != null) {
+        heartbeatDelayId = null;
+        _publishMembershipState();
+      }
+    }
+  }
+
+  /// The delayed leave fires when a heartbeat is missed, and clears our
+  /// membership while we are still connected: we would stay in the call
+  /// but vanish from everyone's list of who is in it. A delayed leave is
+  /// armed again by now, so it is safe to write the membership back.
+  Future<void> _restoreMembershipIfCleared() async {
+    final current =
+        room.matrixRoom.states[MatrixVoipRoomComponent.callMemberStateEvent]
+            ?[_ownMembershipKey];
+    if (current != null && current.content["application"] != null) {
+      _lastMembership = Map.of(current.content);
+      _joinedAt ??= MatrixCallMembership.joinedAt(
+          current.content, current is Event ? current.originServerTs : null);
+      return;
+    }
+
+    final membership = _lastMembership;
+    if (membership == null || heartbeatDelayId == null || _leaving) return;
+
+    // Our write only shows up in the room state once it comes back over
+    // sync: don't write it again in the meantime.
+    final now = DateTime.now();
+    final last = _lastMembershipRestore;
+    if (last != null && now.difference(last) < const Duration(seconds: 30)) {
+      return;
+    }
+    _lastMembershipRestore = now;
+
+    Log.w("Our call membership was cleared while we are in the call, "
+        "restoring it");
+    await room.matrixRoom.client.setRoomStateWithKey(
+      room.matrixRoom.id,
+      MatrixVoipRoomComponent.callMemberStateEvent,
+      _ownMembershipKey,
+      MatrixCallMembership.withPublishedState(membership,
+          media: _localLiveMedia,
+          voiceState: _localVoiceState,
+          joinedAt: _joinedAt ?? now,
+          now: now),
+    );
+  }
+
+  /// A membership's `expires` counts from the join, and only a change to
+  /// what we publish or our mute state rewrites it. Push it out well before
+  /// it passes, or after four hours in a call every client stops listing us.
+  Future<void> _refreshMembershipExpiry() async {
+    final current =
+        room.matrixRoom.states[MatrixVoipRoomComponent.callMemberStateEvent]
+            ?[_ownMembershipKey];
+    if (current is! Event || current.content["application"] == null) return;
+    final expires = current.content["expires"];
+    if (expires is! int) return;
+
+    final now = DateTime.now();
+    final joinedAt =
+        MatrixCallMembership.joinedAt(current.content, current.originServerTs)!;
+    final expiresAt = joinedAt.add(Duration(milliseconds: expires));
+    if (expiresAt.difference(now) > const Duration(hours: 1)) return;
+
+    final last = _lastExpiryRefresh;
+    if (last != null && now.difference(last) < const Duration(minutes: 5)) {
+      return;
+    }
+    _lastExpiryRefresh = now;
+
+    Log.i("Extending our call membership before it expires");
+    await _writeMembershipState(heartbeatDelayId != null
+        ? CallMembershipState(media: _localLiveMedia, voice: _localVoiceState)
+        : const CallMembershipState());
   }
 
   @override

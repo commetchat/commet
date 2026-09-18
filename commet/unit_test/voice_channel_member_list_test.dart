@@ -254,6 +254,44 @@ void main() {
       expect(changes, isEmpty);
       expect(callParticipants(component), equals({otherUserId}));
     });
+
+    test(
+        "someone connected to our call stays listed after their membership "
+        "lapses", () {
+      // Their delayed leave fired, clearing the membership, but they are
+      // still in the LiveKit room with us.
+      final selfMembership = callMembership(selfUserId, selfDeviceId);
+      room.matrixRoom.states[MatrixActivitiesComponent.callMemberStateEvent] = {
+        selfMembership.stateKey!: selfMembership,
+      };
+      final session = FakeVoipSession(client, roomId, "session-1")
+        ..publish(selfUserId, VoipStreamType.audio)
+        ..publish(otherUserId, VoipStreamType.audio);
+      clientManager.callManager.currentSessions.add(session);
+
+      expect(callParticipants(component), equals({selfUserId, otherUserId}));
+    });
+
+    test("our call is listed even with no membership state at all", () {
+      room.matrixRoom.states
+          .remove(MatrixActivitiesComponent.callMemberStateEvent);
+      final session = FakeVoipSession(client, roomId, "session-1")
+        ..publish(selfUserId, VoipStreamType.audio)
+        ..publish(otherUserId, VoipStreamType.audio);
+      clientManager.callManager.currentSessions.add(session);
+
+      expect(callParticipants(component), equals({selfUserId, otherUserId}));
+    });
+
+    test("with no membership state and nobody connected, nothing is listed",
+        () {
+      room.matrixRoom.states
+          .remove(MatrixActivitiesComponent.callMemberStateEvent);
+      clientManager.callManager.currentSessions
+          .add(FakeVoipSession(client, roomId, "session-1"));
+
+      expect(component.getSessions(), isEmpty);
+    });
   });
 
   group("Live badges (issue #9)", () {

@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/soundboard/entrance_sound.dart';
+import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/live_media_indicator.dart';
+import 'package:commet/ui/atoms/speaking_indicator.dart';
 import 'package:commet/ui/atoms/voice_state_indicator.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
@@ -20,6 +23,7 @@ import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:commet_calendar_widget/calendar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -101,10 +105,17 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   List<RoomActivitySession>? activitySessions;
   List<MatrixCalendarEventState>? calendarEvents;
 
+  /// Our call in this room, while we are in it. Only then do we hear the
+  /// members, so only then can the list show who is speaking.
+  VoipSession? voiceSession;
+  StreamSubscription? voiceLevelSub;
+  Set<String> speakingMembers = const {};
+
   @override
   void initState() {
     calendarRoom = widget.room.getComponent<CalendarRoom>();
     activities = widget.room.getComponent<ActivitiesComponent>();
+    final isVoiceRoom = widget.room.getComponent<VoipRoomComponent>() != null;
 
     subs = [
       widget.room.onUpdate.listen(onRoomUpdate),
@@ -112,7 +123,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         calendarRoom!.onEventsChanged.listen(onCalendarEventsChanged),
       if (activities != null)
         activities!.onSessionsChanged.listen(onSessionsChanged),
+      if (isVoiceRoom && clientManager != null)
+        clientManager!.callManager.currentSessions.onListUpdated
+            .listen((_) => attachVoiceSession()),
     ];
+
+    if (isVoiceRoom) attachVoiceSession();
 
     if (activities != null) {
       activitySessions = activities?.getSessions();
@@ -155,7 +171,39 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     for (var sub in subs) {
       sub.cancel();
     }
+    voiceLevelSub?.cancel();
     super.dispose();
+  }
+
+  void attachVoiceSession() {
+    final session =
+        widget.room.getComponent<VoipRoomComponent>()?.currentSession;
+    if (identical(session, voiceSession)) return;
+
+    voiceLevelSub?.cancel();
+    voiceSession = session;
+    voiceLevelSub =
+        session?.onUpdateVolumeVisualizers.listen((_) => updateSpeaking());
+    updateSpeaking();
+  }
+
+  /// Everyone whose voice is coming through right now, ourselves included.
+  /// Screen share audio is not someone talking.
+  void updateSpeaking() {
+    final session = voiceSession;
+    final speaking = session == null
+        ? const <String>{}
+        : session.streams
+            .where((stream) =>
+                stream.type != VoipStreamType.screenshare &&
+                stream.type != VoipStreamType.screenshareAudio &&
+                stream.audiolevel > 0.5)
+            .map((stream) => stream.streamUserId)
+            .toSet();
+
+    if (setEquals(speaking, speakingMembers)) return;
+    if (!mounted) return;
+    setState(() => speakingMembers = speaking);
   }
 
   void onCalendarEventsChanged(void event) {
@@ -389,6 +437,16 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         avatar: member.avatar,
         avatarPlaceholderColor: member.defaultColor,
         avatarPlaceholderText: member.displayName,
+        // Scaled down from the call tiles to stay inside this row.
+        avatarBuilder: (avatar) => SpeakingIndicator(
+          // Voice members only, not people in a third party activity.
+          speaking: showActivityIcons && speakingMembers.contains(identifier),
+          radius: 12,
+          ringGap: 1.5,
+          ringWidth: 2,
+          waveTravel: 5,
+          child: avatar,
+        ),
         footer: canShowActivityIcons
             ? Padding(
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),

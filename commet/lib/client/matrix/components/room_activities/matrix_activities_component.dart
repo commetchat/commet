@@ -82,10 +82,9 @@ class MatrixActivitiesComponent
 
   @override
   List<RoomActivitySession> getSessions() {
-    final state = room.matrixRoom.states[callMemberStateEvent];
-    if (state == null) {
-      return [];
-    }
+    // No membership state is not the end of it: people can be in our LiveKit
+    // room with their membership gone (see below).
+    final state = room.matrixRoom.states[callMemberStateEvent] ?? const {};
 
     List<RoomActivitySession> activities = List.empty(growable: true);
     final now = DateTime.now();
@@ -164,17 +163,29 @@ class MatrixActivitiesComponent
       }
     }
 
-    final call = activities.firstWhereOrNull((a) => a.application == "m.call");
     final session = _callManager?.getCallInRoom(client, room.identifier);
-    if (call != null && session != null) {
+    if (session != null) {
+      var call = activities.firstWhereOrNull((a) => a.application == "m.call");
+      if (call == null) {
+        call = RoomActivitySession(
+            participants: {},
+            application: "m.call",
+            icon: ImageOrIcon(icon: Icons.call),
+            thirdparty: false);
+        activities.add(call);
+      }
       _applyCallStreams(call, session);
+      if (call.participants.isEmpty) activities.remove(call);
     }
 
     return activities;
   }
 
   /// For people in our own call, LiveKit is right away what their
-  /// memberships only say after a debounced write and a sync.
+  /// memberships only say after a debounced write and a sync. It also lists
+  /// who is in the call: a membership can lapse while its owner is still
+  /// connected (a missed heartbeat fires the delayed leave), and they must
+  /// not vanish from the list of someone who can hear them.
   static void _applyCallStreams(RoomActivitySession call, VoipSession session) {
     final inCall = <String, Set<LiveMedia>>{};
     final voice = <String, Set<VoiceState>>{};
@@ -196,6 +207,7 @@ class MatrixActivitiesComponent
           break;
       }
     }
+    call.participants.addAll(inCall.keys);
     call.liveMedia.addAll(inCall);
     call.voiceState.addAll(voice);
   }

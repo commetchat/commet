@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/anchored_popover.dart';
@@ -90,7 +92,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
       }),
       widget.session.onUpdateVolumeVisualizers.listen((_) async {
         await widget.session.updateStats();
-        audioLevel.animateTo(widget.session.generalAudioLevel);
+        audioLevel.animateTo(localAudioLevel);
       })
     ];
 
@@ -106,6 +108,18 @@ class _CallSessionPanelState extends State<CallSessionPanel>
     soundboard.release();
     super.dispose();
   }
+
+  /// How loud we are in the call: only our own outgoing media, so the
+  /// indicator shows whether we are being heard rather than whether anyone
+  /// is talking. Screen share audio is not us talking. A legacy call carries
+  /// the microphone in a stream typed video while the camera is on, so the
+  /// camera stream counts too.
+  double get localAudioLevel => widget.session.streams
+      .where((stream) =>
+          stream.direction == VoipStreamDirection.outgoing &&
+          stream.type != VoipStreamType.screenshare &&
+          stream.type != VoipStreamType.screenshareAudio)
+      .fold(0.0, (level, stream) => max(level, stream.audiolevel));
 
   void openRoom() {
     EventBus.doOpenRoom(widget.session.roomId,

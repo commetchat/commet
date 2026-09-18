@@ -10,6 +10,9 @@ class SpeakingIndicator extends StatefulWidget {
     required this.speaking,
     required this.radius,
     required this.child,
+    this.ringGap = 3,
+    this.ringWidth = 3,
+    this.waveTravel = 20,
     super.key,
   });
 
@@ -18,6 +21,14 @@ class SpeakingIndicator extends StatefulWidget {
   final bool speaking;
   final double radius;
   final Widget child;
+
+  /// Space between the avatar and the solid ring.
+  final double ringGap;
+  final double ringWidth;
+
+  /// How far past the ring the waves ripple. Small avatars in tight rows
+  /// need less, or the waves spill into their neighbours.
+  final double waveTravel;
 
   @override
   State<SpeakingIndicator> createState() => _SpeakingIndicatorState();
@@ -75,6 +86,9 @@ class _SpeakingIndicatorState extends State<SpeakingIndicator>
         fade: fade,
         waves: waves,
         radius: widget.radius,
+        ringGap: widget.ringGap,
+        ringWidth: widget.ringWidth,
+        waveTravel: widget.waveTravel,
       ),
       child: widget.child,
     );
@@ -86,15 +100,18 @@ class _SpeakingPainter extends CustomPainter {
     required this.fade,
     required this.waves,
     required this.radius,
+    required this.ringGap,
+    required this.ringWidth,
+    required this.waveTravel,
   }) : super(repaint: Listenable.merge([fade, waves]));
 
   final Animation<double> fade;
   final Animation<double> waves;
   final double radius;
+  final double ringGap;
+  final double ringWidth;
+  final double waveTravel;
 
-  static const double ringGap = 3;
-  static const double ringWidth = 3;
-  static const double waveTravel = 20;
   static const int waveCount = 2;
 
   @override
@@ -127,6 +144,9 @@ class _SpeakingPainter extends CustomPainter {
   @override
   bool shouldRepaint(_SpeakingPainter oldDelegate) =>
       oldDelegate.radius != radius ||
+      oldDelegate.ringGap != ringGap ||
+      oldDelegate.ringWidth != ringWidth ||
+      oldDelegate.waveTravel != waveTravel ||
       oldDelegate.fade != fade ||
       oldDelegate.waves != waves;
 }

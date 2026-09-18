@@ -17,7 +17,8 @@ import 'package:window_manager/window_manager.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 /// A call stream covering the whole screen: the app window goes fullscreen
-/// (the browser tab on web) and the stream fills it edge to edge.
+/// (the browser tab on web) and the stream fills most of it, inset from the
+/// edges.
 class VoipFullscreenStreamView extends StatefulWidget {
   const VoipFullscreenStreamView(
       {required this.stream, required this.session, super.key});
@@ -64,6 +65,12 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
       desc: "Button that leaves the fullscreen view of a call stream");
 
   static const _controlsTimeout = Duration(milliseconds: 2500);
+
+  /// Share of the screen the stream takes, leaving a black margin round it.
+  static const double _streamScale = 0.95;
+
+  /// Up from tiamat's default 15.
+  static const double _buttonRadius = 20;
 
   RTCScreenShareAnnotationSession? annotationSession;
   RTCScreenShareAnnotationComponent? component;
@@ -150,26 +157,58 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
+            // Inset from the screen edges rather than filling them.
             Positioned.fill(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return MouseRegion(
-                    child: VoipStreamView(
-                      stream,
-                      widget.session,
-                      audioStream: audioStream,
-                      canFullscreen: false,
-                      fit: BoxFit.contain,
-                    ),
-                    onHover: (event) {
-                      final x = event.localPosition.dx / constraints.maxWidth;
-                      final y = event.localPosition.dy / constraints.maxHeight;
+              child: Center(
+                child: FractionallySizedBox(
+                  widthFactor: _streamScale,
+                  heightFactor: _streamScale,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return MouseRegion(
+                        child: VoipStreamView(
+                          stream,
+                          widget.session,
+                          audioStream: audioStream,
+                          canFullscreen: false,
+                          fit: BoxFit.contain,
+                        ),
+                        onHover: (event) {
+                          final x =
+                              event.localPosition.dx / constraints.maxWidth;
+                          final y =
+                              event.localPosition.dy / constraints.maxHeight;
 
-                      annotationSession?.setCursorPosition(
-                          streamId: widget.stream.streamId, x: x, y: y);
+                          annotationSession?.setCursorPosition(
+                              streamId: widget.stream.streamId, x: x, y: y);
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                ),
+              ),
+            ),
+            // A light grey wash rising from the bottom while the controls
+            // are up, so they read against a bright stream.
+            Positioned.fill(
+              child: IgnorePointer(
+                child: AnimatedOpacity(
+                  opacity: showControls ? 1 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        stops: const [0, 0.35],
+                        colors: [
+                          Colors.grey.withValues(alpha: 0.2),
+                          Colors.grey.withValues(alpha: 0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
             SafeArea(
@@ -179,10 +218,11 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
                   opacity: showControls ? 1 : 0,
                   duration: const Duration(milliseconds: 200),
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Wrap(spacing: 5, children: [
+                    padding: const EdgeInsets.all(12),
+                    child: Wrap(spacing: 8, children: [
                       if (component != null)
                         tiamat.CircleButton(
+                          radius: _buttonRadius,
                           icon: Icons.mouse,
                           onPressed: () async {
                             var session = await component
@@ -196,6 +236,7 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
                       Tooltip(
                         message: labelExitFullscreen,
                         child: tiamat.CircleButton(
+                          radius: _buttonRadius,
                           icon: Icons.fullscreen_exit,
                           onPressed: close,
                         ),

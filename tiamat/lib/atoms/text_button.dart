@@ -215,8 +215,12 @@ class TextButton extends StatelessWidget {
     this.customBuilder,
     this.softwrap,
     this.footer,
+    this.avatarBuilder,
   });
   final String text;
+
+  /// Wraps the avatar, e.g. to draw a speaking ring around it.
+  final Widget Function(Widget avatar)? avatarBuilder;
 
   final IconData? icon;
   final ImageProvider? avatar;
@@ -254,11 +258,13 @@ class TextButton extends StatelessWidget {
                       width: avatarRadius * 2,
                       height: avatarRadius * 2,
                       child: useAvatar
-                          ? Avatar(
-                              radius: avatarRadius,
-                              image: avatar,
-                              placeholderColor: avatarPlaceholderColor,
-                              placeholderText: avatarPlaceholderText,
+                          ? (avatarBuilder ?? (avatar) => avatar)(
+                              Avatar(
+                                radius: avatarRadius,
+                                image: avatar,
+                                placeholderColor: avatarPlaceholderColor,
+                                placeholderText: avatarPlaceholderText,
+                              ),
                             )
                           : Icon(
                               size: iconSize,
