@@ -115,4 +115,57 @@ void main() {
     await tester.pump();
     expect(stream.volume, 0);
   });
+
+  testWidgets('the pill stays compact when given the tile height',
+      (tester) async {
+    final stream = _ScreenAudio(0.6);
+    await tester.pumpWidget(MaterialApp(
+      theme: ThemeData.light().copyWith(extensions: const [ThemeSettings()]),
+      home: Scaffold(
+        body: Align(
+          alignment: Alignment.bottomLeft,
+          child: SizedBox(
+            width: 250,
+            height: 600,
+            child: StreamVolumeControl(stream),
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+
+    // The tile's bottom-left corner, as the call grid lays the overlay out.
+    expect(tester.getSize(find.byType(Slider)).height, lessThan(80));
+  });
+
+  testWidgets('the pill shrink-wraps the overlay instead of the tile',
+      (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      theme: ThemeData.light().copyWith(extensions: const [ThemeSettings()]),
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 250,
+            height: 600,
+            // The overlay's constraints: the tile's Stack offers loose ones.
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: StreamVolumeControl(_ScreenAudio(0.6)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+
+    expect(
+        tester.getSize(find.byType(StreamVolumeControl)).height, lessThan(80));
+  });
 }
