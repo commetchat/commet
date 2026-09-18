@@ -806,9 +806,18 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   @override
   bool get isMicrophoneMuted => livekitRoom.localParticipant?.isMuted ?? false;
 
+  /// Whether a screen capture this session owns is still running.
+  bool get _hasActiveCapture => _captureTracks.any((track) => track.isActive);
+
+  /// Sharing follows the capture, not only LiveKit: a full reconnect empties
+  /// the publication map while the capture keeps running, and the app must not
+  /// report the screen as private then (issue #65). An Android capture,
+  /// created by the SDK, is owned through the publication event and reads the
+  /// same way; only how it is started and stopped is left to the SDK.
   @override
   bool get isSharingScreen =>
-      livekitRoom.localParticipant?.isScreenShareEnabled() ?? false;
+      (livekitRoom.localParticipant?.isScreenShareEnabled() ?? false) ||
+      _hasActiveCapture;
 
   @override
   Stream<void> get onStateChanged => _stateChanged.stream;
@@ -1001,7 +1010,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       lk.TrackSource.screenShareVideo,
       lk.TrackSource.screenShareAudio,
     ].any((source) => participant?.getTrackPublicationBySource(source) != null);
-    final stillCapturing = _captureTracks.any((track) => track.isActive);
+    final stillCapturing = _hasActiveCapture;
     if (stillPublished || stillCapturing) {
       throw StateError(
           "The screen share could not be stopped: it still looks live");
