@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/screen_share_stop_reporting.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -38,7 +39,7 @@ class _CallWidgetState extends State<CallWidget> {
   }
 
   Future<void> stopScreenshare() {
-    return widget.session.stopScreenshare();
+    return stopScreenshareOrReportFailure(context, widget.session);
   }
 
   Future<void> setMicrophoneMute(bool isMuted) {
