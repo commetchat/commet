@@ -517,21 +517,29 @@ class _StreamVolumeControlState extends State<StreamVolumeControl>
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(4, 4, 12, 4),
+        // The control is laid out with the tile's constraints, so both the
+        // button and the slider have to be bounded: either one would otherwise
+        // stretch the pill to the tile height. See #61.
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            tiamat.IconButton(
-              icon: volume == 0
-                  ? Icons.volume_off_rounded
-                  : volume < 0.5
-                      ? Icons.volume_down_rounded
-                      : Icons.volume_up_rounded,
-              iconColor: Colors.white,
-              size: 20,
-              onPressed: toggleMute,
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: tiamat.IconButton(
+                icon: volume == 0
+                    ? Icons.volume_off_rounded
+                    : volume < 0.5
+                        ? Icons.volume_down_rounded
+                        : Icons.volume_up_rounded,
+                iconColor: Colors.white,
+                size: 20,
+                onPressed: toggleMute,
+              ),
             ),
             SizedBox(
               width: 90,
+              height: 40,
               child: SliderTheme(
                 data: VideoPlayerState.compactSliderTheme(context),
                 child: Slider(
