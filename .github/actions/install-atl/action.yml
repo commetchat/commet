@@ -1,0 +1,62 @@
+name: Install ATL
+description: >-
+  Installs the Visual C++ ATL component. The Blacksmith Windows image ships VS
+  Build Tools without it, and flutter_local_notifications_windows needs
+  atlbase.h to build.
+
+runs:
+  using: composite
+  steps:
+    - name: Install Visual C++ ATL
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+
+        $installerRoot = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer'
+        $vswhere = Join-Path $installerRoot 'vswhere.exe'
+        if (-not (Test-Path $vswhere)) {
+          throw "vswhere.exe not found at $vswhere"
+        }
+
+        $vsPath = & $vswhere -latest -products * -property installationPath | Select-Object -First 1
+        if (-not $vsPath) {
+          throw 'No Visual Studio installation found'
+        }
+
+        $msvc = Join-Path $vsPath 'VC\Tools\MSVC'
+        if (Get-ChildItem $msvc -Recurse -Filter atlbase.h -ErrorAction SilentlyContinue) {
+          Write-Host "ATL is already installed in $vsPath"
+          exit 0
+        }
+
+        $installer = Join-Path $installerRoot 'vs_installer.exe'
+        if (-not (Test-Path $installer)) {
+          $installer = Join-Path $installerRoot 'setup.exe'
+        }
+        if (-not (Test-Path $installer)) {
+          throw "Visual Studio Installer not found in $installerRoot"
+        }
+
+        Write-Host "Installing Microsoft.VisualStudio.Component.VC.ATL into $vsPath"
+        $process = Start-Process -FilePath $installer -ArgumentList @(
+          'modify',
+          '--installPath', "`"$vsPath`"",
+          '--add', 'Microsoft.VisualStudio.Component.VC.ATL',
+          '--quiet',
+          '--norestart'
+        ) -Wait -PassThru
+
+        # 3010 is success with a pending reboot; the build can go on.
+        if ($process.ExitCode -ne 0 -and $process.ExitCode -ne 3010) {
+          throw "Visual Studio Installer exited with code $($process.ExitCode)"
+        }
+
+        $deadline = (Get-Date).AddMinutes(5)
+        while (-not (Get-ChildItem $msvc -Recurse -Filter atlbase.h -ErrorAction SilentlyContinue)) {
+          if ((Get-Date) -gt $deadline) {
+            throw 'ATL install reported success but atlbase.h is still missing'
+          }
+          Start-Sleep -Seconds 10
+        }
+
+        Write-Host 'ATL installed'
