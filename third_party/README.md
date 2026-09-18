@@ -19,4 +19,8 @@ capture in `getDisplayMedia({audio: true})` on Windows (WASAPI process
 loopback) and Linux (PulseAudio / PipeWire monitor source, needs `libpulse`
 dev headers at build time). It pulls the prebuilt libwebrtc `m150.7871.01` at
 configure time into `flutter-webrtc/third_party/{downloads,libwebrtc}/`, both
-gitignored. No `// COMMET` changes yet.
+gitignored. `// COMMET` changes: `LoopbackCapturer::SetRawTap` (packets as
+they come off the OS, fed by both capturers) and `commet_system_audio_reference.h`
+with the `commetStartSystemAudioReference` / `commetStopSystemAudioReference`
+methods in `flutter_webrtc.cc`, which give the voice DSP the system mix as a
+loudspeaker reference.

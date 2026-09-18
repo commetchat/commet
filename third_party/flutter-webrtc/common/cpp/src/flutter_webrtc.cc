@@ -1299,6 +1299,33 @@ void FlutterWebRTC::HandleMethodCall(
       RTCLoggingSeverity severity = str2LogSeverity(severityStr);
       initLoggerCallback(severity);
     }
+  } else if (method_call.method_name().compare(
+                 "commetStartSystemAudioReference") == 0) {
+    // COMMET: feed the system mix to Commet's voice DSP, see
+    // commet_system_audio_reference.h. `ctx` and `feed` are the Rust handle
+    // and the address of commet_dsp_feed_reference, as pointer-sized ints.
+    if (!method_call.arguments()) {
+      result->Error("Bad Arguments", "Null arguments received");
+      return;
+    }
+    const EncodableMap params =
+        GetValue<EncodableMap>(*method_call.arguments());
+    const int64_t ctx = findLongInt(params, "ctx");
+    const int64_t feed = findLongInt(params, "feed");
+    if (ctx <= 0 || feed <= 0) {
+      result->Error("Bad Arguments", "ctx and feed are required");
+      return;
+    }
+    const bool ok = commet_reference_.Start(
+        reinterpret_cast<void*>(static_cast<uintptr_t>(ctx)),
+        reinterpret_cast<CommetSystemAudioReference::FeedFn>(
+            static_cast<uintptr_t>(feed)));
+    result->Success(EncodableValue(ok));
+  } else if (method_call.method_name().compare(
+                 "commetStopSystemAudioReference") == 0) {
+    // COMMET: once this returns the Rust handle is no longer referenced.
+    commet_reference_.Stop();
+    result->Success(EncodableValue(true));
   } else {
     if (HandleFrameCryptorMethodCall(method_call, std::move(result), &result)) {
       return;

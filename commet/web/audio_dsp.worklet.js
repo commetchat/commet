@@ -44,7 +44,7 @@ class CommetDspProcessor extends AudioWorkletProcessor {
         if (this.destroyed) return;
         const ex = instance.exports;
         const abi = ex.commet_dsp_abi_version();
-        if (abi !== 1) {
+        if (abi !== 2) {
           this.port.postMessage({ type: "error", message: "audio_dsp ABI " + abi + " unsupported" });
           return;
         }
@@ -74,7 +74,10 @@ class CommetDspProcessor extends AudioWorkletProcessor {
     view.setUint8(0, p.noiseSuppression ? 1 : 0);
     view.setUint8(1, p.gateMode | 0);
     view.setUint8(2, p.farEndDucking ? 1 : 0);
-    view.setUint8(3, 0);
+    // Only WebRTC playout is visible to a browser, so this acts on the
+    // remote participants coming back out of the speakers, not on anything
+    // else playing on the machine.
+    view.setUint8(3, p.speakerBleed ? 1 : 0);
     view.setFloat32(4, I16_SCALE, true);
     view.setFloat32(8, num(p.gateThresholdDb, -50), true);
     view.setFloat32(12, num(p.gateFloorDb, -40), true);

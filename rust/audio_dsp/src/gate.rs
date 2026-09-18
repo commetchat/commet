@@ -9,13 +9,28 @@ pub enum GateMode {
     Off,
     /// Open when the frame level exceeds `threshold_db`.
     Manual,
-    /// Open when RNNoise's voice probability says there is speech.
+    /// Open when RNNoise's voice probability says there is speech and the
+    /// level is above `threshold_db`.
     Auto,
+}
+
+/// What the loudspeaker bleed detector (`crate::bleed`) made of this frame.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct BleedState {
+    /// The microphone holds nothing but what the loudspeakers play: keep the
+    /// gate shut, whatever the VAD says.
+    pub suppress: bool,
+    /// Whether the user is talking over the far end, judged against the
+    /// playout reference. `None` when that judgement is not available, in
+    /// which case the ducker falls back to the VAD.
+    pub far_talk: Option<bool>,
 }
 
 #[derive(Clone, Copy, Debug)]
 pub struct GateConfig {
     pub mode: GateMode,
+    /// Manual mode opens above this level. Automatic mode requires it as
+    /// well as the VAD, so the slider is a floor in both modes.
     pub threshold_db: f32,
     /// Gain applied while closed, in dB (negative). Never a hard mute so
     /// residual room tone stays natural.
@@ -105,7 +120,15 @@ impl Gate {
         self.far_peak_db = -120.0;
     }
 
-    /// Called from the render side with the far-end level of one block.
+    /// Advance the far-end peak hold by one block. Called once per capture
+    /// block, after any `observe_far_end` for it.
+    pub fn tick_far_end(&mut self) {
+        if self.far_hold > 0 {
+            self.far_hold -= 1;
+        }
+    }
+
+    /// The far-end level of one block.
     pub fn observe_far_end(&mut self, level_db: f32) {
         if level_db >= self.far_peak_db || self.far_hold == 0 {
             self.far_peak_db = level_db;
@@ -132,28 +155,34 @@ impl Gate {
     /// Decide the target gain for this frame and apply smoothed gain in place.
     /// `level_db` is the frame level before gating, `vad` RNNoise's speech
     /// probability (0 when noise suppression is off: we then fall back to the
-    /// level threshold in Auto mode too).
-    pub fn process(&mut self, cfg: &GateConfig, level_db: f32, vad: f32, have_vad: bool, buf: &mut [f32]) {
-        if self.far_hold > 0 {
-            self.far_hold -= 1;
-        }
-
+    /// level threshold in Auto mode too). `bleed` comes from the loudspeaker
+    /// bleed detector; `BleedState::default()` when there is none.
+    pub fn process(
+        &mut self,
+        cfg: &GateConfig,
+        level_db: f32,
+        vad: f32,
+        have_vad: bool,
+        bleed: BleedState,
+        buf: &mut [f32],
+    ) {
         let mut target = 1.0f32;
 
         if cfg.mode != GateMode::Off {
-            let open_cond = match cfg.mode {
-                GateMode::Manual => level_db > cfg.threshold_db,
-                GateMode::Auto => {
-                    if have_vad {
-                        // hysteresis on the probability
-                        let thr = if self.open { VAD_CLOSE } else { VAD_OPEN };
-                        vad > thr && level_db > SILENCE_FLOOR_DB
-                    } else {
-                        level_db > cfg.threshold_db
+            let open_cond = !bleed.suppress
+                && match cfg.mode {
+                    GateMode::Manual => level_db > cfg.threshold_db,
+                    GateMode::Auto => {
+                        if have_vad {
+                            // hysteresis on the probability
+                            let thr = if self.open { VAD_CLOSE } else { VAD_OPEN };
+                            vad > thr && level_db > cfg.threshold_db.max(SILENCE_FLOOR_DB)
+                        } else {
+                            level_db > cfg.threshold_db
+                        }
                     }
-                }
-                GateMode::Off => true,
-            };
+                    GateMode::Off => true,
+                };
             if open_cond {
                 self.open = true;
                 self.hold = HOLD_FRAMES;
@@ -170,7 +199,14 @@ impl Gate {
         }
 
         if cfg.duck_enabled && self.far_hold > 0 && self.far_peak_db > cfg.duck_far_threshold_db {
-            let speaking = if have_vad { vad > DUCK_VAD_VETO } else { level_db > cfg.threshold_db };
+            // The VAD cannot tell the user from the far end coming back out
+            // of the loudspeakers, so a level comparison against the playout
+            // wins whenever the bleed detector has one.
+            let speaking = match bleed.far_talk {
+                Some(talking) => talking,
+                None if have_vad => vad > DUCK_VAD_VETO,
+                None => level_db > cfg.threshold_db,
+            };
             if !speaking {
                 target *= db_to_gain(cfg.duck_depth_db);
             }
@@ -213,14 +249,14 @@ mod tests {
         let mut b = frame(1000.0);
         for _ in 0..60 {
             b = frame(1000.0);
-            g.process(&cfg, -50.0, 0.0, false, &mut b);
+            g.process(&cfg, -50.0, 0.0, false, BleedState::default(), &mut b);
         }
         assert!(!g.is_open());
         let floor = db_to_gain(cfg.floor_db);
         assert!((b[479] / 1000.0 - floor).abs() < 0.02, "closed gain {}", b[479] / 1000.0);
         // Loud frame: opens within the frame (5 ms attack).
         let mut b = frame(1000.0);
-        g.process(&cfg, -10.0, 0.0, false, &mut b);
+        g.process(&cfg, -10.0, 0.0, false, BleedState::default(), &mut b);
         assert!(g.is_open());
         assert!(b[479] / 1000.0 > 0.9, "open gain {}", b[479] / 1000.0);
     }
@@ -230,18 +266,18 @@ mod tests {
         let cfg = GateConfig { mode: GateMode::Auto, ..Default::default() };
         let mut g = Gate::new(48000);
         let mut b = frame(1.0);
-        g.process(&cfg, -20.0, 0.9, true, &mut b);
+        g.process(&cfg, -20.0, 0.9, true, BleedState::default(), &mut b);
         assert!(g.is_open());
         // vad drops to 0.4: above close threshold, stays open.
-        g.process(&cfg, -20.0, 0.4, true, &mut b);
+        g.process(&cfg, -20.0, 0.4, true, BleedState::default(), &mut b);
         assert!(g.is_open());
         // vad 0.1 for fewer than HOLD_FRAMES frames keeps it open (hold).
         for _ in 0..(HOLD_FRAMES - 1) {
-            g.process(&cfg, -20.0, 0.1, true, &mut b);
+            g.process(&cfg, -20.0, 0.1, true, BleedState::default(), &mut b);
         }
         assert!(g.is_open());
-        g.process(&cfg, -20.0, 0.1, true, &mut b);
-        g.process(&cfg, -20.0, 0.1, true, &mut b);
+        g.process(&cfg, -20.0, 0.1, true, BleedState::default(), &mut b);
+        g.process(&cfg, -20.0, 0.1, true, BleedState::default(), &mut b);
         assert!(!g.is_open());
     }
 
@@ -254,7 +290,7 @@ mod tests {
         for _ in 0..40 {
             b = frame(1000.0);
             g.observe_far_end(-20.0);
-            g.process(&cfg, -30.0, 0.05, true, &mut b);
+            g.process(&cfg, -30.0, 0.05, true, BleedState::default(), &mut b);
         }
         let ducked = b[479] / 1000.0;
         assert!((gain_to_db(ducked) - cfg.duck_depth_db).abs() < 1.0, "ducked {}", gain_to_db(ducked));
@@ -262,7 +298,7 @@ mod tests {
         for _ in 0..40 {
             b = frame(1000.0);
             g.observe_far_end(-20.0);
-            g.process(&cfg, -20.0, 0.9, true, &mut b);
+            g.process(&cfg, -20.0, 0.9, true, BleedState::default(), &mut b);
         }
         assert!(b[479] / 1000.0 > 0.95);
     }

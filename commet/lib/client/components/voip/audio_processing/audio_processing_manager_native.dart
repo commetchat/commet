@@ -30,8 +30,10 @@ final class DspParams extends Struct {
   external int gateMode;
   @Uint8()
   external int farEndDucking;
+
+  /// Close the gate on loudspeaker bleed. Was padding before ABI 2.
   @Uint8()
-  external int pad;
+  external int speakerBleed;
   @Float()
   external double inputScale;
   @Float()
@@ -66,12 +68,14 @@ typedef _InitNative = Void Function(Pointer<Void>, Int32, Int32);
 typedef _ProcessNative = Void Function(
     Pointer<Void>, Int32, Int32, Int32, Pointer<Float>);
 typedef _ResetNative = Void Function(Pointer<Void>, Int32);
+typedef _FeedReferenceNative = Void Function(
+    Pointer<Void>, Pointer<Int16>, Size, Size, Int32);
 
 class _Bindings {
   final DynamicLibrary lib;
   _Bindings(this.lib);
 
-  static const expectedAbi = 1;
+  static const expectedAbi = 2;
 
   late final int Function() abiVersion =
       lib.lookupFunction<Uint32 Function(), int Function()>(
@@ -140,6 +144,13 @@ class _Bindings {
   late final int renderReset = lib
       .lookup<NativeFunction<_ResetNative>>('commet_dsp_render_reset')
       .address;
+
+  // Handed to the vendored flutter-webrtc plugin, which calls it from its
+  // loopback capture thread with the system mix (see
+  // third_party/flutter-webrtc/common/cpp/include/commet_system_audio_reference.h).
+  late final int feedReference = lib
+      .lookup<NativeFunction<_FeedReferenceNative>>('commet_dsp_feed_reference')
+      .address;
 }
 
 /// Linux and Windows: hooks rust/audio_dsp (shipped inside
@@ -161,6 +172,11 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   Timer? _pollTimer;
   bool _installed = false;
   bool _inCall = false;
+
+  /// Whether the flutter-webrtc loopback is feeding the system mix to the
+  /// bleed detector. Start and stop are serialized through [_referenceOps].
+  bool _referenceRunning = false;
+  Future<void> _referenceOps = Future.value();
 
   _MicLoopback? _loopback;
   bool _monitor = false;
@@ -257,6 +273,7 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
     _installed = true;
     Log.i("Voice DSP: installed on the WebRTC audio pipeline");
     _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
+    await _syncReference();
   }
 
   Future<void> _uninstall() async {
@@ -264,10 +281,55 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
     _installed = false;
     _pollTimer?.cancel();
     _pollTimer = null;
+    // The loopback thread calls into the Rust handle too: detach it first.
+    await _syncReference();
     // Detach from the audio thread before freeing the Rust state.
     await lk.Native.clearExternalAudioProcessing();
     _teardown();
     Log.i("Voice DSP: removed from the WebRTC audio pipeline");
+  }
+
+  /// Runs the system-audio loopback that feeds the bleed detector exactly
+  /// while the DSP is installed and "filter sound from your speakers" is on.
+  ///
+  /// On Linux the loopback is the default sink's monitor, which carries our
+  /// own playback too: during the microphone test with "Hear myself" on, it
+  /// would hear the user's voice coming back out of the speakers and hold
+  /// the voice back. It stays off then. (On Windows the loopback excludes
+  /// our own process.)
+  Future<void> _syncReference() {
+    return _referenceOps = _referenceOps.then((_) async {
+      final b = _bindings;
+      final handle = _handle;
+      final want = _installed &&
+          b != null &&
+          handle != null &&
+          settings.speakerBleed &&
+          !(PlatformUtils.isLinux && isTesting && _monitor);
+      if (want == _referenceRunning) return;
+      try {
+        if (want) {
+          final ok = await webrtc.WebRTC.invokeMethod<bool, dynamic>(
+              'commetStartSystemAudioReference',
+              {'ctx': handle.address, 'feed': b.feedReference});
+          _referenceRunning = ok == true;
+          Log.i(_referenceRunning
+              ? "Voice DSP: listening to system audio for speaker bleed"
+              : "Voice DSP: no system audio capture, speaker bleed is only "
+                  "judged against call audio");
+        } else {
+          // Only reached after the plugin answered a start, so the method
+          // exists, and its stop handler cannot fail: once this returns the
+          // capture thread no longer holds the Rust handle.
+          _referenceRunning = false;
+          await webrtc.WebRTC.invokeMethod<bool, dynamic>(
+              'commetStopSystemAudioReference');
+          Log.i("Voice DSP: stopped listening to system audio");
+        }
+      } catch (e, s) {
+        Log.onError(e, s, content: "Voice DSP: system audio reference");
+      }
+    });
   }
 
   void _teardown() {
@@ -296,6 +358,7 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
     if (b == null || _handle == null || _params == null) return;
     _writeParams(settings);
     b.setParams(_handle!, _params!);
+    await _syncReference();
   }
 
   @override
@@ -324,6 +387,7 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
       await _install();
       if (!_installed) return;
       started = await _startLoopback();
+      await _syncReference();
       if (!started) await _uninstall();
       notifyStateChanged();
     });
@@ -362,6 +426,7 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   Future<void> setMicTestMonitor(bool enabled) async {
     _monitor = enabled;
     _loopback?.setMonitor(enabled);
+    await _syncReference();
     notifyStateChanged();
   }
 
@@ -370,7 +435,7 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
     params.noiseSuppression = s.noiseSuppression ? 1 : 0;
     params.gateMode = s.gateMode;
     params.farEndDucking = s.farEndDucking ? 1 : 0;
-    params.pad = 0;
+    params.speakerBleed = s.speakerBleed ? 1 : 0;
     // WebRTC hands us int16-scale floats.
     params.inputScale = 1.0;
     params.gateThresholdDb = s.gateThresholdDb;

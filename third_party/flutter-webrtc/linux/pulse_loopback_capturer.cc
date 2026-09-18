@@ -305,6 +305,10 @@ void PulseLoopbackCapturer::CaptureThread() {
     }
     if (!running_) break;
 
+    // COMMET: see LoopbackCapturer::RawTap.
+    if (raw_tap_) {
+      raw_tap_(buf.data(), kFramesPer10ms, kChannels, kSampleRate);
+    }
     if (source_) {
       source_->CaptureFrame(buf.data(), kBitsPerSample, kSampleRate, kChannels,
                             kFramesPer10ms);

@@ -110,6 +110,8 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       _dspNoiseSuppression = now;
       _reapplyNoiseSuppression();
     });
+    _dspWatchdog =
+        Timer.periodic(const Duration(seconds: 1), (_) => _checkDspAlive());
 
     startHeartbeat().catchError((Object e, StackTrace s) {
       Log.onError(e, s, content: "Could not start the membership heartbeat");
@@ -122,6 +124,40 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
   StreamSubscription? _settingsSub;
   bool _dspNoiseSuppression = false;
+
+  /// The microphone track is created with WebRTC's suppressor off whenever
+  /// our DSP is supported (MatrixLivekitBackend.join), which is decided by
+  /// the library loading, before anything has been captured. If the DSP
+  /// then never receives audio, the call would have neither suppressor.
+  /// Once that has been seen for [_dspStallLimit] of live microphone, WebRTC's
+  /// suppressor goes back on for the rest of the call.
+  bool _dspFailed = false;
+  DateTime? _dspStalledSince;
+  Timer? _dspWatchdog;
+  static const _dspStallLimit = Duration(seconds: 4);
+
+  void _checkDspAlive() {
+    if (_dspFailed || state == VoipState.ended) return;
+    final dsp = AudioProcessingManager.instance;
+    final pub =
+        livekitRoom.localParticipant?.audioTrackPublications.firstOrNull;
+    final micLive = pub != null && pub.track != null && !pub.muted;
+    if (!dsp.isSupported || !_dspNoiseSuppression || !micLive) {
+      _dspStalledSince = null;
+      return;
+    }
+    if (dsp.isProcessing) {
+      _dspStalledSince = null;
+      return;
+    }
+    final since = _dspStalledSince ??= DateTime.now();
+    if (DateTime.now().difference(since) < _dspStallLimit) return;
+    _dspFailed = true;
+    Log.w("Voice DSP: no microphone audio reached it in "
+        "${_dspStallLimit.inSeconds} s of live microphone; turning WebRTC's "
+        "noise suppression back on for this call");
+    _reapplyNoiseSuppression();
+  }
 
   lk.EventsListener<lk.RoomEvent>? _roomListener;
   Timer? _volumeTimer;
@@ -140,7 +176,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     final track = pub?.track;
     if (pub == null || track is! lk.LocalAudioTrack || pub.muted) return;
 
-    final wantWebrtcSuppression = !_dspNoiseSuppression;
+    final wantWebrtcSuppression = !_dspNoiseSuppression || _dspFailed;
     if (track.currentOptions.noiseSuppression == wantWebrtcSuppression) {
       return;
     }
@@ -825,6 +861,8 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       keyProvider?.dispose();
       _settingsSub?.cancel();
       _settingsSub = null;
+      _dspWatchdog?.cancel();
+      _dspWatchdog = null;
 
       // Bounded: these hang when the network is what broke, and the session
       // still has to end and release LiveKit. The delayed leave, or

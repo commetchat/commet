@@ -8,7 +8,8 @@ Status (2026-09-14): Phase 0 and Phase 1 code is written on branch
 `feature/voice-dsp`. Verified so far, all inside a Flutter 3.41.9 container
 mirroring CI:
 
-- `cargo test -p audio_dsp`: 17 tests pass; wasm build is 478 KB.
+- `cargo test -p audio_dsp`: 25 unit tests and 15 recording driven ones pass
+  (2026-09-17, see "Loudspeaker bleed"); wasm build is 483 KB.
 - `dart analyze` in `commet/`: no new issues. The vendored LiveKit files
   analyze clean.
 - `flutter build linux --debug`: passes, including the vendored C++ plugin
@@ -94,6 +95,12 @@ Native (Linux, Windows): mic → WebRTC ADM → APM (AEC3, NS off when ours is
 on, AGC off) → **capture post-processing hook → Rust** → Opus. Playout →
 **render pre-processing hook → Rust (level only)** → speakers. The hook is
 process-global on the shared APM, so it also covers legacy 1:1 calls.
+While the DSP is installed and "Filter out sound from your speakers" is on,
+the vendored flutter-webrtc also runs its system-audio loopback (WASAPI
+process loopback excluding ourselves on Windows, the default sink's monitor
+on Linux) and hands every packet to `commet_dsp_feed_reference` from its
+capture thread, ahead of the Windows feeder's 160 ms pre-buffer
+(`commet_system_audio_reference.h`, `LoopbackCapturer::SetRawTap`).
 
 Web: `getUserMedia` (browser AEC on, NS off, AGC on) →
 `MediaStreamAudioSourceNode` → **`commet-dsp` AudioWorklet (wasm)** →
@@ -108,16 +115,24 @@ buffers them into 480-sample frames, adding 10 ms of latency.
 ### Processing inside `audio_dsp`
 
 1. Resample to 48 kHz if needed (windowed-sinc FIR, `resample.rs`).
-2. RNNoise (`nnnoiseless`), which also yields a speech probability.
-3. Gate (`gate.rs`): manual threshold or VAD-driven with hysteresis
-   (open above 0.5, close below 0.3), 150 ms hold, 5 ms attack, 200 ms
-   release, closed gain -40 dB (not a hard mute).
-4. Ducker: when the far-end peak (300 ms hold) is above -45 dBFS and local
-   VAD is below 0.4, apply -20 dB. Local speech vetoes ducking.
-5. Resample back.
+2. Loudspeaker bleed (`bleed.rs`), against the playout and the system mix
+   separately: is there anything in the microphone the loudspeakers do not
+   explain? See "Loudspeaker bleed" below.
+3. RNNoise (`nnnoiseless`), which also yields a speech probability.
+4. Gate (`gate.rs`): manual threshold, or VAD-driven with hysteresis
+   (open above 0.5, close below 0.3) *and* above the same threshold, 150 ms
+   hold, 5 ms attack, 200 ms release, closed gain -40 dB (not a hard mute).
+   Held shut while step 2 says the microphone holds only bleed.
+5. Ducker: when the far-end peak (300 ms hold) is above -45 dBFS and the
+   user is not talking, apply -20 dB. "Talking" comes from step 2 when it has
+   learned the playout, from the VAD (below 0.4) otherwise.
+6. Resample back.
 
-Parameters and the report cross threads through atomics; the audio-thread
-entry points never allocate after construction (there is a test for it).
+Parameters and the report cross threads through atomics, and so do the
+render and reference levels (a `fetch_max` mailbox the capture side empties
+once per block; before ABI 2 the render thread wrote the gate's state
+directly). The audio-thread entry points never allocate after construction
+(there is a test for it).
 RNNoise does very little against pure full-band white noise; real noise is
 coloured and the fixtures reflect that.
 
@@ -147,7 +162,10 @@ receiving no frames. That is the first thing to read when the meter is dead.
 
 | Path | Role |
 |------|------|
-| `rust/audio_dsp/` | DSP crate, C ABI in `src/ffi.rs`, fixture in `testdata/` |
+| `rust/audio_dsp/` | DSP crate, C ABI in `src/ffi.rs`, loudspeaker bleed in `src/bleed.rs`, recordings in `testdata/` (see its README) |
+| `rust/audio_dsp/tests/speaker_bleed.rs` | what leaves the client with speakers and no headset, on real speech through a simulated room |
+| `third_party/flutter-webrtc/common/cpp/include/commet_system_audio_reference.h` | system mix to `commet_dsp_feed_reference`; `commetStartSystemAudioReference` / `commetStopSystemAudioReference` in `flutter_webrtc.cc` |
+| `third_party/flutter-webrtc/common/cpp/include/loopback_capturer.h`, `{windows/application,linux/pulse}_loopback_capturer.cc` | `SetRawTap`: packets as they come off the OS, before the Windows feeder's pre-buffer |
 | `rust/rust/src/lib.rs` | `pub use audio_dsp;` so the symbols ship in `librust_lib_commet` |
 | `third_party/livekit-client-sdk-flutter/shared_cpp/commet_external_audio_processing.h` | CustomProcessing adapters |
 | `third_party/livekit-client-sdk-flutter/{linux,windows}/livekit_plugin.cpp` | `commetSetExternalAudioProcessing` / `commetClearExternalAudioProcessing` |
@@ -160,15 +178,17 @@ receiving no frames. That is the first thing to read when the meter is dead.
 | `commet/scripts/prepare-web.sh` | builds `audio_dsp.wasm` |
 
 Preferences: `voipNoiseSuppression`, `voipInputSensitivityAuto`,
-`voipInputSensitivityDb`, `voipFarEndDucking`.
+`voipInputSensitivityDb`, `voipFarEndDucking`, `voipSpeakerBleed`.
 
-Vendored LiveKit changes are marked `// COMMET`.
+Vendored LiveKit and flutter-webrtc changes are marked `// COMMET`.
 
 ## Building and testing
 
 ```sh
-# Rust unit tests (17), including a synthesized speech fixture
+# 25 unit tests and 15 recording driven ones (tests/speaker_bleed.rs)
 cargo test -p audio_dsp
+# every scenario with its measured numbers
+cargo test -p audio_dsp --test speaker_bleed -- --nocapture
 # or without a local toolchain
 docker run --rm -v "$PWD":/w -w /w rust:1 cargo test -p audio_dsp
 
@@ -210,6 +230,117 @@ Ordered by how badly it hurts if wrong.
 7. **Packaged builds** (flatpak, .deb, MSIX, web bundle with
    `application/wasm` MIME type), not only `flutter run`.
 
+## Loudspeaker bleed
+
+Report (2026-09-17): "I could watch videos unmuted and nobody heard them,
+now they do", on a speakers-and-microphone setup with no headset.
+
+### What went wrong
+
+`tests/speaker_bleed.rs` puts real recordings (`testdata/README.md`)
+through a loudspeaker-and-room simulation (band limiting, 20 ms of air, a
+Schroeder room) and measures what leaves the client. Before the fix, at the
+shipping defaults:
+
+| Scenario, capture level | Attenuation | Gate open | VAD |
+|---|---|---|---|
+| user talking, -22 dBFS | 0.0 dB | 91 % | 0.67 |
+| noisy room (fan, PC), -40 dBFS | 48.9 dB | 0 % | 0.01 |
+| video dialogue on speakers, -34 dBFS | 0.2 dB | 89 % | 0.74 |
+| music on speakers, -34 dBFS | 2.6 dB | 76 % | 0.59 |
+| a friend's stream bleeding back, -30 dBFS | 0.2 dB | 96 % | 0.83 |
+
+Steady background noise was gone, and a loudspeaker playing speech or music
+went straight through: in automatic mode the gate only consulted RNNoise's
+speech probability, which is high for a voice out of a loudspeaker however
+quiet or reverberant; the only level criterion was -70 dBFS; the manual
+threshold defaulted to -50 dBFS, 15 to 25 dB below typical bleed; and the
+far-end ducker was vetoed by the VAD in exactly the case it was for.
+
+`rust/audio_dsp` had not changed since it landed. What changed on
+2026-09-14 is what ran *instead*: `f546eea6` made `MatrixLivekitBackend.join`
+pass `noiseSuppression: false` while our DSP is on, and `37ab8327` vendored
+flutter-webrtc 1.6.2, whose desktop `GetUserMedia` is the first to map that
+flag onto `RTCAudioOptions` (the commetchat `hkdf` fork before it always set
+`googNoiseSuppression: true`). From that build on, WebRTC's suppressor was
+off on desktop for the first time, and the gate let through what it used to
+shave off.
+
+### The fix
+
+`rust/audio_dsp/src/bleed.rs`, fed with two references: WebRTC's playout
+(render hook, all platforms) and the system mix (loopback, desktop). Per
+10 ms, on levels between 250 Hz and 4 kHz (the band small loudspeakers
+reproduce faithfully):
+
+- The reference-to-microphone *lag* is a physical constant, so it is
+  established over many 300 ms windows: each window correlates the
+  microphone's envelope with the reference's at every lag up to 120 ms,
+  over the frames where the reference plays, and a running average per lag
+  has to single one out. Two unrelated signals correlate by chance now and
+  then, never consistently at one lag, so a headset never establishes one.
+- While a lag is established, windows that follow the reference at it
+  teach the *coupling* (microphone peak minus reference peak; the estimate
+  is the median of the last 16).
+- A frame is the user talking if the microphone is 6 dB above the bleed the
+  reference predicts (its recent peak plus the coupling, decaying like a
+  room after the reference stops), otherwise it is bleed, and the gate stays
+  shut whatever the VAD says.
+- Windows a quarter of which the stored coupling cannot explain do not vote
+  on the lag (conversation must not erode it), but still teach the coupling
+  if they follow the reference very closely (0.85): the speakers were
+  turned up.
+- No reference, no lag, nothing learned: `Idle`, the gate works as before.
+  The user talking without a break, a headset, speakers unplugged: the lag
+  fades or never forms, `Idle`.
+
+With the fix, same fixtures and settings (numbers after the first 2 s, the
+learning time):
+
+| Scenario | Attenuation | Notes |
+|---|---|---|
+| video dialogue on speakers, -40 / -34 / -28 dBFS | 40.3 dB each | first detected after 1.5 s |
+| music on speakers, -30 dBFS | 42.7 dB | learned after 2.1 s |
+| same, reference 80 ms late and in 50 ms bursts | 40.3 dB | WASAPI loopback stalls like this |
+| speakers turned up 14 dB mid-video | 39.4 dB | 4 s after the change |
+| a friend's stream bleeding back (playout reference) | 53.3 dB | before AEC3, which also works on it |
+| user talking over the video, then pausing | voice -0.3 dB, video in the pause -40.3 dB | pause judged from 0.5 s in (gate hold and release) |
+| 19 s of talking over music without a break | voice -0.4 dB | |
+| headset, video playing, user talking | voice -0.0 dB | bleed never reported |
+| no reference (browser), dialogue at -34 dBFS | 0.2 dB | unchanged, see below |
+
+Also changed:
+
+- Automatic input sensitivity now requires the threshold as well as the VAD,
+  and the slider is shown in both modes. In a browser, where no system audio
+  is visible, putting the marker between the loudspeaker's peaks and the
+  user's voice is the tool: at -20 dBFS the fixtures' dialogue comes out
+  40 dB down and the voice 0.3 dB down, in either mode. The default stays
+  at -50 dBFS so nobody quiet is cut off.
+- `MatrixLivekitVoipSession` watches `AudioProcessingManager.isProcessing`:
+  if the microphone is live and the DSP has seen no frames for 4 s, it
+  restarts the track with WebRTC's suppressor on for the rest of the call.
+  Before, `isSupported` (the library loaded) was enough to turn WebRTC's
+  off, and a hook that never ran left the call with neither.
+- The render level used to be written into the gate from the render thread
+  while the capture thread read it; it now goes through the same atomic
+  mailbox as the system reference.
+
+Preference: `voipSpeakerBleed` ("Filter out sound from your speakers"),
+on by default. Report flags: `speakerBleed` (the gate is held for bleed),
+`referenceActive` (system audio is arriving); the settings status line says
+"Holding back sound from your speakers." while the first is set. ABI 2:
+`Params::speaker_bleed` took the padding byte, `commet_dsp_feed_reference`
+is new.
+
+Still not verified: any of this with a real microphone in a real room. The
+fixtures are real speech through a simulated room; a real loudspeaker adds
+distortion, a real room more reverb, and WASAPI's timing is modelled, not
+measured. Test: speakers, a video playing, "Test microphone" with "Hear
+myself" *off* (on Linux the monitor would hear itself) and a second person
+listening in a call; the status line should say "Holding back sound from
+your speakers." within two seconds of the video starting.
+
 ## Known gaps
 
 - Android: no Rust library is built (cargokit is commented out in
@@ -227,3 +358,9 @@ Ordered by how badly it hurts if wrong.
 - Only channel 0 reaches the native hook; a stereo mic's second channel is
   unfiltered. `AudioCaptureOptions` has no `channelCount` in this fork.
 - Sounds played through media_kit (join, mute) are not in the AEC reference.
+- In a browser, sound playing on the machine outside the call (a video in
+  another tab) reaches the room from loudspeakers: only WebRTC playout is
+  visible there. The input sensitivity marker is the tool ("Loudspeaker
+  bleed"). The Media Capture spec's `echoCancellation: "all"` mode (cancel
+  all system audio, not only the page's) would be the browser-side answer;
+  which browsers ship it has not been checked.

@@ -23,11 +23,15 @@ class AudioDspSettings {
   final double gateThresholdDb;
   final bool farEndDucking;
 
+  /// Close the gate on loudspeaker bleed (rust/audio_dsp `bleed`).
+  final bool speakerBleed;
+
   const AudioDspSettings({
     required this.noiseSuppression,
     required this.gateAuto,
     required this.gateThresholdDb,
     required this.farEndDucking,
+    required this.speakerBleed,
   });
 
   factory AudioDspSettings.fromPreferences() => AudioDspSettings(
@@ -35,6 +39,7 @@ class AudioDspSettings {
         gateAuto: preferences.voipInputSensitivityAuto.value,
         gateThresholdDb: preferences.voipInputSensitivityDb.value,
         farEndDucking: preferences.voipFarEndDucking.value,
+        speakerBleed: preferences.voipSpeakerBleed.value,
       );
 
   int get gateMode => gateAuto ? gateModeAuto : gateModeManual;
@@ -44,6 +49,7 @@ class AudioDspSettings {
         "noiseSuppression": noiseSuppression,
         "gateMode": gateMode,
         "farEndDucking": farEndDucking,
+        "speakerBleed": speakerBleed,
         "gateThresholdDb": gateThresholdDb,
         "gateFloorDb": gateFloorDb,
         "duckDepthDb": duckDepthDb,
@@ -56,11 +62,12 @@ class AudioDspSettings {
       other.noiseSuppression == noiseSuppression &&
       other.gateAuto == gateAuto &&
       other.gateThresholdDb == gateThresholdDb &&
-      other.farEndDucking == farEndDucking;
+      other.farEndDucking == farEndDucking &&
+      other.speakerBleed == speakerBleed;
 
   @override
-  int get hashCode =>
-      Object.hash(noiseSuppression, gateAuto, gateThresholdDb, farEndDucking);
+  int get hashCode => Object.hash(
+      noiseSuppression, gateAuto, gateThresholdDb, farEndDucking, speakerBleed);
 }
 
 /// Snapshot of what the DSP is doing, polled about ten times a second while a
@@ -70,6 +77,8 @@ class AudioDspReport {
   static const int flagNsActive = 1 << 1;
   static const int flagUnsupportedRate = 1 << 2;
   static const int flagDucking = 1 << 3;
+  static const int flagSpeakerBleed = 1 << 4;
+  static const int flagReference = 1 << 5;
 
   /// Microphone level after noise suppression, before the gate, in dBFS.
   final double levelDb;
@@ -101,6 +110,12 @@ class AudioDspReport {
   bool get noiseSuppressionActive => flags & flagNsActive != 0;
   bool get unsupportedRate => flags & flagUnsupportedRate != 0;
   bool get ducking => flags & flagDucking != 0;
+
+  /// The microphone held only sound from the loudspeakers and was held back.
+  bool get speakerBleed => flags & flagSpeakerBleed != 0;
+
+  /// System audio (loopback) is reaching the DSP.
+  bool get referenceActive => flags & flagReference != 0;
 
   @override
   String toString() =>

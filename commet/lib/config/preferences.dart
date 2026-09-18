@@ -601,6 +601,12 @@ class Preferences {
   BoolPreference voipFarEndDucking =
       BoolPreference("voip_far_end_ducking", defaultValue: true);
 
+  /// Hold back whatever of the microphone the loudspeakers explain: the
+  /// system mix on desktop (loopback capture), WebRTC playout everywhere.
+  /// Nothing happens for a headset user; see docs/voice-audio-processing.md.
+  BoolPreference voipSpeakerBleed =
+      BoolPreference("voip_speaker_bleed", defaultValue: true);
+
   /// Play other people's screen shares as soon as they start, instead of
   /// waiting for "Watch stream" (issue #50).
   BoolPreference voipAutoWatchScreenShares =
