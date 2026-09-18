@@ -164,6 +164,13 @@ class _LocalParticipant implements lk.LocalParticipant {
   /// do in production.
   _Listener? listener;
 
+  /// A LiveKit stop that throws part way, the way the vendored SDK can when
+  /// one of its platform calls fails (the H.265 codec path, issue #79).
+  /// [failScreenShareStopBeforeRemoval] leaves the publication published,
+  /// [failScreenShareStopAfterRemoval] throws once it is gone.
+  bool failScreenShareStopBeforeRemoval = false;
+  bool failScreenShareStopAfterRemoval = false;
+
   @override
   bool get isMuted => false;
 
@@ -203,11 +210,19 @@ class _LocalParticipant implements lk.LocalParticipant {
         getTrackPublicationBySource(lk.TrackSource.screenShareVideo);
     if (publication == null) return null;
 
+    if (failScreenShareStopBeforeRemoval) {
+      throw Exception('the SDK stop failed before removing anything');
+    }
+
     await removePublishedTrack(publication.sid);
     final screenAudio =
         getTrackPublicationBySource(lk.TrackSource.screenShareAudio);
     if (screenAudio != null) {
       await removePublishedTrack(screenAudio.sid);
+    }
+
+    if (failScreenShareStopAfterRemoval) {
+      throw Exception('the SDK stop failed after the unpublish');
     }
     return publication;
   }
@@ -599,5 +614,56 @@ void main() {
     expect(session.isSharingScreen, isTrue,
         reason: 'the screen is still captured, so the app must not report '
             'it as private');
+  });
+
+  test(
+      'a stop whose livekit removal throws still releases the capture and '
+      'ends the share', () async {
+    await shareScreen();
+    // The SDK removed the publication and then a later step (sender removal,
+    // renegotiation) failed: the old stop aborted here and left the OS
+    // capture running (issue #79).
+    participant.failScreenShareStopAfterRemoval = true;
+
+    await session.stopScreenshare();
+
+    expect(capture.running, isFalse,
+        reason: 'the stop skipped releasing the capture because the SDK call '
+            'threw');
+    expect(session.isSharingScreen, isFalse);
+  });
+
+  test(
+      'a stop that leaves the livekit publication behind still removes it and '
+      'releases the capture', () async {
+    final publication = await shareScreen();
+    // The SDK stop failed before it removed anything, the way a failing
+    // sender removal does on the H.265 path (issue #79).
+    participant.failScreenShareStopBeforeRemoval = true;
+
+    await session.stopScreenshare();
+
+    expect(capture.running, isFalse,
+        reason: 'the stop skipped releasing the capture because the SDK call '
+            'threw');
+    expect(participant.trackPublications.containsKey(publication.sid), isFalse,
+        reason: 'a publication the SDK failed to remove stayed published and '
+            'viewers would keep receiving it');
+    expect(session.isSharingScreen, isFalse);
+  });
+
+  test('a stop with a screen-share publication whose track is gone removes it',
+      () async {
+    final publication = await shareScreen();
+    // A publication can outlive its track (the SDK detached it, or a failed
+    // removal left it half torn down): it still counts as live for the stop
+    // verification and for viewers.
+    publication.track = null;
+    participant.failScreenShareStopBeforeRemoval = true;
+
+    await session.stopScreenshare();
+
+    expect(participant.trackPublications.containsKey(publication.sid), isFalse);
+    expect(capture.running, isFalse);
   });
 }

@@ -24,3 +24,11 @@ they come off the OS, fed by both capturers) and `commet_system_audio_reference.
 with the `commetStartSystemAudioReference` / `commetStopSystemAudioReference`
 methods in `flutter_webrtc.cc`, which give the voice DSP the system mix as a
 loudspeaker reference.
+
+`livekit-client-sdk-flutter` carries a backport of the upstream 2.8.0/2.11.0
+unpublish fixes (issue #79): `removePublishedTrack` removes every simulcast
+codec sender (a backup codec publishes over its own sender) before it disposes
+the publication and renegotiates, backup codec state is cleared on unpublish
+and before a full-reconnect republish, and the degradation preference is
+applied to backup senders too. Marked `// COMMET` in
+`lib/src/participant/local.dart` and `lib/src/track/local/video.dart`.

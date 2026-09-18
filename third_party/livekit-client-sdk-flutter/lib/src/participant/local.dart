@@ -546,8 +546,11 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
       logger.warning('Publication not found $trackSid');
       return;
     }
-    await pub.dispose();
-
+    // COMMET: the publication (and, through it, the track) is disposed last,
+    // once every sender is off the pc and the renegotiation that tells the
+    // server is done. Disposing first tore the track down before its senders
+    // could be removed, so the server kept the publication live for viewers
+    // (issue #79).
     final track = pub.track;
     if (track != null) {
       if (room.roomOptions.stopLocalTrackOnUnpublish) {
@@ -555,23 +558,44 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
       }
 
       final sender = track.transceiver?.sender;
+      var didRemoveSender = false;
       if (sender != null) {
         try {
           await room.engine.publisher?.pc.removeTrack(sender);
-          if (track is LocalVideoTrack) {
-            track.simulcastCodecs.forEach((key, simulcastTrack) async {
-              await room.engine.publisher?.pc.removeTrack(simulcastTrack.sender!);
-            });
-          }
         } catch (e) {
           logger.warning('[$objectId] rtc.removeTrack() did throw $e');
         }
+        didRemoveSender = true;
+      }
 
-        // doesn't make sense to negotiate if already disposed
-        if (!isDisposed) {
-          // manual negotiation since track changed
-          await room.engine.negotiate();
+      // COMMET: not gated on the primary sender, stale backup codec state must
+      // not survive unpublish even when the track never got a live sender.
+      // A backup codec publishes over its own sender: the removal has to be
+      // awaited before the renegotiation below, and a sender that never
+      // materialized (the server revoked the request) must not abort it.
+      if (track is LocalVideoTrack) {
+        // remove each backup sender on its own, one failure should not
+        // prevent removal of the others
+        for (final simulcastTrack in track.simulcastCodecs.values.toList()) {
+          final simulcastSender = simulcastTrack.sender;
+          if (simulcastSender == null) {
+            continue;
+          }
+          try {
+            await room.engine.publisher?.pc.removeTrack(simulcastSender);
+          } catch (e) {
+            logger.warning('[$objectId] rtc.removeTrack() did throw $e');
+          }
+          simulcastTrack.sender = null;
+          didRemoveSender = true;
         }
+        track.clearSimulcastState();
+      }
+
+      // doesn't make sense to negotiate if already disposed
+      if (didRemoveSender && !isDisposed) {
+        // manual negotiation since track changed
+        await room.engine.negotiate();
       }
 
       // did unpublish
@@ -621,7 +645,13 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
       if (track.track is LocalAudioTrack) {
         await publishAudioTrack(track.track as LocalAudioTrack);
       } else if (track.track is LocalVideoTrack) {
-        await publishVideoTrack(track.track as LocalVideoTrack);
+        final videoTrack = track.track as LocalVideoTrack;
+        // COMMET: a full reconnect replaced the peer connection, so any
+        // simulcast codec senders the track still holds belong to the old
+        // one. Republishing through them would act on a torn down connection
+        // (issue #79).
+        videoTrack.clearSimulcastState();
+        await publishVideoTrack(videoTrack);
       }
     }
   }
@@ -957,6 +987,13 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
       publication,
       backupCodec,
     );
+
+    // COMMET: the backup codec publishes over its own sender, so it needs the
+    // same degradation preference the primary sender resolved to. Without
+    // this, a share that regressed to this codec (viewers without H.265) is
+    // the only stream with WebRTC's implicit preference: a frame rate that
+    // diverges from the one the user asked for (issue #79).
+    await track.applyDegradationPreference(simulcastTrack.sender);
 
     final cid = simulcastTrack.sender!.senderId;
 
