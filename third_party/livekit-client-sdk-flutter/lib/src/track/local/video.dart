@@ -68,6 +68,11 @@ class LocalVideoTrack extends LocalTrack with VideoTrack {
   Map<String, SimulcastTrackInfo> simulcastCodecs = {};
   Map<(String, int), rtc.RTCRtpEncoding> encodingBackups = {};
 
+  // COMMET: remembered so every sender publishing this track (the primary and
+  // each backup codec) gets the same preference; see
+  // [applyDegradationPreference].
+  DegradationPreference? _degradationPreference;
+
   List<lk_rtc.SubscribedCodec> subscribedCodecs = [];
 
   @override
@@ -502,12 +507,45 @@ extension LocalVideoTrackExt on LocalVideoTrack {
     return simulcastCodecInfo;
   }
 
+  // COMMET: drops the simulcast codec state tied to the senders of the
+  // current publish. Must run when those senders are gone (unpublish, full
+  // reconnect): otherwise a later publish finds stale senders and rejects the
+  // backup codec as a duplicate, or removes senders from a peer connection
+  // that no longer owns them.
+  @internal
+  void clearSimulcastState() {
+    simulcastCodecs.clear();
+    encodingBackups.clear();
+  }
+
+  // COMMET: degradation is a property of the sender, not of the track, so
+  // every sender publishing this track needs it applied on its own. A backup
+  // codec publishes over its own sender; without this it keeps WebRTC's
+  // implicit preference and its frame rate diverges from the primary encoder
+  // (the low frame rate seen with H.265 screen shares, issue #79).
   Future<void> setDegradationPreference(DegradationPreference preference) async {
-    final params = sender?.parameters;
-    if (params == null) {
+    _degradationPreference = preference;
+    await applyDegradationPreference(sender);
+    for (final simulcastCodec in simulcastCodecs.values.toList()) {
+      await applyDegradationPreference(simulcastCodec.sender);
+    }
+  }
+
+  // COMMET: applies the preference remembered for this track to one of its
+  // senders. Tolerates a missing sender: a backup codec's sender only exists
+  // once the server asked for it.
+  @internal
+  Future<void> applyDegradationPreference(rtc.RTCRtpSender? sender) async {
+    final preference = _degradationPreference;
+    if (sender == null || preference == null) {
       return;
     }
-    params.degradationPreference = preference.toRTCType();
-    await sender?.setParameters(params);
+    try {
+      final params = sender.parameters;
+      params.degradationPreference = preference.toRTCType();
+      await sender.setParameters(params);
+    } catch (e) {
+      logger.warning('Failed to set degradation preference on sender $e');
+    }
   }
 }

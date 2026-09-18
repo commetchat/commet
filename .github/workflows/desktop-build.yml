@@ -22,11 +22,11 @@ jobs:
       matrix:
         include:
           - platform: windows
-            os: windows-2022
+            os: blacksmith-4vcpu-windows-2025
             bundle: commet/build/windows/x64/runner/${{ inputs.build_mode == 'debug' && 'Debug' || 'Release' }}
             archive: zip
           - platform: linux
-            os: ubuntu-latest
+            os: blacksmith-4vcpu-ubuntu-2404
             bundle: commet/build/linux/x64/${{ inputs.build_mode }}/bundle
             archive: tar.gz
     runs-on: ${{ matrix.os }}
@@ -55,6 +55,12 @@ jobs:
       # cargokit builds librust_lib_commet with cargo during the Flutter build
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
+
+      # The Blacksmith Windows image ships VS Build Tools without ATL, and
+      # flutter_local_notifications_windows needs atlbase.h.
+      - name: Install ATL
+        if: matrix.platform == 'windows'
+        uses: ./.github/actions/install-atl
 
       - name: Install Linux build dependencies
         if: runner.os == 'Linux'

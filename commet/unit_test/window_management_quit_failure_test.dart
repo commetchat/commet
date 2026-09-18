@@ -10,11 +10,14 @@ void main() {
     () async {
       final messenger =
           TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final calls = <String>[];
       var destroyAttempts = 0;
       var failNextDestroy = true;
       messenger.setMockMethodCallHandler(
         const MethodChannel('window_manager'),
         (call) async {
+          calls.add(call.method);
+          if (call.method == 'isMinimized') return false;
           if (call.method != 'destroy') return null;
 
           destroyAttempts++;
@@ -36,9 +39,20 @@ void main() {
       // already closed and the window still up, nothing else could quit the app.
       await WindowManagement.close();
       expect(destroyAttempts, 1);
+      expect(calls, contains('hide'));
+      expect(
+        calls.indexOf('show'),
+        greaterThan(calls.indexOf('destroy')),
+        reason: 'a failed quit must undo the hide, or the retry has no window',
+      );
 
       await WindowManagement.close();
       expect(destroyAttempts, 2);
+      expect(
+        calls.where((method) => method == 'show'),
+        hasLength(1),
+        reason: 'the second quit succeeds and has nothing to restore',
+      );
     },
   );
 }

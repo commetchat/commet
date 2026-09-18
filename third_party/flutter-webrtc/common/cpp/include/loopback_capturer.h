@@ -1,6 +1,9 @@
 #ifndef LOOPBACK_CAPTURER_H_
 #define LOOPBACK_CAPTURER_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -15,17 +18,33 @@ using namespace libwebrtc;
 //
 // Concrete implementations:
 //   windows/application_loopback_capturer.h  — Windows WASAPI
-//   linux/  (future)                         — PulseAudio / PipeWire
+//   linux/pulse_loopback_capturer.h          — PulseAudio / PipeWire
 class LoopbackCapturer {
  public:
+  // COMMET: PCM as it comes off the OS capture API, before any pacing or
+  // pre-buffering (the Windows feeder holds 160 ms back before it starts
+  // calling CaptureFrame). Interleaved int16, `frames` frames of `channels`
+  // channels; a null `samples` is a block the OS reported as silent. Called
+  // on the capturer's own thread. Used by CommetSystemAudioReference, which
+  // needs the system mix *before* it reaches the microphone through the air.
+  using RawTap = std::function<void(const int16_t* samples, size_t frames,
+                                    size_t channels, int sample_rate)>;
+
   virtual ~LoopbackCapturer() = default;
 
   // Start capturing system audio and pushing PCM frames into |source|.
+  // |source| may be null when only the raw tap is wanted.
   // Returns false if the platform capture path could not be initialised.
   virtual bool Start(scoped_refptr<RTCAudioSource> source) = 0;
 
   // Stop capturing and clean up platform resources.
   virtual void Stop() = 0;
+
+  // COMMET: set before Start(); not changed while capturing.
+  void SetRawTap(RawTap tap) { raw_tap_ = std::move(tap); }
+
+ protected:
+  RawTap raw_tap_;
 };
 
 }  // namespace flutter_webrtc_plugin

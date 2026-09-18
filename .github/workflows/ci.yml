@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
         run: cargo test ${{ steps.find.outputs.rust_crates }}
 
   version:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       version: ${{ steps.next.outputs.version }}
     steps:
@@ -139,7 +139,7 @@ jobs:
 
   publish:
     needs: [test, version, build-release]
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: write
     steps:
@@ -170,7 +170,7 @@ jobs:
 
   attach-debug:
     needs: [version, publish, build-debug]
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: write
     steps:

@@ -16,8 +16,9 @@ use std::ffi::c_void;
 
 use crate::{Dsp, Params, Report};
 
-/// Bump when the struct layouts or the callback signatures change.
-pub const ABI_VERSION: u32 = 1;
+/// Bump when the struct layouts, their meaning or the callback signatures
+/// change. 2: `Params::speaker_bleed` (was padding), `commet_dsp_feed_reference`.
+pub const ABI_VERSION: u32 = 2;
 
 #[no_mangle]
 pub extern "C" fn commet_dsp_abi_version() -> u32 {
@@ -91,9 +92,34 @@ pub extern "C" fn commet_dsp_feed_render(h: *mut Dsp, buf: *const f32, n: usize)
     if h.is_null() || buf.is_null() || n == 0 {
         return;
     }
-    let dsp = unsafe { &mut *h };
+    let dsp = unsafe { &*h };
     let slice = unsafe { std::slice::from_raw_parts(buf, n) };
     dsp.feed_render(slice);
+}
+
+/// System audio from a loopback capturer: int16 PCM, `frames` frames of
+/// `channels` interleaved channels at `sample_rate`. A null `samples` is a
+/// block the capturer reported as silent. Shaped as the callback the native
+/// loopback tap calls (`ctx` is the handle), from the capturer's own thread.
+#[no_mangle]
+pub extern "C" fn commet_dsp_feed_reference(
+    ctx: *mut c_void,
+    samples: *const i16,
+    frames: usize,
+    channels: usize,
+    sample_rate: i32,
+) {
+    if ctx.is_null() || frames == 0 || sample_rate <= 0 {
+        return;
+    }
+    let dsp = unsafe { &*(ctx as *const Dsp) };
+    let channels = channels.max(1);
+    let pcm = if samples.is_null() {
+        None
+    } else {
+        Some(unsafe { std::slice::from_raw_parts(samples, frames * channels) })
+    };
+    dsp.feed_reference_i16(pcm, channels, sample_rate as usize);
 }
 
 #[no_mangle]
@@ -236,6 +262,24 @@ mod tests {
         commet_dsp_get_report(h, &mut r);
         assert_eq!(r.frames, 1);
         assert_eq!(r.sample_rate, 48000);
+        commet_dsp_destroy(h);
+    }
+
+    #[test]
+    fn reference_reaches_the_capture_side() {
+        let h = commet_dsp_create(std::ptr::null());
+        let pcm = vec![8000i16; 480 * 2];
+        let mut buf = vec![0.0f32; 480];
+        commet_dsp_feed_reference(h as *mut c_void, pcm.as_ptr(), 480, 2, 48000);
+        commet_dsp_capture_process(h as *mut c_void, 3, 480, 480, buf.as_mut_ptr());
+        let mut r = Report::default();
+        commet_dsp_get_report(h, &mut r);
+        assert_eq!(r.flags & crate::REPORT_FLAG_REFERENCE, crate::REPORT_FLAG_REFERENCE);
+        // silent blocks still count as the reference being there
+        commet_dsp_feed_reference(h as *mut c_void, std::ptr::null(), 480, 2, 48000);
+        commet_dsp_capture_process(h as *mut c_void, 3, 480, 480, buf.as_mut_ptr());
+        commet_dsp_get_report(h, &mut r);
+        assert_eq!(r.flags & crate::REPORT_FLAG_REFERENCE, crate::REPORT_FLAG_REFERENCE);
         commet_dsp_destroy(h);
     }
 }

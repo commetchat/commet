@@ -24,3 +24,17 @@ Hard fork of Commet (a Flutter Matrix client) by PondLabs. Layout:
 ## Voice rooms
 
 Multi-user voice is the MatrixRTC/LiveKit path (`commet/lib/client/matrix/components/voip_room/`). Legacy 1:1 calls go through matrix-dart-sdk (`.../components/voip/`). Audio processing hooks into both on native through WebRTC's audio processing module, and into the LiveKit path on web through an AudioWorklet.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues in `PondLabs/roscord`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Defaults: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.

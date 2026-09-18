@@ -38,6 +38,16 @@ class WindowManagement {
     if (_closing) return;
     _closing = true;
 
+    // Get the window off the screen before the teardown: releasing a client
+    // awaits the sync transaction in flight and can use the full budget below.
+    // The user should not watch a frozen window for that long (#80).
+    try {
+      await windowManager.hide();
+    } catch (error, stacktrace) {
+      // A hide that fails must not hold the quit back.
+      Log.onError(error, stacktrace, content: "Failed to hide the window");
+    }
+
     await closeClients();
 
     try {
@@ -46,6 +56,18 @@ class WindowManagement {
       // Let a later attempt try again rather than wedging the window shut.
       _closing = false;
       Log.onError(error, stacktrace, content: "Failed to close the window");
+      await _restoreWindow();
+    }
+  }
+
+  /// Brings the window back when a quit attempt failed, so the user can retry.
+  /// Never throws: recovery failing must not mask the original error.
+  static Future<void> _restoreWindow() async {
+    try {
+      await windowManager.show();
+    } catch (error, stacktrace) {
+      Log.onError(error, stacktrace,
+          content: "Failed to show the window again");
     }
   }
 

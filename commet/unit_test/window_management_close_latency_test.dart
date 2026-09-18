@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
@@ -24,15 +26,22 @@ class _FakeDirectMessages implements DirectMessagesComponent {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-/// A client that only needs to be closable: [ClientManager] subscribes to the
-/// streams and asks for components when it is added.
-class _FakeClient implements Client {
+/// A client whose close waits on the sync transaction in flight: exactly the
+/// teardown that made the visible window linger for up to 5 s (issue #80).
+class _SlowClient implements Client {
   final _directMessages = _FakeDirectMessages();
+  final _closeGate = Completer<void>();
 
   bool closed = false;
+  bool closeStarted = false;
+
+  void finishClosing() {
+    closed = true;
+    _closeGate.complete();
+  }
 
   @override
-  String get identifier => 'fake';
+  String get identifier => 'slow';
 
   @override
   NotifyingList<Room> get rooms => NotifyingList.empty(growable: true);
@@ -68,7 +77,8 @@ class _FakeClient implements Client {
 
   @override
   Future<void> close({bool closeDatabase = true}) async {
-    closed = true;
+    closeStarted = true;
+    await _closeGate.future;
   }
 
   @override
@@ -79,28 +89,26 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(
-    'closing the app releases the clients and quits through the window manager exactly once',
+    'the window leaves the screen before the clients finish closing',
     () async {
-      final client = _FakeClient();
+      final client = _SlowClient();
       final manager = ClientManager();
       manager.addClient(client);
       app.clientManager = manager;
       addTearDown(() => app.clientManager = null);
 
-      final destroyCalls = <MethodCall>[];
+      final calls = <String>[];
+      bool? closedWhenDestroyed;
       final messenger =
           TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       messenger.setMockMethodCallHandler(
         const MethodChannel('window_manager'),
         (call) async {
-          destroyCalls.add(call);
-          // The window must only be destroyed once the clients are released:
-          // closing waits for a sync in flight, and a process that went away
-          // first would leave the close half done. Hiding it first is fine —
-          // that is what takes the wait off the visible path (#80).
+          calls.add(call.method);
           if (call.method == 'destroy') {
-            expect(client.closed, isTrue);
+            closedWhenDestroyed = client.closed;
           }
+          if (call.method == 'isMinimized') return false;
           return null;
         },
       );
@@ -111,15 +119,33 @@ void main() {
         ),
       );
 
-      await WindowManagement.close();
-      // The Linux runner re-enters the close through the delete event that
-      // destroy() posts, so a second close must not run any of it again.
-      await WindowManagement.close();
+      final quitting = WindowManagement.close();
+      await pumpEventQueue();
 
-      expect(client.closed, isTrue);
       expect(
-        destroyCalls.where((call) => call.method == 'destroy'),
-        hasLength(1),
+        client.closeStarted,
+        isTrue,
+        reason: 'the teardown is the step that can take the full 5 s budget',
+      );
+      expect(
+        calls,
+        contains('hide'),
+        reason: 'the window must be off the screen before the teardown starts',
+      );
+      expect(
+        calls,
+        isNot(contains('destroy')),
+        reason: 'destroy still waits for the clients to be released',
+      );
+
+      client.finishClosing();
+      await quitting;
+
+      expect(calls, contains('destroy'));
+      expect(
+        closedWhenDestroyed,
+        isTrue,
+        reason: 'the clients are released before the window goes away',
       );
     },
   );
