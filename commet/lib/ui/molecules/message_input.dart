@@ -8,6 +8,7 @@ import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
@@ -1164,14 +1165,10 @@ class MessageInputState extends State<MessageInput> {
         trending: gifs.trending,
         placeholderText: gifs.searchPlaceholder,
         onDismiss: closeGifPicker,
-        gifPicked: (gif) async {
-          await widget.sendGif?.call(gif);
-          closeGifPicker();
-        },
-        favoritePicked: (gif) async {
-          await widget.sendFavoriteGif?.call(gif);
-          closeGifPicker();
-        },
+        gifPicked: (gif) async => sendGifInBackground(
+            () => widget.sendGif?.call(gif), closeGifPicker),
+        favoritePicked: (gif) async => sendGifInBackground(
+            () => widget.sendFavoriteGif?.call(gif), closeGifPicker),
         onUnfavoriteGif: (gif) => gifs.removeFavorite(gif),
       ),
     );
@@ -1272,18 +1269,32 @@ class MessageInputState extends State<MessageInput> {
                 clearKeyboardOverride(debounce: false);
               });
             },
-            onFavoritePicked: (gif) async {
-              await widget.sendFavoriteGif?.call(gif);
-              setState(() {
-                clearKeyboardOverride(debounce: false);
-              });
-            },
-            onGifPressed: (gif) async {
-              await widget.sendGif?.call(gif);
-              setState(() {
-                clearKeyboardOverride(debounce: false);
-              });
-            });
+            onFavoritePicked: (gif) async => sendGifInBackground(
+                () => widget.sendFavoriteGif?.call(gif), closeEmotePicker),
+            onGifPressed: (gif) async => sendGifInBackground(
+                () => widget.sendGif?.call(gif), closeEmotePicker));
+  }
+
+  void closeEmotePicker() {
+    if (!mounted) return;
+    setState(() {
+      clearKeyboardOverride(debounce: false);
+    });
+  }
+
+  /// Closes the picker, then sends. The gif shows up in the chat as sending
+  /// straight away while its upload carries on, and holding the picker open
+  /// for the upload made sending look stuck. A failure is reported here,
+  /// since the picker that used to show it is gone.
+  void sendGifInBackground(
+      Future<void>? Function() send, void Function() close) {
+    close();
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    Future.sync(send).catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Failed to send gif");
+      messenger?.showSnackBar(
+          SnackBar(content: Text(GifPicker.labelGifPickerSendFailed)));
+    });
   }
 
   Future<void> handlePickedAttachment(PendingFileAttachment attachment) async {

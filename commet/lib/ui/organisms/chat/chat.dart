@@ -338,16 +338,18 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> sendGif(GifSearchResult gif) async {
-    await gifs?.sendGif(
-        room,
-        gif,
-        interactionType == EventInteractionType.reply
-            ? interactingEvent
-            : null);
+    final replyTo = _takeReplyTarget();
+    await gifs?.sendGif(room, gif, replyTo);
+  }
 
-    if (interactionType == EventInteractionType.reply) {
-      setInteractingEvent(null);
-    }
+  /// The event a gif replies to. The reply is cleared as the gif is picked,
+  /// not once it has sent: the gif shows up in the chat right away and its
+  /// upload carries on in the background.
+  TimelineEvent? _takeReplyTarget() {
+    if (interactionType != EventInteractionType.reply) return null;
+    final replyTo = interactingEvent;
+    setInteractingEvent(null);
+    return replyTo;
   }
 
   void editLastMessage() {
@@ -427,11 +429,9 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> sendFavoriteGif(FavoriteGif gif) async {
-    await room.client.getComponent<GifComponent>()?.sendFavoriteGif(
-        room,
-        gif,
-        interactionType == EventInteractionType.reply
-            ? interactingEvent
-            : null);
+    final replyTo = _takeReplyTarget();
+    await room.client
+        .getComponent<GifComponent>()
+        ?.sendFavoriteGif(room, gif, replyTo);
   }
 }

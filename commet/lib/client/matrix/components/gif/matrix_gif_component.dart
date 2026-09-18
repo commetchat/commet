@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
@@ -10,6 +11,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/src/painting/image_provider.dart';
@@ -133,77 +135,179 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
   @override
   Stream<dynamic> get onFavoritesChanged => _changedController.stream;
 
+  /// Where each gif we have sent lives on our homeserver, so sending it
+  /// again skips the download and the upload, like a favorite does.
+  final Map<Uri, Uri> _uploadedGifs = {};
+
+  /// Set once the homeserver turns down reserving an mxc up front, so it
+  /// isn't asked again for every gif.
+  bool _asyncUploadUnsupported = false;
+
+  /// Sends the message as soon as the gif has somewhere to live, and uploads
+  /// it after. Uploading to the homeserver is the slow part, and it used to
+  /// come first, so nothing showed in the chat for several seconds.
   @override
   Future<TimelineEvent?> sendGif(
       Room room, GifSearchResult gif, TimelineEvent? inReplyTo) async {
     var matrixRoom = (room as MatrixRoom).matrixRoom;
-    var response = await matrixRoom.client.httpClient.get(gif.fullResUrl);
-    // Throw so the picker can tell the user, instead of closing as if it sent
+    final client = matrixRoom.client;
+
+    final replyingTo = inReplyTo == null
+        ? Future<matrix.Event?>.value(null)
+        : matrixRoom.getEventById(inReplyTo.eventId);
+
+    Future<void>? upload;
+    var mxc = _uploadedGifs[gif.fullResUrl];
+    if (mxc == null) {
+      // Neither waits for the other.
+      final reserving = _reserveMxc(client);
+      final bytes = await _downloadGif(client, gif);
+      final reserved = await reserving;
+
+      if (reserved == null) {
+        mxc = await client.uploadContent(bytes,
+            filename: "sticker", contentType: gif.mimeType);
+      } else {
+        mxc = reserved;
+        // Our own copy shows from the cache while it uploads.
+        await _cacheLocally(reserved, bytes);
+        upload = _uploadToReserved(client, reserved, bytes, gif.mimeType);
+      }
+    }
+
+    var content = {
+      "body": gif.fullResUrl.pathSegments.last,
+      "url": mxc.toString(),
+      if (preferences.stickerCompatibilityMode.value) "msgtype": "m.image",
+      if (preferences.stickerCompatibilityMode.value)
+        "chat.commet.type": "chat.commet.sticker",
+      "info": {
+        "chat.commet.animated": true,
+        "w": gif.x.toInt(),
+        "h": gif.y.toInt(),
+        "mimetype": gif.mimeType
+      }
+    };
+
+    var id = await matrixRoom.sendEvent(content,
+        type: preferences.stickerCompatibilityMode.value
+            ? matrix.EventTypes.Message
+            : matrix.EventTypes.Sticker,
+        inReplyTo: await replyingTo);
+
+    if (id == null) throw Exception("Gif was not sent");
+
+    if (upload != null) {
+      try {
+        await upload;
+      } catch (_) {
+        // The message points at media that never arrived: take it back
+        // rather than leave everyone a broken image.
+        await matrixRoom
+            .redactEvent(id, reason: "The GIF failed to upload")
+            .catchError((Object e, StackTrace s) {
+          Log.onError(e, s, content: "Could not redact a gif that failed");
+          return null;
+        });
+        rethrow;
+      }
+    }
+    _uploadedGifs[gif.fullResUrl] = mxc;
+
+    var event = await matrixRoom.getEventById(id);
+    return room.convertEvent(event!,
+        timeline: (room.timeline as MatrixTimeline).matrixTimeline);
+  }
+
+  Future<Uint8List> _downloadGif(
+      matrix.Client client, GifSearchResult gif) async {
+    var response = await client.httpClient.get(gif.fullResUrl);
+    // Throw so the user is told, instead of it looking sent
     if (response.statusCode != 200) {
       throw Exception("Could not download gif (${response.statusCode})");
     }
-    {
-      var data = response.bodyBytes;
+    return response.bodyBytes;
+  }
 
-      matrix.Event? replyingTo;
-      var uri = await matrixRoom.client
-          .uploadContent(data, filename: "sticker", contentType: gif.mimeType);
-
-      var content = {
-        "body": gif.fullResUrl.pathSegments.last,
-        "url": uri.toString(),
-        if (preferences.stickerCompatibilityMode.value) "msgtype": "m.image",
-        if (preferences.stickerCompatibilityMode.value)
-          "chat.commet.type": "chat.commet.sticker",
-        "info": {
-          "chat.commet.animated": true,
-          "w": gif.x.toInt(),
-          "h": gif.y.toInt(),
-          "mimetype": gif.mimeType
-        }
-      };
-
-      if (inReplyTo != null) {
-        replyingTo = await matrixRoom.getEventById(inReplyTo.eventId);
+  /// An mxc to send the message with before the gif is uploaded to it
+  /// (asynchronous uploads, `POST /_matrix/media/v1/create`), or null to
+  /// upload first on a homeserver without them.
+  Future<Uri?> _reserveMxc(matrix.Client client) async {
+    if (_asyncUploadUnsupported) return null;
+    try {
+      return (await client.createContent()).contentUri;
+    } on matrix.MatrixException catch (e) {
+      if (e.error == matrix.MatrixError.M_UNRECOGNIZED ||
+          e.error == matrix.MatrixError.M_NOT_FOUND) {
+        _asyncUploadUnsupported = true;
       }
+      Log.w("Could not reserve an mxc for a gif, uploading first: $e");
+      return null;
+    } catch (e) {
+      Log.w("Could not reserve an mxc for a gif, uploading first: $e");
+      return null;
+    }
+  }
 
-      var id = await matrixRoom.sendEvent(content,
-          type: preferences.stickerCompatibilityMode.value
-              ? matrix.EventTypes.Message
-              : matrix.EventTypes.Sticker,
-          inReplyTo: replyingTo);
+  /// Retried: once the message is out, a failed upload means a broken image.
+  Future<void> _uploadToReserved(
+      matrix.Client client, Uri mxc, Uint8List bytes, String mimeType) async {
+    for (var attempt = 1;; attempt++) {
+      try {
+        await client.uploadContentToMXC(mxc.host, mxc.pathSegments.first, bytes,
+            filename: "sticker", contentType: mimeType);
+        return;
+      } on matrix.MatrixException catch (e) {
+        // An earlier attempt landed after all.
+        if (e.errcode == "M_CANNOT_OVERWRITE_MEDIA") return;
+        if (attempt >= 3) rethrow;
+        Log.w("Gif upload failed (attempt $attempt): $e");
+      } catch (e) {
+        if (attempt >= 3) rethrow;
+        Log.w("Gif upload failed (attempt $attempt): $e");
+      }
+      await Future.delayed(Duration(seconds: attempt * 2));
+    }
+  }
 
-      if (id == null) throw Exception("Gif was not sent");
-
-      var event = await matrixRoom.getEventById(id);
-      return room.convertEvent(event!,
-          timeline: (room.timeline as MatrixTimeline).matrixTimeline);
+  /// Puts the gif where our timeline looks for it first, so the message
+  /// shows it at once instead of asking the homeserver for media that is
+  /// still uploading.
+  Future<void> _cacheLocally(Uri mxc, Uint8List bytes) async {
+    try {
+      await fileCache?.putFile(MatrixMxcImage.getIdentifier(mxc), bytes);
+      await fileCache?.putFile(
+          MatrixMxcImage.getThumbnailIdentifier(mxc), bytes);
+    } catch (e, s) {
+      Log.onError(e, s, content: "Could not cache a gif being sent");
     }
   }
 
   GifSearchResult parseTenorResult(Map<String, dynamic> result) {
-    const int sizeLimit = 3000000; //3 MB
-
     var formats = result['media_formats'] as Map<String, dynamic>;
-
-    String mimeType = "image/gif";
 
     var preview =
         formats['tinygif'] ?? formats['nanogif'] ?? formats['mediumgif'];
 
+    // The smallest of the full size versions: every byte of it is uploaded
+    // to the homeserver on send, and a webp is often a tenth of the gif.
     var fullRes = formats['gif'];
-
-    //We only want to send full res if less than 3mb
-    if (fullRes['size'] as int > sizeLimit && formats['mediumgif'] != null) {
-      fullRes = formats['mediumgif'];
+    String mimeType = "image/gif";
+    for (final (key, mime) in const [
+      ('mediumgif', 'image/gif'),
+      ('webp', 'image/webp'),
+    ]) {
+      final format = formats[key];
+      if (format == null || format['size'] is! num || format['dims'] == null) {
+        continue;
+      }
+      if (fullRes == null || format['size'] < fullRes['size']) {
+        fullRes = format;
+        mimeType = mime;
+      }
     }
 
     var webp = formats["webp"];
-    if (webp != null && webp['size'] < fullRes['size']) {
-      fullRes = webp;
-      mimeType = "image/webp";
-    }
-
     if (webp != null && webp['size'] < preview['size']) {
       preview = webp;
     }
