@@ -49,6 +49,13 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   final ScreenShareWatchList _watchList = ScreenShareWatchList(
       autoWatch: () => preferences.voipAutoWatchScreenShares.value);
 
+  /// The capture tracks this session published for its screen share: the
+  /// screen video and, when system audio is shared, the screen audio. The
+  /// session keeps them because LiveKit's publication map is not a handle on
+  /// the capture — a full reconnect clears it while the OS capture keeps
+  /// running — and [stopScreenshare] still has to stop it (issue #63).
+  final List<lk.LocalTrack> _captureTracks = [];
+
   String get _ownMembershipKey =>
       "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 
@@ -609,7 +616,23 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     }
   }
 
+  /// Owns a capture track of our screen share, once. LiveKit can announce the
+  /// same track more than once: a reconnect republishes the track objects it
+  /// held before clearing its map.
+  void _ownCaptureTrack(lk.LocalTrack track) {
+    if (!ScreenShareWatchList.isScreenShareSource(track.source)) {
+      return;
+    }
+    if (_captureTracks.any((owned) => identical(owned, track))) return;
+    _captureTracks.add(track);
+  }
+
   void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
+    final track = event.publication.track;
+    if (track != null) {
+      _ownCaptureTrack(track);
+    }
+
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
@@ -892,6 +915,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
         : [await lk.LocalVideoTrack.createScreenShareTrack(captureOptions)];
 
     for (final track in tracks) {
+      _ownCaptureTrack(track);
       if (track is lk.LocalVideoTrack) {
         await livekitRoom.localParticipant?.publishVideoTrack(track,
             publishOptions: lk.VideoPublishOptions(
@@ -932,11 +956,26 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
   @override
   Future<void> stopScreenshare() async {
+    // Ask LiveKit first: on the normal path it removes the screen share
+    // publication (stopping its track) and any screen audio publication the
+    // SDK still finds.
     await livekitRoom.localParticipant?.setScreenShareEnabled(false);
     final screenAudio = livekitRoom.localParticipant
         ?.getTrackPublicationBySource(lk.TrackSource.screenShareAudio);
     if (screenAudio != null) {
       await livekitRoom.localParticipant?.removePublishedTrack(screenAudio.sid);
+    }
+
+    // Then stop the captures this session created. The SDK call above is a
+    // no-op when a full reconnect cleared its publication map, and the OS
+    // capture survives that: stopping the owned tracks is what releases it
+    // (issue #63). Stopping a track the SDK already stopped is a no-op.
+    for (final track in _captureTracks) {
+      try {
+        await track.stop();
+      } catch (e, s) {
+        Log.onError(e, s, content: "Could not stop a screen capture track");
+      }
     }
 
     if (PlatformUtils.isAndroid) {
@@ -948,6 +987,25 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     }
 
     _stateChanged.add(());
+
+    _verifyScreenshareStopped();
+  }
+
+  /// A stop is only over once the session can no longer see the share as
+  /// live: a screen-share publication still published, or an owned capture
+  /// track still active. Reporting success while it is would leave the screen
+  /// captured with nothing left to stop it, so this raises instead.
+  void _verifyScreenshareStopped() {
+    final participant = livekitRoom.localParticipant;
+    final stillPublished = const [
+      lk.TrackSource.screenShareVideo,
+      lk.TrackSource.screenShareAudio,
+    ].any((source) => participant?.getTrackPublicationBySource(source) != null);
+    final stillCapturing = _captureTracks.any((track) => track.isActive);
+    if (stillPublished || stillCapturing) {
+      throw StateError(
+          "The screen share could not be stopped: it still looks live");
+    }
   }
 
   @override
