@@ -55,11 +55,48 @@ class _LocalVideoTrack implements lk.LocalVideoTrack {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// The screen audio half of a share: a second capture track the session owns
+/// and has to stop too. Faked at [lk.LocalTrack] level rather than
+/// `LocalAudioTrack`: the session only ever uses the owned track as a
+/// [lk.LocalTrack], and the playback stream its publication builds would
+/// otherwise drag the volume and visualizer platform channels into this test.
+class _LocalScreenAudioTrack implements lk.LocalTrack {
+  _LocalScreenAudioTrack(this.capture);
+
+  final _Capture capture;
+
+  @override
+  lk.TrackType get kind => lk.TrackType.AUDIO;
+
+  @override
+  lk.TrackSource get source => lk.TrackSource.screenShareAudio;
+
+  @override
+  bool get isActive => capture.running;
+
+  @override
+  Future<bool> stop() async {
+    capture.running = false;
+    return true;
+  }
+
+  @override
+  Future<bool> dispose() async {
+    capture.running = false;
+    return true;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class _Publication implements lk.LocalTrackPublication<lk.LocalTrack> {
   _Publication({
     required this.sid,
     required this.participant,
     this.track,
+    this.source = lk.TrackSource.screenShareVideo,
+    this.kind = lk.TrackType.VIDEO,
   });
 
   @override
@@ -69,10 +106,10 @@ class _Publication implements lk.LocalTrackPublication<lk.LocalTrack> {
   final lk.LocalParticipant participant;
 
   @override
-  final lk.TrackSource source = lk.TrackSource.screenShareVideo;
+  final lk.TrackSource source;
 
   @override
-  final lk.TrackType kind = lk.TrackType.VIDEO;
+  final lk.TrackType kind;
 
   @override
   lk.LocalTrack? track;
@@ -313,11 +350,13 @@ void main() {
   const me = '@me:example.org:DEVICE';
 
   late _Capture capture;
+  late _Capture audioCapture;
   late _LocalParticipant participant;
   late _Room room;
   late MatrixLivekitVoipSession session;
 
-  Future<_Publication> shareScreen({bool canStop = true}) async {
+  Future<_Publication> shareScreen(
+      {bool canStop = true, bool withAudio = false}) async {
     final publication = _Publication(
       sid: 'TR_screen',
       participant: participant,
@@ -330,11 +369,29 @@ void main() {
       publication: publication,
     ));
     await Future.delayed(Duration.zero);
+
+    if (withAudio) {
+      final audio = _Publication(
+        sid: 'TR_screen_audio',
+        participant: participant,
+        track: _LocalScreenAudioTrack(audioCapture),
+        source: lk.TrackSource.screenShareAudio,
+        kind: lk.TrackType.AUDIO,
+      );
+      participant.trackPublications[audio.sid] = audio;
+      room.listener.emit(lk.LocalTrackPublishedEvent(
+        participant: participant,
+        publication: audio,
+      ));
+      await Future.delayed(Duration.zero);
+    }
+
     return publication;
   }
 
   setUp(() {
     capture = _Capture();
+    audioCapture = _Capture();
     participant = _LocalParticipant(me);
     room = _Room(participant);
     participant.listener = room.listener;
@@ -382,21 +439,23 @@ void main() {
     expect(capture.running, isFalse);
   });
 
-  test('hanging up mid-share stops the capture even with the map cleared',
+  test('hanging up mid-share stops the screen and system audio captures',
       () async {
-    await shareScreen();
+    await shareScreen(withAudio: true);
 
     // The reconnect window: LiveKit has cleared its publication map, so the
     // room's dispose has nothing to unpublish and the session has to stop
-    // the capture itself (issue #66).
+    // the captures itself (issue #66).
     participant.trackPublications.clear();
 
     await session.hangUpCall();
 
     expect(capture.running, isFalse,
         reason: 'hanging up left the screen being captured');
+    expect(audioCapture.running, isFalse,
+        reason: 'hanging up left the system audio being captured');
     expect(room.disconnected, isTrue,
-        reason: 'the hang up did not run to completion');
+        reason: 'the hang up did not reach the room teardown');
   });
 
   test('a stop that cannot be verified raises instead of reporting success',

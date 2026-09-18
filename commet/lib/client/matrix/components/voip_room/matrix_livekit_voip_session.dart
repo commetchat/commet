@@ -742,11 +742,17 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     if (state == VoipState.ended) return;
     Log.i("Hanging up call");
 
-    // First of all: the captures belong to this session, and the room's
-    // dispose only unpublishes what the SDK still has in its map — empty in
-    // exactly the reconnect window that leaves the OS capture running. Stop
-    // them here, not after a teardown that can hang (issue #66).
-    await _stopOwnedCaptureTracks();
+    // The captures belong to this session, and the room's dispose only
+    // unpublishes what the SDK still has in its map — empty in exactly the
+    // reconnect window that leaves the OS capture running. Stop them before
+    // the teardown, bounded like it: the stop reaches a platform call, and a
+    // capture that refuses to release must not keep the session alive
+    // (issue #66).
+    await _stopOwnedCaptureTracks()
+        .timeout(const Duration(seconds: 8))
+        .catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Could not stop the screen capture on hang up");
+    });
 
     try {
       // First, so no membership write lands after the clear below: leaving
@@ -963,10 +969,10 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   /// Stops every capture track this session owns. This is what releases the
   /// OS capture when LiveKit no longer has a publication to stop — a full
   /// reconnect clears the publication map while the capture keeps running
-  /// (issues #63 and #66). A failure is logged, not thrown: a hang up has to
-  /// finish either way, and a stop reports it through
-  /// [_verifyScreenshareStopped] instead. Stopping an already stopped track
-  /// is a no-op in the SDK.
+  /// (issues #63 and #66). Failures are logged, not thrown: the hang up has
+  /// to finish either way, and [stopScreenshare] surfaces them through
+  /// [_verifyScreenshareStopped]. Stopping a stopped track is a no-op in the
+  /// SDK.
   Future<void> _stopOwnedCaptureTracks() async {
     for (final track in _captureTracks) {
       try {
@@ -989,10 +995,9 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       await livekitRoom.localParticipant?.removePublishedTrack(screenAudio.sid);
     }
 
-    // Then stop the captures this session created. The SDK call above is a
+    // Then stop the captures this session created: the SDK call above is a
     // no-op when a full reconnect cleared its publication map, and the OS
-    // capture survives that: stopping the owned tracks is what releases it
-    // (issue #63). Stopping a track the SDK already stopped is a no-op.
+    // capture survives that (issue #63).
     await _stopOwnedCaptureTracks();
 
     if (PlatformUtils.isAndroid) {
