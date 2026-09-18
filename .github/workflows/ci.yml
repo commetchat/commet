@@ -1,8 +1,9 @@
 name: ci
 
-# Every push to main: tests, the release builds and the debug builds all start
-# at once (the builds only need the version). Publishing the GitHub release
-# waits for the tests and the release builds; attaching the debug bundles
+# Every push to main: tests and the Windows release build start at once (the
+# build only needs the version), and publishing the GitHub release waits for
+# both. The Linux release build and the debug builds only run when the
+# workflow is started by hand with them ticked; attaching the debug bundles
 # waits for the release and the debug builds.
 on:
   push:
@@ -17,6 +18,14 @@ on:
         type: choice
         options: [auto, patch, minor, major]
         default: auto
+      linux:
+        description: Also build Linux
+        type: boolean
+        default: false
+      debug:
+        description: Also build debug bundles
+        type: boolean
+        default: false
 
 # Queue runs instead of overlapping them so two pushes never pick the same version.
 concurrency:
@@ -136,6 +145,7 @@ jobs:
     with:
       build_mode: release
       version: ${{ needs.version.outputs.version }}
+      platforms: ${{ inputs.linux && '["windows", "linux"]' || '["windows"]' }}
 
   publish:
     needs: [test, version, build-release]
@@ -163,10 +173,12 @@ jobs:
 
   build-debug:
     needs: [version]
+    if: inputs.debug
     uses: ./.github/workflows/desktop-build.yml
     with:
       build_mode: debug
       version: ${{ needs.version.outputs.version }}
+      platforms: ${{ inputs.linux && '["windows", "linux"]' || '["windows"]' }}
 
   attach-debug:
     needs: [version, publish, build-debug]

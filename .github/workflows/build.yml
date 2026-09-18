@@ -1,9 +1,10 @@
 
 name: build
 
+# Manual only: start it from the Actions tab. The Windows release build that
+# ships runs from ci.yml on every push to main.
 on:
-  pull_request:
-  merge_group:
+  workflow_dispatch:
 
 env:
   PROJECT_PATH: commet

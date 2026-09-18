@@ -1,6 +1,6 @@
-on: 
-  merge_group:
-  pull_request:
+on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 name: benchmark

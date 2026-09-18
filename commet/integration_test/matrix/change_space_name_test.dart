@@ -52,8 +52,6 @@ void main() {
 
     await tester.tap(find.widgetWithIcon(tiamat.IconButton, Icons.check));
 
-    // Renaming is a server round trip, and the new name only lands on the
-    // space once the state event comes back over sync.
     await tester.waitFor(() => space.displayName == newName,
         timeout: const Duration(seconds: 30));
 
@@ -62,6 +60,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(space.displayName, equals(newName));
+
+    // The header redraws off the space's update stream rather than on the
+    // frame after the rename, so give it frames to catch up.
+    await tester.waitFor(
+        () => find.widgetWithText(SpaceHeader, newName).evaluate().isNotEmpty,
+        timeout: const Duration(seconds: 30));
 
     expect(find.widgetWithText(SpaceHeader, newName), findsWidgets);
 

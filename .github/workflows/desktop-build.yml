@@ -1,6 +1,6 @@
 name: desktop-build
 
-# Reusable: builds the Windows and Linux desktop bundles in one mode and
+# Reusable: builds the desktop bundles for the given platforms in one mode and
 # uploads each as an artifact named roscord-<version>-<platform>-x64-<mode>.
 on:
   workflow_call:
@@ -13,6 +13,11 @@ on:
         description: Version tag baked into the build, e.g. v0.5.0
         required: true
         type: string
+      platforms:
+        description: JSON array of platforms to build, from windows and linux
+        required: false
+        type: string
+        default: '["windows", "linux"]'
 
 jobs:
   build:
@@ -20,21 +25,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: windows
-            os: blacksmith-4vcpu-windows-2025
-            bundle: commet/build/windows/x64/runner/${{ inputs.build_mode == 'debug' && 'Debug' || 'Release' }}
-            archive: zip
-          - platform: linux
-            os: blacksmith-4vcpu-ubuntu-2404
-            bundle: commet/build/linux/x64/${{ inputs.build_mode }}/bundle
-            archive: tar.gz
-    runs-on: ${{ matrix.os }}
+        platform: ${{ fromJSON(inputs.platforms) }}
+    runs-on: ${{ matrix.platform == 'windows' && 'blacksmith-4vcpu-windows-2025' || 'blacksmith-4vcpu-ubuntu-2404' }}
     env:
       ASSET_NAME: roscord-${{ inputs.version }}-${{ matrix.platform }}-x64-${{ inputs.build_mode }}
       # Release builds get the production application id, debug builds the
       # .develop one so both can be installed side by side.
       COMMET_PROD: ${{ inputs.build_mode == 'release' && '1' || '0' }}
+      BUNDLE: ${{ matrix.platform == 'windows' && format('commet/build/windows/x64/runner/{0}', inputs.build_mode == 'debug' && 'Debug' || 'Release') || format('commet/build/linux/x64/{0}/bundle', inputs.build_mode) }}
+      ARCHIVE: ${{ matrix.platform == 'windows' && 'zip' || 'tar.gz' }}
     steps:
       - name: Enable long paths
         if: runner.os == 'Windows'
@@ -87,9 +86,9 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp -r "${{ matrix.bundle }}" "dist/$ASSET_NAME"
+          cp -r "$BUNDLE" "dist/$ASSET_NAME"
           cd dist
-          if [ "${{ matrix.archive }}" = zip ]; then
+          if [ "$ARCHIVE" = zip ]; then
             7z a -tzip "$ASSET_NAME.zip" "$ASSET_NAME" > /dev/null
           else
             tar -czf "$ASSET_NAME.tar.gz" "$ASSET_NAME"
@@ -99,5 +98,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ASSET_NAME }}
-          path: dist/${{ env.ASSET_NAME }}.${{ matrix.archive }}
+          path: dist/${{ env.ASSET_NAME }}.${{ env.ARCHIVE }}
           if-no-files-found: error

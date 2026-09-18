@@ -1,7 +1,7 @@
 name: static-analysis
 on:
-  pull_request:
-  merge_group:
+  push:
+    branches: [main]
 
 env:
   PROJECT_PATH: commet

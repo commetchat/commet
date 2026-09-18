@@ -415,8 +415,8 @@ class MatrixSpace extends Space {
   @override
   Future<void> setDisplayName(String newName) async {
     _displayName = newName;
-    await _matrixRoom.setName(newName);
     _onUpdate.add(null);
+    await _matrixRoom.setName(newName);
   }
 
   @override

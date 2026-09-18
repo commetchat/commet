@@ -71,12 +71,11 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
       widget.supportsOfficialEmbeds ??
       VideoPlaybackDialog.supportsOfficialEmbeds;
 
-  bool get isVideo {
-    final uri = widget.data?.uri;
-    return widget.data?.type == UrlDestinationType.video ||
-        widget.data?.videoEmbedInfo != null ||
-        (uri != null && provider.canHandle(uri));
-  }
+  // Not provider.canHandle: providers claim links that may not hold a video
+  // (X posts with only text or photos), so trust what the preview resolved.
+  bool get isVideo =>
+      widget.data?.type == UrlDestinationType.video ||
+      widget.data?.videoEmbedInfo != null;
 
   bool get isShortForm => widget.data?.videoEmbedInfo?.isShortForm ?? false;
 

@@ -1,4 +1,6 @@
-on: push
+on:
+  push:
+    branches: [main]
 name: integration-test
 
 env:

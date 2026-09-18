@@ -68,6 +68,77 @@ class TwitterProvider implements VideoProvider {
     final info = extractStatusInfo(uri);
     if (info == null) return null;
 
+    final tweet = await _fetchTweet(info, client);
+    if (tweet == null) return null;
+
+    final author = tweet['author'] as Map<String, dynamic>?;
+    final authorName = author != null
+        ? '${author['name']} (@${author['screen_name']})'
+        : info.username;
+
+    final text = tweet['text'] as String? ?? '';
+    final media = tweet['media'] as Map<String, dynamic>?;
+    final videos = media?['videos'] as List<dynamic>?;
+
+    // Invariant: strictly differentiate tweets with video vs text/image only.
+    // Image posts go through [resolvePhoto] instead.
+    if (videos == null || videos.isEmpty) {
+      return null;
+    }
+
+    final video = videos.first as Map<String, dynamic>;
+    final vUrl = video['url'] as String?;
+    final streamUrl = vUrl != null ? Uri.tryParse(vUrl) : null;
+    final thumbUrl = video['thumbnail_url'] as String?;
+
+    double? aspectRatio;
+    final width = (video['width'] as num?)?.toDouble();
+    final height = (video['height'] as num?)?.toDouble();
+    if (width != null && height != null && height > 0) {
+      aspectRatio = width / height;
+    }
+
+    Duration? duration;
+    final durSeconds = (video['duration'] as num?)?.toDouble();
+    if (durSeconds != null) {
+      duration = Duration(milliseconds: (durSeconds * 1000).round());
+    }
+
+    final isVertical = aspectRatio != null && aspectRatio < 0.85;
+
+    return VideoEmbedInfo(
+      originalUrl: uri,
+      title: text.isNotEmpty ? text : 'Post from $authorName',
+      author: authorName,
+      thumbnailUrl: thumbUrl,
+      thumbnail: thumbUrl != null ? NetworkImage(thumbUrl) : null,
+      streamUrl: streamUrl,
+      playbackSource: streamUrl != null ? NativeVideoSource(streamUrl) : null,
+      aspectRatio: aspectRatio ?? 16.0 / 9.0,
+      duration: duration,
+      platformName: 'X (Twitter)',
+      isShortForm: isVertical,
+      capabilities: capabilities,
+    );
+  }
+
+  /// First photo attached to a status, for previewing image posts (which
+  /// [resolve] rejects). Null when the status has no photos.
+  Future<Uri?> resolvePhoto(Uri uri, {http.Client? client}) async {
+    final info = extractStatusInfo(uri);
+    if (info == null) return null;
+
+    final tweet = await _fetchTweet(info, client);
+    final media = tweet?['media'] as Map<String, dynamic>?;
+    final photos = media?['photos'] as List<dynamic>?;
+    if (photos == null || photos.isEmpty) return null;
+
+    final url = (photos.first as Map<String, dynamic>)['url'] as String?;
+    return url != null ? Uri.tryParse(url) : null;
+  }
+
+  Future<Map<String, dynamic>?> _fetchTweet(
+      TwitterStatusInfo info, http.Client? client) async {
     final httpClient = client ?? _defaultHttpClient ?? http.Client();
     final shouldCloseClient = client == null && _defaultHttpClient == null;
 
@@ -78,58 +149,7 @@ class TwitterProvider implements VideoProvider {
           await httpClient.get(apiUrl).timeout(const Duration(seconds: 4));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as Map<String, dynamic>;
-        final tweet = data['tweet'] as Map<String, dynamic>?;
-        if (tweet == null) return null;
-
-        final author = tweet['author'] as Map<String, dynamic>?;
-        final authorName = author != null
-            ? '${author['name']} (@${author['screen_name']})'
-            : info.username;
-
-        final text = tweet['text'] as String? ?? '';
-        final media = tweet['media'] as Map<String, dynamic>?;
-        final videos = media?['videos'] as List<dynamic>?;
-
-        // Invariant: strictly differentiate tweets with video vs text/image only.
-        if (videos == null || videos.isEmpty) {
-          return null;
-        }
-
-        final video = videos.first as Map<String, dynamic>;
-        final vUrl = video['url'] as String?;
-        final streamUrl = vUrl != null ? Uri.tryParse(vUrl) : null;
-        final thumbUrl = video['thumbnail_url'] as String?;
-
-        double? aspectRatio;
-        final width = (video['width'] as num?)?.toDouble();
-        final height = (video['height'] as num?)?.toDouble();
-        if (width != null && height != null && height > 0) {
-          aspectRatio = width / height;
-        }
-
-        Duration? duration;
-        final durSeconds = (video['duration'] as num?)?.toDouble();
-        if (durSeconds != null) {
-          duration = Duration(milliseconds: (durSeconds * 1000).round());
-        }
-
-        final isVertical = aspectRatio != null && aspectRatio < 0.85;
-
-        return VideoEmbedInfo(
-          originalUrl: uri,
-          title: text.isNotEmpty ? text : 'Post from $authorName',
-          author: authorName,
-          thumbnailUrl: thumbUrl,
-          thumbnail: thumbUrl != null ? NetworkImage(thumbUrl) : null,
-          streamUrl: streamUrl,
-          playbackSource:
-              streamUrl != null ? NativeVideoSource(streamUrl) : null,
-          aspectRatio: aspectRatio ?? 16.0 / 9.0,
-          duration: duration,
-          platformName: 'X (Twitter)',
-          isShortForm: isVertical,
-          capabilities: capabilities,
-        );
+        return data['tweet'] as Map<String, dynamic>?;
       }
     } catch (_) {
       // Fallback

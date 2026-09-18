@@ -2,6 +2,7 @@ import 'package:commet/cache/file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/components/video_embed/composite_video_provider.dart';
+import 'package:commet/client/components/video_embed/providers/twitter_provider.dart';
 import 'package:commet/client/components/video_embed/video_embed_info.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
@@ -232,10 +233,15 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
     VideoEmbedInfo? videoEmbedInfo;
 
     if (CompositeVideoProvider.instance.canHandle(url)) {
-      destinationType = UrlDestinationType.video;
       try {
         videoEmbedInfo = await CompositeVideoProvider.instance.resolve(url);
-        if (videoEmbedInfo != null) {
+        // A provider knowing the link doesn't make it a video: an X post may
+        // be text or photos only, and then it previews as a page.
+        if (videoEmbedInfo == null) {
+          final photo = await _resolvePhoto(url);
+          if (photo != null) image = photo;
+        } else {
+          destinationType = UrlDestinationType.video;
           siteName ??= videoEmbedInfo.platformName;
           title ??= videoEmbedInfo.title;
           image ??= videoEmbedInfo.thumbnail;
@@ -322,7 +328,25 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
           videoEmbedInfo: videoInfo,
         );
       }
+
+      final photo = await _resolvePhoto(uri);
+      if (photo != null) {
+        return UrlPreviewData(
+          uri,
+          siteName: CompositeVideoProvider.instance.findProvider(uri)?.name,
+          image: photo,
+          type: UrlDestinationType.image,
+        );
+      }
     } catch (_) {}
     return null;
+  }
+
+  Future<ImageProvider?> _resolvePhoto(Uri uri) async {
+    final provider = CompositeVideoProvider.instance.findProvider(uri);
+    if (provider is! TwitterProvider) return null;
+
+    final photo = await provider.resolvePhoto(uri);
+    return photo != null ? NetworkImage(photo.toString()) : null;
   }
 }

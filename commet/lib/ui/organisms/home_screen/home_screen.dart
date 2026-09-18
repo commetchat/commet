@@ -73,6 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void onSync(void event) {
     Future.delayed(Duration(seconds: 1)).then((_) {
+      // The screen may have been torn down during the delay.
+      if (!mounted) return;
       setState(() {
         updateRecent();
       });
