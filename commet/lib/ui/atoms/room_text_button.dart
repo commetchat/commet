@@ -9,6 +9,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/live_media_indicator.dart';
+import 'package:commet/ui/atoms/voice_state_indicator.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
@@ -331,7 +332,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 for (var participant in activity.participants)
                   buildCallMember(participant,
                       showActivityIcons: activity.thirdparty == false,
-                      liveMedia: activity.liveMedia[participant] ?? const {}),
+                      liveMedia: activity.liveMedia[participant] ?? const {},
+                      voiceState: activity.voiceState[participant] ?? const {}),
               ],
             ),
           ),
@@ -370,7 +372,9 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   }
 
   Widget buildCallMember(String identifier,
-      {bool showActivityIcons = true, Set<LiveMedia> liveMedia = const {}}) {
+      {bool showActivityIcons = true,
+      Set<LiveMedia> liveMedia = const {},
+      Set<VoiceState> voiceState = const {}}) {
     var color = Theme.of(context).colorScheme.secondary;
 
     final member = widget.room.getMemberOrFallback(identifier);
@@ -390,6 +394,11 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                 child: Row(
                   children: [
+                    if (voiceState.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                        child: VoiceStateIndicator(voiceState),
+                      ),
                     if (liveMedia.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),

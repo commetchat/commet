@@ -122,7 +122,8 @@ class TwitterProvider implements VideoProvider {
           thumbnailUrl: thumbUrl,
           thumbnail: thumbUrl != null ? NetworkImage(thumbUrl) : null,
           streamUrl: streamUrl,
-          playbackSource: streamUrl != null ? NativeVideoSource(streamUrl) : null,
+          playbackSource:
+              streamUrl != null ? NativeVideoSource(streamUrl) : null,
           aspectRatio: aspectRatio ?? 16.0 / 9.0,
           duration: duration,
           platformName: 'X (Twitter)',

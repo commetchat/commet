@@ -295,7 +295,28 @@ Both parts of the recommendation were implemented, with these choices for the op
 
 - **Key name.** `chat.commet.streams`, as in the issue. The join write lists `[]`.
 - **Publishing.** On by default, with no setting yet. Nothing is published unless the delayed leave is armed (`heartbeatDelayId`), and a failed heartbeat restart retracts the list.
-- **Writes.** `LiveMediaPublisher` debounces for 750 ms, keeps at least 2 s between writes (doubling after failures, up to 1 min), sends one write at a time with the newest value, and skips unchanged values. `hangUpCall` stops it before clearing the membership.
-- **Rewrites.** `MatrixCallMembership.withLiveMedia` keeps every other key, sets `created_ts` to the join time, and moves `expires` 4 h past now. roscord's readers now count expiry from `created_ts ?? origin_server_ts`, and `findSelectedFocus` sorts by join time.
+- **Writes.** `CallMembershipPublisher` (named `LiveMediaPublisher` when #9 landed) debounces for 750 ms, keeps at least 2 s between writes (doubling after failures, up to 1 min), sends one write at a time with the newest value, and skips unchanged values. `hangUpCall` stops it before clearing the membership.
+- **Rewrites.** `MatrixCallMembership.withPublishedState` (named `withLiveMedia` when #9 landed) keeps every other key, sets `created_ts` to the join time, and moves `expires` 4 h past now. roscord's readers now count expiry from `created_ts ?? origin_server_ts`, and `findSelectedFocus` sorts by join time.
 - **Reading.** Streams count only from full events. For members in our own LiveKit room, LiveKit replaces what their membership says. The list refreshes on our call's `onStateChanged` and on call.member events in the sync `state` section.
 - **Not done.** `m.call.intent`, the hourly `expires` refresh on its own, rescheduling a lost delayed leave (and rejoining), the shorter 10 s / 5 s heartbeat, keeping the "Clear Memberships" actions away from an active session's key, and reading sticky `m.rtc.member` events.
+
+## Follow-up: muted and deafened in the room list
+
+The same pipeline now also carries whether a member has silenced themselves,
+so the sidebar shows a crossed-out microphone or headset next to their name.
+
+- **Key name.** `chat.commet.voice_state`, a list of `"muted"` / `"deafened"`
+  alongside `chat.commet.streams`. `"deafened"` is read as muted too, since
+  deafening turns the microphone off. An **absent key means unknown**, which is
+  not the same as an empty list: a client that does not report its voice state
+  gets no icon rather than an "unmuted" one.
+- **One writer.** Streams and voice state are written as a single
+  `CallMembershipState`, because each write rewrites the whole state event and
+  two independent writers would clobber each other.
+- **Reading.** Same as the LIVE badge: state for members outside our call,
+  LiveKit for members inside it. Only a member's *audio* stream counts towards
+  muted, so a muted camera is not a muted member. Deafen has no LiveKit
+  equivalent; in-call it comes from the existing `chat.commet.voice_state.v1`
+  data topic, out-of-call from the membership.
+- **Write volume.** roscord has no push-to-talk, so mute is a manual toggle and
+  the existing debounce and rate limit cover it.

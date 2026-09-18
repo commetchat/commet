@@ -35,8 +35,7 @@ class VideoPlayerImplementation extends StatefulWidget {
       _VideoPlayerImplementationState();
 }
 
-class _VideoPlayerImplementationState
-    extends State<VideoPlayerImplementation> {
+class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
   late Player player;
   VideoController? controller;
   bool loaded = false;

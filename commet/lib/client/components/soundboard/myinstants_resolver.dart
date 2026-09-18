@@ -79,8 +79,7 @@ class MyInstantsResolver {
   /// Never returns arbitrary third-party URLs found in page markup.
   static String? extractAudioUrl(String pageHtml, {required String pageUrl}) {
     final pageUri = Uri.tryParse(pageUrl);
-    final pageHost =
-        (pageUri?.host.toLowerCase() ?? 'www.myinstants.com');
+    final pageHost = (pageUri?.host.toLowerCase() ?? 'www.myinstants.com');
 
     String? absolutize(String raw) {
       raw = raw.trim().replaceAll('&amp;', '&');
@@ -183,8 +182,7 @@ class MyInstantsResolver {
         throw MyInstantsValidationError('Not an audio file ($mime)');
       }
     }
-    if (!isAllowedUrl(downloadUrl) &&
-        !_isSameHostMediaUrl(downloadUrl)) {
+    if (!isAllowedUrl(downloadUrl) && !_isSameHostMediaUrl(downloadUrl)) {
       throw const MyInstantsValidationError('Unexpected download host');
     }
   }

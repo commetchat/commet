@@ -1,6 +1,7 @@
-// Keeps the live media listed in our own call membership (issue #9) in step
-// with what we publish, without hammering the homeserver: state writes share
-// the message rate limit (Synapse's default is 0.2/s with a burst of 10).
+// Keeps the state listed in our own call membership (issue #9) in step with
+// what we publish and whether we have silenced ourselves, without hammering
+// the homeserver: state writes share the message rate limit (Synapse's
+// default is 0.2/s with a burst of 10).
 import 'dart:async';
 import 'dart:math';
 
@@ -8,15 +9,46 @@ import 'package:collection/collection.dart';
 import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/debug/log.dart';
 
-class LiveMediaPublisher {
-  LiveMediaPublisher({
-    required Future<void> Function(Set<LiveMedia> media) write,
+/// What our call membership advertises about us. Written as one value, since
+/// every write rewrites the whole state event and two writers would clobber
+/// each other.
+class CallMembershipState {
+  const CallMembershipState({
+    this.media = const {},
+    this.voice = const {},
+  });
+
+  /// What we publish: screen share, camera.
+  final Set<LiveMedia> media;
+
+  /// How we have silenced ourselves: muted, deafened.
+  final Set<VoiceState> voice;
+
+  static const _media = SetEquality<LiveMedia>();
+  static const _voice = SetEquality<VoiceState>();
+
+  @override
+  bool operator ==(Object other) =>
+      other is CallMembershipState &&
+      _media.equals(media, other.media) &&
+      _voice.equals(voice, other.voice);
+
+  @override
+  int get hashCode => Object.hash(_media.hash(media), _voice.hash(voice));
+
+  @override
+  String toString() => "CallMembershipState(media: $media, voice: $voice)";
+}
+
+class CallMembershipPublisher {
+  CallMembershipPublisher({
+    required Future<void> Function(CallMembershipState state) write,
     this.debounce = const Duration(milliseconds: 750),
     this.minInterval = const Duration(seconds: 2),
     this.maxBackoff = const Duration(minutes: 1),
   }) : _write = write;
 
-  final Future<void> Function(Set<LiveMedia> media) _write;
+  final Future<void> Function(CallMembershipState state) _write;
 
   /// How long a value must stay unchanged before it is written.
   final Duration debounce;
@@ -26,23 +58,21 @@ class LiveMediaPublisher {
   final Duration minInterval;
   final Duration maxBackoff;
 
-  static const _equality = SetEquality<LiveMedia>();
-
   /// The join write lists nothing.
-  Set<LiveMedia> _written = const {};
-  Set<LiveMedia> _desired = const {};
+  CallMembershipState _written = const CallMembershipState();
+  CallMembershipState _desired = const CallMembershipState();
   Timer? _debounceTimer;
   Timer? _cooldownTimer;
   Future<void>? _inFlight;
   int _failures = 0;
   bool _stopped = false;
 
-  /// What we publish now. Written once it has stayed the same for
+  /// What we advertise now. Written once it has stayed the same for
   /// [debounce], one write at a time and at most one per [minInterval];
   /// a value equal to the last one written isn't written again.
-  void update(Set<LiveMedia> media) {
+  void update(CallMembershipState state) {
     if (_stopped) return;
-    _desired = Set.unmodifiable(media);
+    _desired = state;
     _debounceTimer?.cancel();
     _debounceTimer = Timer(debounce, () {
       _debounceTimer = null;
@@ -57,7 +87,7 @@ class LiveMediaPublisher {
         _cooldownTimer != null) {
       return;
     }
-    if (_equality.equals(_desired, _written)) return;
+    if (_desired == _written) return;
 
     final sending = _send(_desired);
     _inFlight = sending;
@@ -66,15 +96,15 @@ class LiveMediaPublisher {
     });
   }
 
-  Future<void> _send(Set<LiveMedia> media) async {
+  Future<void> _send(CallMembershipState state) async {
     var wait = minInterval;
     try {
-      await _write(media);
-      _written = media;
+      await _write(state);
+      _written = state;
       _failures = 0;
     } catch (e) {
       _failures++;
-      Log.w("Could not publish live media (attempt $_failures): $e");
+      Log.w("Could not publish call membership state (attempt $_failures): $e");
       final backoff = minInterval * pow(2, _failures - 1).toInt();
       wait = backoff > maxBackoff ? maxBackoff : backoff;
     }

@@ -6,6 +6,11 @@ import 'package:commet/utils/image_or_icon.dart';
 /// Media a participant is publishing that the room list shows (issue #9).
 enum LiveMedia { screen, camera }
 
+/// How a voice channel member has silenced themselves, shown next to their
+/// name in the room list. [deafened] implies [muted]: deafening turns the
+/// microphone off too.
+enum VoiceState { muted, deafened }
+
 class RoomActivitySession {
   Set<String> participants;
 
@@ -13,6 +18,11 @@ class RoomActivitySession {
   /// in our own call. Participants without an entry publish nothing we know
   /// of.
   final Map<String, Set<LiveMedia>> liveMedia = {};
+
+  /// Who has muted or deafened themselves, for those who reported it or are
+  /// in our own call. Participants without an entry are on a client that
+  /// does not report it, and get no indicator rather than a wrong one.
+  final Map<String, Set<VoiceState>> voiceState = {};
 
   String application;
 

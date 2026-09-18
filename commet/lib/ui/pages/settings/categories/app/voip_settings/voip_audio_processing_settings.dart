@@ -117,14 +117,16 @@ class _VoipAudioProcessingSettingsState
           "Diagnostic shown when the voice DSP is installed but not receiving frames");
 
   String labelVoipDspStatus(String rate, String suppression, String gate) =>
-      Intl.message("Processing $rate audio. Noise suppression $suppression. $gate",
+      Intl.message(
+          "Processing $rate audio. Noise suppression $suppression. $gate",
           args: [rate, suppression, gate],
           name: "labelVoipDspStatus",
           desc:
               "Diagnostic line under the level meter: sample rate, whether noise suppression is running, gate state");
 
   String get labelVoipDspOn => Intl.message("on",
-      name: "labelVoipDspOn", desc: "Noise suppression state in the status line");
+      name: "labelVoipDspOn",
+      desc: "Noise suppression state in the status line");
 
   String get labelVoipDspOff => Intl.message("off",
       name: "labelVoipDspOff",

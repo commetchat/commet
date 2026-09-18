@@ -88,9 +88,7 @@ abstract class AudioProcessingManager {
   /// its gate the judge of what actually leaves the client.
   bool get isProcessing {
     final t = _framesAdvancedAt;
-    return isActive &&
-        t != null &&
-        DateTime.now().difference(t) < _liveWindow;
+    return isActive && t != null && DateTime.now().difference(t) < _liveWindow;
   }
 
   /// Last time the input gate was seen open, i.e. the microphone was being

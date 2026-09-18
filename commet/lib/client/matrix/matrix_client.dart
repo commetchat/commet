@@ -856,11 +856,33 @@ class MatrixClient extends Client {
     var result = await flow.submit(this);
 
     if (result is LoginResultSuccess) {
+      // Adding an account that is already signed in on this device would run
+      // two sessions against the same user. Throw the session we just created
+      // away instead of registering it.
+      if (_isAlreadyLoggedIn()) {
+        try {
+          await _matrixClient.logout();
+        } catch (error, stack) {
+          Log.onError(error, stack);
+        }
+
+        return LoginResultAlreadyLoggedIn();
+      }
+
       preferences.addRegisteredMatrixClient(identifier);
       await _postLoginSuccess();
     }
 
     return result;
+  }
+
+  bool _isAlreadyLoggedIn() {
+    final userId = _matrixClient.userID;
+    if (userId == null) return false;
+
+    return clientManager?.clients.whereType<MatrixClient>().any((client) =>
+            client != this && client.matrixClient.userID == userId) ==
+        true;
   }
 
   static (MatrixLinkType, String, String)? parseMatrixLink(Uri uri) {

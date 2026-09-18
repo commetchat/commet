@@ -70,11 +70,17 @@ class SoundboardCallController extends ChangeNotifier {
   int _refs = 0;
   bool _disposed = false;
   StreamSubscription? _engineSub;
+  StreamSubscription? _sessionSub;
 
   /// Activations whose overlay has already been shown.
   final Set<String> _shownEventIds = {};
 
-  SoundboardCallController(this.session);
+  SoundboardCallController(this.session) {
+    // In the constructor, not init(): the engine is silenced through
+    // [listenerVolume], which is null-safe before init() builds the session,
+    // and this way the wiring does not depend on the async setup finishing.
+    _sessionSub = session.onStateChanged.listen((_) => _applyListenerVolume());
+  }
 
   Future<void> init() async {
     _resolveCatalog();
@@ -105,7 +111,7 @@ class SoundboardCallController extends ChangeNotifier {
       onError: (e, s, ctx) => Log.onError(e, s, content: 'Soundboard: $ctx'),
     );
     soundboard = sb;
-    engine.setVolume(userVolume);
+    engine.setVolume(listenerVolume);
     // init() subscribes synchronously, then preloads the whole catalog; the
     // entrance sound doesn't wait for that (the player fetches it on demand).
     final initialized = sb.init();
@@ -257,9 +263,21 @@ class SoundboardCallController extends ChangeNotifier {
 
   Future<void> setVolume01(double v) async {
     await preferences.soundboardVolume.set(v * 100.0);
-    soundboard?.engine.setVolume(v.clamp(0.0, 1.5));
+    // Through [listenerVolume]: a volume set while deafened is remembered,
+    // but stays silent until the user can hear again.
+    _applyListenerVolume();
     notifyListeners();
   }
+
+  void _applyListenerVolume() {
+    soundboard?.engine.setVolume(listenerVolume);
+  }
+
+  /// What the engine should play at: nothing while the user is deafened,
+  /// otherwise the volume they picked. Soundboard sounds are played locally,
+  /// so deafening, which only silences the LiveKit streams, would otherwise
+  /// leave other people's sounds audible.
+  double get listenerVolume => session.isDeafened ? 0.0 : userVolume;
 
   /// Listener's soundboard volume as the engine takes it (0..1.5).
   static double get userVolume =>
@@ -272,6 +290,7 @@ class SoundboardCallController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _engineSub?.cancel();
+    _sessionSub?.cancel();
     soundboard?.dispose();
     final catalog = this.catalog;
     if (catalog is _CompositeCatalog) catalog.dispose();

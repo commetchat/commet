@@ -12,7 +12,7 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
 import 'package:commet/client/matrix/components/voip_room/call_membership_writes.dart';
-import 'package:commet/client/matrix/components/voip_room/live_media_publisher.dart';
+import 'package:commet/client/matrix/components/voip_room/call_membership_publisher.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
@@ -39,10 +39,11 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
   final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
-  /// Lists what we publish in our call membership, so people outside the
-  /// call see our LIVE badge (issue #9).
-  late final LiveMediaPublisher _liveMediaPublisher =
-      LiveMediaPublisher(write: _writeLiveMedia);
+  /// Lists what we publish and whether we have silenced ourselves in our call
+  /// membership, so people outside the call see our LIVE badge and our
+  /// muted/deafened icon (issue #9).
+  late final CallMembershipPublisher _membershipPublisher =
+      CallMembershipPublisher(write: _writeMembershipState);
 
   /// The session connects with auto-subscribe off and subscribes itself,
   /// leaving out screen shares nobody opted in to watch (issue #50).
@@ -217,7 +218,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     }
 
     _stateChanged.add(());
-    _publishLiveMedia();
+    _publishMembershipState();
   }
 
   void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
@@ -244,7 +245,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
         : _isDeafened;
     streams.add(s);
     _stateChanged.add(());
-    _publishLiveMedia();
+    _publishMembershipState();
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
@@ -621,14 +622,14 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     s.deafened = _isDeafened;
     streams.add(s);
     _stateChanged.add(());
-    _publishLiveMedia();
+    _publishMembershipState();
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
     _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
-    _publishLiveMedia();
+    _publishMembershipState();
   }
 
   /// Screen share and camera as LiveKit sees them, which also covers a
@@ -638,15 +639,23 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
         if (isCameraEnabled) LiveMedia.camera,
       };
 
-  void _publishLiveMedia() {
+  /// Deafening turns the microphone off, so it always reports muted too.
+  Set<VoiceState> get _localVoiceState => {
+        if (isMicrophoneMuted || _isDeafened) VoiceState.muted,
+        if (_isDeafened) VoiceState.deafened,
+      };
+
+  void _publishMembershipState() {
     if (state == VoipState.ended) return;
     // Only with the delayed leave armed: it is what clears the membership,
     // and the badge with it, if this client crashes while streaming.
-    _liveMediaPublisher
-        .update(heartbeatDelayId != null ? _localLiveMedia : const {});
+    _membershipPublisher.update(heartbeatDelayId != null
+        ? CallMembershipState(media: _localLiveMedia, voice: _localVoiceState)
+        : const CallMembershipState());
   }
 
-  Future<void> _writeLiveMedia(Set<LiveMedia> media) async {
+  // Named `published`, not `state`: `state` is this session's VoipState.
+  Future<void> _writeMembershipState(CallMembershipState published) async {
     final current =
         room.matrixRoom.states[MatrixVoipRoomComponent.callMemberStateEvent]
             ?[_ownMembershipKey];
@@ -661,8 +670,11 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       room.matrixRoom.id,
       MatrixVoipRoomComponent.callMemberStateEvent,
       _ownMembershipKey,
-      MatrixCallMembership.withLiveMedia(current.content,
-          media: media, joinedAt: joinedAt, now: DateTime.now()),
+      MatrixCallMembership.withPublishedState(current.content,
+          media: published.media,
+          voiceState: published.voice,
+          joinedAt: joinedAt,
+          now: DateTime.now()),
     );
   }
 
@@ -722,7 +734,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     try {
       // First, so no membership write lands after the clear below: leaving
       // unpublishes our tracks, which would schedule one.
-      await _liveMediaPublisher.stop();
+      await _membershipPublisher.stop();
 
       keyProvider?.dispose();
       _settingsSub?.cancel();
@@ -817,6 +829,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     }
 
     await livekitRoom.localParticipant?.setMicrophoneEnabled(!state);
+    _publishMembershipState();
     _stateChanged.add(());
   }
 
@@ -842,6 +855,9 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     }
 
     _broadcastVoiceState();
+    // LiveKit tells the room right away; the membership is what people
+    // outside the call read, so it has to be rewritten too.
+    _publishMembershipState();
 
     _stateChanged.add(());
   }
@@ -1025,7 +1041,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
     final delayId = result["delay_id"] as String;
     heartbeatDelayId = delayId;
-    _publishLiveMedia();
+    _publishMembershipState();
 
     heartbeatTimer =
         Timer.periodic(timerLength - Duration(seconds: 5), (timer) async {
@@ -1038,7 +1054,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
         print(result);
         if (heartbeatDelayId == null) {
           heartbeatDelayId = delayId;
-          _publishLiveMedia();
+          _publishMembershipState();
         }
       } catch (e, s) {
         // The delayed leave may be gone (it already fired, or the server
@@ -1046,7 +1062,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
         Log.onError(e, s, content: "Call membership heartbeat failed");
         if (heartbeatDelayId != null) {
           heartbeatDelayId = null;
-          _publishLiveMedia();
+          _publishMembershipState();
         }
       }
     });

@@ -71,6 +71,9 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   static ValueKey spaceSettingsButtonKey =
       const ValueKey("SPACE_SUMMARY_SPACE_SETTINGS_BUTTON");
 
+  static ValueKey inviteButtonKey =
+      const ValueKey("SPACE_SUMMARY_INVITE_BUTTON");
+
   String get tooltipSpaceSettings => Intl.message("Space settings",
       desc: "Tooltip for the button that opens space settings",
       name: "tooltipSpaceSettings");
@@ -304,7 +307,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       text: "Invite",
       preferredDirection: AxisDirection.left,
       child: tiamat.CircleButton(
-        key: spaceSettingsButtonKey,
+        key: inviteButtonKey,
         icon: Icons.person_add,
         radius: BuildConfig.MOBILE ? 24 : 16,
         onPressed: () => widget.onInviteButtonTap?.call(),

@@ -13,9 +13,12 @@ jobs:
   integration-test:
     name: Integration Test
     runs-on: ubuntu-latest
+    # The tests talk to a real homeserver; without a cap a hung test would sit
+    # on the runner for the default six hours.
+    timeout-minutes: 60
     steps:
       - name: Checkout  ┏━┓ ︵ /(^.^/)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: 'true'
         
@@ -63,11 +66,18 @@ jobs:
           cd $PROJECT_PATH
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+          # ffmpeg cannot grab a display that does not exist yet
+          for _ in $(seq 1 30); do [ -e /tmp/.X11-unix/X99 ] && break; sleep 1; done
           ffmpeg -f x11grab -video_size 1920x1080 -framerate 15 -i :99 -vcodec libx264 -preset ultrafast -qp 0 -nostdin -loglevel quiet -pix_fmt yuv444p video.mkv &
+          FFMPEG_PID=$!
+          # The step runs under `bash -e`, so the failure has to be caught here
+          # or the recording is never finalised and the artifact is unusable.
+          set +e
           scripts/integration-test.sh
           INTEGRATION_TEST_EXIT_CODE=$?
-          sleep 1
-          kill $(pgrep ffmpeg)
+          set -e
+          kill -INT $FFMPEG_PID 2>/dev/null || true
+          wait $FFMPEG_PID 2>/dev/null || true
           exit $INTEGRATION_TEST_EXIT_CODE
 
       - name: Upload Artifact

@@ -66,6 +66,10 @@ class CallSessionPanel extends StatefulWidget {
 
 class _CallSessionPanelState extends State<CallSessionPanel>
     with TickerProviderStateMixin {
+  /// The control buttons sit in boxes the height of the whole row, so
+  /// tiamat's 15px default left them looking lost in all that space.
+  static const double iconSize = 20;
+
   late List<StreamSubscription> subs;
   Timer? statUpdateTimer;
   late AnimationController audioLevel;
@@ -142,26 +146,9 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                           height: widget.height,
                           width: widget.height,
                           child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AnimatedBuilder(
-                                animation: audioLevel,
-                                builder: (context, child) {
-                                  return Container(
-                                    child: Icon(
-                                      widget.session.isDeafened
-                                          ? Icons.volume_off_rounded
-                                          : Icons.volume_up_rounded,
-                                      color: widget.session.isDeafened
-                                          ? ColorScheme.of(context).error
-                                          : Color.lerp(
-                                              ColorScheme.of(context).onSurface,
-                                              SpeakingIndicator.color,
-                                              audioLevel.value),
-                                      size: 16,
-                                    ),
-                                  );
-                                },
-                              )),
+                            padding: const EdgeInsets.all(8.0),
+                            child: buildActivityIndicator(context),
+                          ),
                         )),
                     Flexible(
                       child: tiamat.Text(widget.session.roomName,
@@ -186,6 +173,10 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                                 clientManager!.callManager.mute();
                               }
                             },
+                            size: iconSize,
+                            iconColor: widget.session.isMicrophoneMuted
+                                ? ColorScheme.of(context).error
+                                : null,
                             icon: widget.session.isMicrophoneMuted
                                 ? Icons.mic_off_rounded
                                 : Icons.mic_rounded)),
@@ -203,6 +194,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                                 clientManager!.callManager.deafen();
                               }
                             },
+                            size: iconSize,
                             iconColor: widget.session.isDeafened
                                 ? ColorScheme.of(context).error
                                 : null,
@@ -219,6 +211,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                       alignment: PopoverAlignment.start,
                       builder: (context, onPressed) => tiamat.IconButton(
                         onPressed: onPressed,
+                        size: iconSize,
                         iconColor: onPressed == null
                             ? Theme.of(context).disabledColor
                             : null,
@@ -235,6 +228,7 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                             onPressed: () {
                               widget.session.hangUpCall();
                             },
+                            size: iconSize,
                             iconColor: ColorScheme.of(context).error,
                             icon: Icons.call_end_rounded)),
                   ),
@@ -243,6 +237,36 @@ class _CallSessionPanelState extends State<CallSessionPanel>
             ],
           ),
         ));
+  }
+
+  /// Crossed out and red while we are not transmitting, and then static:
+  /// lighting up for voice activity would suggest the microphone is live.
+  Widget buildActivityIndicator(BuildContext context) {
+    final silenced =
+        widget.session.isMicrophoneMuted || widget.session.isDeafened;
+
+    if (silenced) {
+      return Icon(
+        Icons.volume_off_rounded,
+        color: ColorScheme.of(context).error,
+        size: iconSize,
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: audioLevel,
+      builder: (context, child) {
+        return Icon(
+          Icons.volume_up_rounded,
+          color: Color.lerp(
+            ColorScheme.of(context).onSurface,
+            SpeakingIndicator.color,
+            audioLevel.value,
+          ),
+          size: iconSize,
+        );
+      },
+    );
   }
 
   Widget pickAnimation({required VoipSession entry, required Widget child}) {

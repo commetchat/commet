@@ -283,7 +283,17 @@ class GetOrCreateRoom extends StatefulWidget {
 
 class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
   RoomGetter? selected;
+
+  /// True while a room is actually being created; drives the spinner.
   bool loading = false;
+
+  /// True while the creation form is open in front of us. The form is modal, so
+  /// this only dims the dialog behind it. It must not show a spinner: an
+  /// endlessly animating widget under a dialog that waits for user input never
+  /// lets `pumpAndSettle` return, which deadlocks the integration tests.
+  bool formOpen = false;
+
+  bool get dimmed => loading || formOpen;
 
   @override
   void initState() {
@@ -300,9 +310,9 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
   Widget build(BuildContext context) {
     if (MediaQuery.of(context).mobile)
       return IgnorePointer(
-        ignoring: loading,
+        ignoring: dimmed,
         child: Opacity(
-          opacity: loading ? 0.5 : 1.0,
+          opacity: dimmed ? 0.5 : 1.0,
           child: LayoutBuilder(
             builder: (context, constraints) {
               if (widget.creators.length == 1)
@@ -339,9 +349,9 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
       child: Stack(
         children: [
           IgnorePointer(
-            ignoring: loading,
+            ignoring: dimmed,
             child: Opacity(
-              opacity: loading ? 0.5 : 1,
+              opacity: dimmed ? 0.5 : 1,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,7 +520,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
   onNextButtonPressed(RoomGetter entry) async {
     setState(() {
       selected = entry;
-      loading = true;
+      formOpen = true;
     });
 
     var args = await AdaptiveDialog.show<CreateRoomArgs>(
@@ -524,39 +534,47 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
       },
     );
 
+    if (!mounted) return;
+
     setState(() {
-      selected = entry;
-      loading = true;
+      formOpen = false;
+      loading = args != null;
     });
 
-    if (args != null) {
-      try {
-        var result = await entry.create!(args);
+    if (args == null) {
+      return;
+    }
 
-        print(result);
+    try {
+      var result = await entry.create!(args);
 
-        Navigator.of(context).pop(result);
-      } catch (e, s) {
-        Log.onError(e, s);
-        await AdaptiveDialog.show(
-          context,
-          title: "Error",
-          builder: (context) {
-            return tiamat.Text.body(e.toString());
-          },
-        );
+      if (!mounted) return;
 
-        Navigator.of(context).pop();
-      }
-    } else {
+      Navigator.of(context).pop(result);
+    } catch (e, s) {
+      Log.onError(e, s);
+
+      if (!mounted) return;
+
       setState(() {
         loading = false;
       });
+
+      await AdaptiveDialog.show(
+        context,
+        title: "Error",
+        builder: (context) {
+          return tiamat.Text.body(e.toString());
+        },
+      );
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop();
     }
   }
 
   onExistingRoomPicked(SpaceChild result) {
-    print("Existing picked: ${result}");
     Navigator.of(context).pop(result);
   }
 }

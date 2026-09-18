@@ -9,8 +9,7 @@ class SoundboardSessionCache {
   final LinkedHashMap<String, int> _order = LinkedHashMap();
   final void Function(String evicted)? onEvict;
 
-  SoundboardSessionCache(
-      {this.maxEntries = 20, this.onEvict});
+  SoundboardSessionCache({this.maxEntries = 20, this.onEvict});
 
   void markLoaded(String soundId, int nowMs) {
     _order.remove(soundId);

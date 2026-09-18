@@ -1,5 +1,6 @@
-import 'package:commet/client/room.dart';
+import 'package:commet/client/client.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
+import 'package:commet/ui/pages/get_or_create_room/room_creator.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,7 @@ import 'package:commet/main.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../extensions/common_flows.dart';
+import '../extensions/wait_for.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:commet/generated/l10n.dart';
@@ -23,9 +25,9 @@ void main() {
 
     String spaceName = "Private Space ${RandomUtils.getRandomString(8)}";
     await _setSpaceName(tester, spaceName);
-    await _confirmCreateSpace(tester);
 
     var client = app.clientManager.clients.first;
+    await _confirmCreateSpace(tester, client, spaceName);
 
     expect(client.spaces.any((element) => element.displayName == spaceName),
         isTrue);
@@ -48,9 +50,9 @@ void main() {
 
     String spaceName = "Public Space ${RandomUtils.getRandomString(8)}";
     await _setSpaceName(tester, spaceName);
-    await _confirmCreateSpace(tester);
 
     var client = app.clientManager.clients.first;
+    await _confirmCreateSpace(tester, client, spaceName);
 
     expect(client.spaces.any((element) => element.displayName == spaceName),
         isTrue);
@@ -69,17 +71,31 @@ void main() {
 // sidebar's add button opens it with only the Space creator, "Next" opens the
 // form (name, topic, visibility), "Create Room!" creates the space.
 
-Future<void> _confirmCreateSpace(WidgetTester tester) async {
+Future<void> _confirmCreateSpace(
+    WidgetTester tester, Client client, String spaceName) async {
   await tester.tap(find
       .widgetWithText(tiamat.Button, T.current.promptConfirmRoomCreation)
       .first);
+
+  // Creating the space is a server round trip followed by a sync; waiting on
+  // the space itself is the only reliable signal that the flow is done.
+  await tester.waitFor(
+      () => client.spaces.any((space) => space.displayName == spaceName),
+      timeout: const Duration(seconds: 30));
 
   await tester.pumpAndSettle();
 }
 
 Future<void> _setSpaceName(WidgetTester tester, String spaceName) async {
   // The name field is the first text field of the form, the topic the second.
-  await tester.enterText(find.byType(TextField).first, spaceName);
+  // Scoped to the form, since the page behind the dialog has its own fields.
+  await tester.enterText(
+      find
+          .descendant(
+              of: find.byType(RoomCreatorWidget),
+              matching: find.byType(TextField))
+          .first,
+      spaceName);
   await tester.pumpAndSettle();
 }
 

@@ -58,3 +58,8 @@ echo "Sent message"
 
 curl -fS --retry 3 -XPOST -d "{\"user_id\":\"$mxid1\"}" "http://$HOMESERVER/_matrix/client/r0/rooms/$roomID/invite?access_token=$usertoken2"
 echo "Invited $USER1_NAME"
+
+# create a space owned by user1, so that tests which act on an existing space do
+# not depend on another test having created one first
+spaceID=$(curl --retry 3 --silent --fail -XPOST -H "Content-Type: application/json" -d "{\"name\":\"Integration Test Space\", \"preset\":\"private_chat\", \"creation_content\":{\"type\":\"m.space\"}}" "http://$HOMESERVER/_matrix/client/v3/createRoom?access_token=$usertoken1" | jq -r '.room_id')
+echo "Created space '$spaceID' for $USER1_NAME"

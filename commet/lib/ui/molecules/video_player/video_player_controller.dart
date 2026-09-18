@@ -136,7 +136,8 @@ class VideoPlayerController {
   Stream<Duration> get onProgressed => _onProgressed.stream;
   Stream<DownloadProgress> get onDownloadProgressed => _downloadProgress.stream;
   Stream<String> get onError => _onError.stream;
-  Stream<VideoPlayerSettings> get onSettingsChanged => _settingsController.stream;
+  Stream<VideoPlayerSettings> get onSettingsChanged =>
+      _settingsController.stream;
 
   VideoPlayerSettings get settings => _settings;
 
@@ -197,8 +198,7 @@ class VideoPlayerController {
 
   Future<void> setVolume(double volume) async {
     final clamped = volume.clamp(0.0, 100.0);
-    final lastNonZero =
-        clamped > 0 ? clamped : _settings.lastNonZeroVolume;
+    final lastNonZero = clamped > 0 ? clamped : _settings.lastNonZeroVolume;
     updateSettings(volume: clamped, lastNonZeroVolume: lastNonZero);
     await _setVolume?.call(clamped);
   }

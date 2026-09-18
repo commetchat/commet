@@ -1,27 +1,29 @@
 import 'dart:async';
 
 import 'package:commet/client/components/activities/activities_component.dart';
-import 'package:commet/client/matrix/components/voip_room/live_media_publisher.dart';
+import 'package:commet/client/matrix/components/voip_room/call_membership_publisher.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const screen = {LiveMedia.screen};
-const screenAndCamera = {LiveMedia.screen, LiveMedia.camera};
-const camera = {LiveMedia.camera};
-const nothing = <LiveMedia>{};
+const screen = CallMembershipState(media: {LiveMedia.screen});
+const screenAndCamera =
+    CallMembershipState(media: {LiveMedia.screen, LiveMedia.camera});
+const camera = CallMembershipState(media: {LiveMedia.camera});
+const muted = CallMembershipState(voice: {VoiceState.muted});
+const nothing = CallMembershipState();
 
 void main() {
-  late List<Set<LiveMedia>> writes;
+  late List<CallMembershipState> writes;
   late Completer<void>? pendingWrite;
   late int failuresLeft;
-  late LiveMediaPublisher publisher;
+  late CallMembershipPublisher publisher;
 
   setUp(() {
     writes = [];
     pendingWrite = null;
     failuresLeft = 0;
-    publisher = LiveMediaPublisher(
-      write: (media) async {
-        writes.add(media);
+    publisher = CallMembershipPublisher(
+      write: (state) async {
+        writes.add(state);
         if (failuresLeft > 0) {
           failuresLeft--;
           throw Exception('M_LIMIT_EXCEEDED');
@@ -126,5 +128,23 @@ void main() {
     publisher.update(screenAndCamera);
     await tester.pump(const Duration(seconds: 10));
     expect(writes, [screen]);
+  });
+
+  testWidgets('muting is a change even though the streams are the same',
+      (tester) async {
+    publisher.update(muted);
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(writes, [muted]);
+
+    // Same value again: nothing to say.
+    publisher.update(muted);
+    await tester.pump(const Duration(seconds: 5));
+    expect(writes, [muted]);
+
+    publisher.update(nothing);
+    await tester.pump(const Duration(seconds: 5));
+    expect(writes, [muted, nothing]);
+
+    await finish();
   });
 }

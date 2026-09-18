@@ -23,8 +23,7 @@ class SoundboardEmojiOverlay extends StatefulWidget {
   });
 
   @override
-  State<SoundboardEmojiOverlay> createState() =>
-      _SoundboardEmojiOverlayState();
+  State<SoundboardEmojiOverlay> createState() => _SoundboardEmojiOverlayState();
 }
 
 class _SoundboardEmojiOverlayState extends State<SoundboardEmojiOverlay>
@@ -49,8 +48,8 @@ class _SoundboardEmojiOverlayState extends State<SoundboardEmojiOverlay>
       ),
       TweenSequenceItem(tween: ConstantTween(1.0), weight: 50),
       TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.6)
-            .chain(CurveTween(curve: Curves.easeIn)),
+        tween:
+            Tween(begin: 1.0, end: 0.6).chain(CurveTween(curve: Curves.easeIn)),
         weight: 25,
       ),
     ]).animate(_controller);
@@ -62,8 +61,8 @@ class _SoundboardEmojiOverlayState extends State<SoundboardEmojiOverlay>
       ),
       TweenSequenceItem(tween: ConstantTween(1.0), weight: 55),
       TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.0)
-            .chain(CurveTween(curve: Curves.easeIn)),
+        tween:
+            Tween(begin: 1.0, end: 0.0).chain(CurveTween(curve: Curves.easeIn)),
         weight: 25,
       ),
     ]).animate(_controller);

@@ -55,8 +55,7 @@ class SystemWideShortcuts {
 
   static String get shortcutNameToggleDeafen => Intl.message("Toggle Deafen",
       name: "shortcutNameToggleDeafen",
-      desc:
-          "name for the system wide shortcut to toggle the deafen status");
+      desc: "name for the system wide shortcut to toggle the deafen status");
 
   static Map<String, AppShortcut> shortcuts = {
     "mute": AppShortcut(

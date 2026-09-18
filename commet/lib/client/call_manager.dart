@@ -151,7 +151,13 @@ class CallManager {
     player?.setPlaylistMode(PlaylistMode.loop);
   }
 
+  /// Someone joining or leaving is other people's noise, so a deafened user
+  /// does not hear it. Our own still plays: a session we have just joined is
+  /// never deafened, and by the time we leave ours is already dropped from
+  /// [currentSessions]. Joining a second call while deafened in the first is
+  /// silent, which is what a deafened user asked for.
   void joinCallSound() {
+    if (isDeafened) return;
     player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/joined_call.ogg"));
     player?.setPlaylistMode(PlaylistMode.none);
@@ -272,6 +278,7 @@ class CallManager {
   }
 
   void endCallSound() {
+    if (isDeafened) return;
     player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/left_call.ogg"));
     player?.setPlaylistMode(PlaylistMode.none);

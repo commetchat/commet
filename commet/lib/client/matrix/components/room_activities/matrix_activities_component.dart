@@ -154,6 +154,13 @@ class MatrixActivitiesComponent
               .putIfAbsent(event.senderId, () => {})
               .addAll(media);
         }
+
+        // Only for a membership that says anything about it: a client that
+        // does not report its voice state must not read as unmuted.
+        if (event.content.containsKey(MatrixCallMembership.voiceStateKey)) {
+          activity.voiceState[event.senderId] =
+              MatrixCallMembership.voiceStateOf(event.content);
+        }
       }
     }
 
@@ -170,6 +177,7 @@ class MatrixActivitiesComponent
   /// memberships only say after a debounced write and a sync.
   static void _applyCallStreams(RoomActivitySession call, VoipSession session) {
     final inCall = <String, Set<LiveMedia>>{};
+    final voice = <String, Set<VoiceState>>{};
     for (final stream in session.streams) {
       final media = inCall.putIfAbsent(stream.streamUserId, () => {});
       switch (stream.type) {
@@ -178,11 +186,18 @@ class MatrixActivitiesComponent
         case VoipStreamType.video:
           media.add(LiveMedia.camera);
         case VoipStreamType.audio:
+          // Only the microphone says anything about muting: a muted camera
+          // or screen share is not a muted member.
+          voice[stream.streamUserId] = {
+            if (stream.isMuted || stream.isDeafened) VoiceState.muted,
+            if (stream.isDeafened) VoiceState.deafened,
+          };
         case VoipStreamType.screenshareAudio:
           break;
       }
     }
     call.liveMedia.addAll(inCall);
+    call.voiceState.addAll(voice);
   }
 
   @override

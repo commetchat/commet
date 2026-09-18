@@ -66,7 +66,8 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                   link: widget.link,
                   child: Listener(
                     onPointerSignal: (event) {
-                      if (event is PointerScrollEvent && selectedEntry == null) {
+                      if (event is PointerScrollEvent &&
+                          selectedEntry == null) {
                         widget.onScrolled?.call(event);
                       }
                     },

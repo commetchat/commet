@@ -101,8 +101,10 @@ class FakeVoipSession implements VoipSession {
   @override
   Stream<void> get onStateChanged => _stateChanged.stream;
 
-  void publish(String userId, VoipStreamType type) {
-    streams.add(FakeVoipStream(userId, type));
+  void publish(String userId, VoipStreamType type,
+      {bool muted = false, bool deafened = false}) {
+    streams.add(
+        FakeVoipStream(userId, type, isMuted: muted, isDeafened: deafened));
     _stateChanged.add(null);
   }
 
@@ -115,8 +117,13 @@ class FakeVoipStream implements VoipStream {
   final String streamUserId;
   @override
   final VoipStreamType type;
+  @override
+  final bool isMuted;
+  @override
+  final bool isDeafened;
 
-  FakeVoipStream(this.streamUserId, this.type);
+  FakeVoipStream(this.streamUserId, this.type,
+      {this.isMuted = false, this.isDeafened = false});
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -142,6 +149,7 @@ matrix.Event callMemberEvent(
   String userId,
   String deviceId, {
   List<Object?>? streams,
+  List<Object?>? voiceState,
   DateTime? sentAt,
   Map<String, Object?> extra = const {},
 }) {
@@ -159,6 +167,7 @@ matrix.Event callMemberEvent(
       "scope": "m.room",
       "expires": 14400000,
       if (streams != null) "chat.commet.streams": streams,
+      if (voiceState != null) "chat.commet.voice_state": voiceState,
       ...extra,
     },
   );
@@ -353,6 +362,84 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(changes, hasLength(1));
+    });
+  });
+
+  group("Muted and deafened icons", () {
+    const thirdUserId = "@third:example.org";
+
+    void setMemberships(List<matrix.StrippedStateEvent> memberships) {
+      room.matrixRoom.states[MatrixActivitiesComponent.callMemberStateEvent] = {
+        for (final m in memberships) m.stateKey!: m,
+      };
+    }
+
+    test("a member who reports being muted is muted", () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", voiceState: ["muted"]),
+      ]);
+
+      expect(
+          callSession(component).voiceState[otherUserId], {VoiceState.muted});
+    });
+
+    test("a deafened member reads as muted too", () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", voiceState: ["deafened"]),
+      ]);
+
+      expect(callSession(component).voiceState[otherUserId],
+          {VoiceState.muted, VoiceState.deafened});
+    });
+
+    test("a member who reports being unmuted has an empty state, not null", () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", voiceState: []),
+      ]);
+
+      expect(callSession(component).voiceState[otherUserId], isEmpty);
+    });
+
+    test("a client that says nothing about it gets no icon", () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", streams: ["screen"]),
+      ]);
+
+      expect(callSession(component).voiceState[otherUserId], isNull);
+    });
+
+    test("in our call, LiveKit decides who is muted", () {
+      setMemberships([
+        // Unmuted a moment ago; the membership hasn't caught up.
+        callMemberEvent(room, otherUserId, "DEVICEB", voiceState: ["muted"]),
+        callMemberEvent(room, selfUserId, selfDeviceId, voiceState: []),
+        // Not in our LiveKit room: state is all we have.
+        callMemberEvent(room, thirdUserId, "DEVICEC",
+            voiceState: ["muted", "deafened"]),
+      ]);
+      final session = FakeVoipSession(client, roomId, "session-1")
+        ..publish(otherUserId, VoipStreamType.audio)
+        ..publish(selfUserId, VoipStreamType.audio,
+            muted: true, deafened: true);
+      clientManager.callManager.currentSessions.add(session);
+
+      final voice = callSession(component).voiceState;
+      expect(voice[otherUserId], isEmpty);
+      expect(voice[selfUserId], {VoiceState.muted, VoiceState.deafened});
+      expect(voice[thirdUserId], {VoiceState.muted, VoiceState.deafened});
+    });
+
+    test("only the microphone counts: a muted camera is not a muted member",
+        () {
+      setMemberships([
+        callMemberEvent(room, otherUserId, "DEVICEB", voiceState: []),
+      ]);
+      final session = FakeVoipSession(client, roomId, "session-1")
+        ..publish(otherUserId, VoipStreamType.audio)
+        ..publish(otherUserId, VoipStreamType.video, muted: true);
+      clientManager.callManager.currentSessions.add(session);
+
+      expect(callSession(component).voiceState[otherUserId], isEmpty);
     });
   });
 }

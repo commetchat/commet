@@ -28,6 +28,41 @@ void main() {
     });
   });
 
+  group('voiceStateOf', () {
+    test('reads how a member reports having silenced themselves', () {
+      expect(
+          MatrixCallMembership.voiceStateOf({
+            'chat.commet.voice_state': ['muted'],
+          }),
+          {VoiceState.muted});
+    });
+
+    test('deafened implies muted', () {
+      expect(
+          MatrixCallMembership.voiceStateOf({
+            'chat.commet.voice_state': ['deafened'],
+          }),
+          {VoiceState.muted, VoiceState.deafened});
+    });
+
+    test('ignores unknown values and anything that is not a list', () {
+      expect(
+          MatrixCallMembership.voiceStateOf({
+            'chat.commet.voice_state': ['muted', 'asleep', 7],
+          }),
+          {VoiceState.muted});
+      expect(
+          MatrixCallMembership.voiceStateOf(
+              {'chat.commet.voice_state': 'muted'}),
+          isEmpty);
+    });
+
+    test('a client that says nothing reports nothing', () {
+      expect(MatrixCallMembership.voiceStateOf({'application': 'm.call'}),
+          isEmpty);
+    });
+  });
+
   group('isExpired', () {
     test('a membership lasts `expires` from when it was sent', () {
       const content = {'expires': 1000};
@@ -65,7 +100,7 @@ void main() {
     });
   });
 
-  group('withLiveMedia', () {
+  group('withPublishedState', () {
     final joinContent = {
       'application': 'm.call',
       'call_id': '',
@@ -87,12 +122,14 @@ void main() {
     };
 
     test('lists the streams and keeps the rest of the membership', () {
-      final content = MatrixCallMembership.withLiveMedia(joinContent,
+      final content = MatrixCallMembership.withPublishedState(joinContent,
           media: {LiveMedia.camera, LiveMedia.screen},
+          voiceState: {VoiceState.deafened, VoiceState.muted},
           joinedAt: joined,
           now: joined);
 
       expect(content['chat.commet.streams'], ['screen', 'camera']);
+      expect(content['chat.commet.voice_state'], ['muted', 'deafened']);
       for (final key in ['application', 'call_id', 'device_id', 'scope']) {
         expect(content[key], joinContent[key]);
       }
@@ -101,14 +138,16 @@ void main() {
     });
 
     test('keeps the join time and pushes the expiry 4 h past now', () {
-      final content = MatrixCallMembership.withLiveMedia(joinContent,
+      final content = MatrixCallMembership.withPublishedState(joinContent,
           media: const {},
+          voiceState: const {},
           joinedAt: joined,
           now: joined.add(const Duration(hours: 1)));
 
       expect(content['created_ts'], joined.millisecondsSinceEpoch);
       expect(content['expires'], const Duration(hours: 5).inMilliseconds);
       expect(content['chat.commet.streams'], isEmpty);
+      expect(content['chat.commet.voice_state'], isEmpty);
       expect(
           MatrixCallMembership.isExpired(
               content,

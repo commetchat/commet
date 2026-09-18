@@ -291,7 +291,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                     ])),
                     SliverGrid.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount),
+                          crossAxisCount: crossAxisCount),
                       itemCount: getEmoticonList(pack).length,
                       itemBuilder: (context, index) {
                         var emote = getEmoticonList(pack)[index];

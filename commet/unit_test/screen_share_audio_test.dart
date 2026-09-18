@@ -37,13 +37,18 @@ class DummyDesktopCapturerSource implements DesktopCapturerSource {
   @override
   StreamController<String> get onNameChanged => StreamController.broadcast();
   @override
-  StreamController<Uint8List> get onThumbnailChanged => StreamController.broadcast();
+  StreamController<Uint8List> get onThumbnailChanged =>
+      StreamController.broadcast();
 }
 
 void main() {
-  group('Slice 1: ScreenCaptureSource and ScreenCaptureDialogResult Contract', () {
-    test('ScreenCaptureDialogResult defaults doNotShareAudio to false and captureAudio to true', () {
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+  group('Slice 1: ScreenCaptureSource and ScreenCaptureDialogResult Contract',
+      () {
+    test(
+        'ScreenCaptureDialogResult defaults doNotShareAudio to false and captureAudio to true',
+        () {
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
       final result = ScreenCaptureDialogResult(source: source);
 
       expect(result.source.id, equals('screen:0'));
@@ -51,25 +56,33 @@ void main() {
       expect(result.captureAudio, isTrue);
     });
 
-    test('ScreenCaptureDialogResult sets captureAudio to false when doNotShareAudio is true', () {
-      final source = DummyDesktopCapturerSource(id: 'window:1', name: 'App Window');
-      final result = ScreenCaptureDialogResult(source: source, doNotShareAudio: true);
+    test(
+        'ScreenCaptureDialogResult sets captureAudio to false when doNotShareAudio is true',
+        () {
+      final source =
+          DummyDesktopCapturerSource(id: 'window:1', name: 'App Window');
+      final result =
+          ScreenCaptureDialogResult(source: source, doNotShareAudio: true);
 
       expect(result.doNotShareAudio, isTrue);
       expect(result.captureAudio, isFalse);
     });
 
     test('WebrtcScreencaptureSource defaults captureAudio to true', () {
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
       final captureSource = WebrtcScreencaptureSource(source);
 
       expect(captureSource.captureAudio, isTrue);
     });
 
     test('WebrtcScreencaptureSource accepts captureAudio parameter', () {
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
-      final captureSourceWithAudio = WebrtcScreencaptureSource(source, captureAudio: true);
-      final captureSourceWithoutAudio = WebrtcScreencaptureSource(source, captureAudio: false);
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+      final captureSourceWithAudio =
+          WebrtcScreencaptureSource(source, captureAudio: true);
+      final captureSourceWithoutAudio =
+          WebrtcScreencaptureSource(source, captureAudio: false);
 
       expect(captureSourceWithAudio.captureAudio, isTrue);
       expect(captureSourceWithoutAudio.captureAudio, isFalse);
@@ -77,7 +90,8 @@ void main() {
 
     test('WebrtcBrowserScreenCaptureSource supports captureAudio', () {
       final browserDefault = WebrtcBrowserScreenCaptureSource();
-      final browserNoAudio = WebrtcBrowserScreenCaptureSource(captureAudio: false);
+      final browserNoAudio =
+          WebrtcBrowserScreenCaptureSource(captureAudio: false);
 
       expect(browserDefault.captureAudio, isTrue);
       expect(browserNoAudio.captureAudio, isFalse);
@@ -85,7 +99,8 @@ void main() {
 
     test('WebrtcAndroidScreencaptureSource supports captureAudio', () {
       final androidDefault = WebrtcAndroidScreencaptureSource();
-      final androidNoAudio = WebrtcAndroidScreencaptureSource(captureAudio: false);
+      final androidNoAudio =
+          WebrtcAndroidScreencaptureSource(captureAudio: false);
 
       expect(androidDefault.captureAudio, isTrue);
       expect(androidNoAudio.captureAudio, isFalse);
@@ -93,8 +108,11 @@ void main() {
   });
 
   group('Slice 2: ScreenCaptureSourceDialog UI and Checkbox Interaction', () {
-    testWidgets('renders ScreenCaptureSourceDialog with checkbox and unchecked by default', (tester) async {
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+    testWidgets(
+        'renders ScreenCaptureSourceDialog with checkbox and unchecked by default',
+        (tester) async {
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
       final controller = StreamController<DesktopCapturerSource>.broadcast();
 
       await tester.pumpWidget(createTestApp(
@@ -110,8 +128,11 @@ void main() {
       expect(find.text('Não compartilhar áudio do sistema'), findsOneWidget);
     });
 
-    testWidgets('pops with doNotShareAudio = false when checkbox is not clicked', (tester) async {
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+    testWidgets(
+        'pops with doNotShareAudio = false when checkbox is not clicked',
+        (tester) async {
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
       final controller = StreamController<DesktopCapturerSource>.broadcast();
       ScreenCaptureDialogResult? poppedResult;
 
@@ -122,7 +143,9 @@ void main() {
               onPressed: () async {
                 poppedResult = await showDialog<ScreenCaptureDialogResult>(
                   context: context,
-                  builder: (_) => Dialog(child: ScreenCaptureSourceDialog([source], controller.stream)),
+                  builder: (_) => Dialog(
+                      child: ScreenCaptureSourceDialog(
+                          [source], controller.stream)),
                 );
               },
               child: const Text('Open'),
@@ -145,8 +168,10 @@ void main() {
       expect(poppedResult!.captureAudio, isTrue);
     });
 
-    testWidgets('pops with doNotShareAudio = true when checkbox is checked', (tester) async {
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+    testWidgets('pops with doNotShareAudio = true when checkbox is checked',
+        (tester) async {
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
       final controller = StreamController<DesktopCapturerSource>.broadcast();
       ScreenCaptureDialogResult? poppedResult;
 
@@ -157,7 +182,9 @@ void main() {
               onPressed: () async {
                 poppedResult = await showDialog<ScreenCaptureDialogResult>(
                   context: context,
-                  builder: (_) => Dialog(child: ScreenCaptureSourceDialog([source], controller.stream)),
+                  builder: (_) => Dialog(
+                      child: ScreenCaptureSourceDialog(
+                          [source], controller.stream)),
                 );
               },
               child: const Text('Open'),
@@ -191,10 +218,13 @@ void main() {
   });
 
   group('Slice 3: VoipSession Screen Share Audio Contract', () {
-    test('setScreenShare activates screen audio when captureAudio is true', () async {
+    test('setScreenShare activates screen audio when captureAudio is true',
+        () async {
       final session = MockScreenShareVoipSession();
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
-      final captureSource = WebrtcScreencaptureSource(source, captureAudio: true);
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+      final captureSource =
+          WebrtcScreencaptureSource(source, captureAudio: true);
 
       expect(session.isSharingScreen, isFalse);
       expect(session.isScreenAudioActive, isFalse);
@@ -206,10 +236,14 @@ void main() {
       expect(session.currentScreenshare?.captureAudio, isTrue);
     });
 
-    test('setScreenShare does not activate screen audio when captureAudio is false', () async {
+    test(
+        'setScreenShare does not activate screen audio when captureAudio is false',
+        () async {
       final session = MockScreenShareVoipSession();
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
-      final captureSource = WebrtcScreencaptureSource(source, captureAudio: false);
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+      final captureSource =
+          WebrtcScreencaptureSource(source, captureAudio: false);
 
       await session.setScreenShare(captureSource);
 
@@ -218,10 +252,13 @@ void main() {
       expect(session.currentScreenshare?.captureAudio, isFalse);
     });
 
-    test('stopScreenshare disables both screenshare and screen audio', () async {
+    test('stopScreenshare disables both screenshare and screen audio',
+        () async {
       final session = MockScreenShareVoipSession();
-      final source = DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
-      final captureSource = WebrtcScreencaptureSource(source, captureAudio: true);
+      final source =
+          DummyDesktopCapturerSource(id: 'screen:0', name: 'Screen 1');
+      final captureSource =
+          WebrtcScreencaptureSource(source, captureAudio: true);
 
       await session.setScreenShare(captureSource);
       expect(session.isSharingScreen, isTrue);
@@ -260,5 +297,3 @@ class MockScreenShareVoipSession implements VoipSession {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
-
-

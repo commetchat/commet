@@ -35,8 +35,7 @@ class _Emoticon implements Emoticon {
   @override
   ImageProvider? get image => null;
 
-  _Emoticon(this.slug, {String? key, this.shortcode})
-      : key = key ?? slug;
+  _Emoticon(this.slug, {String? key, this.shortcode}) : key = key ?? slug;
 
   @override
   EmoticonUsage get usage => EmoticonUsage.emoji;
@@ -116,7 +115,8 @@ void main() {
       ),
     );
     expect(scrollCount, 1,
-        reason: 'Scroll over primary menu should forward when no secondary menu is open');
+        reason:
+            'Scroll over primary menu should forward when no secondary menu is open');
 
     // Open the secondary menu balloon
     await tester.tap(addReactionFinder);
@@ -133,7 +133,8 @@ void main() {
       ),
     );
     expect(scrollCount, 1,
-        reason: 'Scroll inside the emoji balloon must not forward to timeline behind it');
+        reason:
+            'Scroll inside the emoji balloon must not forward to timeline behind it');
 
     // Also scrolling over the primary menu while the balloon is open should not forward to the timeline.
     await tester.sendEventToBinding(
@@ -143,7 +144,8 @@ void main() {
       ),
     );
     expect(scrollCount, 1,
-        reason: 'Scroll over action bar when balloon is open must not forward to timeline');
+        reason:
+            'Scroll over action bar when balloon is open must not forward to timeline');
 
     // Scenario 3: Close the balloon and verify that scrolling resumes forwarding to onScrolled.
     await tester.tap(addReactionFinder);
@@ -157,7 +159,8 @@ void main() {
       ),
     );
     expect(scrollCount, 2,
-        reason: 'Scrolling should resume forwarding to timeline once secondary menu is closed');
+        reason:
+            'Scrolling should resume forwarding to timeline once secondary menu is closed');
   });
 
   testWidgets('EmojiPicker buildEmojiList has a Scrollbar', (tester) async {
