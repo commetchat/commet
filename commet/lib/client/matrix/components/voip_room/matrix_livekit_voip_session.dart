@@ -813,7 +813,8 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     await _stopOwnedCaptureTracks()
         .timeout(const Duration(seconds: 8))
         .catchError((Object e, StackTrace s) {
-      Log.onError(e, s, content: "Could not stop the screen capture on hang up");
+      Log.onError(e, s,
+          content: "Could not stop the screen capture on hang up");
     });
 
     try {
