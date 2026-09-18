@@ -56,6 +56,12 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
+      # The Blacksmith Windows image ships VS Build Tools without ATL, and
+      # flutter_local_notifications_windows needs atlbase.h.
+      - name: Install ATL
+        if: matrix.platform == 'windows'
+        uses: ./.github/actions/install-atl
+
       - name: Install Linux build dependencies
         if: runner.os == 'Linux'
         run: |

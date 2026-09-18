@@ -27,7 +27,12 @@ jobs:
 
       - name: Configure Flutter
         run: flutter config --enable-windows-desktop
-        
+      
+      # The Blacksmith Windows image ships VS Build Tools without ATL, and
+      # flutter_local_notifications_windows needs atlbase.h.
+      - name: Install ATL
+        uses: ./.github/actions/install-atl
+
       - name: Code Generation
         run: |
           cd .\commet
