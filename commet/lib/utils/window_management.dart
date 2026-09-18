@@ -1,15 +1,54 @@
-import 'dart:io';
-
 import 'package:collection/collection.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WindowManagement {
+  static bool _closing = false;
+  static bool _clientsClosed = false;
+
+  /// Releases the clients and the call manager.
+  ///
+  /// Bounded like AppRefresh: closing a client awaits the sync transaction in
+  /// flight, which may be exactly what is slow. Never throws: a client that
+  /// fails to close must not keep the window from closing.
+  static Future<void> closeClients() async {
+    if (_clientsClosed) return;
+    _clientsClosed = true;
+
+    try {
+      await clientManager?.close().timeout(const Duration(seconds: 5),
+          onTimeout: () => Log.w("Closing clients timed out"));
+    } catch (error, stacktrace) {
+      Log.onError(error, stacktrace, content: "Failed to release the clients");
+    }
+  }
+
+  /// Shuts the app down through the window manager.
+  ///
+  /// Not `exit()`: that skips the engine teardown and crashes on Windows
+  /// (coremessaging.dll). `destroy()` posts the platform's quit message, so
+  /// the runner's message loop returns and the process tears down normally.
+  static Future<void> close() async {
+    if (_closing) return;
+    _closing = true;
+
+    await closeClients();
+
+    try {
+      await windowManager.destroy();
+    } catch (error, stacktrace) {
+      // Let a later attempt try again rather than wedging the window shut.
+      _closing = false;
+      Log.onError(error, stacktrace, content: "Failed to close the window");
+    }
+  }
+
   static Future<void> init() async {
     if (!(PlatformUtils.isLinux || PlatformUtils.isWindows)) return;
 
@@ -75,14 +114,9 @@ class _WindowListener extends WindowListener {
 
     if (preferences.minimizeOnClose.value) {
       windowManager.minimize();
-    } else {
-      if (clientManager != null) {
-        for (var client in clientManager!.clients) {
-          await client.close();
-        }
-      }
-
-      exit(0);
+      return;
     }
+
+    await WindowManagement.close();
   }
 }

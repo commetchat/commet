@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
@@ -162,7 +161,9 @@ void appMain() async {
 
     if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       if (await SingleInstance.tryConnectToMainInstance(commandLineArgs)) {
-        exit(0);
+        // exit() wedges this process; quit through the window manager instead.
+        await WindowManagement.close();
+        return;
       } else {
         SingleInstance.becomeMainInstance();
       }
