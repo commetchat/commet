@@ -15,13 +15,18 @@ class WindowManagement {
   /// Releases the clients and the call manager.
   ///
   /// Bounded like AppRefresh: closing a client awaits the sync transaction in
-  /// flight, which may be exactly what is slow.
+  /// flight, which may be exactly what is slow. Never throws: a client that
+  /// fails to close must not keep the window from closing.
   static Future<void> closeClients() async {
     if (_clientsClosed) return;
     _clientsClosed = true;
 
-    await clientManager?.close().timeout(const Duration(seconds: 5),
-        onTimeout: () => Log.w("Closing clients timed out"));
+    try {
+      await clientManager?.close().timeout(const Duration(seconds: 5),
+          onTimeout: () => Log.w("Closing clients timed out"));
+    } catch (error, stacktrace) {
+      Log.onError(error, stacktrace, content: "Failed to release the clients");
+    }
   }
 
   /// Shuts the app down through the window manager.
@@ -35,7 +40,13 @@ class WindowManagement {
 
     await closeClients();
 
-    await windowManager.destroy();
+    try {
+      await windowManager.destroy();
+    } catch (error, stacktrace) {
+      // Let a later attempt try again rather than wedging the window shut.
+      _closing = false;
+      Log.onError(error, stacktrace, content: "Failed to close the window");
+    }
   }
 
   static Future<void> init() async {
