@@ -28,6 +28,13 @@ class _LocalVideoTrack implements lk.LocalVideoTrack {
   /// the native track leaves the track active.
   final bool canStop;
 
+  /// Called while the capture is being stopped, for tests that interleave a
+  /// republish with a stop still in flight.
+  void Function()? onStopping;
+
+  bool _active = false;
+  bool _stopped = false;
+
   @override
   lk.TrackType get kind => lk.TrackType.VIDEO;
 
@@ -35,21 +42,34 @@ class _LocalVideoTrack implements lk.LocalVideoTrack {
   lk.TrackSource get source => lk.TrackSource.screenShareVideo;
 
   @override
-  bool get isActive => capture.running;
+  bool get isActive => _active;
+
+  /// `publishVideoTrack` starts a track before it announces it, and a
+  /// reconnect republishes tracks through the same method. For a stopped
+  /// track this only re-arms the wrapper (`Track.start()` flips `_active`):
+  /// the capture behind it stays stopped.
+  @override
+  Future<bool> start() async {
+    if (_active) return false;
+    _active = true;
+    return true;
+  }
 
   @override
   Future<bool> stop() async {
+    // `Track.stop()` returns early on an already stopped track, before it
+    // touches the media track; `LocalTrack.stop()` remembers the stop.
+    if (!_active && _stopped) return false;
     if (!canStop) throw Exception('the capture is stuck');
+    onStopping?.call();
     capture.running = false;
+    _stopped = true;
+    _active = false;
     return true;
   }
 
   @override
-  Future<bool> dispose() async {
-    if (!canStop) throw Exception('the capture is stuck');
-    capture.running = false;
-    return true;
-  }
+  Future<bool> dispose() async => stop();
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -355,13 +375,9 @@ void main() {
   late _Room room;
   late MatrixLivekitVoipSession session;
 
-  Future<_Publication> shareScreen(
-      {bool canStop = true, bool withAudio = false}) async {
-    final publication = _Publication(
-      sid: 'TR_screen',
-      participant: participant,
-      track: _LocalVideoTrack(capture, canStop: canStop),
-    );
+  /// What `publishVideoTrack` / `publishAudioTrack` do once the track is
+  /// ready: add the publication and announce it.
+  Future<_Publication> announce(_Publication publication) async {
     participant.trackPublications[publication.sid] = publication;
 
     room.listener.emit(lk.LocalTrackPublishedEvent(
@@ -369,6 +385,20 @@ void main() {
       publication: publication,
     ));
     await Future.delayed(Duration.zero);
+
+    return publication;
+  }
+
+  Future<_Publication> shareScreen(
+      {bool canStop = true, bool withAudio = false}) async {
+    final track = _LocalVideoTrack(capture, canStop: canStop);
+    // `publishVideoTrack` starts the track before it announces it.
+    await track.start();
+    final publication = await announce(_Publication(
+      sid: 'TR_screen',
+      participant: participant,
+      track: track,
+    ));
 
     if (withAudio) {
       final audio = _Publication(
@@ -378,15 +408,25 @@ void main() {
         source: lk.TrackSource.screenShareAudio,
         kind: lk.TrackType.AUDIO,
       );
-      participant.trackPublications[audio.sid] = audio;
-      room.listener.emit(lk.LocalTrackPublishedEvent(
-        participant: participant,
-        publication: audio,
-      ));
-      await Future.delayed(Duration.zero);
+      await announce(audio);
     }
 
     return publication;
+  }
+
+  /// `LocalParticipant.rePublishAllTracks()` after a full reconnect: it clears
+  /// its publication map and republishes the track objects it held, through
+  /// `publishVideoTrack`, so they are started again (the wrapper only) and
+  /// announced under a new sid.
+  Future<_Publication> republishShare(lk.LocalTrack track,
+      {String sid = 'TR_screen_republished'}) async {
+    participant.trackPublications.clear();
+    await track.start();
+    return announce(_Publication(
+      sid: sid,
+      participant: participant,
+      track: track,
+    ));
   }
 
   setUp(() {
@@ -470,5 +510,63 @@ void main() {
     await expectLater(session.stopScreenshare(), throwsA(isA<StateError>()));
 
     expect(capture.running, isTrue);
+  });
+
+  test('a republished share whose capture was stopped is refused', () async {
+    final original = await shareScreen();
+    await session.stopScreenshare();
+
+    // A full reconnect republishes the track objects LiveKit held before it
+    // cleared its map. The user stopped this one right before, so its share
+    // must not come back for a second click.
+    final republished = await republishShare(original.track!);
+
+    expect(participant.trackPublications.containsKey(republished.sid), isFalse,
+        reason: 'the republished publication was not removed through livekit');
+    expect(session.streams, isEmpty,
+        reason: 'an outgoing stream was added for a share that was stopped');
+    expect(capture.running, isFalse,
+        reason: 'the republished share restarted the stopped capture');
+  });
+
+  test('a republish that lands while the stop is running is still refused',
+      () async {
+    final original = await shareScreen();
+    final track = original.track! as _LocalVideoTrack;
+
+    // The publication map is cleared (a full reconnect) and the republish
+    // lands while the capture is being stopped: before the stop can mark it
+    // stopped, so the event alone cannot tell it apart from a new share.
+    participant.trackPublications.clear();
+    track.onStopping = () {
+      announce(_Publication(
+        sid: 'TR_screen_republished',
+        participant: participant,
+        track: track,
+      ));
+    };
+
+    await session.stopScreenshare();
+
+    expect(participant.trackPublications.containsKey('TR_screen_republished'),
+        isFalse);
+    expect(session.streams.where((s) => s.streamId == 'TR_screen_republished'),
+        isEmpty,
+        reason: 'a stream from the mid-stop republish stayed on the panel');
+    expect(capture.running, isFalse);
+  });
+
+  test('a share started after one was stopped is not refused', () async {
+    await shareScreen();
+    await session.stopScreenshare();
+
+    // A new share creates its own capture tracks, so the refusal check does
+    // not match: starting to share again after stopping must still work.
+    final fresh = _LocalVideoTrack(_Capture());
+    final publication = await republishShare(fresh, sid: 'TR_screen_2');
+
+    expect(participant.trackPublications.containsKey(publication.sid), isTrue);
+    expect(session.streams.where((s) => s.streamId == publication.sid),
+        isNotEmpty);
   });
 }
