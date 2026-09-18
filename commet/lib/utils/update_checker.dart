@@ -9,6 +9,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/links/link_utils.dart';
+import 'package:commet/utils/window_management.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -126,9 +127,9 @@ class UpdateChecker {
         await ErrorUtils.tryRun(context, () async {
           Log.i("Found installer, doing automatic update");
 
-          for (var client in clientManager!.clients) {
-            await client.close();
-          }
+          // Release the databases before the installer runs, but bounded: a
+          // sync in flight must not hold the update back.
+          await WindowManagement.closeClients();
 
           Process.run(
               installerPath,
@@ -142,7 +143,9 @@ class UpdateChecker {
           await Future.delayed(Duration(seconds: 1));
         });
 
-        exit(0);
+        // Not exit(): it crashes on Windows instead of shutting down.
+        await WindowManagement.close();
+        return;
       }
 
       if (confirmation == null) return;
