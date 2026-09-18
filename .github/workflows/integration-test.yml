@@ -12,7 +12,7 @@ env:
 jobs:
   integration-test:
     name: Integration Test
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     # The tests talk to a real homeserver; without a cap a hung test would sit
     # on the runner for the default six hours.
     timeout-minutes: 60
