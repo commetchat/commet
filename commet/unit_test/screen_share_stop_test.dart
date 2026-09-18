@@ -429,6 +429,11 @@ void main() {
     ));
   }
 
+  /// A full reconnect: LocalParticipant.rePublishAllTracks() clears its
+  /// publications before it republishes the tracks it kept. Clearing the map
+  /// does not stop the capture.
+  void simulateFullReconnect() => participant.trackPublications.clear();
+
   setUp(() {
     capture = _Capture();
     audioCapture = _Capture();
@@ -457,10 +462,7 @@ void main() {
       'the capture', () async {
     await shareScreen();
 
-    // LocalParticipant.rePublishAllTracks() clears its publications before it
-    // republishes the tracks it kept (a full reconnect does this). Clearing
-    // the map does not stop the capture.
-    participant.trackPublications.clear();
+    simulateFullReconnect();
 
     await session.stopScreenshare();
 
@@ -502,10 +504,10 @@ void main() {
       () async {
     await shareScreen(canStop: false);
 
-    // Same reconnect window: the publication map is empty, and the capture
-    // refuses to stop (a stuck sender still holds it). A stop that reports
-    // success here would leave the screen captured and nothing to click.
-    participant.trackPublications.clear();
+    // The capture refuses to stop: a stuck sender still holds it, and a stop
+    // that reports success here would leave the screen captured and nothing
+    // to click.
+    simulateFullReconnect();
 
     await expectLater(session.stopScreenshare(), throwsA(isA<StateError>()));
 
@@ -568,5 +570,34 @@ void main() {
     expect(participant.trackPublications.containsKey(publication.sid), isTrue);
     expect(session.streams.where((s) => s.streamId == publication.sid),
         isNotEmpty);
+  });
+
+  test('sharing follows the capture when livekit no longer has the publication',
+      () async {
+    await shareScreen();
+
+    expect(session.isSharingScreen, isTrue);
+
+    simulateFullReconnect();
+
+    expect(session.isSharingScreen, isTrue,
+        reason: 'the screen is still being captured, so the stop control '
+            'must stay on screen');
+
+    await session.stopScreenshare();
+
+    expect(session.isSharingScreen, isFalse,
+        reason: 'the capture is gone, and so is the publication');
+  });
+
+  test('sharing stays true while the capture refuses to stop', () async {
+    await shareScreen(canStop: false);
+    simulateFullReconnect();
+
+    await expectLater(session.stopScreenshare(), throwsA(isA<StateError>()));
+
+    expect(session.isSharingScreen, isTrue,
+        reason: 'the screen is still captured, so the app must not report '
+            'it as private');
   });
 }
