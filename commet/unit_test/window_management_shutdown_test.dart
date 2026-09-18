@@ -11,16 +11,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeDirectMessages implements DirectMessagesComponent {
   @override
-  final INotifyingList<Room> directMessageRooms =
-      NotifyingList.empty(growable: true);
+  final INotifyingList<Room> directMessageRooms = NotifyingList.empty(
+    growable: true,
+  );
 
   @override
-  final INotifyingList<Room> highlightedRoomsList =
-      NotifyingList.empty(growable: true);
+  final INotifyingList<Room> highlightedRoomsList = NotifyingList.empty(
+    growable: true,
+  );
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 /// A client that only needs to be closable: [ClientManager] subscribes to the
@@ -56,7 +57,7 @@ class _FakeClient implements Client {
 
   @override
   StoredStreamController<ClientConnectionStatusUpdate>
-      get connectionStatusChanged => StoredStreamController();
+  get connectionStatusChanged => StoredStreamController();
 
   @override
   T? getComponent<T extends Component>() {
@@ -71,45 +72,54 @@ class _FakeClient implements Client {
   }
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(
-      'closing the app releases the clients and quits through the window manager exactly once',
-      () async {
-    final client = _FakeClient();
-    final manager = ClientManager();
-    manager.addClient(client);
-    app.clientManager = manager;
-    addTearDown(() => app.clientManager = null);
+    'closing the app releases the clients and quits through the window manager exactly once',
+    () async {
+      final client = _FakeClient();
+      final manager = ClientManager();
+      manager.addClient(client);
+      app.clientManager = manager;
+      addTearDown(() => app.clientManager = null);
 
-    final destroyCalls = <MethodCall>[];
-    final messenger =
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-    messenger.setMockMethodCallHandler(const MethodChannel('window_manager'),
+      final destroyCalls = <MethodCall>[];
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(
+        const MethodChannel('window_manager'),
         (call) async {
-      destroyCalls.add(call);
-      // The window must only go away once the clients are released: closing
-      // waits for a sync in flight, and a window that vanished first would
-      // leave the close half done.
-      if (call.method == 'destroy') {
-        expect(client.closed, isTrue);
-      }
-      return null;
-    });
-    addTearDown(() => messenger
-        .setMockMethodCallHandler(const MethodChannel('window_manager'), null));
+          destroyCalls.add(call);
+          // The window must only go away once the clients are released: closing
+          // waits for a sync in flight, and a window that vanished first would
+          // leave the close half done.
+          if (call.method == 'destroy') {
+            expect(client.closed, isTrue);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => messenger.setMockMethodCallHandler(
+          const MethodChannel('window_manager'),
+          null,
+        ),
+      );
 
-    await WindowManagement.close();
-    // The Linux runner re-enters the close through the delete event that
-    // destroy() posts, so a second close must not run any of it again.
-    await WindowManagement.close();
+      await WindowManagement.close();
+      // The Linux runner re-enters the close through the delete event that
+      // destroy() posts, so a second close must not run any of it again.
+      await WindowManagement.close();
 
-    expect(client.closed, isTrue);
-    expect(destroyCalls.where((call) => call.method == 'destroy'), hasLength(1));
-  });
+      expect(client.closed, isTrue);
+      expect(
+        destroyCalls.where((call) => call.method == 'destroy'),
+        hasLength(1),
+      );
+    },
+  );
 }
