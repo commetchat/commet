@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/audio_processing/audio_dsp_settings.dart';
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,35 @@ class _VoipAudioProcessingSettingsState
       "Audio below the marker is not transmitted. Drag it just above your room's background level.",
       name: "labelVoipInputSensitivityDescription",
       desc: "Describes the manual microphone threshold slider and meter");
+
+  String get labelVoipInputSensitivityAutoFloorDescription => Intl.message(
+      "Speech is transmitted only when it is also louder than the marker. Leave it low unless sound from your speakers gets through; then drag it between that and your voice.",
+      name: "labelVoipInputSensitivityAutoFloorDescription",
+      desc:
+          "Describes the microphone threshold slider while automatic input sensitivity is on, where it acts as a minimum level");
+
+  String get labelVoipSpeakerBleed => Intl.message(
+      "Filter out sound from your speakers",
+      name: "labelVoipSpeakerBleed",
+      desc:
+          "Label for the toggle that keeps audio playing on the user's speakers out of their microphone");
+
+  String get labelVoipSpeakerBleedDescription => Intl.message(
+      "If you use speakers instead of a headset, keeps what your computer is playing (videos, music, other people in the call) out of your microphone while you are not talking. Takes a second or two to adjust when something starts playing.",
+      name: "labelVoipSpeakerBleedDescription",
+      desc: "Describes the speaker bleed filter toggle on desktop");
+
+  String get labelVoipSpeakerBleedDescriptionWeb => Intl.message(
+      "If you use speakers instead of a headset, keeps other people in the call from coming back through your microphone. The browser cannot see other sound playing on your computer; if a video gets through, raise the input sensitivity marker above it.",
+      name: "labelVoipSpeakerBleedDescriptionWeb",
+      desc:
+          "Describes the speaker bleed filter toggle in the browser, where only call audio can be filtered");
+
+  String get labelVoipDspSpeakerBleed => Intl.message(
+      "Holding back sound from your speakers.",
+      name: "labelVoipDspSpeakerBleed",
+      desc:
+          "Gate state in the status line when the microphone only hears the user's speakers");
 
   String get labelVoipFarEndDucking => Intl.message(
       "Reduce echo from other participants",
@@ -219,39 +249,47 @@ class _VoipAudioProcessingSettingsState
             spacing: 6,
             children: [
               tiamat.Text.labelEmphasised(labelVoipInputSensitivity),
-              if (!auto)
-                tiamat.Text.labelLow(labelVoipInputSensitivityDescription),
+              // A floor in automatic mode too (the VAD alone cannot tell a
+              // voice from a loudspeaker), so the marker is always shown.
+              tiamat.Text.labelLow(auto
+                  ? labelVoipInputSensitivityAutoFloorDescription
+                  : labelVoipInputSensitivityDescription),
               InputLevelMeter(
                 report: report,
-                thresholdDb:
-                    auto ? null : preferences.voipInputSensitivityDb.value,
+                thresholdDb: preferences.voipInputSensitivityDb.value,
               ),
-              if (!auto)
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 64,
-                      child: tiamat.Text.labelLow(
-                          "${preferences.voipInputSensitivityDb.value.toStringAsFixed(0)} dB"),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 64,
+                    child: tiamat.Text.labelLow(
+                        "${preferences.voipInputSensitivityDb.value.toStringAsFixed(0)} dB"),
+                  ),
+                  Expanded(
+                    child: tiamat.Slider(
+                      min: InputLevelMeter.minDb,
+                      max: InputLevelMeter.maxDb,
+                      value: preferences.voipInputSensitivityDb.value
+                          .clamp(InputLevelMeter.minDb, InputLevelMeter.maxDb),
+                      onChanged: (value) {
+                        preferences.voipInputSensitivityDb.set(value);
+                        setState(() {});
+                      },
                     ),
-                    Expanded(
-                      child: tiamat.Slider(
-                        min: InputLevelMeter.minDb,
-                        max: InputLevelMeter.maxDb,
-                        value: preferences.voipInputSensitivityDb.value.clamp(
-                            InputLevelMeter.minDb, InputLevelMeter.maxDb),
-                        onChanged: (value) {
-                          preferences.voipInputSensitivityDb.set(value);
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
               _statusLine(manager, report),
               if (!manager.isInCall) _testControls(manager),
             ],
           ),
+        ),
+        BooleanPreferenceToggle(
+          preference: preferences.voipSpeakerBleed,
+          title: labelVoipSpeakerBleed,
+          description: PlatformUtils.isWeb
+              ? labelVoipSpeakerBleedDescriptionWeb
+              : labelVoipSpeakerBleedDescription,
         ),
         BooleanPreferenceToggle(
           preference: preferences.voipFarEndDucking,
@@ -275,7 +313,11 @@ class _VoipAudioProcessingSettingsState
     final status = labelVoipDspStatus(
       rate,
       report.noiseSuppressionActive ? labelVoipDspOn : labelVoipDspOff,
-      report.gateOpen ? labelVoipDspGateOpen : labelVoipDspGateClosed,
+      report.speakerBleed
+          ? labelVoipDspSpeakerBleed
+          : report.gateOpen
+              ? labelVoipDspGateOpen
+              : labelVoipDspGateClosed,
     );
     return tiamat.Text.labelLow(
         manager.isInCall ? "$labelVoipInputMeterInCall $status" : status);

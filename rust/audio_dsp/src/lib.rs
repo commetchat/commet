@@ -6,24 +6,35 @@
 //! 2. RNNoise noise suppression (nnnoiseless), which also yields a speech
 //!    probability,
 //! 3. an input gate (manual threshold or VAD driven) plus a far-end ducker,
+//!    both told by `bleed` when the microphone holds nothing but what the
+//!    loudspeakers are playing,
 //! 4. resample back.
+//!
+//! The loudspeakers are known from two references: WebRTC's playout
+//! (`feed_render`) and, where the platform can capture it, the whole system
+//! mix (`feed_reference`). Both may be called from their own threads; they
+//! only publish a level through an atomic that the capture side collects
+//! once per block.
 //!
 //! Samples are floats in int16 scale (-32768..32767), which is what WebRTC's
 //! audio processing module hands to custom processors. Callers with unit-scale
 //! audio (the browser AudioWorklet) set `Params::input_scale` to 32768.
 //!
 //! The audio-thread entry points (`process_block`, `process_stream`,
-//! `feed_render`) never allocate after construction. Parameters and the
-//! report are exchanged through atomics so the UI thread can poke at a
-//! running instance.
+//! `feed_render`, `feed_reference`) never allocate after construction.
+//! Parameters and the report are exchanged through atomics so the UI thread
+//! can poke at a running instance.
 
+pub mod bleed;
 pub mod ffi;
 pub mod gate;
 pub mod resample;
 
 use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::Mutex;
 
-use gate::{Gate, GateConfig, GateMode};
+use bleed::{BandLevel, BleedEstimator, Verdict};
+use gate::{BleedState, Gate, GateConfig, GateMode};
 use nnnoiseless::DenoiseState;
 use resample::Resampler;
 
@@ -46,7 +57,9 @@ pub struct Params {
     pub gate_mode: u8,
     /// 0 = off, 1 = on.
     pub far_end_ducking: u8,
-    pub _pad: u8,
+    /// 0 = off, 1 = close the gate on loudspeaker bleed (see `bleed`). Was
+    /// padding before ABI 2, which is why it is last among the bytes.
+    pub speaker_bleed: u8,
     /// Multiply input by this before processing (and divide on output).
     /// 1.0 for int16-scale audio, 32768.0 for unit-scale audio.
     pub input_scale: f32,
@@ -63,7 +76,7 @@ impl Default for Params {
             noise_suppression: 1,
             gate_mode: 2,
             far_end_ducking: 1,
-            _pad: 0,
+            speaker_bleed: 1,
             input_scale: 1.0,
             gate_threshold_db: g.threshold_db,
             gate_floor_db: g.floor_db,
@@ -77,6 +90,10 @@ pub const REPORT_FLAG_GATE_OPEN: u32 = 1 << 0;
 pub const REPORT_FLAG_NS_ACTIVE: u32 = 1 << 1;
 pub const REPORT_FLAG_UNSUPPORTED_RATE: u32 = 1 << 2;
 pub const REPORT_FLAG_DUCKING: u32 = 1 << 3;
+/// The microphone held only loudspeaker bleed and the gate was kept shut.
+pub const REPORT_FLAG_SPEAKER_BLEED: u32 = 1 << 4;
+/// System audio (`feed_reference`) arrived during the last block.
+pub const REPORT_FLAG_REFERENCE: u32 = 1 << 5;
 
 /// Snapshot for meters and debugging. Written by the audio thread, read by
 /// anyone.
@@ -103,11 +120,19 @@ struct Shared {
     noise_suppression: AtomicU32,
     gate_mode: AtomicU32,
     far_end_ducking: AtomicU32,
+    speaker_bleed: AtomicU32,
     input_scale: AtomicU32,
     gate_threshold_db: AtomicU32,
     gate_floor_db: AtomicU32,
     duck_depth_db: AtomicU32,
     duck_far_threshold_db: AtomicU32,
+
+    /// Loudest render / reference block since the capture side last looked,
+    /// as `level_mailbox_encode`; 0 when nothing arrived.
+    render_mailbox: AtomicU32,
+    /// Same for the band-limited render level the bleed detector uses.
+    render_band_mailbox: AtomicU32,
+    reference_mailbox: AtomicU32,
 
     level_db: AtomicU32,
     vad: AtomicU32,
@@ -125,17 +150,34 @@ fn u2f(u: u32) -> f32 {
     f32::from_bits(u)
 }
 
+/// Levels in the mailboxes are centi-dB offset to be positive, so
+/// `fetch_max` keeps the loudest and 0 can mean "nothing arrived".
+fn level_mailbox_encode(db: f32) -> u32 {
+    ((db.clamp(-150.0, 50.0) + 200.0) * 100.0) as u32
+}
+
+fn level_mailbox_take(slot: &AtomicU32) -> Option<f32> {
+    match slot.swap(0, Ordering::Relaxed) {
+        0 => None,
+        v => Some(v as f32 / 100.0 - 200.0),
+    }
+}
+
 impl Shared {
     fn new(p: &Params) -> Shared {
         let s = Shared {
             noise_suppression: AtomicU32::new(0),
             gate_mode: AtomicU32::new(0),
             far_end_ducking: AtomicU32::new(0),
+            speaker_bleed: AtomicU32::new(0),
             input_scale: AtomicU32::new(f2u(1.0)),
             gate_threshold_db: AtomicU32::new(0),
             gate_floor_db: AtomicU32::new(0),
             duck_depth_db: AtomicU32::new(0),
             duck_far_threshold_db: AtomicU32::new(0),
+            render_mailbox: AtomicU32::new(0),
+            render_band_mailbox: AtomicU32::new(0),
+            reference_mailbox: AtomicU32::new(0),
             level_db: AtomicU32::new(f2u(-120.0)),
             vad: AtomicU32::new(0),
             far_level_db: AtomicU32::new(f2u(-120.0)),
@@ -152,6 +194,7 @@ impl Shared {
         self.noise_suppression.store(p.noise_suppression as u32, Ordering::Relaxed);
         self.gate_mode.store(p.gate_mode as u32, Ordering::Relaxed);
         self.far_end_ducking.store(p.far_end_ducking as u32, Ordering::Relaxed);
+        self.speaker_bleed.store(p.speaker_bleed as u32, Ordering::Relaxed);
         self.input_scale.store(f2u(p.input_scale), Ordering::Relaxed);
         self.gate_threshold_db.store(f2u(p.gate_threshold_db), Ordering::Relaxed);
         self.gate_floor_db.store(f2u(p.gate_floor_db), Ordering::Relaxed);
@@ -164,7 +207,7 @@ impl Shared {
             noise_suppression: self.noise_suppression.load(Ordering::Relaxed) as u8,
             gate_mode: self.gate_mode.load(Ordering::Relaxed) as u8,
             far_end_ducking: self.far_end_ducking.load(Ordering::Relaxed) as u8,
-            _pad: 0,
+            speaker_bleed: self.speaker_bleed.load(Ordering::Relaxed) as u8,
             input_scale: u2f(self.input_scale.load(Ordering::Relaxed)),
             gate_threshold_db: u2f(self.gate_threshold_db.load(Ordering::Relaxed)),
             gate_floor_db: u2f(self.gate_floor_db.load(Ordering::Relaxed)),
@@ -215,10 +258,77 @@ pub fn level_dbfs(buf: &[f32]) -> f32 {
     }
 }
 
+/// Render and reference blocks are not aligned with capture blocks: some
+/// capture blocks see two, some none, and WASAPI loopback stalls for tens of
+/// milliseconds and then delivers a burst. A block with nothing new repeats
+/// the last level for this many blocks before the source counts as gone.
+const RENDER_HOLD_FRAMES: u32 = 3;
+const REFERENCE_HOLD_FRAMES: u32 = 10;
+
+struct LevelHold {
+    last_db: f32,
+    missed: u32,
+    max_missed: u32,
+}
+
+impl LevelHold {
+    fn new(max_missed: u32) -> LevelHold {
+        LevelHold { last_db: -120.0, missed: u32::MAX, max_missed }
+    }
+
+    /// The level for this block, or None when the source has gone quiet for
+    /// longer than the hold.
+    fn next(&mut self, arrived: Option<f32>) -> Option<f32> {
+        match arrived {
+            Some(db) => {
+                self.last_db = db;
+                self.missed = 0;
+                Some(db)
+            }
+            None if self.missed < self.max_missed => {
+                self.missed += 1;
+                Some(self.last_db)
+            }
+            None => None,
+        }
+    }
+
+    fn reset(&mut self) {
+        *self = LevelHold::new(self.max_missed);
+    }
+}
+
+/// RMS of int16-scale samples after multiplying by `scale`, in dBFS.
+fn scaled_level_dbfs(buf: &[f32], scale: f32) -> f32 {
+    if scale == 1.0 {
+        return level_dbfs(buf);
+    }
+    // Avoid a temp buffer: scale the mean square instead.
+    let mean_sq = buf.iter().map(|s| s * s).sum::<f32>() / buf.len().max(1) as f32;
+    let rms = mean_sq.sqrt() * scale / I16_SCALE;
+    if rms <= 1e-6 {
+        -120.0
+    } else {
+        (20.0 * rms.log10()).max(-120.0)
+    }
+}
+
 pub struct Dsp {
     shared: Shared,
     denoise: Box<DenoiseState<'static>>,
     gate: Gate,
+    /// Bleed against WebRTC's playout and against the system mix.
+    bleed_render: BleedEstimator,
+    bleed_reference: BleedEstimator,
+    render_hold: LevelHold,
+    reference_hold: LevelHold,
+    render_band_hold: LevelHold,
+    /// Band-limited level meters (`bleed::BandLevel`). The render and
+    /// reference ones belong to the threads that feed them; the locks are
+    /// never contended.
+    mic_band: BandLevel,
+    render_band: Mutex<BandLevel>,
+    reference_band: Mutex<BandLevel>,
     /// Rate of the blocks the capture side hands us.
     capture_rate: usize,
     up: Option<Resampler>,
@@ -243,6 +353,14 @@ impl Dsp {
             shared: Shared::new(&params),
             denoise: DenoiseState::new(),
             gate: Gate::new(NATIVE_RATE),
+            bleed_render: BleedEstimator::new(),
+            bleed_reference: BleedEstimator::new(),
+            render_hold: LevelHold::new(RENDER_HOLD_FRAMES),
+            reference_hold: LevelHold::new(REFERENCE_HOLD_FRAMES),
+            render_band_hold: LevelHold::new(RENDER_HOLD_FRAMES),
+            mic_band: BandLevel::new(),
+            render_band: Mutex::new(BandLevel::new()),
+            reference_band: Mutex::new(BandLevel::new()),
             capture_rate: NATIVE_RATE,
             up: None,
             down: None,
@@ -294,6 +412,14 @@ impl Dsp {
         }
         self.gate.reset();
         self.gate.set_rate(NATIVE_RATE);
+        // A capture restart is usually a device change: a different
+        // microphone hears the loudspeakers differently.
+        self.bleed_render.reset();
+        self.bleed_reference.reset();
+        self.render_hold.reset();
+        self.render_band_hold.reset();
+        self.reference_hold.reset();
+        self.mic_band.reset();
         self.stream_in_len = 0;
         self.stream_out_head = 0;
         self.stream_out_len = 0;
@@ -301,20 +427,48 @@ impl Dsp {
         self.shared.frames.store(0, Ordering::Relaxed);
     }
 
-    /// Far-end (playout) audio. Any rate, any block size, mono or interleaved;
-    /// we only take a level from it.
-    pub fn feed_render(&mut self, buf: &[f32]) {
+    /// Far-end (playout) audio, mono, any block size; we only take levels
+    /// from it. Safe to call from the render thread while the capture thread
+    /// processes. The rate is inferred from 10 ms blocks (what the APM hands
+    /// the render hook) and taken as 48 kHz otherwise (AudioWorklet quanta).
+    pub fn feed_render(&self, buf: &[f32]) {
         let scale = u2f(self.shared.input_scale.load(Ordering::Relaxed));
-        let level = if scale == 1.0 {
-            level_dbfs(buf)
-        } else {
-            // Avoid a temp buffer: scale the mean square instead.
-            let mean_sq = buf.iter().map(|s| s * s).sum::<f32>() / buf.len().max(1) as f32;
-            let rms = mean_sq.sqrt() * scale / I16_SCALE;
-            if rms <= 1e-6 { -120.0 } else { (20.0 * rms.log10()).max(-120.0) }
+        let level = scaled_level_dbfs(buf, scale);
+        self.shared.render_mailbox.fetch_max(level_mailbox_encode(level), Ordering::Relaxed);
+        let rate = if SUPPORTED_RATES.contains(&(buf.len() * 100)) { buf.len() * 100 } else { NATIVE_RATE };
+        if let Ok(mut band) = self.render_band.lock() {
+            let db = band.measure(rate, buf.iter().map(|s| s * scale));
+            self.shared.render_band_mailbox.fetch_max(level_mailbox_encode(db), Ordering::Relaxed);
+        }
+    }
+
+    /// What the loudspeakers are playing, from outside WebRTC: the system mix
+    /// captured by loopback. Mono int16-scale floats at `sample_rate`, any
+    /// block size; only a level is taken. Safe to call from the capturer's
+    /// own thread.
+    pub fn feed_reference(&self, buf: &[f32], sample_rate: usize) {
+        if let Ok(mut band) = self.reference_band.lock() {
+            let db = band.measure(sample_rate, buf.iter().copied());
+            self.shared.reference_mailbox.fetch_max(level_mailbox_encode(db), Ordering::Relaxed);
+        }
+    }
+
+    /// `feed_reference` for interleaved int16 PCM straight from a capturer.
+    /// `None` is a block the capturer reported as silent.
+    pub fn feed_reference_i16(&self, buf: Option<&[i16]>, channels: usize, sample_rate: usize) {
+        let channels = channels.max(1);
+        let db = match buf {
+            Some(b) if b.len() >= channels => match self.reference_band.lock() {
+                Ok(mut band) => band.measure(
+                    sample_rate,
+                    b.chunks_exact(channels)
+                        .map(|f| f.iter().map(|&s| s as f32).sum::<f32>() / channels as f32),
+                ),
+                Err(_) => return,
+            },
+            _ => -120.0,
         };
-        self.gate.observe_far_end(level);
-        self.shared.far_level_db.store(f2u(self.gate.far_level_db()), Ordering::Relaxed);
+        self.shared.reference_mailbox.fetch_max(level_mailbox_encode(db), Ordering::Relaxed);
     }
 
     /// Process exactly one 10 ms block at the current capture rate, in place.
@@ -352,7 +506,35 @@ impl Dsp {
             }
         }
 
-        // 2. noise suppression
+        // 2. what the loudspeakers are doing. The microphone level is taken
+        // before noise suppression, which treats bleed and the user alike.
+        let render_db = self.render_hold.next(level_mailbox_take(&self.shared.render_mailbox));
+        let render_band_db = self.render_band_hold.next(level_mailbox_take(&self.shared.render_band_mailbox));
+        let reference_db = self.reference_hold.next(level_mailbox_take(&self.shared.reference_mailbox));
+        if let Some(db) = render_db {
+            self.gate.observe_far_end(db);
+        }
+        self.gate.tick_far_end();
+        self.shared.far_level_db.store(f2u(self.gate.far_level_db()), Ordering::Relaxed);
+        if reference_db.is_some() {
+            flags |= REPORT_FLAG_REFERENCE;
+        }
+        let bleed = if p.speaker_bleed != 0 {
+            let mic_db = self.mic_band.measure(NATIVE_RATE, self.scratch_in.iter().copied());
+            let from_render = self.bleed_render.update(mic_db, render_band_db.unwrap_or(-120.0));
+            let from_reference = self.bleed_reference.update(mic_db, reference_db.unwrap_or(-120.0));
+            BleedState {
+                suppress: from_render == Verdict::Bleed || from_reference == Verdict::Bleed,
+                far_talk: match from_render {
+                    Verdict::Idle => None,
+                    v => Some(v == Verdict::Talk),
+                },
+            }
+        } else {
+            BleedState::default()
+        };
+
+        // 3. noise suppression
         let (vad, have_vad) = if p.noise_suppression != 0 {
             flags |= REPORT_FLAG_NS_ACTIVE;
             let v = self.denoise.process_frame(&mut self.scratch_out, &self.scratch_in);
@@ -362,19 +544,22 @@ impl Dsp {
             (0.0, false)
         };
 
-        // 3. gate + ducker
+        // 4. gate + ducker
         let level = level_dbfs(&self.scratch_out);
         let cfg = gate_config(&p);
-        self.gate.process(&cfg, level, vad, have_vad, &mut self.scratch_out);
+        self.gate.process(&cfg, level, vad, have_vad, bleed, &mut self.scratch_out);
         if self.gate.is_open() {
             flags |= REPORT_FLAG_GATE_OPEN;
+        }
+        if bleed.suppress && cfg.mode != GateMode::Off {
+            flags |= REPORT_FLAG_SPEAKER_BLEED;
         }
         let gain_db = self.gate.current_gain_db();
         if gain_db < -0.5 && self.gate.is_open() {
             flags |= REPORT_FLAG_DUCKING;
         }
 
-        // 4. back to caller rate and scale
+        // 5. back to caller rate and scale
         let inv = 1.0 / scale;
         if let Some(down) = self.down.as_mut() {
             down.process(&self.scratch_out, &mut self.scratch_back[..buf.len()]);
@@ -640,6 +825,7 @@ mod tests {
         ARMED.with(|a| a.set(true));
         for block in sig.chunks_mut(FRAME_SIZE) {
             dsp.feed_render(&render);
+            dsp.feed_reference(&render, 48_000);
             dsp.process_block(block);
         }
         dsp.set_params(&p);

@@ -3,6 +3,8 @@
 
 #include "flutter_common.h"
 
+#include "commet_system_audio_reference.h"  // COMMET
+
 #include "flutter_data_channel.h"
 #include "flutter_data_packet_cryptor.h"
 #include "flutter_frame_cryptor.h"
@@ -45,6 +47,9 @@ class FlutterWebRTC : public FlutterWebRTCBase,
  private:
   void initLoggerCallback(RTCLoggingSeverity severity);
   RTCLoggingSeverity str2LogSeverity(std::string str);
+
+  // COMMET: commetStartSystemAudioReference / commetStopSystemAudioReference.
+  CommetSystemAudioReference commet_reference_;
 };
 
 }  // namespace flutter_webrtc_plugin
