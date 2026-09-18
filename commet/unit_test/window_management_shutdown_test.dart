@@ -57,7 +57,7 @@ class _FakeClient implements Client {
 
   @override
   StoredStreamController<ClientConnectionStatusUpdate>
-  get connectionStatusChanged => StoredStreamController();
+      get connectionStatusChanged => StoredStreamController();
 
   @override
   T? getComponent<T extends Component>() {
