@@ -1,0 +1,36 @@
+import 'package:commet/utils/window_management.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('a quit that fails is not latched: closing the window can be retried',
+      () async {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    var destroyAttempts = 0;
+    var failNextDestroy = true;
+    messenger.setMockMethodCallHandler(const MethodChannel('window_manager'),
+        (call) async {
+      if (call.method != 'destroy') return null;
+
+      destroyAttempts++;
+      if (failNextDestroy) {
+        failNextDestroy = false;
+        throw PlatformException(code: 'destroy-failed');
+      }
+      return null;
+    });
+    addTearDown(() => messenger
+        .setMockMethodCallHandler(const MethodChannel('window_manager'), null));
+
+    // The failed quit must not close the door behind it: with the clients
+    // already closed and the window still up, nothing else could quit the app.
+    await WindowManagement.close();
+    expect(destroyAttempts, 1);
+
+    await WindowManagement.close();
+    expect(destroyAttempts, 2);
+  });
+}
