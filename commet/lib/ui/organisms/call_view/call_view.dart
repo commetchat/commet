@@ -122,7 +122,8 @@ class _CallViewState extends State<CallView> {
       bool canHangUp = false,
       bool canToggleCamera = false,
       required Widget child}) {
-    final buttonRadius = MediaQuery.of(context).mobile ? 24.0 : 36.0;
+    // Mobile keeps touch-sized buttons; the desktop row only shows on hover.
+    final buttonRadius = MediaQuery.of(context).mobile ? 24.0 : 18.0;
     final buttonIconSize = buttonRadius * 1.2;
     return MouseRegion(
       onEnter: (event) {
@@ -148,7 +149,7 @@ class _CallViewState extends State<CallView> {
                 : 0,
             duration: const Duration(milliseconds: 200),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
               child: Wrap(
                 spacing: 12,
                 children: [
