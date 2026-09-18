@@ -29,6 +29,40 @@ import 'package:matrix/matrix.dart' show Event;
 import 'package:matrix/matrix_api_lite.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
+/// The publish options for a screen share.
+///
+/// Both streams a share can send carry the user's frame rate and bitrate.
+/// The backup codec is the one viewers that cannot decode the primary codec
+/// receive — with H.265 in practice, and the SFU falls back to it for them.
+/// Without an explicit encoding the SDK computes one from a screen-share
+/// preset capped at 15 FPS, so those viewers saw a low frame rate while the
+/// sharer's settings said otherwise (issue #79). E2EE rooms get no backup
+/// codec, matching the SDK's own policy: multi-codec simulcast is not
+/// supported with frame encryption.
+lk.VideoPublishOptions buildScreenSharePublishOptions({
+  required String codec,
+  required int framerate,
+  required int bitrate,
+  required bool simulcast,
+  required bool e2ee,
+}) {
+  final encoding =
+      lk.VideoEncoding(maxFramerate: framerate, maxBitrate: bitrate);
+  return lk.VideoPublishOptions(
+    simulcast: simulcast,
+    screenShareEncoding: encoding,
+    videoEncoding: encoding,
+    degradationPreference: lk.DegradationPreference.maintainFramerate,
+    videoCodec: codec,
+    backupVideoCodec: lk.BackupVideoCodec(
+      enabled: !e2ee,
+      codec: 'vp8',
+      simulcast: simulcast,
+      encoding: encoding,
+    ),
+  );
+}
+
 class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   MatrixRoom room;
   lk.Room livekitRoom;
@@ -687,14 +721,15 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       _containsIdentical(_stoppedCaptures, track);
 
   /// Refuses a screen share LiveKit republished after a reconnect for a
-  /// capture this session already stopped. The publication is removed through
-  /// LiveKit so the sender the republish recreated is released, and no
-  /// outgoing stream is added: participants see the share end instead of a
-  /// dead tile, and the panel offers no LIVE tile for it (issue #64).
+  /// capture this session already stopped, or a publication a stop left
+  /// behind. The publication is removed through LiveKit so the sender the
+  /// republish recreated is released, and no outgoing stream is added:
+  /// participants see the share end instead of a dead tile, and the panel
+  /// offers no LIVE tile for it (issues #64 and #79).
   Future<void> _refuseRepublishedShare(
       lk.LocalTrackPublication publication) async {
-    Log.w("Refusing the republished screen share ${publication.sid}: "
-        "its capture was stopped");
+    Log.w("Refusing the screen share ${publication.sid}: "
+        "its capture is no longer live");
     // A republish accepted before its capture was marked stopped left an
     // outgoing stream behind, and the refusal has to take it off the panel.
     _removeStreamsWithSid(publication.sid);
@@ -1024,14 +1059,16 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     Log.i(
         "Starting stream with settings: ${preferences.streamBitrate.value}Mbps, ${framerate}FPS, $codec ${res}");
 
+    final encoding =
+        lk.VideoEncoding(maxFramerate: framerate.toInt(), maxBitrate: bitrate);
+
     var captureOptions = lk.ScreenShareCaptureOptions(
       sourceId: srcid,
       maxFrameRate: framerate,
       captureScreenAudio: source.captureAudio,
       params: lk.VideoParameters(
         dimensions: lk.VideoDimensionsPresets.h720_169,
-        encoding: lk.VideoEncoding(
-            maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+        encoding: encoding,
       ),
     );
 
@@ -1040,20 +1077,19 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
             captureOptions)
         : [await lk.LocalVideoTrack.createScreenShareTrack(captureOptions)];
 
+    final publishOptions = buildScreenSharePublishOptions(
+      codec: codec,
+      framerate: framerate.toInt(),
+      bitrate: bitrate,
+      simulcast: preferences.doSimulcast.value,
+      e2ee: room.isE2EE,
+    );
+
     for (final track in tracks) {
       _ownCaptureTrack(track);
       if (track is lk.LocalVideoTrack) {
-        await livekitRoom.localParticipant?.publishVideoTrack(track,
-            publishOptions: lk.VideoPublishOptions(
-              simulcast: preferences.doSimulcast.value,
-              screenShareEncoding: lk.VideoEncoding(
-                  maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-              videoEncoding: lk.VideoEncoding(
-                  maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-              videoCodec: preferences.streamCodec.value,
-            ));
-        track.setDegradationPreference(
-            lk.DegradationPreference.maintainFramerate);
+        await livekitRoom.localParticipant
+            ?.publishVideoTrack(track, publishOptions: publishOptions);
       } else if (track is lk.LocalAudioTrack) {
         await livekitRoom.localParticipant?.publishAudioTrack(track);
       }
@@ -1107,12 +1143,27 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   Future<void> stopScreenshare() async {
     // Ask LiveKit first: on the normal path it removes the screen share
     // publication (stopping its track) and any screen audio publication the
-    // SDK still finds.
-    await livekitRoom.localParticipant?.setScreenShareEnabled(false);
-    final screenAudio = livekitRoom.localParticipant
-        ?.getTrackPublicationBySource(lk.TrackSource.screenShareAudio);
-    if (screenAudio != null) {
-      await livekitRoom.localParticipant?.removePublishedTrack(screenAudio.sid);
+    // SDK still finds. A failure here must not skip what follows: the SDK
+    // walks several platform calls (stop the track, remove every sender,
+    // renegotiate), and one of them failing used to leave the capture and the
+    // stream running for viewers while the stop reported nothing to do
+    // (issue #79).
+    try {
+      await livekitRoom.localParticipant?.setScreenShareEnabled(false);
+    } catch (e, s) {
+      Log.onError(e, s,
+          content: "Could not remove the screen share through livekit");
+    }
+
+    try {
+      final screenAudio = livekitRoom.localParticipant
+          ?.getTrackPublicationBySource(lk.TrackSource.screenShareAudio);
+      if (screenAudio != null) {
+        await livekitRoom.localParticipant
+            ?.removePublishedTrack(screenAudio.sid);
+      }
+    } catch (e, s) {
+      Log.onError(e, s, content: "Could not remove the screen share audio");
     }
 
     // Then stop the captures this session created: the SDK call above is a
@@ -1122,8 +1173,9 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     await _stopOwnedCaptureTracks();
 
     // A republish that landed while the stop was still running may have been
-    // accepted before its capture was marked stopped. The stop refuses those
-    // now, so one click always ends the share (issue #64).
+    // accepted before its capture was marked stopped, and a publication the
+    // SDK failed to remove is still in its map. The stop refuses those now, so
+    // one click always ends the share (issues #64 and #79).
     await _refuseStoppedCapturePublications();
 
     if (PlatformUtils.isAndroid) {
@@ -1140,19 +1192,20 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   /// Removes every screen-share publication whose capture this session has
-  /// stopped. A republish arriving while a stop is still running reaches
-  /// [onLocalTrackPublished] before the capture is marked stopped, so the stop
-  /// cleans it up itself instead of leaving a dead share to the next click
-  /// (issue #64).
+  /// stopped, and any that lost its track. A republish arriving while a stop
+  /// is still running reaches [onLocalTrackPublished] before the capture is
+  /// marked stopped, and a stop whose SDK-side removal failed (the H.265
+  /// codec path, issue #79) leaves the publication in the map: the stop cleans
+  /// those up itself instead of leaving a dead share to the next click
+  /// (issues #64 and #79).
   Future<void> _refuseStoppedCapturePublications() async {
     final participant = livekitRoom.localParticipant;
     if (participant == null) return;
 
     final refused = participant.trackPublications.values.where((publication) {
       final track = publication.track;
-      return track != null &&
-          ScreenShareWatchList.isScreenShareSource(publication.source) &&
-          _isStoppedCapture(track);
+      return ScreenShareWatchList.isScreenShareSource(publication.source) &&
+          (track == null || _isStoppedCapture(track));
     }).toList();
     for (final publication in refused) {
       await _refuseRepublishedShare(publication);
