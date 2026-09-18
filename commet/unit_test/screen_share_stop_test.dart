@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:commet/client/client.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_session.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -192,6 +194,9 @@ class _Listener implements lk.EventsListener<lk.RoomEvent> {
   }
 
   @override
+  Future<bool> dispose() async => true;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -207,9 +212,19 @@ class _Room implements lk.Room {
 
   final listener = _Listener();
 
+  bool disconnected = false;
+
   @override
   lk.EventsListener<lk.RoomEvent> createListener({bool synchronized = false}) =>
       listener;
+
+  @override
+  Future<void> disconnect() async {
+    disconnected = true;
+  }
+
+  @override
+  Future<bool> dispose() async => true;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -246,12 +261,43 @@ class _MatrixSdkClient implements matrix.Client {
   }
 
   @override
+  Future<String> setRoomStateWithKey(
+    String roomId,
+    String eventType,
+    String stateKey,
+    Map<String, Object?> body,
+  ) async =>
+      '';
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _Profile implements Profile {
+  @override
+  final String identifier = '@me:example.org';
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _Client implements Client {
+  @override
+  final String identifier = '@me:example.org';
+
+  @override
+  final Profile? self = _Profile();
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _MatrixRoomImpl implements MatrixRoom {
   @override
   final matrix.Room matrixRoom = _MatrixSdkRoom();
+
+  @override
+  final Client client = _Client();
 
   @override
   final String identifier = '!room:example.org';
@@ -334,6 +380,23 @@ void main() {
     await session.stopScreenshare();
 
     expect(capture.running, isFalse);
+  });
+
+  test('hanging up mid-share stops the capture even with the map cleared',
+      () async {
+    await shareScreen();
+
+    // The reconnect window: LiveKit has cleared its publication map, so the
+    // room's dispose has nothing to unpublish and the session has to stop
+    // the capture itself (issue #66).
+    participant.trackPublications.clear();
+
+    await session.hangUpCall();
+
+    expect(capture.running, isFalse,
+        reason: 'hanging up left the screen being captured');
+    expect(room.disconnected, isTrue,
+        reason: 'the hang up did not run to completion');
   });
 
   test('a stop that cannot be verified raises instead of reporting success',

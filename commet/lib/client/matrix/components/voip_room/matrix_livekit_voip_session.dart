@@ -742,6 +742,12 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     if (state == VoipState.ended) return;
     Log.i("Hanging up call");
 
+    // First of all: the captures belong to this session, and the room's
+    // dispose only unpublishes what the SDK still has in its map — empty in
+    // exactly the reconnect window that leaves the OS capture running. Stop
+    // them here, not after a teardown that can hang (issue #66).
+    await _stopOwnedCaptureTracks();
+
     try {
       // First, so no membership write lands after the clear below: leaving
       // unpublishes our tracks, which would schedule one.
@@ -954,6 +960,23 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     _stateChanged.add(());
   }
 
+  /// Stops every capture track this session owns. This is what releases the
+  /// OS capture when LiveKit no longer has a publication to stop — a full
+  /// reconnect clears the publication map while the capture keeps running
+  /// (issues #63 and #66). A failure is logged, not thrown: a hang up has to
+  /// finish either way, and a stop reports it through
+  /// [_verifyScreenshareStopped] instead. Stopping an already stopped track
+  /// is a no-op in the SDK.
+  Future<void> _stopOwnedCaptureTracks() async {
+    for (final track in _captureTracks) {
+      try {
+        await track.stop();
+      } catch (e, s) {
+        Log.onError(e, s, content: "Could not stop a screen capture track");
+      }
+    }
+  }
+
   @override
   Future<void> stopScreenshare() async {
     // Ask LiveKit first: on the normal path it removes the screen share
@@ -970,13 +993,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     // no-op when a full reconnect cleared its publication map, and the OS
     // capture survives that: stopping the owned tracks is what releases it
     // (issue #63). Stopping a track the SDK already stopped is a no-op.
-    for (final track in _captureTracks) {
-      try {
-        await track.stop();
-      } catch (e, s) {
-        Log.onError(e, s, content: "Could not stop a screen capture track");
-      }
-    }
+    await _stopOwnedCaptureTracks();
 
     if (PlatformUtils.isAndroid) {
       try {
