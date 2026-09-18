@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/ui/molecules/screen_share_stop_reporting.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -134,7 +135,8 @@ class _CallSessionLivePanelState extends State<CallSessionLivePanel> {
           key: const ValueKey("live-stop-screenshare"),
           tooltip: tooltipStopScreenshare,
           icon: Icons.stop_screen_share_rounded,
-          onPressed: widget.session.stopScreenshare,
+          onPressed: () =>
+              stopScreenshareOrReportFailure(context, widget.session),
         );
       case VoipStreamType.video:
       case VoipStreamType.audio:

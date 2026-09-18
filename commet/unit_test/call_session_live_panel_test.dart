@@ -50,6 +50,15 @@ class FakeVoipSession implements VoipSession {
   int stopScreenshareCalls = 0;
   int stopCameraCalls = 0;
 
+  /// A stop that comes back as an error, like a session whose capture refuses
+  /// to release (issue #67's red case).
+  bool failStopScreenshare = false;
+
+  /// A stop that returns normally but leaves the share live, like a session
+  /// whose verification cannot say the share ended (issue #67's other red
+  /// case).
+  bool leaveShareLiveOnStop = false;
+
   @override
   List<VoipStream> get streams => _streams;
 
@@ -85,6 +94,10 @@ class FakeVoipSession implements VoipSession {
   @override
   Future<void> stopScreenshare() async {
     stopScreenshareCalls++;
+    if (failStopScreenshare) {
+      throw StateError('the stop failed');
+    }
+    if (leaveShareLiveOnStop) return;
     unpublish(VoipStreamType.screenshare);
   }
 
@@ -172,6 +185,39 @@ void main() {
     await tester.pump();
     expect(session.stopCameraCalls, 1);
     expect(find.text('LIVE'), findsNothing);
+  });
+
+  testWidgets('a stop that leaves the share live tells the user',
+      (tester) async {
+    final session = FakeVoipSession()..leaveShareLiveOnStop = true;
+    await tester.pumpWidget(_testApp(CallSessionLivePanel(session: session)));
+    session.publish(VoipStreamType.screenshare);
+    await tester.pump();
+
+    await tester.tap(find.byKey(const ValueKey('live-stop-screenshare')));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(session.isSharingScreen, isTrue,
+        reason: 'the screen is still being captured');
+    expect(find.byType(SnackBar), findsOneWidget,
+        reason: 'the failed stop was reported as a silent success');
+  });
+
+  testWidgets('a stop that comes back as an error tells the user',
+      (tester) async {
+    final session = FakeVoipSession()..failStopScreenshare = true;
+    await tester.pumpWidget(_testApp(CallSessionLivePanel(session: session)));
+    session.publish(VoipStreamType.screenshare);
+    await tester.pump();
+
+    await tester.tap(find.byKey(const ValueKey('live-stop-screenshare')));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull,
+        reason: 'the stop error escaped as an unhandled async error');
+    expect(find.byType(SnackBar), findsOneWidget,
+        reason: 'the failed stop was reported as a silent success');
   });
 
   testWidgets('capture ended by the OS (no button) hides the live section',
