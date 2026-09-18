@@ -245,7 +245,12 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       }
     }
 
+    // A stream we already have (a microphone, a muted screen share) still
+    // changed: the room list's mute icon reads it, and would otherwise keep
+    // showing a remote member as muted until something else refreshed it.
     if (streams.any((e) => e.streamId == event.publication.sid)) {
+      _stateChanged.add(());
+      _publishMembershipState();
       return;
     }
 

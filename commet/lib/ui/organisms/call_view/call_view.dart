@@ -3,7 +3,6 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/call_grid_tiles.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
@@ -123,7 +122,8 @@ class _CallViewState extends State<CallView> {
       bool canHangUp = false,
       bool canToggleCamera = false,
       required Widget child}) {
-    final buttonRadius = MediaQuery.of(context).mobile ? 24.0 : 18.0;
+    final buttonRadius = MediaQuery.of(context).mobile ? 24.0 : 36.0;
+    final buttonIconSize = buttonRadius * 1.2;
     return MouseRegion(
       onEnter: (event) {
         setState(() {
@@ -155,17 +155,20 @@ class _CallViewState extends State<CallView> {
                   if (canScreenshare)
                     tiamat.CircleButton(
                         radius: buttonRadius,
+                        iconSize: buttonIconSize,
                         icon: Icons.screen_share_outlined,
                         onPressed: widget.pickScreenshareSource),
                   if (widget.currentSession.isSharingScreen && canScreenshare)
                     tiamat.CircleButton(
                       radius: buttonRadius,
+                      iconSize: buttonIconSize,
                       icon: Icons.stop_screen_share,
                       onPressed: widget.stopScreenshare,
                     ),
                   if (canMute)
                     tiamat.CircleButton(
                       radius: buttonRadius,
+                      iconSize: buttonIconSize,
                       icon: widget.currentSession.isMicrophoneMuted
                           ? Icons.mic_off
                           : Icons.mic,
@@ -181,6 +184,7 @@ class _CallViewState extends State<CallView> {
                   if (canDeafen)
                     tiamat.CircleButton(
                       radius: buttonRadius,
+                      iconSize: buttonIconSize,
                       icon: widget.currentSession.isDeafened
                           ? Icons.headset_off
                           : Icons.headset,
@@ -196,6 +200,7 @@ class _CallViewState extends State<CallView> {
                   if (canToggleCamera)
                     tiamat.CircleButton(
                       radius: buttonRadius,
+                      iconSize: buttonIconSize,
                       icon: widget.currentSession.isCameraEnabled
                           ? Icons.no_photography
                           : Icons.camera_alt_outlined,
@@ -212,6 +217,7 @@ class _CallViewState extends State<CallView> {
                       },
                       builder: (context, onPressed) => tiamat.CircleButton(
                         radius: buttonRadius,
+                        iconSize: buttonIconSize,
                         icon: Icons.surround_sound,
                         iconColor: onPressed == null
                             ? Theme.of(context).disabledColor
@@ -223,6 +229,7 @@ class _CallViewState extends State<CallView> {
                     tiamat.CircleButton(
                       color: Theme.of(context).colorScheme.errorContainer,
                       radius: buttonRadius,
+                      iconSize: buttonIconSize,
                       icon: Icons.call_end,
                       onPressed: () async {
                         await widget.hangUp?.call();
@@ -291,12 +298,8 @@ class _CallViewState extends State<CallView> {
                       ?.audioStream,
                   borderColor: Colors.white,
                   onFullscreen: () {
-                    Lightbox.show(context,
-                        aspectRatio: mainStream!.aspectRatio,
-                        customWidget: VoipFullscreenStreamView(
-                          session: widget.currentSession,
-                          stream: mainStream!,
-                        ));
+                    VoipFullscreenStreamView.show(context,
+                        session: widget.currentSession, stream: mainStream!);
                   },
                   fit: BoxFit.contain,
                   key: ValueKey(
@@ -328,12 +331,8 @@ class _CallViewState extends State<CallView> {
                       : BoxFit.cover,
                   widget.currentSession,
                   onFullscreen: () {
-                    Lightbox.show(context,
-                        aspectRatio: e.aspectRatio,
-                        customWidget: VoipFullscreenStreamView(
-                          session: widget.currentSession,
-                          stream: e,
-                        ));
+                    VoipFullscreenStreamView.show(context,
+                        session: widget.currentSession, stream: e);
                   },
                 ));
           }).toList()),

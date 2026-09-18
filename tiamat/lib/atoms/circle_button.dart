@@ -19,12 +19,16 @@ class CircleButton extends StatelessWidget {
       this.icon,
       this.onPressed,
       this.color,
-      this.iconColor});
+      this.iconColor,
+      this.iconSize});
   final double radius;
   final Function? onPressed;
   final IconData? icon;
   final Color? color;
   final Color? iconColor;
+
+  /// Defaults to [radius], half the button's width.
+  final double? iconSize;
   @override
   Widget build(BuildContext context) {
     var shadows = Theme.of(context).extension<ShadowSettings>();
@@ -40,6 +44,9 @@ class CircleButton extends StatelessWidget {
             splashColor: Theme.of(context)
                 .colorScheme
                 .onSecondaryContainer, // Splash color
+            mouseCursor: onPressed == null
+                ? SystemMouseCursors.basic
+                : SystemMouseCursors.click,
             onTap: onPressed == null
                 ? null
                 : () {
@@ -55,7 +62,7 @@ class CircleButton extends StatelessWidget {
                           color: iconColor ??
                               Theme.of(context).colorScheme.secondary,
                           icon,
-                          size: radius,
+                          size: iconSize ?? radius,
                         ))
                     : null),
           ),
