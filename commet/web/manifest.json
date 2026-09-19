@@ -1,6 +1,6 @@
 {
-    "name": "commet",
-    "short_name": "commet",
+    "name": "roscord",
+    "short_name": "roscord",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
@@ -15,12 +16,6 @@ const _upstreamCopyright =
 const _ticket2Gap =
     'Known display-name gap, removed by follow-up ticket 2 (Linux, Windows, '
     'and Android identity).';
-const _ticket3Gap =
-    'Known display-name gap, removed by follow-up ticket 3 (macOS and web '
-    'identity).';
-const _ticket4Gap =
-    'Known reachable awards-host gap, removed with the donation engine by '
-    'follow-up ticket 4.';
 const _ticket7Gap =
     'Known localized product-name gap, restored through the ARB pipeline by '
     'follow-up ticket 7.';
@@ -103,18 +98,6 @@ final _legacyIdentityAllowlist = <_Allowance>[
     reason: _distributionIdentity,
   ),
   _Allowance(
-    path: r'macos/Runner\.xcodeproj/project\.pbxproj',
-    token: r'commet(?:\.app)?',
-    count: 7,
-    reason: _buildArtifact,
-  ),
-  _Allowance(
-    path: r'macos/Runner\.xcodeproj/project\.pbxproj',
-    token: r'Commet',
-    count: 3,
-    reason: _ticket3Gap,
-  ),
-  _Allowance(
     path: r'windows/runner/Runner\.rc',
     token: r'commet\.chat\.',
     count: 1,
@@ -195,12 +178,6 @@ final _legacyIdentityAllowlist = <_Allowance>[
     reason: _distributionIdentity,
   ),
   _Allowance(
-    path: r'web/(?:manifest\.json|index\.html)',
-    token: r'commet',
-    count: 4,
-    reason: _ticket3Gap,
-  ),
-  _Allowance(
     path: r'pubspec\.yaml',
     token: r'Commet',
     count: 2,
@@ -223,12 +200,6 @@ final _legacyIdentityAllowlist = <_Allowance>[
     token: r'https://github\.com/commetchat/[^\s]+',
     count: 9,
     reason: _thirdPartyProject,
-  ),
-  _Allowance(
-    path: r'lib/config/build_config\.dart',
-    token: r'stripe-rewards\.commet\.chat',
-    count: 1,
-    reason: _ticket4Gap,
   ),
 ];
 
@@ -253,6 +224,49 @@ void main() {
             'or update its explicit allowance with the production change.',
       );
     }
+  });
+
+  test('macOS product identity comes from AppInfo.xcconfig', () {
+    final appInfo = File(
+      'macos/Runner/Configs/AppInfo.xcconfig',
+    ).readAsStringSync();
+    final project = File(
+      'macos/Runner.xcodeproj/project.pbxproj',
+    ).readAsStringSync();
+    final infoPlist = File('macos/Runner/Info.plist').readAsStringSync();
+
+    expect(
+      RegExp(r'^PRODUCT_NAME = roscord$', multiLine: true).allMatches(appInfo),
+      hasLength(1),
+    );
+    expect(project, contains('path = roscord.app;'));
+    expect(project, isNot(contains('INFOPLIST_KEY_CFBundleDisplayName')));
+    expect(
+      RegExp(r'^\s*PRODUCT_NAME = roscord;$', multiLine: true)
+          .hasMatch(project),
+      isFalse,
+      reason: 'Runner target settings must not override AppInfo.xcconfig.',
+    );
+    expect(
+      RegExp(
+        r'<key>CFBundleName</key>\r?\n\s*<string>\$\(PRODUCT_NAME\)</string>',
+      ).hasMatch(infoPlist),
+      isTrue,
+    );
+  });
+
+  test('web install and window identity is roscord', () {
+    final manifest = jsonDecode(File('web/manifest.json').readAsStringSync())
+        as Map<String, dynamic>;
+    final index = File('web/index.html').readAsStringSync();
+
+    expect(manifest['name'], 'roscord');
+    expect(manifest['short_name'], 'roscord');
+    expect(
+      index,
+      contains('name="apple-mobile-web-app-title" content="roscord"'),
+    );
+    expect(index, contains('<title>roscord</title>'));
   });
 
   test('a temporary user-visible violation is detected', () {
