@@ -149,9 +149,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelProfileNoBadges": "You don't have any badges. You can get badges by donating and supporting development of roscord",
+  "labelProfileNoBadges": "You don't have any badges available.",
   "@labelProfileNoBadges": {
-    "description": "text that is shown when the user has no badges, and explain where they can get badges",
+    "description": "Text shown when the user has no badges available",
     "type": "text",
     "placeholders": {}
   },
@@ -528,45 +528,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "titleConfirmingDonation": "Confirming Donation",
-  "@titleConfirmingDonation": {
-    "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelDonationInstructions": "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received.",
-  "@labelDonationInstructions": {
-    "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelDonationConfirmationSucceeded": "Thank you for your generous donation!",
-  "@labelDonationConfirmationSucceeded": {
-    "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelDonationConfirmationFailed": "Could not find any donations :( Please consider donating to support development of roscord!",
-  "@labelDonationConfirmationFailed": {
-    "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelConfirmCancelDonationConfirmation": "Are you sure you want to dismiss without accepting any award?",
-  "@labelConfirmCancelDonationConfirmation": {
-    "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-    "type": "text",
-    "placeholders": {}
-  },
   "labelNoAccount": "No Account",
   "@labelNoAccount": {
     "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptDonationsRefreshAwards": "Refresh Awards",
-  "@promptDonationsRefreshAwards": {
-    "description": "Prompt the user to refresh any awards they may have received for donating to the project",
     "type": "text",
     "placeholders": {}
   },

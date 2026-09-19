@@ -1775,12 +1775,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Nemáte žádné odznaky. Odznak můžete získat například tak, že přispějete a podpoříte tím vývoj aplikace roscord",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelSpaceVisibilityRestricted": "Prostor s omezeným přístupem",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
@@ -1874,45 +1868,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "Potvrzení daru",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationInstructions": "Postupujte podle pokynů ve svém prohlížeči. Zobrazení odměn může někdy po přijetí vašeho příspěvku trvat jednu až dvě minuty.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "Děkujeme za tento štědrý příspěvek!",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "Nepodařilo se najít žádné příspěvky :( Zvažte prosím podporu vývoje roscord příspěvkem!",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "Opravdu chcete zavřít okno, aniž byste přijal(a) jakoukoli odměnu?",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "Žádný účet",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "Aktualizovat odměny",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },

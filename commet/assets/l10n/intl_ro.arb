@@ -148,12 +148,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Nu ai nicio insignă, încă. Poți primi insigne dacă donezi și susții dezvoltarea roscord",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelChatPageFileTooLarge": "Fișierul este prea mare pentru a fi încărcat!",
     "@labelChatPageFileTooLarge": {
         "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
@@ -527,45 +521,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "Confirmare donație",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationInstructions": "Urmează instrucțiunile din browser. Puțină răbdare, poate dura un minut sau două până când apar recompensele după ce donația a fost primită.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "Mulțumim pentru donația generoasă!",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "Nu am găsit nicio donație :( Te rugăm să consideri o donație pentru a sprijini dezvoltarea roscord!",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "Ești sigur că vrei să renunți fără a accepta nicio recompensă?",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "Fără Cont",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "Actualizeză-ti recompensele",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },

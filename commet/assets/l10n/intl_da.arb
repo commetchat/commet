@@ -1022,12 +1022,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Du har ikke nogen emblemer. Du kan få emblemer ved at donere eller hjælpe med udviklingen af roscord",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelSpaceVisibilityRestricted": "Begrænset samling",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
