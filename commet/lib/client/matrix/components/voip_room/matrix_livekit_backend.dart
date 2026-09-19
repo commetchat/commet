@@ -164,6 +164,9 @@ class MatrixLivekitBackend {
         dynacast: true,
         e2eeOptions: e2eeOptions,
         defaultAudioPublishOptions: lk.AudioPublishOptions(
+          // What the microphone always had: the SDK used to send this flag
+          // inverted, so "red: true" meant no RED (see third_party/README).
+          red: false,
           encoding: lk.AudioEncoding(
               maxBitrate:
                   (preferences.streamAudioBitrate.value * 1000).toInt()),

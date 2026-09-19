@@ -23,7 +23,10 @@ gitignored. `// COMMET` changes: `LoopbackCapturer::SetRawTap` (packets as
 they come off the OS, fed by both capturers) and `commet_system_audio_reference.h`
 with the `commetStartSystemAudioReference` / `commetStopSystemAudioReference`
 methods in `flutter_webrtc.cc`, which give the voice DSP the system mix as a
-loudspeaker reference.
+loudspeaker reference. `commet_music_source.h` with the
+`commetCreateMusicTrack` / `commetStopMusicTrack` methods: a local audio
+track fed from Rust (`commet_music_pull`) by a 10 ms pacing thread, for the
+DJ booth (`docs/dj-booth.md`).
 
 `livekit-client-sdk-flutter` carries a backport of the upstream 2.8.0/2.11.0
 unpublish fixes (issue #79): `removePublishedTrack` removes every simulcast
@@ -32,3 +35,7 @@ the publication and renegotiates, backup codec state is cleared on unpublish
 and before a full-reconnect republish, and the degradation preference is
 applied to backup senders too. Marked `// COMMET` in
 `lib/src/participant/local.dart` and `lib/src/track/local/video.dart`.
+`AudioPublishOptions.stereo` (DJ booth music): `TF_STEREO` on the published
+track, `stereo=1;sprop-stereo=1` munged into our offer for it
+(`lib/src/core/transport.dart`), and the subscriber answer asks for stereo
+wherever the server's offer has it (`lib/src/core/engine.dart`).

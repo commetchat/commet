@@ -57,8 +57,10 @@ class MatrixLivekitVoipStream implements VoipStream {
       : _setTrackVolume = setTrackVolume ?? _setPlaybackVolume,
         _createAudioVisualizer = createAudioVisualizer ?? _speakingVisualizer {
     if (publication.track case AudioTrack t) {
-      _setTrackVolume(volume, t);
-      _startVisualizer(t);
+      // Our own music is what everyone hears: its level is theirs to set,
+      // and on a custom source this volume would change what is sent.
+      if (!_isOwnMusic) _setTrackVolume(volume, t);
+      if (!_isMusic) _startVisualizer(t);
     }
     if (publication is RemoteTrackPublication &&
         publication.kind == TrackType.VIDEO) {
@@ -174,10 +176,15 @@ class MatrixLivekitVoipStream implements VoipStream {
       _stallDetector.trackChanged();
     }
     if (publication.track case AudioTrack t) {
-      _startVisualizer(t);
-      _setTrackVolume(_playbackVolume ?? volume, t);
+      if (!_isMusic) _startVisualizer(t);
+      if (!_isOwnMusic) _setTrackVolume(_playbackVolume ?? volume, t);
     }
   }
+
+  /// Music has no speaking indicator, so no level analyser either.
+  bool get _isMusic => type == VoipStreamType.music;
+
+  bool get _isOwnMusic => _isMusic && publication is LocalTrackPublication;
 
   /// LiveKit detached the publication's track.
   Future<void> onTrackUnsubscribed() => _stopVisualizer();
@@ -285,14 +292,21 @@ class MatrixLivekitVoipStream implements VoipStream {
   String get streamOwnerId => publication.participant.identity;
 
   @override
-  VoipStreamType get type => typeOf(publication.kind, publication.source);
+  VoipStreamType get type =>
+      typeOf(publication.kind, publication.source, name: publication.name);
+
+  /// Name the DJ booth publishes its music under (the track source says
+  /// nothing: LiveKit has no source for it).
+  static const musicTrackName = 'commet-dj-music';
 
   /// Maps a LiveKit publication's kind and source onto the app's stream
   /// types. System audio captured with a screen share is its own type so the
   /// call grid can fold it into the screen share tile instead of drawing a
   /// second avatar for the sharer.
-  static VoipStreamType typeOf(TrackType kind, TrackSource source) {
+  static VoipStreamType typeOf(TrackType kind, TrackSource source,
+      {String? name}) {
     if (kind == TrackType.AUDIO) {
+      if (name == musicTrackName) return VoipStreamType.music;
       return source == TrackSource.screenShareAudio
           ? VoipStreamType.screenshareAudio
           : VoipStreamType.audio;
@@ -327,7 +341,9 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   Future<void> setVolume(double volume) async {
-    if (isScreenShareAudio) {
+    if (type == VoipStreamType.music) {
+      await preferences.djMusicVolume.set(volume);
+    } else if (isScreenShareAudio) {
       preferences.setVoipScreenShareVolume(userId, volume);
     } else {
       preferences.setVoipUserVolume(userId, volume);
@@ -347,6 +363,7 @@ class MatrixLivekitVoipStream implements VoipStream {
   /// isn't attached yet gets it in [onTrackSubscribed].
   void applyVolume(double volume) {
     _playbackVolume = volume;
+    if (_isOwnMusic) return;
     if (publication.track case AudioTrack track) {
       _setTrackVolume(volume, track);
     }
@@ -378,7 +395,9 @@ class MatrixLivekitVoipStream implements VoipStream {
   }
 
   @override
-  double get volume => isScreenShareAudio
-      ? preferences.getVoipScreenShareVolume(userId)
-      : preferences.getVoipUserVolume(userId);
+  double get volume => type == VoipStreamType.music
+      ? preferences.djMusicVolume.value
+      : isScreenShareAudio
+          ? preferences.getVoipScreenShareVolume(userId)
+          : preferences.getVoipUserVolume(userId);
 }

@@ -1326,6 +1326,80 @@ void FlutterWebRTC::HandleMethodCall(
     // COMMET: once this returns the Rust handle is no longer referenced.
     commet_reference_.Stop();
     result->Success(EncodableValue(true));
+  } else if (method_call.method_name().compare("commetCreateMusicTrack") ==
+             0) {
+    // COMMET: a local audio track playing Commet's music player, see
+    // commet_music_source.h. `ctx` and `pull` are the Rust player handle and
+    // the address of commet_music_pull, as pointer-sized ints. Answers like
+    // getDisplayMedia, so Dart builds the stream the same way.
+    if (!method_call.arguments()) {
+      result->Error("Bad Arguments", "Null arguments received");
+      return;
+    }
+    const EncodableMap params =
+        GetValue<EncodableMap>(*method_call.arguments());
+    const int64_t ctx = findLongInt(params, "ctx");
+    const int64_t pull = findLongInt(params, "pull");
+    if (ctx <= 0 || pull <= 0) {
+      result->Error("Bad Arguments", "ctx and pull are required");
+      return;
+    }
+    EnsureWebRTCInitialized();
+    if (!factory_) {
+      result->Error("commetCreateMusicTrack", "WebRTC is not initialized");
+      return;
+    }
+
+    RTCAudioOptions options;
+    options.echo_cancellation = false;
+    options.auto_gain_control = false;
+    options.noise_suppression = false;
+    const std::string source_label = "commet_music_" + GenerateUUID();
+    scoped_refptr<RTCAudioSource> source = factory_->CreateAudioSource(
+        source_label.c_str(), RTCAudioSource::SourceType::kCustom, options);
+    const std::string track_id = GenerateUUID();
+    scoped_refptr<RTCAudioTrack> track =
+        factory_->CreateAudioTrack(source, track_id.c_str());
+    const std::string stream_id = GenerateUUID();
+    scoped_refptr<RTCMediaStream> stream =
+        factory_->CreateStream(stream_id.c_str());
+    stream->AddTrack(track);
+    local_streams_[stream_id] = stream;
+    local_tracks_[track_id] = track;
+
+    commet_music_tracks_.Add(
+        track_id,
+        std::make_unique<CommetMusicFeeder>(
+            source, reinterpret_cast<void*>(static_cast<uintptr_t>(ctx)),
+            reinterpret_cast<CommetMusicFeeder::PullFn>(
+                static_cast<uintptr_t>(pull))));
+
+    EncodableMap audio_info;
+    audio_info[EncodableValue("id")] = EncodableValue(track_id);
+    audio_info[EncodableValue("label")] = EncodableValue(track_id);
+    audio_info[EncodableValue("kind")] =
+        EncodableValue(track->kind().std_string());
+    audio_info[EncodableValue("enabled")] = EncodableValue(track->enabled());
+    EncodableList audio_tracks;
+    audio_tracks.push_back(EncodableValue(audio_info));
+
+    EncodableMap response;
+    response[EncodableValue("streamId")] = EncodableValue(stream_id);
+    response[EncodableValue("audioTracks")] = EncodableValue(audio_tracks);
+    response[EncodableValue("videoTracks")] = EncodableValue(EncodableList());
+    result->Success(EncodableValue(response));
+  } else if (method_call.method_name().compare("commetStopMusicTrack") ==
+             0) {
+    // COMMET: once this returns the Rust player handle is no longer
+    // referenced. The track itself is released by the usual trackDispose.
+    if (!method_call.arguments()) {
+      result->Error("Bad Arguments", "Null arguments received");
+      return;
+    }
+    const EncodableMap params =
+        GetValue<EncodableMap>(*method_call.arguments());
+    const std::string track_id = findString(params, "trackId");
+    result->Success(EncodableValue(commet_music_tracks_.Stop(track_id)));
   } else {
     if (HandleFrameCryptorMethodCall(method_call, std::move(result), &result)) {
       return;

@@ -3,6 +3,7 @@
 
 #include "flutter_common.h"
 
+#include "commet_music_source.h"             // COMMET
 #include "commet_system_audio_reference.h"  // COMMET
 
 #include "flutter_data_channel.h"
@@ -50,6 +51,9 @@ class FlutterWebRTC : public FlutterWebRTCBase,
 
   // COMMET: commetStartSystemAudioReference / commetStopSystemAudioReference.
   CommetSystemAudioReference commet_reference_;
+
+  // COMMET: commetCreateMusicTrack / commetStopMusicTrack (DJ booth).
+  CommetMusicTracks commet_music_tracks_;
 };
 
 }  // namespace flutter_webrtc_plugin

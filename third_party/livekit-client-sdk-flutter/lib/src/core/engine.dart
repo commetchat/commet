@@ -24,6 +24,7 @@ import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as rtc;
 import 'package:meta/meta.dart';
+import 'package:sdp_transform/sdp_transform.dart' as sdp_transform;
 
 import '../e2ee/e2ee_manager.dart';
 import '../e2ee/options.dart';
@@ -1386,7 +1387,14 @@ class Engine extends Disposable with EventsEmittable<EngineEvent> {
         final answer = await subscriber!.pc.createAnswer();
         logger.fine('Created answer');
         logger.finer('sdp: ${answer.sdp}');
-        await subscriber!.pc.setLocalDescription(answer);
+        // COMMET: decode in stereo what the server offers in stereo (a DJ's
+        // music track); without it in our answer the decoder stays mono.
+        final munged = _answerStereoLikeOffer(event.sd.sdp, answer.sdp);
+        if (munged != null) {
+          await subscriber!.setMungedSDP(sd: answer, munged: munged);
+        } else {
+          await subscriber!.pc.setLocalDescription(answer);
+        }
         signalClient.sendAnswer(answer);
       } catch (_) {
         logger.severe('[$objectId] Failed to createAnswer()');
@@ -1477,6 +1485,33 @@ class Engine extends Disposable with EventsEmittable<EngineEvent> {
 
   void setRegionUrlProvider(RegionUrlProvider provider) {
     _regionUrlProvider = provider;
+  }
+}
+
+/// COMMET: [answer] with stereo Opus asked for on every audio section the
+/// [offer] has in stereo, matched by mid. Null when nothing had to change or
+/// either SDP can't be read.
+String? _answerStereoLikeOffer(String? offer, String? answer) {
+  if (offer == null || answer == null) return null;
+  try {
+    final stereoMids = <String>{};
+    for (final media in (sdp_transform.parse(offer)['media'] as List? ?? const [])) {
+      if (media['type'] == 'audio' && media['mid'] != null && opusIsStereo(media)) {
+        stereoMids.add(media['mid'].toString());
+      }
+    }
+    if (stereoMids.isEmpty) return null;
+    final parsed = sdp_transform.parse(answer);
+    var changed = false;
+    for (final media in (parsed['media'] as List? ?? const [])) {
+      if (media['type'] == 'audio' && stereoMids.contains(media['mid']?.toString()) && !opusIsStereo(media)) {
+        changed = ensureOpusStereo(media) || changed;
+      }
+    }
+    return changed ? sdp_transform.write(parsed, null) : null;
+  } catch (e) {
+    logger.warning('Could not ask for stereo audio: $e');
+    return null;
   }
 }
 

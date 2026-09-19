@@ -204,6 +204,7 @@ class MatrixActivitiesComponent
             if (stream.isDeafened) VoiceState.deafened,
           };
         case VoipStreamType.screenshareAudio:
+        case VoipStreamType.music:
           break;
       }
     }

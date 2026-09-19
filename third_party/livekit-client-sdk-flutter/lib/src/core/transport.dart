@@ -50,6 +50,56 @@ class TrackBitrateInfo {
   });
 }
 
+/// COMMET: asks for stereo Opus on one parsed `m=audio` section: `stereo=1`
+/// tells the other side we want to receive two channels, `sprop-stereo=1`
+/// that we send them. Returns whether the section has Opus.
+bool ensureOpusStereo(Map<String, dynamic> media) {
+  int? opusPayload;
+  for (final rtp in (media['rtp'] as List? ?? const [])) {
+    if ((rtp['codec'] as String?)?.toLowerCase() == 'opus') {
+      opusPayload = rtp['payload'] as int?;
+      break;
+    }
+  }
+  if (opusPayload == null) return false;
+  final fmtps = (media['fmtp'] as List?) ?? [];
+  media['fmtp'] = fmtps;
+  final fmtp = fmtps.cast<Map<String, dynamic>?>().firstWhere(
+      (f) => f?['payload'] == opusPayload,
+      orElse: () => null);
+  if (fmtp == null) {
+    fmtps.add(<String, dynamic>{'payload': opusPayload, 'config': 'stereo=1;sprop-stereo=1'});
+    return true;
+  }
+  var config = (fmtp['config'] as String?) ?? '';
+  for (final param in ['stereo=1', 'sprop-stereo=1']) {
+    if (!config.split(';').contains(param)) {
+      config = config.isEmpty ? param : '$config;$param';
+    }
+  }
+  fmtp['config'] = config;
+  return true;
+}
+
+/// COMMET: whether a parsed `m=audio` section's Opus asks for stereo.
+bool opusIsStereo(Map<String, dynamic> media) {
+  int? opusPayload;
+  for (final rtp in (media['rtp'] as List? ?? const [])) {
+    if ((rtp['codec'] as String?)?.toLowerCase() == 'opus') {
+      opusPayload = rtp['payload'] as int?;
+      break;
+    }
+  }
+  if (opusPayload == null) return false;
+  for (final fmtp in (media['fmtp'] as List? ?? const [])) {
+    if (fmtp['payload'] == opusPayload) {
+      final params = (fmtp['config'] as String? ?? '').split(';');
+      return params.contains('stereo=1') || params.contains('sprop-stereo=1');
+    }
+  }
+  return false;
+}
+
 typedef TransportOnOffer = void Function(rtc.RTCSessionDescription offer);
 typedef PeerConnectionCreate = Future<rtc.RTCPeerConnection> Function(Map<String, dynamic> configuration,
     [Map<String, dynamic> constraints]);
@@ -179,6 +229,12 @@ class Transport extends Disposable {
 
     final sdpParsed = sdp_transform.parse(offer.sdp ?? '');
     sdpParsed['media']?.forEach((media) {
+      // COMMET: stereo audio tracks (see AudioPublishOptions.stereo).
+      if (media['type'] == 'audio' &&
+          media['msid'] != null &&
+          _stereoTrackCids.any((cid) => (media['msid'] as String).contains(cid))) {
+        ensureOpusStereo(media);
+      }
       if (media['type'] == 'video') {
         ensureVideoDDExtensionForSVC(media, media['type'], media['port'], media['protocol'], media['payloads']);
 
@@ -255,6 +311,11 @@ class Transport extends Disposable {
     }
     return null;
   }
+
+  // COMMET: cids of published tracks whose Opus has to be stereo.
+  final Set<String> _stereoTrackCids = {};
+
+  void setTrackStereo(String cid) => _stereoTrackCids.add(cid);
 
   void setTrackBitrateInfo(TrackBitrateInfo info) {
     _bitrateTrackers.add(info);
