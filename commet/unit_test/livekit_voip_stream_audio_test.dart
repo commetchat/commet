@@ -39,6 +39,10 @@ class _Publication implements RemoteTrackPublication<RemoteTrack> {
   @override
   final TrackSource source;
 
+  /// The stream's type reads it: the DJ booth's music is told apart by name.
+  @override
+  final String name = 'microphone';
+
   @override
   RemoteTrack? track;
 
