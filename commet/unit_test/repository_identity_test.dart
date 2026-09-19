@@ -13,9 +13,6 @@ const _thirdPartyProject =
     'Real third-party project id: roscord still consumes this upstream fork.';
 const _upstreamCopyright =
     'Upstream copyright attribution: this names the original copyright holder.';
-const _ticket2Gap =
-    'Known display-name gap, removed by follow-up ticket 2 (Linux, Windows, '
-    'and Android identity).';
 const _ticket7Gap =
     'Known localized product-name gap, restored through the ARB pipeline by '
     'follow-up ticket 7.';
@@ -60,12 +57,6 @@ final _legacyIdentityAllowlist = <_Allowance>[
     token: r'chat\.commet(?:\.commetapp)?',
     count: 4,
     reason: _distributionIdentity,
-  ),
-  _Allowance(
-    path: r'android/app/src/debug/res/values/strings\.xml',
-    token: r'Commet',
-    count: 1,
-    reason: _ticket2Gap,
   ),
   _Allowance(
     path: r'assets/l10n/intl_[^/]+\.arb',
@@ -116,12 +107,6 @@ final _legacyIdentityAllowlist = <_Allowance>[
     reason: _buildArtifact,
   ),
   _Allowance(
-    path: r'linux/my_application\.cc',
-    token: r'commet',
-    count: 1,
-    reason: _ticket2Gap,
-  ),
-  _Allowance(
     path: r'linux/CMakeLists\.txt',
     token: r'\(\$ENV\{COMMET_PROD\}|chat\.commet\.commetapp(?:\.develop)?',
     count: 3,
@@ -136,34 +121,15 @@ final _legacyIdentityAllowlist = <_Allowance>[
   _Allowance(
     path:
         r'linux/(?:flatpak|debian/usr/share/applications)/chat\.commet\.commetapp\.desktop',
-    token: r'Commet',
-    count: 3,
-    reason: _ticket2Gap,
-  ),
-  _Allowance(
-    path:
-        r'linux/(?:flatpak|debian/usr/share/applications)/chat\.commet\.commetapp\.desktop',
     token: r'.*commet.*',
-    count: 8,
+    count: 9,
     reason: _distributionIdentity,
-  ),
-  _Allowance(
-    path: r'linux/flatpak/chat\.commet\.commetapp\.metainfo\.xml',
-    token: r'Commet',
-    count: 2,
-    reason: _ticket2Gap,
   ),
   _Allowance(
     path: r'linux/flatpak/chat\.commet\.commetapp\.metainfo\.xml',
     token: r'chat\.commet\.commetapp(?:\.desktop)?',
     count: 2,
     reason: _distributionIdentity,
-  ),
-  _Allowance(
-    path: r'linux/flatpak/chat\.commet\.commetapp\.metainfo\.xml',
-    token: r'https://commet\.chat',
-    count: 1,
-    reason: _ticket2Gap,
   ),
   _Allowance(
     path: r'linux/flatpak/chat\.commet\.commetapp\.yaml',
@@ -176,12 +142,6 @@ final _legacyIdentityAllowlist = <_Allowance>[
     token: r'commet',
     count: 2,
     reason: _distributionIdentity,
-  ),
-  _Allowance(
-    path: r'pubspec\.yaml',
-    token: r'Commet',
-    count: 2,
-    reason: _ticket2Gap,
   ),
   _Allowance(
     path: r'pubspec\.yaml',
@@ -281,6 +241,76 @@ void main() {
     expect(findings, hasLength(1));
     expect(_unmatchedFindings(findings), equals(findings));
     expect(page.existsSync(), isTrue);
+  });
+
+  test('Dart is the sole owner of the Linux window title', () {
+    final nativeRunner = File('linux/my_application.cc').readAsStringSync();
+    final windowManagement = File(
+      'lib/utils/window_management.dart',
+    ).readAsStringSync();
+
+    expect(nativeRunner, isNot(contains('gtk_window_set_title')));
+    expect(
+      RegExp(r'windowManager\.setTitle\(').allMatches(windowManagement),
+      hasLength(1),
+    );
+    expect(windowManagement, contains('await _updateTitle();'));
+    expect(windowManagement, contains('"roscord",'));
+  });
+
+  test(
+    'Linux launchers show roscord and match the runtime application class',
+    () {
+      final cmake = File('linux/CMakeLists.txt').readAsStringSync();
+      final nativeRunner = File('linux/my_application.cc').readAsStringSync();
+      final flatpak = File(
+        'linux/flatpak/chat.commet.commetapp.desktop',
+      ).readAsStringSync();
+      final debian = File(
+        'linux/debian/usr/share/applications/chat.commet.commetapp.desktop',
+      ).readAsStringSync();
+      final flatpakLines = flatpak.split(RegExp(r'\r?\n'));
+      final debianLines = debian.split(RegExp(r'\r?\n'));
+
+      expect(cmake, contains('set(APPLICATION_ID "chat.commet.commetapp")'));
+      expect(nativeRunner, contains('g_set_prgname(APPLICATION_ID)'));
+      expect(nativeRunner, contains('"application-id", APPLICATION_ID'));
+
+      expect(flatpakLines, contains('Name=roscord'));
+      expect(flatpakLines, contains('Icon=chat.commet.commetapp'));
+      expect(flatpakLines, contains('Exec=commet'));
+      expect(flatpakLines, contains('StartupWMClass=chat.commet.commetapp'));
+
+      expect(debianLines, contains('Name=roscord'));
+      expect(debianLines, contains('Icon=commet-desktop'));
+      expect(
+        debianLines,
+        contains('Exec=/usr/lib/chat.commet.commetapp/commet %U'),
+      );
+      expect(debianLines, contains('StartupWMClass=chat.commet.commetapp'));
+    },
+  );
+
+  test('ticket 2 display metadata names roscord', () {
+    expect(
+      File('android/app/src/debug/res/values/strings.xml').readAsStringSync(),
+      contains('<string name="app_name">roscord</string>'),
+    );
+
+    final metainfo = File(
+      'linux/flatpak/chat.commet.commetapp.metainfo.xml',
+    ).readAsStringSync();
+    expect(metainfo, contains('<name>roscord</name>'));
+    expect(metainfo, contains('<p>roscord is a client for Matrix'));
+
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    expect(
+      RegExp(
+        r'^\s+display_name: roscord$',
+        multiLine: true,
+      ).allMatches(pubspec),
+      hasLength(2),
+    );
   });
 }
 

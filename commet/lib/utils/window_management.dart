@@ -22,8 +22,10 @@ class WindowManagement {
     _clientsClosed = true;
 
     try {
-      await clientManager?.close().timeout(const Duration(seconds: 5),
-          onTimeout: () => Log.w("Closing clients timed out"));
+      await clientManager?.close().timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => Log.w("Closing clients timed out"),
+          );
     } catch (error, stacktrace) {
       Log.onError(error, stacktrace, content: "Failed to release the clients");
     }
@@ -66,8 +68,11 @@ class WindowManagement {
     try {
       await windowManager.show();
     } catch (error, stacktrace) {
-      Log.onError(error, stacktrace,
-          content: "Failed to show the window again");
+      Log.onError(
+        error,
+        stacktrace,
+        content: "Failed to show the window again",
+      );
     }
   }
 
@@ -84,6 +89,8 @@ class WindowManagement {
 
     EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
     EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
+
+    await _updateTitle();
 
     if (commandLineArgs.contains("--minimize")) {
       windowManager.minimize();
@@ -119,13 +126,13 @@ class WindowManagement {
     _updateTitle();
   }
 
-  static void _updateTitle() {
+  static Future<void> _updateTitle() async {
     final result = [
       _currentRoomName,
       _currentSpaceName,
       "roscord",
     ].whereNot((a) => a == null).join(" | ");
-    windowManager.setTitle(result);
+    await windowManager.setTitle(result);
   }
 }
 

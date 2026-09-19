@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Commet
+Name=roscord
 Exec=/usr/lib/chat.commet.commetapp/commet %U
 Terminal=false
 Type=Application
 Icon=commet-desktop
-StartupWMClass=Commet
+StartupWMClass=chat.commet.commetapp
 Comment=Your space to connect!
 Categories=Network;InstantMessaging;Chat;
