@@ -2080,7 +2080,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "descriptionUpdateAvailable": "There is a newer version of roscord available: {version}",
+  "descriptionUpdateAvailable": "There is a newer version of roscord available: {version}. Tap to open the release page.",
   "@descriptionUpdateAvailable": {
     "description": "describes the update, showing the version code for the available update",
     "type": "text",
