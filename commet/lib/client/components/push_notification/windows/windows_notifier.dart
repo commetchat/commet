@@ -44,7 +44,7 @@ class WindowsNotifier implements Notifier {
 
     await WinToast.instance().initialize(
       aumId: 'chat.commet.app.windows-a33bc9ba',
-      displayName: 'Commet',
+      displayName: 'roscord',
       iconPath: uri.toString(),
       clsid: '7685C041-9D17-4112-8FC4-386743A3D53E',
     );

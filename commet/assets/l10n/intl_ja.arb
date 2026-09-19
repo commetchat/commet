@@ -203,7 +203,7 @@
             "spaceName": {}
         }
     },
-    "unifiedPushExplainer": "# Unified Push\nこのバージョンの CommetはGoogle Play Servicesなしで設計されています。 プッシュ通知を受信するには、 [Unified Push](https://unifiedpush.org/)を使用する必要があります。 \n\nすでにUnified Push対応ディストリビューターアプリがインストールされている場合は、以下で設定できます。\n",
+    "unifiedPushExplainer": "# Unified Push\nこのバージョンの roscordはGoogle Play Servicesなしで設計されています。 プッシュ通知を受信するには、 [Unified Push](https://unifiedpush.org/)を使用する必要があります。 \n\nすでにUnified Push対応ディストリビューターアプリがインストールされている場合は、以下で設定できます。\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

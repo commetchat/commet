@@ -204,7 +204,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nEssa versão do Commet foi feita sem Serviços do Google Play. Para receber notificações, você precisa usar [Unified Push](https://unifiedpush.org/). \n\nSe você já tem um aplicativo compatível com Unified Push instalado, você pode o configurar abaixo\n",
+    "unifiedPushExplainer": "# Unified Push\nEssa versão do roscord foi feita sem Serviços do Google Play. Para receber notificações, você precisa usar [Unified Push](https://unifiedpush.org/). \n\nSe você já tem um aplicativo compatível com Unified Push instalado, você pode o configurar abaixo\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

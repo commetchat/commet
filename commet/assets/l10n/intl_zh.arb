@@ -408,7 +408,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# UnifiedPush\n此版本的 Commet 是在没有 Google Play 服务的情况下构建的。为了接收推送通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。 \n\n如果您已经安装了兼容 UnifiedPush 的分发器应用，可以在下面进行配置\n",
+    "unifiedPushExplainer": "# UnifiedPush\n此版本的 roscord 是在没有 Google Play 服务的情况下构建的。为了接收推送通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。 \n\n如果您已经安装了兼容 UnifiedPush 的分发器应用，可以在下面进行配置\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

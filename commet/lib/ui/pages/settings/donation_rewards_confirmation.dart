@@ -138,7 +138,7 @@ class _DonationRewardsConfirmationState
           "Text that is shown when the donation flow was successful, and the donation has been confirmed");
 
   String get labelDonationConfirmationFailed => Intl.message(
-      "Could not find any donations :( Please consider donating to support development of Commet!",
+      "Could not find any donations :( Please consider donating to support development of roscord!",
       name: "labelDonationConfirmationFailed",
       desc:
           "Text that is shown when the donation flow was failed, and the no donation was found");

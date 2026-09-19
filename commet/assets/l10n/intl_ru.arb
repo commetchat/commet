@@ -1205,7 +1205,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nЭта версия Commet собрана без поддержки служб Google Play. Получение пуш-уведомлений возможно посредством [Unified Push](https://unifiedpush.org/).\n\nЕсли у вас уже установлено приложение распределения уведомлений, совместимое с Unified Push, выполнить настройку можно ниже\n",
+    "unifiedPushExplainer": "# Unified Push\nЭта версия roscord собрана без поддержки служб Google Play. Получение пуш-уведомлений возможно посредством [Unified Push](https://unifiedpush.org/).\n\nЕсли у вас уже установлено приложение распределения уведомлений, совместимое с Unified Push, выполнить настройку можно ниже\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1847,7 +1847,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "У вас нет бейджей. Вы можете получить бейджи, поддержав разработку Commet",
+    "labelProfileNoBadges": "У вас нет бейджей. Вы можете получить бейджи, поддержав разработку roscord",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1958,7 +1958,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Не удалось обработать транзакцию :( Поддержите разработку Commet своим донатом!",
+    "labelDonationConfirmationFailed": "Не удалось обработать транзакцию :( Поддержите разработку roscord своим донатом!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
@@ -2377,7 +2377,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Доступна новая версия Commet: {version}",
+    "descriptionUpdateAvailable": "Доступна новая версия roscord: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

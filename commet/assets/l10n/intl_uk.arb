@@ -1105,7 +1105,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nЦя версія Commet зібрана без Google Play Services. Щоб отримувати push-сповіщення, вам необхідно використовувати [Unified Push](https://unifiedpush.org/). \n\nЯкщо ви вже маєте Unified Push застосунок, ви можете його налаштувати тут\n",
+    "unifiedPushExplainer": "# Unified Push\nЦя версія roscord зібрана без Google Play Services. Щоб отримувати push-сповіщення, вам необхідно використовувати [Unified Push](https://unifiedpush.org/). \n\nЯкщо ви вже маєте Unified Push застосунок, ви можете його налаштувати тут\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1853,7 +1853,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "У вас немає значків. Ви можете отримати їх, якщо зробите пожертву та підтримаєте розробку Commet",
+    "labelProfileNoBadges": "У вас немає значків. Ви можете отримати їх, якщо зробите пожертву та підтримаєте розробку roscord",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1970,7 +1970,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Не вдалося знайти жодних пожертв :( Підтримайте розробку Commet своїм внеском!",
+    "labelDonationConfirmationFailed": "Не вдалося знайти жодних пожертв :( Підтримайте розробку roscord своїм внеском!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
@@ -2389,7 +2389,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Доступна нова версія Commet: {version}",
+    "descriptionUpdateAvailable": "Доступна нова версія roscord: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

@@ -612,7 +612,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nSee Commeti versioon on kompileeritud ilma Google Play Services toeta. Tõuketeavituste jaoks pead sa kasutama [Unified Push](https://unifiedpush.org/) teenuseid. \n\nKui sul juba on Unified Push teenustega ühilduv haldusrakendus paigaldatud, siis saad teda alljärgnevalt seadistada\n",
+    "unifiedPushExplainer": "# Unified Push\nSee roscord versioon on kompileeritud ilma Google Play Services toeta. Tõuketeavituste jaoks pead sa kasutama [Unified Push](https://unifiedpush.org/) teenuseid. \n\nKui sul juba on Unified Push teenustega ühilduv haldusrakendus paigaldatud, siis saad teda alljärgnevalt seadistada\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1876,7 +1876,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Sul pole veel silte. Neid võid saada toetades rahaliselt Commeti arendust",
+    "labelProfileNoBadges": "Sul pole veel silte. Neid võid saada toetades rahaliselt roscord arendust",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1970,7 +1970,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Ühtegi rahalist toetust ei leidunud :( Palun kaalu Commeti arenduse toetamist!",
+    "labelDonationConfirmationFailed": "Ühtegi rahalist toetust ei leidunud :( Palun kaalu roscord arenduse toetamist!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",

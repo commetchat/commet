@@ -149,7 +149,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelProfileNoBadges": "You don't have any badges. You can get badges by donating and supporting development of Commet",
+  "labelProfileNoBadges": "You don't have any badges. You can get badges by donating and supporting development of roscord",
   "@labelProfileNoBadges": {
     "description": "text that is shown when the user has no badges, and explain where they can get badges",
     "type": "text",
@@ -462,7 +462,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "unifiedPushExplainer": "# Unified Push\nThis version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). \n\nIf you already have a Unified Push compatible distributor app installed, you can configure it below\n",
+  "unifiedPushExplainer": "# Unified Push\nThis version of roscord was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). \n\nIf you already have a Unified Push compatible distributor app installed, you can configure it below\n",
   "@unifiedPushExplainer": {
     "description": "Explains the need for unified push. Supports markdown",
     "type": "text",
@@ -546,7 +546,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelDonationConfirmationFailed": "Could not find any donations :( Please consider donating to support development of Commet!",
+  "labelDonationConfirmationFailed": "Could not find any donations :( Please consider donating to support development of roscord!",
   "@labelDonationConfirmationFailed": {
     "description": "Text that is shown when the donation flow was failed, and the no donation was found",
     "type": "text",
@@ -2080,7 +2080,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "descriptionUpdateAvailable": "There is a newer version of Commet available: {version}",
+  "descriptionUpdateAvailable": "There is a newer version of roscord available: {version}",
   "@descriptionUpdateAvailable": {
     "description": "describes the update, showing the version code for the available update",
     "type": "text",

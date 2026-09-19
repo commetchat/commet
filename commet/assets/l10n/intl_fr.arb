@@ -1480,7 +1480,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nCette version de Commet a été compilée sans les services Google Play. Pour recevoir des notifications push, vous aurez besoin d'utiliser [Unified Push](https://unifiedpush.org/).\n\nSi vous disposez déjà d'une application de distribution de notifications compatible avec Unified Push, vous pouvez l'utiliser dans la configuration ci-dessous\n",
+    "unifiedPushExplainer": "# Unified Push\nCette version de roscord a été compilée sans les services Google Play. Pour recevoir des notifications push, vous aurez besoin d'utiliser [Unified Push](https://unifiedpush.org/).\n\nSi vous disposez déjà d'une application de distribution de notifications compatible avec Unified Push, vous pouvez l'utiliser dans la configuration ci-dessous\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1847,7 +1847,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Vous n'avez aucun badge. Vous pouvez acquérir des badges en faisant un don et en supportant le développement de Commet",
+    "labelProfileNoBadges": "Vous n'avez aucun badge. Vous pouvez acquérir des badges en faisant un don et en supportant le développement de roscord",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1964,7 +1964,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Aucun don trouvé :( Merci de considérer de faire un don pour supporter le développement de Commet !",
+    "labelDonationConfirmationFailed": "Aucun don trouvé :( Merci de considérer de faire un don pour supporter le développement de roscord !",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
@@ -2330,7 +2330,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Une nouvelle version de Commet est disponible : {version}",
+    "descriptionUpdateAvailable": "Une nouvelle version de roscord est disponible : {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

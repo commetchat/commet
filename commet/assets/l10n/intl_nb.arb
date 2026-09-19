@@ -324,7 +324,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nDenne versjonen av Commet ble bygget uten Google Play Services. For å motta push-varsler, må du bruke [Unified Push](https://unifiedpush.org/). \n\nHvis du allerede har en Unified Push-kompatibel distributørapp installert, kan du konfigurere den nedenfor\n",
+    "unifiedPushExplainer": "# Unified Push\nDenne versjonen av roscord ble bygget uten Google Play Services. For å motta push-varsler, må du bruke [Unified Push](https://unifiedpush.org/). \n\nHvis du allerede har en Unified Push-kompatibel distributørapp installert, kan du konfigurere den nedenfor\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

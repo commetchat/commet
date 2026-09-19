@@ -20,7 +20,7 @@ class FatalErrorPage extends StatelessWidget {
                 const Text("Something went wrong!"),
                 Text(error.toString()),
                 const Text(
-                    "Sorry, there was a fatal error and Commet was unable to start. Please copy the error details and report this issue on GitHub"),
+                    "Sorry, there was a fatal error and roscord was unable to start. Please copy the error details and report this issue on GitHub"),
                 const Text(
                     "Make sure to remove any personal/sensitive information before submitting the report!"),
                 ElevatedButton(

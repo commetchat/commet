@@ -1061,7 +1061,7 @@
             "spaceName": {}
         }
     },
-    "unifiedPushExplainer": "# UnifiedPush\n此版本的 Commet 是在沒有 Google Play 服務的情況下建立的。為了接收推播通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。\n\n如果您已經安裝了相容於 Unified Push 的應用程式，可以在下面進行設置\n",
+    "unifiedPushExplainer": "# UnifiedPush\n此版本的 roscord 是在沒有 Google Play 服務的情況下建立的。為了接收推播通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。\n\n如果您已經安裝了相容於 Unified Push 的應用程式，可以在下面進行設置\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1775,7 +1775,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "您沒有任何徽章。贊助並支持 Commet 的開發即可獲得徽章",
+    "labelProfileNoBadges": "您沒有任何徽章。贊助並支持 roscord 的開發即可獲得徽章",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1892,7 +1892,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "無法找到任何贊助紀錄 :( 請考慮贊助支持 Commet 的開發！",
+    "labelDonationConfirmationFailed": "無法找到任何贊助紀錄 :( 請考慮贊助支持 roscord 的開發！",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
@@ -2311,7 +2311,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "有新的 Commet 更新可供使用：{version}",
+    "descriptionUpdateAvailable": "有新的 roscord 更新可供使用：{version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

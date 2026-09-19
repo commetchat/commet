@@ -602,7 +602,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nEssa versão do Commet foi feita sem Serviços do Google Play. Para receber notificações, precisa usar [Unified Push](https://unifiedpush.org/). \n\nSe já tem uma app compatível com Unified Push instalado, pode configurá-lo abaixo\n",
+    "unifiedPushExplainer": "# Unified Push\nEssa versão do roscord foi feita sem Serviços do Google Play. Para receber notificações, precisa usar [Unified Push](https://unifiedpush.org/). \n\nSe já tem uma app compatível com Unified Push instalado, pode configurá-lo abaixo\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

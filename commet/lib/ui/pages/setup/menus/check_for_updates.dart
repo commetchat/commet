@@ -18,7 +18,7 @@ class UpdateCheckerSetup implements SetupMenu {
       children: [
         tiamat.Text.largeTitle("Check for updates"),
         tiamat.Text.label(
-            "Would you like Commet to automatically check for new updates?"),
+            "Would you like roscord to automatically check for new updates?"),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
@@ -65,7 +65,7 @@ class _CheckForUpdatesSettingWidgetState
       preference: preferences.checkForUpdates,
       title: "Check for updates",
       description:
-          "Automatically check if there is a newer version of Commet available",
+          "Automatically check if there is a newer version of roscord available",
     );
   }
 }

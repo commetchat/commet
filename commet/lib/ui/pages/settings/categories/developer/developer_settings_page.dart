@@ -382,7 +382,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 
                 var process = await Process.start(exe, [
                   '--widget_runner',
-                  '--title="commet | Widget Runner"',
+                  '--title="roscord | Widget Runner"',
                   '--url=${"https://commet.chat"}'
                 ]);
 

@@ -148,7 +148,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Nu ai nicio insignă, încă. Poți primi insigne dacă donezi și susții dezvoltarea Commet",
+    "labelProfileNoBadges": "Nu ai nicio insignă, încă. Poți primi insigne dacă donezi și susții dezvoltarea roscord",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -461,7 +461,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nAceastă versiune de Commet a fost creată fără serviciile Google Play. Pentru a primi notificări, va trebui să folosești [Unified Push](https://unifiedpush.org/). \n\nDacă ai deja instalată o aplicație de distribuție compatibilă cu UnifiedPush, o poți configura mai jos.\n",
+    "unifiedPushExplainer": "# Unified Push\nAceastă versiune de roscord a fost creată fără serviciile Google Play. Pentru a primi notificări, va trebui să folosești [Unified Push](https://unifiedpush.org/). \n\nDacă ai deja instalată o aplicație de distribuție compatibilă cu UnifiedPush, o poți configura mai jos.\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -545,7 +545,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Nu am găsit nicio donație :( Te rugăm să consideri o donație pentru a sprijini dezvoltarea Commet!",
+    "labelDonationConfirmationFailed": "Nu am găsit nicio donație :( Te rugăm să consideri o donație pentru a sprijini dezvoltarea roscord!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
@@ -2079,7 +2079,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Există o versiune Commet mai nouă: {version}",
+    "descriptionUpdateAvailable": "Există o versiune roscord mai nouă: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

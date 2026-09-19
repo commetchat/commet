@@ -66,7 +66,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"commet", origin, size))
+  // COMMET: window title shows the fork's name, not upstream's.
+  if (!window.Create(L"roscord", origin, size))
   {
     return EXIT_FAILURE;
   }

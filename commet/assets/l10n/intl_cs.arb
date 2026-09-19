@@ -425,7 +425,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nTato verze aplikace Commet byla vytvořena bez služeb Google Play. Abyste mohli přijímat push oznámení, budete muset použít [Unified Push](https://unifiedpush.org/). \n\nPokud již máte nainstalovanou kompatibilní aplikaci s Unified Push, můžete ji nakonfigurovat níže\n",
+    "unifiedPushExplainer": "# Unified Push\nTato verze aplikace roscord byla vytvořena bez služeb Google Play. Abyste mohli přijímat push oznámení, budete muset použít [Unified Push](https://unifiedpush.org/). \n\nPokud již máte nainstalovanou kompatibilní aplikaci s Unified Push, můžete ji nakonfigurovat níže\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1775,7 +1775,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Nemáte žádné odznaky. Odznak můžete získat například tak, že přispějete a podpoříte tím vývoj aplikace Commet",
+    "labelProfileNoBadges": "Nemáte žádné odznaky. Odznak můžete získat například tak, že přispějete a podpoříte tím vývoj aplikace roscord",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1892,7 +1892,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Nepodařilo se najít žádné příspěvky :( Zvažte prosím podporu vývoje Commet příspěvkem!",
+    "labelDonationConfirmationFailed": "Nepodařilo se najít žádné příspěvky :( Zvažte prosím podporu vývoje roscord příspěvkem!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
@@ -2311,7 +2311,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "K dispozici je novější verze aplikace Commet: {version}",
+    "descriptionUpdateAvailable": "K dispozici je novější verze aplikace roscord: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

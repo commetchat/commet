@@ -51,7 +51,7 @@ class BuildConfig {
 
   static const bool SUPPORTS_CACHE = !WEB;
 
-  static const String app = "Commet";
+  static const String app = "roscord";
 
   static const String appSchema = "chat.commet";
 
