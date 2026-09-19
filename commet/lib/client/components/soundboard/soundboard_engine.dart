@@ -8,6 +8,7 @@
 // - Local optimistic play: caller plays immediately, then sends; echo of own
 //   eventId is ignored via [ownEventIds] (no double-play).
 // - No global `currentSound`; [active] is a Map keyed by eventId.
+import 'soundboard_clock.dart';
 import 'soundboard_constraints.dart';
 import 'soundboard_dedup.dart';
 import 'soundboard_event.dart';
@@ -48,6 +49,10 @@ class SoundboardEngine {
   final SoundboardDedup dedup;
   final NowMs nowMs;
 
+  /// Each sender's clock offset, for judging staleness (the session feeds
+  /// it the clock messages).
+  final SoundboardClocks clocks;
+
   /// eventId -> ActiveSound, in start order. Never a single global
   /// currentSound.
   final Map<String, ActiveSound> active = {};
@@ -64,8 +69,10 @@ class SoundboardEngine {
     required this.player,
     SoundboardDedup? dedup,
     NowMs? nowMs,
+    SoundboardClocks? clocks,
   })  : dedup = dedup ?? SoundboardDedup(),
-        nowMs = nowMs ?? (() => DateTime.now().millisecondsSinceEpoch);
+        nowMs = nowMs ?? (() => DateTime.now().millisecondsSinceEpoch),
+        clocks = clocks ?? SoundboardClocks();
 
   void addListener(void Function() l) => _listeners.add(l);
   void removeListener(void Function() l) => _listeners.remove(l);
@@ -122,12 +129,14 @@ class SoundboardEngine {
     final now = nowMs();
     if (_ownEventIds.remove(event.eventId)) return false; // own echo
     if (dedup.checkAndRemember(event.eventId, now)) return false;
-    if (!event.isFresh(now)) return false;
+    final sender = (authenticatedSenderId?.isNotEmpty == true)
+        ? authenticatedSenderId!
+        : event.senderId;
+    if (!clocks.isFresh(event, sender, now)) return false;
+    clocks.observe(sender, event.timestampMs, now);
     _startPlayback(
       soundId: event.soundId,
-      senderId: (authenticatedSenderId?.isNotEmpty == true)
-          ? authenticatedSenderId!
-          : event.senderId,
+      senderId: sender,
       eventId: event.eventId,
       now: now,
       soundDurationMs: soundDurationMs,

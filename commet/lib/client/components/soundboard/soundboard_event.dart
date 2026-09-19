@@ -11,6 +11,11 @@ import 'soundboard_constraints.dart';
 
 class SoundboardEvent {
   static const String typePlay = 'soundboard.play';
+
+  /// No sound: a sample of the sender's clock, sent on joining a call so
+  /// receivers know how far it is from theirs (see SoundboardClocks).
+  /// Clients that predate it drop it as an unknown type.
+  static const String typeClock = 'soundboard.clock';
   static const String livekitTopic = 'chat.commet.soundboard.v1';
   static const String toDeviceType = 'chat.commet.soundboard.play';
   static const int currentVersion = 1;
@@ -22,6 +27,10 @@ class SoundboardEvent {
   final String eventId;
   final int timestampMs;
 
+  /// On a clock message: whether receivers should answer with their own, as
+  /// the people already in a call do for someone joining.
+  final bool wantsReply;
+
   const SoundboardEvent({
     this.type = typePlay,
     this.version = currentVersion,
@@ -29,15 +38,28 @@ class SoundboardEvent {
     required this.senderId,
     required this.eventId,
     required this.timestampMs,
+    this.wantsReply = false,
   });
+
+  const SoundboardEvent.clock({
+    required this.senderId,
+    required this.eventId,
+    required this.timestampMs,
+    this.wantsReply = false,
+  })  : type = typeClock,
+        version = currentVersion,
+        soundId = '';
+
+  bool get isClock => type == typeClock;
 
   Map<String, dynamic> toJson() => {
         'type': type,
         'version': version,
-        'sound_id': soundId,
+        if (!isClock) 'sound_id': soundId,
         'sender_id': senderId,
         'event_id': eventId,
         'timestamp': timestampMs,
+        if (isClock) 'wants_reply': wantsReply,
       };
 
   /// Parses unknown-future versions leniently: unknown fields ignored,
@@ -45,20 +67,24 @@ class SoundboardEvent {
   /// forward-compat (caller only needs sound_id/event_id/timestamp).
   static SoundboardEvent? tryParse(Map<String, dynamic> json) {
     try {
-      if (json['type'] != typePlay) return null;
+      final type = json['type'];
+      if (type != typePlay && type != typeClock) return null;
       final soundId = json['sound_id'] as String?;
       final eventId = json['event_id'] as String?;
       final ts = json['timestamp'];
-      if (soundId == null || soundId.isEmpty) return null;
+      if (type == typePlay && (soundId == null || soundId.isEmpty)) {
+        return null;
+      }
       if (eventId == null || eventId.isEmpty) return null;
       if (ts is! num) return null;
       return SoundboardEvent(
-        type: typePlay,
+        type: type as String,
         version: (json['version'] as num?)?.toInt() ?? 1,
-        soundId: soundId,
+        soundId: soundId ?? '',
         senderId: (json['sender_id'] as String?) ?? '',
         eventId: eventId,
         timestampMs: ts.toInt(),
+        wantsReply: json['wants_reply'] == true,
       );
     } catch (_) {
       return null;
@@ -77,7 +103,8 @@ class SoundboardEvent {
   List<int> encode() => utf8.encode(jsonEncode(toJson()));
 
   /// TTL check against [nowMs]. Drops stale (reconnect queue) and
-  /// far-future (clock abuse) events.
+  /// far-future (clock abuse) events. Trusts the sender's clock: only for a
+  /// sender whose clock offset is unknown (see SoundboardClocks).
   bool isFresh(int nowMs) {
     final age = nowMs - timestampMs;
     if (age < -SoundboardConstraints.maxFutureSkew.inMilliseconds) {

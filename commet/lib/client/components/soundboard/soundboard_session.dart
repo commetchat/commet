@@ -13,6 +13,7 @@ import 'dart:async';
 import 'package:commet/client/components/soundboard/soundboard_cache.dart';
 import 'package:commet/client/components/soundboard/soundboard_catalog.dart';
 import 'package:commet/client/components/soundboard/soundboard_engine.dart';
+import 'package:commet/client/components/soundboard/soundboard_event.dart';
 import 'package:commet/client/components/soundboard/soundboard_transport.dart';
 import 'package:uuid/uuid.dart';
 
@@ -62,7 +63,45 @@ class SoundboardSession {
       // Opportunistic: preload newly added sounds while in call.
       preloadAll();
     });
+    // Everyone already in the call answers with theirs, so each side knows
+    // the other's clock before the first sound (see SoundboardClocks).
+    _sendClock(wantsReply: true);
     await preloadAll();
+  }
+
+  /// When each sender was last answered, so a burst of clock messages from
+  /// someone rejoining gets one reply, not one each.
+  final Map<String, int> _clockRepliedAt = {};
+  static const _clockReplyInterval = Duration(seconds: 5);
+
+  Future<void> _sendClock({required bool wantsReply}) async {
+    try {
+      await transport.send(SoundboardEvent.clock(
+        senderId: selfUserId,
+        eventId: const Uuid().v4(),
+        timestampMs: engine.nowMs(),
+        wantsReply: wantsReply,
+      ));
+    } catch (e, s) {
+      onError(e, s, 'Soundboard clock send failed');
+    }
+  }
+
+  void _onClock(SoundboardEvent event, String? authenticatedSenderId) {
+    final sender = (authenticatedSenderId?.isNotEmpty == true)
+        ? authenticatedSenderId!
+        : event.senderId;
+    if (sender.isEmpty || sender == selfUserId) return;
+    final now = engine.nowMs();
+    engine.clocks.observe(sender, event.timestampMs, now);
+
+    if (!event.wantsReply) return;
+    final last = _clockRepliedAt[sender];
+    if (last != null && now - last < _clockReplyInterval.inMilliseconds) {
+      return;
+    }
+    _clockRepliedAt[sender] = now;
+    _sendClock(wantsReply: false);
   }
 
   Future<void> preloadAll() async {
@@ -98,6 +137,10 @@ class SoundboardSession {
   }
 
   Future<void> _onIncoming(TransportIncoming msg) async {
+    if (msg.event.isClock) {
+      _onClock(msg.event, msg.authenticatedSenderId);
+      return;
+    }
     final receiveMs = DateTime.now().millisecondsSinceEpoch;
     if (_lastSendMs != 0) {
       remoteReceiveLatenciesMs.add(receiveMs - _lastSendMs);
