@@ -13,10 +13,6 @@ const _thirdPartyProject =
     'Real third-party project id: roscord still consumes this upstream fork.';
 const _upstreamCopyright =
     'Upstream copyright attribution: this names the original copyright holder.';
-const _ticket7Gap =
-    'Known localized product-name gap, restored through the ARB pipeline by '
-    'follow-up ticket 7.';
-
 final _commetToken = RegExp(
   r'[A-Za-z0-9_./:@${}()\-]*commet[A-Za-z0-9_./:@${}()\-]*',
   caseSensitive: false,
@@ -68,7 +64,7 @@ final _legacyIdentityAllowlist = <_Allowance>[
     path: r'assets/l10n/intl_[^/]+\.arb',
     token: r'Commets|Commeti|Commeten|Commet\.?',
     count: 12,
-    reason: _ticket7Gap,
+    reason: _thirdPartyProject,
   ),
   _Allowance(
     path: r'macos/Runner/Configs/AppInfo\.xcconfig',

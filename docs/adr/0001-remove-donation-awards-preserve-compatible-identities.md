@@ -12,7 +12,7 @@ The product name shown to users is roscord, but names that identify an installed
 - Matrix event types, state keys, account-data keys, and widget or LiveKit topics under `chat.commet.*` remain protocol identities because rooms, homeservers, and other clients already persist and exchange them.
 - Existing on-disk directory, cache, database, and preference namespaces remain storage identities so an update can read existing user data. A removed feature may migrate its own retired key, as the donation-flow cleanup does.
 - Rust crate, library, symbol, JavaScript binding, and other internal build-artifact names remain stable where generated bindings and native callers depend on them.
-- Real third-party identifiers remain factual, including the `commetchat/*` dependency repositories and the `commet-16334` Firebase project. Upstream `commet.chat` copyright attribution is also retained; PondLabs attribution is recorded alongside it in platform metadata.
+- Real third-party identifiers remain factual, including the `commetchat/*` dependency repositories, localized attribution to Commet's encrypted URL preview project, and the `commet-16334` Firebase project. Upstream `commet.chat` copyright attribution is also retained; PondLabs attribution is recorded alongside it in platform metadata.
 
 These are the durable keep categories used by the repository identity guard. Display-name entries marked there as follow-up gaps are temporary exceptions, not compatibility identities.
 
