@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.1.11
   win_toast: ^0.4.0
   window_manager: ^0.5.1
+  tray_manager: ^0.5.3
   flutter: 
     sdk: flutter
   flutter_highlighter: 
@@ -170,7 +171,12 @@ dependency_overrides:
   livekit_client:
     path: ../third_party/livekit-client-sdk-flutter
 
-dev_dependencies: 
+  # tray_manager: the Linux appindicator made optional, so a build without it
+  # runs without a tray icon instead of failing.
+  tray_manager:
+    path: ../third_party/tray_manager
+
+dev_dependencies:
   drift_dev: ^2.28.0
   build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
@@ -212,6 +218,7 @@ flutter:
     - assets/l10n/
     - assets/sound/
     - assets/images/app_icon/
+    - assets/images/tray/
     - assets/images/effects/particles/
     - assets/images/placeholders/
     - assets/images/placeholders/photos/

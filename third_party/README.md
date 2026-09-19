@@ -7,6 +7,7 @@ back to their origin; we change them here.
 |-----------|--------|-----|
 | `livekit-client-sdk-flutter` | https://github.com/commetchat/livekit-client-sdk-flutter (branch `hkdf`) | `19f6b86d7a391876aceabf8ef3e117d399c23899` (2026-05-23) |
 | `flutter-webrtc` | https://github.com/flutter-webrtc/flutter-webrtc (tag `1.6.2+hotfix.2`) | `d77879b` (2026-09) |
+| `tray_manager` | https://pub.dev/packages/tray_manager | `0.5.3` (2026-09) |
 
 `example/`, `test/`, `testfiles/`, `.github/` and git metadata were dropped
 from the copies. Local changes are marked with `// COMMET:` comments in Dart
@@ -32,3 +33,11 @@ the publication and renegotiates, backup codec state is cleared on unpublish
 and before a full-reconnect republish, and the degradation preference is
 applied to backup senders too. Marked `// COMMET` in
 `lib/src/participant/local.dart` and `lib/src/track/local/video.dart`.
+
+`tray_manager` shows the system tray icon (voice status: idle, live, muted).
+The `// COMMET` change makes the Linux appindicator optional: without
+`libayatana-appindicator3-dev` (or `libappindicator3-dev`) at build time the
+plugin still builds, answers every call with "not implemented", and the app
+runs without a tray icon, instead of the build failing (the Flatpak runtime
+has no appindicator). Marked in `linux/CMakeLists.txt` and
+`linux/tray_manager_plugin.cc`.

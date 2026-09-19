@@ -5,6 +5,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet/utils/voice_tray.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -49,6 +50,8 @@ class WindowManagement {
     }
 
     await closeClients();
+    // Windows keeps a dead tray icon around until the pointer crosses it.
+    await VoiceTray.instance.dispose();
 
     try {
       await windowManager.destroy();
@@ -91,6 +94,10 @@ class WindowManagement {
       windowManager.show();
       windowManager.focus();
     }
+
+    VoiceTray.instance.init().catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Could not set up the tray icon");
+    });
   }
 
   static bool _onKeyEvent(KeyEvent event) {
