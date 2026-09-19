@@ -1982,24 +1982,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptPickDonationAccount": "Choisissez le compte avec lequel vous souhaitez faire un don",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "Faire un don sans le lier à un compte",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "Faire un don",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
     "promptDonationsRefreshAwards": "Rafraîchir les récompenses",
     "@promptDonationsRefreshAwards": {
         "description": "Prompt the user to refresh any awards they may have received for donating to the project",

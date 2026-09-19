@@ -564,24 +564,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptPickDonationAccount": "Pick an account to donate with",
-  "@promptPickDonationAccount": {
-    "description": "Prompt the user to select an account to link to their donation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelDonateAnonymously": "Donate without linking to an account",
-  "@labelDonateAnonymously": {
-    "description": "Prompt the user to donate to the project, without linking to their user account",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptDonate": "Donate",
-  "@promptDonate": {
-    "description": "Prompt the user to donate to the project",
-    "type": "text",
-    "placeholders": {}
-  },
   "promptDonationsRefreshAwards": "Refresh Awards",
   "@promptDonationsRefreshAwards": {
     "description": "Prompt the user to refresh any awards they may have received for donating to the project",

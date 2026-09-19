@@ -1,4 +1,5 @@
 import 'package:commet/ui/organisms/particle_player/particle_system_confetti.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:starfield/renderer/particle_system_renderer.dart';
@@ -65,7 +66,8 @@ class _UpdateInstalledDialogState extends State<UpdateInstalledDialog> {
                                   mainAxisSize: MainAxisSize.min,
                                   spacing: 8,
                                   children: [
-                                    tiamat.Text("Close"),
+                                    tiamat.Text(
+                                        CommonStrings.promptPoliteNo),
                                   ],
                                 ),
                               ),

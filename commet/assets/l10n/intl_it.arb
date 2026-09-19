@@ -557,24 +557,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptPickDonationAccount": "Scegli un account da cui donare",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "Dona senza associare un account",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "Dona",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
     "promptDonationsRefreshAwards": "Ricarica Premi",
     "@promptDonationsRefreshAwards": {
         "description": "Prompt the user to refresh any awards they may have received for donating to the project",

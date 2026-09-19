@@ -1910,24 +1910,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptPickDonationAccount": "選擇一個帳號用於贊助",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "贊助但不登入帳號",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "贊助",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
     "promptDonationsRefreshAwards": "重新整理獎勵狀態",
     "@promptDonationsRefreshAwards": {
         "description": "Prompt the user to refresh any awards they may have received for donating to the project",
