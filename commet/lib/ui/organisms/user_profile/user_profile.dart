@@ -529,10 +529,10 @@ class _UserProfileState extends State<UserProfile> {
       desc:
           "label for the ui to select which badges to display on the users profile");
 
-  String get labelProfileNoBadges => Intl.message(
-      "You don't have any badges available.",
-      name: "labelProfileNoBadges",
-      desc: "Text shown when the user has no badges available");
+  String get labelProfileNoBadges =>
+      Intl.message("You don't have any badges available.",
+          name: "labelProfileNoBadges",
+          desc: "Text shown when the user has no badges available");
 
   Future<void> editBadges() async {
     var availableBadges = await component.getAvailableBadges();

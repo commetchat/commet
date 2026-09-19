@@ -10,7 +10,8 @@ typedef int(__stdcall *rust_entry)();
 // COMMET: spawns the widget runner in-process instead of a second window. The
 // library and symbol names are pinned to the Rust crate `rust_lib_commet` and
 // its exported `commet_widget_runner`; they are identifiers, not branding, and
-// are left alone deliberately. There is a Linux twin in commet/linux/main.cc.
+// are left alone deliberately. The Linux twin is in
+// commet/linux/widget_runner.h and is invoked from commet/linux/main.cc.
 int widgetRunnerEntry(std::vector<std::string> args)
 {
   HINSTANCE hGetProcIDDLL = LoadLibrary(L"rust_lib_commet.dll");

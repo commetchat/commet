@@ -66,8 +66,7 @@ class _UpdateInstalledDialogState extends State<UpdateInstalledDialog> {
                                   mainAxisSize: MainAxisSize.min,
                                   spacing: 8,
                                   children: [
-                                    tiamat.Text(
-                                        CommonStrings.promptPoliteNo),
+                                    tiamat.Text(CommonStrings.promptPoliteNo),
                                   ],
                                 ),
                               ),
