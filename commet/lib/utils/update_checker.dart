@@ -127,7 +127,17 @@ class UpdateChecker {
 
     if (match == null) return null;
 
-    return match.group(1)!.split(".").map(int.parse).toList();
+    var version = <int>[];
+
+    // COMMET: Preserve the documented null contract for components outside
+    // Dart's integer range instead of allowing int.parse to throw.
+    for (var component in match.group(1)!.split(".")) {
+      var value = int.tryParse(component);
+      if (value == null) return null;
+      version.add(value);
+    }
+
+    return version;
   }
 
   static bool get shouldCheckForUpdates {

@@ -27,6 +27,10 @@ void main() {
       expect(UpdateChecker.parseVersion("development"), isNull);
       expect(UpdateChecker.parseVersion(""), isNull);
     });
+
+    test('returns null when a numeric component is too large', () {
+      expect(UpdateChecker.parseVersion("v9223372036854775808.0.0"), isNull);
+    });
   });
 
   group('isNewer', () {
