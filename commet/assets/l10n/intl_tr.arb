@@ -371,7 +371,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nCommet'in bu sürümü Google Play Hizmetleri olmadan oluşturuldu. Bildirim alabilmek için [Unified Push](https://unifiedpush.org/) kullanmanız gerekecektir.\n\nHalihazırda Unified Push uyumlu bir dağıtıcı uygulama yüklüyse, aşağıdan yapılandırabilirsiniz.\n",
+    "unifiedPushExplainer": "# Unified Push\nroscord bu sürümü Google Play Hizmetleri olmadan oluşturuldu. Bildirim alabilmek için [Unified Push](https://unifiedpush.org/) kullanmanız gerekecektir.\n\nHalihazırda Unified Push uyumlu bir dağıtıcı uygulama yüklüyse, aşağıdan yapılandırabilirsiniz.\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

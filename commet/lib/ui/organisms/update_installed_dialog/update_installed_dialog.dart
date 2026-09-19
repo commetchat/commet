@@ -1,5 +1,4 @@
 import 'package:commet/ui/organisms/particle_player/particle_system_confetti.dart';
-import 'package:commet/ui/pages/settings/desktop_settings_page.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,8 +6,7 @@ import 'package:starfield/renderer/particle_system_renderer.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UpdateInstalledDialog extends StatefulWidget {
-  const UpdateInstalledDialog({super.key, this.onDonateTapped});
-  final Function()? onDonateTapped;
+  const UpdateInstalledDialog({super.key});
   @override
   State<UpdateInstalledDialog> createState() => _UpdateInstalledDialogState();
 }
@@ -17,7 +15,7 @@ class _UpdateInstalledDialogState extends State<UpdateInstalledDialog> {
   MessageEffectConfetti? confetti;
 
   String get updateInstalledContent => Intl.message(
-      "Thank you for updating! Please consider donating to support the project so we can continue to deliver great updates!",
+      "Thank you for updating! You are now running the latest version.",
       desc:
           "Content for the dialog which is shown when an update has been installed",
       name: "updateInstalledContent");
@@ -53,34 +51,6 @@ class _UpdateInstalledDialogState extends State<UpdateInstalledDialog> {
                     spacing: 12,
                     children: [
                       tiamat.Text.label(updateInstalledContent),
-                      Material(
-                          clipBehavior: Clip.antiAlias,
-                          color: ColorScheme.of(context).surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-
-                              widget.onDonateTapped?.call();
-                            },
-                            child: SizedBox(
-                              height: 60,
-                              child: Center(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  spacing: 8,
-                                  children: [
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.redAccent,
-                                    ),
-                                    tiamat.Text.label(
-                                        DesktopSettingsPageState.promptDonate),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )),
                       Material(
                           clipBehavior: Clip.antiAlias,
                           color: ColorScheme.of(context).surfaceContainerLow,

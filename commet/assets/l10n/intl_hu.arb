@@ -371,7 +371,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nA Commet ezen verziója Google Play szervízek nélkül lett csinálva. Ahhoz, hogy értesítéseket kapj, [Unified Push](https://unifiedpush.org/)-ot kell használnod.\n\nHa már van egy Unified Push kompatibilis forgalmazó alkalmazásod, lentebb beállíthatod.\n",
+    "unifiedPushExplainer": "# Unified Push\nA roscord ezen verziója Google Play szervízek nélkül lett csinálva. Ahhoz, hogy értesítéseket kapj, [Unified Push](https://unifiedpush.org/)-ot kell használnod.\n\nHa már van egy Unified Push kompatibilis forgalmazó alkalmazásod, lentebb beállíthatod.\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

@@ -258,10 +258,10 @@ flutter:
   generate: true
 
 msix_config: 
-  display_name: Commet
+  display_name: roscord
   identity_name: chat.commet.app.windows-a33bc9ba
   msix_version: 1.0.4.0
   toast_activator: 
     clsid: 7685C041-9D17-4112-8FC4-386743A3D53E
     arguments: -ToastActivated
-    display_name: Commet
+    display_name: roscord

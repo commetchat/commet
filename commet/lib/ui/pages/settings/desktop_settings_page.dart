@@ -1,28 +1,16 @@
-import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
-import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
-import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DesktopSettingsPage extends StatefulWidget {
-  const DesktopSettingsPage(
-      {required this.settings,
-      this.buttons,
-      this.onDonateButtonTapped,
-      this.showDonateButton = false,
-      super.key});
+  const DesktopSettingsPage({required this.settings, this.buttons, super.key});
   final List<SettingsCategory> settings;
   final List<SettingsButton>? buttons;
-  final bool showDonateButton;
-  final Function(BuildContext context)? onDonateButtonTapped;
   @override
   State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
 }
@@ -155,82 +143,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                   ),
                 ),
               ),
-              if (widget.showDonateButton)
-                buildDonateButton(context,
-                    onTap: () => widget.onDonateButtonTapped?.call(context))
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  static String get promptDonate => Intl.message("Donate",
-      name: "promptDonate", desc: "Prompt the user to donate to the project");
-
-  static String get promptDonationsRefreshAwards => Intl.message(
-      "Refresh Awards",
-      name: "promptDonationsRefreshAwards",
-      desc:
-          "Prompt the user to refresh any awards they may have received for donating to the project");
-
-  static Widget buildDonateButton(BuildContext context, {Function()? onTap}) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
-      child: AdaptiveContextMenu(
-        items: [
-          ContextMenuItem(
-              text: promptDonationsRefreshAwards,
-              icon: m.Icons.refresh,
-              onPressed: () async {
-                var client = await AdaptiveDialog.pickClient(context);
-
-                if (client != null) {
-                  var identifier = await client
-                      .getComponent<DonationAwardsComponent>()
-                      ?.getClientSecret();
-                  if (identifier != null) {
-                    AdaptiveDialog.show(
-                      context,
-                      builder: (context) {
-                        return DonationRewardsConfirmation(
-                          client: client,
-                          identifier: identifier,
-                          didOpenDonationWindow: false,
-                          since: null,
-                        );
-                      },
-                    );
-                  }
-                }
-              }),
-        ],
-        child: m.Material(
-          clipBehavior: Clip.antiAlias,
-          color: m.ColorScheme.of(context).surfaceContainerLow,
-          borderRadius: BorderRadius.circular(8),
-          child: m.InkWell(
-            onTap: onTap,
-            child: SizedBox(
-              width: double.infinity,
-              child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: m.Icon(
-                          m.Icons.favorite,
-                          color: m.ColorScheme.of(context).onSurfaceVariant,
-                        ),
-                      ),
-                      tiamat.Text(
-                        promptDonate,
-                        color: m.ColorScheme.of(context).onSurface,
-                      ),
-                    ],
-                  )),
-            ),
           ),
         ),
       ),

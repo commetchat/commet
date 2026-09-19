@@ -94,7 +94,7 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
     var scriptText = Utf8Decoder().convert(scriptBytes);
 
     text =
-        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+        text.replaceAll("\$RUNNER_PAGE_TITLE", "roscord Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", editedUrl.toString());
 

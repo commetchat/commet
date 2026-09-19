@@ -1205,7 +1205,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nЭта версия Commet собрана без поддержки служб Google Play. Получение пуш-уведомлений возможно посредством [Unified Push](https://unifiedpush.org/).\n\nЕсли у вас уже установлено приложение распределения уведомлений, совместимое с Unified Push, выполнить настройку можно ниже\n",
+    "unifiedPushExplainer": "# Unified Push\nЭта версия roscord собрана без поддержки служб Google Play. Получение пуш-уведомлений возможно посредством [Unified Push](https://unifiedpush.org/).\n\nЕсли у вас уже установлено приложение распределения уведомлений, совместимое с Unified Push, выполнить настройку можно ниже\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1847,12 +1847,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "У вас нет бейджей. Вы можете получить бейджи, поддержав разработку Commet",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "incomingCallMessage": "Входящий вызов: {callingUserName}!",
     "@incomingCallMessage": {
         "description": "Label to display that a user is calling",
@@ -1940,63 +1934,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "Подтверждаем поддержку",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationInstructions": "Следуйте инструкциям в вашем браузере. Пожалуйста, будьте терпеливы, на выдачу наград после получения поддержки может уйти несколько минут.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "Спасибо за вашу щедрую поддержку!",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "Не удалось обработать транзакцию :( Поддержите разработку Commet своим донатом!",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "Вы уверены что хотите отменить это действие, не получив наград?",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "Без аккаунта",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptPickDonationAccount": "Выберите аккаунт для поддержки",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "Поддержать без привязки к аккаунту",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "Поддержать",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "Обновить награды",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },
@@ -2377,7 +2317,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Доступна новая версия Commet: {version}",
+    "descriptionUpdateAvailable": "Доступна новая версия roscord: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

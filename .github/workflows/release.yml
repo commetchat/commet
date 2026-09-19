@@ -45,7 +45,7 @@ jobs:
           dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }}
 
       - name: Archive 
-        run: tar -a -c -f commet-windows.zip -C .\commet\build\windows\x64\runner\ Release
+        run: tar -a -c -f roscord-windows.zip -C .\commet\build\windows\x64\runner\ Release
       
       - name: Upload to release
         if: github.event_name == 'release'
@@ -54,16 +54,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: .\commet-windows.zip
-          asset_name: commet-windows.zip
+          asset_path: .\roscord-windows.zip
+          asset_name: roscord-windows.zip
           asset_content_type: application/zip
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: commet-windows.zip
-          path: .\commet-windows.zip
+          name: roscord-windows.zip
+          path: .\roscord-windows.zip
 
 
   release-android:
@@ -140,14 +140,14 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: commet/build/app/outputs/flutter-apk/app-release.apk
-          asset_name: commet-android.apk
+          asset_name: roscord-android.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: commet-android.apk
+          name: roscord-android.apk
           path: commet/build/app/outputs/flutter-apk/app-release.apk
 
   release-android-google-services:
@@ -226,7 +226,7 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: commet/build/app/outputs/flutter-apk/app-release.apk
-          asset_name: commet-android-google-services.apk
+          asset_name: roscord-android-google-services.apk
           asset_content_type: application/vnd.android.package-archive
 
 
@@ -234,7 +234,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: commet-android-google-services.apk
+          name: roscord-android-google-services.apk
           path: commet/build/app/outputs/flutter-apk/app-release.apk
 
   release-linux-debian:
@@ -307,7 +307,7 @@ jobs:
           echo $version
           cd ./commet-pkg
           sed -i "s/{{VERSION_TAG}}/$version/g" ./DEBIAN/control
-          dpkg-deb --build ./ commet-linux-x64.deb
+          dpkg-deb --build ./ roscord-linux-x64.deb
       
       - name: Upload to release
         if: github.event_name == 'release'
@@ -316,16 +316,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: commet-pkg/commet-linux-x64.deb
-          asset_name: commet-${{ matrix.os }}-x64.deb
+          asset_path: commet-pkg/roscord-linux-x64.deb
+          asset_name: roscord-${{ matrix.os }}-x64.deb
           asset_content_type: application/vnd.debian.binary-package
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: commet-${{ matrix.os }}-x64.deb
-          path: commet-pkg/commet-linux-x64.deb
+          name: roscord-${{ matrix.os }}-x64.deb
+          path: commet-pkg/roscord-linux-x64.deb
 
   release-linux-flatpak:
     runs-on: blacksmith-4vcpu-ubuntu-2404
@@ -476,7 +476,7 @@ jobs:
       - name: Create archive
         run: |
           cd $PROJECT_PATH/build/linux/x64/release
-          tar -czf commet-linux-portable-x64.tar.gz bundle
+          tar -czf roscord-linux-portable-x64.tar.gz bundle
       
       - name: Upload to release
         if: github.event_name == 'release'
@@ -485,16 +485,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: commet/build/linux/x64/release/commet-linux-portable-x64.tar.gz
-          asset_name: commet-linux-portable-x64.tar.gz
+          asset_path: commet/build/linux/x64/release/roscord-linux-portable-x64.tar.gz
+          asset_name: roscord-linux-portable-x64.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: commet-linux-portable-x64.tar.gz
-          path: commet/build/linux/x64/release/commet-linux-portable-x64.tar.gz
+          name: roscord-linux-portable-x64.tar.gz
+          path: commet/build/linux/x64/release/roscord-linux-portable-x64.tar.gz
 
 
   release-web:
@@ -537,7 +537,7 @@ jobs:
       - name: Create archive
         run: |
           cd $PROJECT_PATH/build
-          tar -czf commet-web.tar.gz web
+          tar -czf roscord-web.tar.gz web
       
       - name: Upload to release
         if: github.event_name == 'release'
@@ -546,13 +546,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: commet/build/commet-web.tar.gz
-          asset_name: commet-web.tar.gz
+          asset_path: commet/build/roscord-web.tar.gz
+          asset_name: roscord-web.tar.gz
           asset_content_type: application/gzip
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: commet-web.tar.gz
-          path: commet/build/commet-web.tar.gz
+          name: roscord-web.tar.gz
+          path: commet/build/roscord-web.tar.gz

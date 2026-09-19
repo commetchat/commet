@@ -768,7 +768,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nDiese Version von Commet verwendet keine Google-Play-Services. Um Push-Benachrichtignungen zu erhalten, muss [Unified Push](https://unifiedpush.org/) verwendet werden.\n\nWenn bereits eine Unified-Push-Distributor-App installiert ist, kann sie unten konfiguriert werden.\n",
+    "unifiedPushExplainer": "# Unified Push\nDiese Version von roscord verwendet keine Google-Play-Services. Um Push-Benachrichtignungen zu erhalten, muss [Unified Push](https://unifiedpush.org/) verwendet werden.\n\nWenn bereits eine Unified-Push-Distributor-App installiert ist, kann sie unten konfiguriert werden.\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",

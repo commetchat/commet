@@ -396,7 +396,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nCommeten bertsio honek ez du Google Play Services erabiltzen. Push jakinarazpenak jasotzeko, [Unified Push](https://unifiedpush.org/) erabili beharko duzu.\n\nUnified Push-ekin bateragarria den banaketa aplikazio bat instalatuta baduzu, hemen konfigura dezakezu\n",
+    "unifiedPushExplainer": "# Unified Push\nroscorden bertsio honek ez du Google Play Services erabiltzen. Push jakinarazpenak jasotzeko, [Unified Push](https://unifiedpush.org/) erabili beharko duzu.\n\nUnified Push-ekin bateragarria den banaketa aplikazio bat instalatuta baduzu, hemen konfigura dezakezu\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1796,45 +1796,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "Donazioa egiaztatzen",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationInstructions": "Jarraitu nabigatzaileko argibideak. Ez izan presarik, pare bat minutu beharko dira donazioa jaso denetik sariak ikusgai egon arte.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "Eskerrik asko donazio eskuzabalagatik!",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "Ziur baztertu nahi duzula saririk onartu gabe?",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "Konturik ez",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptPickDonationAccount": "Hautatu zein konturekin egin donazioa",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "Freskatu sariak",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },
@@ -2127,12 +2091,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Ez duzu entseinarik. Entseinak donazioak egiten eta Commet-en garapenari babesa ematen lor ditzakezu",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelSpaceVisibilityRestricted": "Mugatutako gunea",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
@@ -2198,24 +2156,6 @@
     "roomVisibilityRestrictedExplanation": "Gela hau erabilgarri egongo da gune nagusiko kide den edonorentzat",
     "@roomVisibilityRestrictedExplanation": {
         "description": "Explains what 'restricted' visibility means",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "Ezin izan da donaziorik aurkitu :( Kontuan hartu Commet-en garapena babesteko donazioa egitea!",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "Egin dohaintza kontuarekin erlazionatu gabe",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "Egin dohaintza",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
         "type": "text",
         "placeholders": {}
     },
@@ -2324,7 +2264,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Commet-en bertsio berriagoa dago eskuragarri: {version}",
+    "descriptionUpdateAvailable": "roscord bertsio berriagoa dago eskuragarri: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

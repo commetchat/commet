@@ -7,6 +7,11 @@
 
 typedef int(__stdcall *rust_entry)();
 
+// COMMET: spawns the widget runner in-process instead of a second window. The
+// library and symbol names are pinned to the Rust crate `rust_lib_commet` and
+// its exported `commet_widget_runner`; they are identifiers, not branding, and
+// are left alone deliberately. The Linux twin is in
+// commet/linux/widget_runner.h and is invoked from commet/linux/main.cc.
 int widgetRunnerEntry(std::vector<std::string> args)
 {
   HINSTANCE hGetProcIDDLL = LoadLibrary(L"rust_lib_commet.dll");
@@ -45,6 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   std::vector<std::string> command_line_arguments =
       GetCommandLineArguments();
 
+  // COMMET: the --widget_runner branch and widgetRunnerEntry above are ours.
   for (const std::string &i : command_line_arguments)
   {
     int result = strcmp(i.c_str(), "--widget_runner");
@@ -66,7 +72,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"commet", origin, size))
+  // COMMET: window title shows the fork's name, not upstream's.
+  if (!window.Create(L"roscord", origin, size))
   {
     return EXIT_FAILURE;
   }

@@ -53,7 +53,7 @@ class Log {
     print: (self, parent, zone, line) {
       parent.print(zone, "($prefix) $line");
 
-      if (line.startsWith("[Commet")) {
+      if (line.startsWith("[roscord")) {
         return;
       }
 
@@ -132,7 +132,7 @@ class Log {
         break;
     }
 
-    return '[Commet (${Log.prefix})] $logsStr';
+    return '[roscord (${Log.prefix})] $logsStr';
   }
 
   static void _print(LogEntry entry) {

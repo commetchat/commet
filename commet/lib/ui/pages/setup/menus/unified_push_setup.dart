@@ -53,7 +53,7 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
 
   String get unifiedPushExplainer => Intl.message("""
 # Unified Push
-This version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). 
+This version of roscord was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). 
 
 If you already have a Unified Push compatible distributor app installed, you can configure it below
 """,

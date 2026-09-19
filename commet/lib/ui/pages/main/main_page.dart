@@ -3,7 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
@@ -19,8 +18,6 @@ import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/ui/organisms/update_installed_dialog/update_installed_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
-import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
-import 'package:commet/ui/pages/settings/settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/app_refresh/app_refresh.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -217,8 +214,6 @@ class MainPageState extends State<MainPage> {
     });
 
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
-
-    checkDonationFlow();
   }
 
   void onFirstFrame(Duration timeStamp) async {
@@ -243,9 +238,7 @@ class MainPageState extends State<MainPage> {
           context,
           title: updateInstalledTitle,
           builder: (buildContext) {
-            return UpdateInstalledDialog(
-              onDonateTapped: () => SettingsPage.onDonateButtonTapped(context),
-            );
+            return const UpdateInstalledDialog();
           },
         );
       }
@@ -504,33 +497,6 @@ class MainPageState extends State<MainPage> {
     var client = clientManager.getClient(clientId);
     if (client != null) {
       UserProfile.show(context, client: client, userId: userId);
-    }
-  }
-
-  void checkDonationFlow() async {
-    var donationCheck = preferences.runningDonationCheckFlow;
-    if (donationCheck != null) {
-      var client = clientManager.getClient(donationCheck.$1);
-
-      Log.i(
-        "Resuming donation flow for user: ${client?.self?.identifier}",
-      );
-
-      if (client != null) {
-        var secret = await client
-            .getComponent<DonationAwardsComponent>()
-            ?.getClientSecret();
-        if (secret != null) {
-          AdaptiveDialog.show(context,
-              builder: (context) => DonationRewardsConfirmation(
-                    client: client,
-                    identifier: secret,
-                    didOpenDonationWindow: true,
-                    since: donationCheck.$2,
-                  ),
-              dismissible: false);
-        }
-      }
     }
   }
 

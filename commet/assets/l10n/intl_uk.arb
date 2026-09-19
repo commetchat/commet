@@ -1105,7 +1105,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nЦя версія Commet зібрана без Google Play Services. Щоб отримувати push-сповіщення, вам необхідно використовувати [Unified Push](https://unifiedpush.org/). \n\nЯкщо ви вже маєте Unified Push застосунок, ви можете його налаштувати тут\n",
+    "unifiedPushExplainer": "# Unified Push\nЦя версія roscord зібрана без Google Play Services. Щоб отримувати push-сповіщення, вам необхідно використовувати [Unified Push](https://unifiedpush.org/). \n\nЯкщо ви вже маєте Unified Push застосунок, ви можете його налаштувати тут\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1853,12 +1853,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "У вас немає значків. Ви можете отримати їх, якщо зробите пожертву та підтримаєте розробку Commet",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelSpaceVisibilityRestricted": "Обмежений простір",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
@@ -1952,63 +1946,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "Підтвердження пожертви",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationInstructions": "Дотримуйтесь інструкцій у вашому браузері. Зачекайте, ваші нагороди з’являться через одну або дві хвилини після отримання вашої пожертви.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "Дякуємо за вашу щедру пожертву!",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "Не вдалося знайти жодних пожертв :( Підтримайте розробку Commet своїм внеском!",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "Упевнені, що хочете вийти, не отримавши жодної нагороди?",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "Немає облікового запису",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptPickDonationAccount": "Виберіть обліковий запис, щоб зробити пожертву",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "Зробити пожертву без прив’язки до облікового запису",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "Пожертва",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "Оновити нагороди",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },
@@ -2389,7 +2329,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Доступна нова версія Commet: {version}",
+    "descriptionUpdateAvailable": "Доступна нова версія roscord: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

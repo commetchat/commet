@@ -1061,7 +1061,7 @@
             "spaceName": {}
         }
     },
-    "unifiedPushExplainer": "# UnifiedPush\n此版本的 Commet 是在沒有 Google Play 服務的情況下建立的。為了接收推播通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。\n\n如果您已經安裝了相容於 Unified Push 的應用程式，可以在下面進行設置\n",
+    "unifiedPushExplainer": "# UnifiedPush\n此版本的 roscord 是在沒有 Google Play 服務的情況下建立的。為了接收推播通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。\n\n如果您已經安裝了相容於 Unified Push 的應用程式，可以在下面進行設置\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1775,12 +1775,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "您沒有任何徽章。贊助並支持 Commet 的開發即可獲得徽章",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelSpaceVisibilityRestricted": "受限空間",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
@@ -1858,18 +1852,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "titleConfirmingDonation": "贊助確認中",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationSucceeded": "非常感謝您的慷慨贊助！",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelTextChatDescription": "易於使用的文字聊天，卻有著您需要的所有功能！傳送訊息、媒體、貼圖、GIF、或更多！",
     "@labelTextChatDescription": {
         "type": "text",
@@ -1886,51 +1868,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationInstructions": "請跟隨您的瀏覽器中的指示操作。您的獎勵將於收到贊助款項後的一至二分鐘內送達，請稍待片刻。",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "無法找到任何贊助紀錄 :( 請考慮贊助支持 Commet 的開發！",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "您確定要退出並放棄接受任何獎勵嗎？",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "無帳號",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptPickDonationAccount": "選擇一個帳號用於贊助",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "贊助但不登入帳號",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "贊助",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "重新整理獎勵狀態",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },
@@ -2311,7 +2251,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "有新的 Commet 更新可供使用：{version}",
+    "descriptionUpdateAvailable": "有新的 roscord 更新可供使用：{version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",

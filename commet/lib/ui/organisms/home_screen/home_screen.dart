@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     if (preferences.checkForUpdates.value == true) {
-      UpdateChecker.checkForUpdates();
+      UpdateChecker.checkForUpdatesOncePerLaunch();
     }
 
     updateRecent();

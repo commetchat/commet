@@ -5,7 +5,6 @@ import 'package:commet/client/matrix/components/account_switch_prefix/matrix_acc
 import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/matrix/components/command_component/matrix_command_component.dart';
 import 'package:commet/client/matrix/components/direct_messages/matrix_direct_messages_component.dart';
-import 'package:commet/client/matrix/components/donation_awards_component/matrix_donation_awards.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
@@ -67,7 +66,6 @@ class ComponentRegistry {
       MatrixProfileComponent(client),
       MatrixUserColorComponent(client),
       MatrixPetNameComponent(client),
-      MatrixDonationAwardsComponent(client),
       MatrixKeyVerificationComponent(client),
       MatrixPollComponent(client),
       MatrixWidgetComponent(client),

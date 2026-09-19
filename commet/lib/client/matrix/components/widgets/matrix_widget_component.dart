@@ -323,7 +323,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     var scriptText = Utf8Decoder().convert(scriptBytes);
 
     text =
-        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+        text.replaceAll("\$RUNNER_PAGE_TITLE", "roscord Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
     text = text.replaceAll("\$WIDGET_ID", info.id);
@@ -373,7 +373,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     var scriptText = Utf8Decoder().convert(scriptBytes);
 
     text =
-        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+        text.replaceAll("\$RUNNER_PAGE_TITLE", "roscord Widget | ${info.name}");
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
 
@@ -427,7 +427,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     var exe = Platform.resolvedExecutable;
     var process = await Process.start(
       exe,
-      ['--widget_runner', '--title="commet | Widget Runner"', '--url=${url}'],
+      ['--widget_runner', '--title="roscord | Widget Runner"', '--url=${url}'],
     );
 
     var runner = MatrixUserWidgetSubprocessRunner(

@@ -298,7 +298,7 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   Text appName() {
     return const Text(
-      "Commet",
+      "roscord",
       style: TextStyle(fontFamily: 'Jellee', fontSize: 30),
     );
   }

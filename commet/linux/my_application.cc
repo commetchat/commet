@@ -24,9 +24,6 @@ static void my_application_activate(GApplication* application) {
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
-  
-  gtk_window_set_title(window, "commet");
-  
   const string iconFilename = "assets/images/app_icon/app_icon_rounded.png";
   path execDir = canonical(read_symlink("/proc/self/exe")).parent_path();
   path iconPath = execDir / "data/flutter_assets" / iconFilename;

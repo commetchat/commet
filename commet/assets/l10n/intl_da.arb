@@ -495,7 +495,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "#Unified Push\nDenne version af Commet var bygget uden Google Play Services. Hvis du vil modtage notifikationer skal du bruge Unified Push](https://unifiedpush.org/).\n\nhvis du allerede har Unified Push kompatibel distributør app installeret kan du konfigurere den herunder\n",
+    "unifiedPushExplainer": "#Unified Push\nDenne version af roscord var bygget uden Google Play Services. Hvis du vil modtage notifikationer skal du bruge Unified Push](https://unifiedpush.org/).\n\nhvis du allerede har Unified Push kompatibel distributør app installeret kan du konfigurere den herunder\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1019,12 +1019,6 @@
     "labelProfileYourBadges": "Dine emblemer",
     "@labelProfileYourBadges": {
         "description": "label for the ui to select which badges to display on the users profile",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelProfileNoBadges": "Du har ikke nogen emblemer. Du kan få emblemer ved at donere eller hjælpe med udviklingen af Commet",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
         "placeholders": {}
     },

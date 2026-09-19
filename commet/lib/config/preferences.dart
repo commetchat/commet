@@ -31,8 +31,6 @@ class Preferences {
 
   static const String _syncedCalendarUrls = "synced_calendar_urls";
 
-  static const String _runningDonationCheckFlow = "running_donation_check_flow";
-
   static const String _systemHotkey = "system_wide_hotkey";
 
   static final StreamController onSettingChangedController =
@@ -42,6 +40,9 @@ class Preferences {
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
+    // Remove the resumable donation-flow state left by older releases. The
+    // flow no longer exists, so retaining this value would orphan user data.
+    await _preferences!.remove("running_donation_check_flow");
     Preference.preferences = _preferences;
     isInit = true;
   }
@@ -177,40 +178,6 @@ class Preferences {
   Future<void> setCalendarSources(String roomId, Map<String, dynamic> sources) {
     return _preferences!
         .setString(_syncedCalendarUrls + ".${roomId}", jsonEncode(sources));
-  }
-
-  (String, DateTime)? get runningDonationCheckFlow {
-    var result = _preferences!.getString(_runningDonationCheckFlow);
-
-    if (result != null) {
-      var data = jsonDecode(result);
-      var user = data["user"] as String;
-      var timestamp = data["time"] as int;
-
-      var time = DateTime.fromMillisecondsSinceEpoch(timestamp);
-
-      return (user, time);
-    }
-
-    return null;
-  }
-
-  Future<void> setRunningDonationCheckFlow(
-      String value, DateTime timestamp) async {
-    _preferences!.setString(
-        _runningDonationCheckFlow,
-        jsonEncode({
-          "user": value,
-          "time": timestamp.millisecondsSinceEpoch,
-        }));
-
-    onSettingChangedController.add(null);
-  }
-
-  Future<void> clearRunningDonationCheckFlow() async {
-    _preferences!.remove(_runningDonationCheckFlow);
-
-    onSettingChangedController.add(null);
   }
 
   String getHotkeyId(String name) {
@@ -410,6 +377,7 @@ class Preferences {
       BoolPreference("enable_tenor_gif_search", defaultValue: false);
 
   //Workaround for: https://github.com/commetchat/commet/issues/202
+  // COMMET: upstream issue reference retained; the workaround is ours to keep.
   BoolPreference stickerCompatibilityMode =
       BoolPreference("sticker_compatibility_mode", defaultValue: true);
 

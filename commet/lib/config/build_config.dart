@@ -51,11 +51,9 @@ class BuildConfig {
 
   static const bool SUPPORTS_CACHE = !WEB;
 
-  static const String app = "Commet";
+  static const String app = "roscord";
 
   static const String appSchema = "chat.commet";
-
-  static Uri donationRewardsApiHost = Uri.https("stripe-rewards.commet.chat");
 
   static const String _BUILD_DATE =
       String.fromEnvironment('BUILD_DATE', defaultValue: "0");

@@ -763,7 +763,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nEsta versión de Commet se ha creado sin los Servicios de Google Play. Para recibir notificaciones push, tendrás que utilizar [Unified Push](https://unifiedpush.org/). \n\nSi ya tienes instalada una aplicación distribuidora compatible con Unified Push, puedes configurarla a continuación\n",
+    "unifiedPushExplainer": "# Unified Push\nEsta versión de roscord se ha creado sin los Servicios de Google Play. Para recibir notificaciones push, tendrás que utilizar [Unified Push](https://unifiedpush.org/). \n\nSi ya tienes instalada una aplicación distribuidora compatible con Unified Push, puedes configurarla a continuación\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -1790,12 +1790,6 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "No tienes ninguna insignia. Puedes obtener insignias al realizar una donación y apoyar el desarrollo de Commet",
-    "@labelProfileNoBadges": {
-        "description": "text that is shown when the user has no badges, and explain where they can get badges",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelSpaceVisibilityRestricted": "Espacio restringido",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
@@ -1863,18 +1857,6 @@
     "messageInvalidUsernameOrPassword": "Usuario o contraseña incorrectos",
     "@messageInvalidUsernameOrPassword": {
         "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
-        "type": "text",
-        "placeholders": {}
-    },
-    "titleConfirmingDonation": "Confirmar Donación",
-    "@titleConfirmingDonation": {
-        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationInstructions": "Sigue las instrucciones en tu navegador. Por favor, ten paciencia; puede llevar uno o dos minutos para que se muestren tus recompensas una vez que tu donación haya sido recibida.",
-    "@labelDonationInstructions": {
-        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
         "type": "text",
         "placeholders": {}
     },
@@ -1970,51 +1952,9 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationSucceeded": "¡Gracias por tu donación generosa!",
-    "@labelDonationConfirmationSucceeded": {
-        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonationConfirmationFailed": "No pudo encontrar ninguna donación :( Considere donar para mantener el desarrollo de Commet!",
-    "@labelDonationConfirmationFailed": {
-        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelConfirmCancelDonationConfirmation": "¿Está seguro que desea despedirlo sin aceptar ningún premio?",
-    "@labelConfirmCancelDonationConfirmation": {
-        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
-        "type": "text",
-        "placeholders": {}
-    },
     "labelNoAccount": "Sin Cuenta",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptPickDonationAccount": "Toma una cuenta con la que donar",
-    "@promptPickDonationAccount": {
-        "description": "Prompt the user to select an account to link to their donation",
-        "type": "text",
-        "placeholders": {}
-    },
-    "labelDonateAnonymously": "Donar sin enlazar a una cuenta",
-    "@labelDonateAnonymously": {
-        "description": "Prompt the user to donate to the project, without linking to their user account",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonate": "Donar",
-    "@promptDonate": {
-        "description": "Prompt the user to donate to the project",
-        "type": "text",
-        "placeholders": {}
-    },
-    "promptDonationsRefreshAwards": "Refrescar Premios",
-    "@promptDonationsRefreshAwards": {
-        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
         "placeholders": {}
     },
@@ -2395,7 +2335,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "Hay una versión nueva de Commet disponible: {version}",
+    "descriptionUpdateAvailable": "Hay una versión nueva de roscord disponible: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",
