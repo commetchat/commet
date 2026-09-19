@@ -68,7 +68,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 # ---------------------------------------------------------------------------
-# System-audio (loopback) capture: PulseAudio simple API.
+# System-audio (loopback) capture: PulseAudio async API (threaded mainloop,
+# one monitor stream per application; COMMET: so our own playback is left out).
 # Guarded so a host without libpulse dev headers still builds the plugin; in
 # that case pulse_loopback_capturer.cc compiles to nothing and the factory
 # returns nullptr (getDisplayMedia audio degrades to no track), matching the
@@ -78,7 +79,7 @@ endif()
 # ---------------------------------------------------------------------------
 find_package(PkgConfig)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PULSE IMPORTED_TARGET libpulse libpulse-simple)
+  pkg_check_modules(PULSE IMPORTED_TARGET libpulse)
 endif()
 if(TARGET PkgConfig::PULSE)
   message(STATUS "flutter_webrtc: libpulse found -- enabling Linux system-audio loopback capture.")

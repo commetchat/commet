@@ -27,6 +27,7 @@ class UrlPreviewWidget extends StatefulWidget {
     this.onOpenVideo,
     this.provider,
     this.supportsOfficialEmbeds,
+    this.canPlayYouTubeNatively,
   });
 
   final UrlPreviewData? data;
@@ -36,6 +37,9 @@ class UrlPreviewWidget extends StatefulWidget {
 
   /// Overrides [VideoPlaybackDialog.supportsOfficialEmbeds], for tests.
   final bool? supportsOfficialEmbeds;
+
+  /// Overrides [VideoPlaybackDialog.canPlayYouTubeNatively], for tests.
+  final bool? canPlayYouTubeNatively;
 
   @override
   State<UrlPreviewWidget> createState() => _UrlPreviewWidgetState();
@@ -71,6 +75,10 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
       widget.supportsOfficialEmbeds ??
       VideoPlaybackDialog.supportsOfficialEmbeds;
 
+  bool get canPlayYouTubeNatively =>
+      widget.canPlayYouTubeNatively ??
+      VideoPlaybackDialog.canPlayYouTubeNatively;
+
   // Not provider.canHandle: providers claim links that may not hold a video
   // (X posts with only text or photos), so trust what the preview resolved.
   bool get isVideo =>
@@ -87,7 +95,16 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
     try {
       final uri = widget.data?.uri;
       if (uri != null) {
-        final resolved = await _resolvePlayback(uri);
+        var resolved = await _resolvePlayback(uri);
+        // No web view for YouTube's own player, but mpv can play the page
+        // through yt-dlp.
+        if (resolved?.playbackSource
+            case OfficialVideoEmbedSource(
+              provider: OfficialVideoProvider.youtube
+            ) when !supportsOfficialEmbeds && canPlayYouTubeNatively) {
+          resolved = resolved!.copyWith(
+              playbackSource: NativeVideoSource(resolved.originalUrl));
+        }
         // Nothing here can play it: either no provider knows the link (an
         // og:video that is an HTML player page), or there is no web view to
         // host the provider's player (issue #19). Hand it to the browser.

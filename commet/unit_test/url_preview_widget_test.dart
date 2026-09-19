@@ -132,28 +132,39 @@ void main() {
   group('play falls back to the browser', () {
     final uri = Uri.parse('https://www.youtube.com/watch?v=ettaeKZHAwA');
 
-    Future<({List<bool> videoOpens, List<int> linkOpens})> tapPlay(
+    Future<
+        ({
+          List<bool> videoOpens,
+          List<int> linkOpens,
+          List<VideoEmbedInfo> videos
+        })> tapPlay(
       WidgetTester tester, {
       required UrlPreviewData preview,
       required CompositeVideoProvider provider,
       required bool supportsOfficialEmbeds,
+      bool canPlayYouTubeNatively = false,
     }) async {
       final videoOpens = <bool>[];
       final linkOpens = <int>[];
+      final videos = <VideoEmbedInfo>[];
       await tester.pumpWidget(
         _testApp(
           UrlPreviewWidget(
             preview,
             provider: provider,
             supportsOfficialEmbeds: supportsOfficialEmbeds,
-            onOpenVideo: (_, __, autoplay) async => videoOpens.add(autoplay),
+            canPlayYouTubeNatively: canPlayYouTubeNatively,
+            onOpenVideo: (_, video, autoplay) async {
+              videoOpens.add(autoplay);
+              videos.add(video);
+            },
             onOpenLink: () => linkOpens.add(1),
           ),
         ),
       );
       await tester.tap(find.byKey(const ValueKey('url-preview-play')));
       await tester.pump();
-      return (videoOpens: videoOpens, linkOpens: linkOpens);
+      return (videoOpens: videoOpens, linkOpens: linkOpens, videos: videos);
     }
 
     UrlPreviewData youtubePreview() => UrlPreviewData(
@@ -179,6 +190,39 @@ void main() {
 
       expect(result.videoOpens, isEmpty);
       expect(result.linkOpens, hasLength(1));
+    });
+
+    testWidgets(
+        'except that YouTube plays natively where yt-dlp can resolve it '
+        '(Linux)', (tester) async {
+      final result = await tapPlay(
+        tester,
+        preview: youtubePreview(),
+        provider: CompositeVideoProvider(providers: [_OfficialEmbedProvider()]),
+        supportsOfficialEmbeds: false,
+        canPlayYouTubeNatively: true,
+      );
+
+      expect(result.linkOpens, isEmpty);
+      expect(result.videoOpens, [true]);
+      final source = result.videos.single.playbackSource;
+      expect(source, isA<NativeVideoSource>());
+      // The page itself: mpv hands it to yt-dlp.
+      expect((source as NativeVideoSource).uri, uri);
+    });
+
+    testWidgets('a web view keeps the official player even with yt-dlp',
+        (tester) async {
+      final result = await tapPlay(
+        tester,
+        preview: youtubePreview(),
+        provider: CompositeVideoProvider(providers: [_OfficialEmbedProvider()]),
+        supportsOfficialEmbeds: true,
+        canPlayYouTubeNatively: true,
+      );
+
+      expect(
+          result.videos.single.playbackSource, isA<OfficialVideoEmbedSource>());
     });
 
     testWidgets('except where a web view can host the embed', (tester) async {

@@ -7,15 +7,15 @@
 // that give screen share its audio, run with no WebRTC source, handing each
 // packet straight to a Rust callback.
 //
-// On Windows the capturer excludes our own process (source id "0"), so
-// WebRTC playout is not counted twice; on Linux the default sink's monitor
-// includes it, which does no harm.
+// The capturers exclude our own process on both Windows (source id "0") and
+// Linux (see PulseLoopbackCapturer), so WebRTC playout is not counted twice.
 //
 // Lifetime: Stop() detaches the callback before it returns, under the same
 // lock the capture thread takes to call it, so the Rust handle may be freed
-// as soon as Stop() returns. Stopping the PulseAudio capturer can block
-// while the sink is suspended (see PulseLoopbackCapturer::Stop), so on Linux
-// that part is finished on a detached thread instead of the platform thread.
+// as soon as Stop() returns. On Linux the rest of the stop runs on a
+// detached thread: the PulseAudio capturer used to block there while the
+// sink was suspended, and tearing down its pulse connection is still best
+// kept off the platform thread.
 #ifndef COMMET_SYSTEM_AUDIO_REFERENCE_H_
 #define COMMET_SYSTEM_AUDIO_REFERENCE_H_
 

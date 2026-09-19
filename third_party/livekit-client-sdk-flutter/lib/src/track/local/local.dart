@@ -258,6 +258,12 @@ abstract class LocalTrack extends Track {
         if (options.selfBrowserSurface != null) {
           constraints['selfBrowserSurface'] = options.selfBrowserSurface!;
         }
+        // COMMET: leave our own tab out of the shared system audio. It plays
+        // everyone else in the call, who would otherwise hear themselves in
+        // the screen share. Browsers that don't know the constraint ignore it.
+        if (options.captureScreenAudio) {
+          constraints['audio'] = {'restrictOwnAudio': true};
+        }
 
         // Remove resolution settings to fix low-resolution screen share on Safari 17.
         // related bug: https://bugs.webkit.org/show_bug.cgi?id=263015

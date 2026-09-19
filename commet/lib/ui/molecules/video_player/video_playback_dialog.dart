@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show HttpServer, InternetAddress, ContentType, Platform;
+import 'dart:io' show File, HttpServer, InternetAddress, ContentType, Platform;
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/client/components/video_embed/video_embed_info.dart';
@@ -30,6 +30,26 @@ class VideoPlaybackDialog extends StatefulWidget {
   /// dialog. flutter_inappwebview has no Linux implementation, and the web
   /// build has no iframe path yet, so those open the link in the browser.
   static bool get supportsOfficialEmbeds => !kIsWeb && !Platform.isLinux;
+
+  /// Whether YouTube can play in the native player instead: mpv hands a
+  /// YouTube page to yt-dlp itself, when it is installed. This is the in-app
+  /// path on Linux, which has no web view for the official player.
+  static bool get canPlayYouTubeNatively =>
+      !kIsWeb && Platform.isLinux && _ytDlpInstalled;
+
+  /// Looked up once: installing yt-dlp takes a restart to be noticed.
+  static final bool _ytDlpInstalled = _onPath(const ["yt-dlp", "youtube-dl"]);
+
+  static bool _onPath(List<String> programs) {
+    final path = Platform.environment["PATH"] ?? "";
+    for (final dir in path.split(":")) {
+      if (dir.isEmpty) continue;
+      for (final program in programs) {
+        if (File("$dir/$program").existsSync()) return true;
+      }
+    }
+    return false;
+  }
 
   static Future<void> show(
     BuildContext context, {
