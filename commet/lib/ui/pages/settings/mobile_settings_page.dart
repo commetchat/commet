@@ -10,17 +10,10 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../navigation/navigation_utils.dart';
 
 class MobileSettingsPage extends StatefulWidget {
-  const MobileSettingsPage(
-      {required this.settings,
-      this.buttons,
-      this.onDonateButtonTapped,
-      this.showDonateButton = false,
-      super.key});
+  const MobileSettingsPage({required this.settings, this.buttons, super.key});
   final List<SettingsButton>? buttons;
   final List<SettingsCategory> settings;
-  final bool showDonateButton;
 
-  final Function(BuildContext context)? onDonateButtonTapped;
   @override
   State<MobileSettingsPage> createState() => _MobileSettingsPageState();
 }
@@ -122,9 +115,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                       )
                   ]),
                 ),
-                if (widget.showDonateButton)
-                  DesktopSettingsPageState.buildDonateButton(context,
-                      onTap: () => widget.onDonateButtonTapped?.call(context))
+                DesktopSettingsPageState.buildAwardsButton(context)
               ],
             ),
           ),

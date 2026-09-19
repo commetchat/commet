@@ -8,11 +8,11 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class FakeCalendarConfig extends MatrixCalendarConfig {
   @override
   Color getColorFromUser(String userId) {
-    if (userId == "@pluto:commet.chat") {
+    if (userId == "@pluto:example.com") {
       return const Color.fromARGB(255, 255, 168, 197);
     }
 
-    if (userId == "@luna:commet.chat") {
+    if (userId == "@luna:example.com") {
       return const Color.fromARGB(255, 82, 255, 255);
     }
 
@@ -21,11 +21,11 @@ class FakeCalendarConfig extends MatrixCalendarConfig {
 
   @override
   ImageProvider<Object>? getUserAvatar(String userId) {
-    if (userId == "@pluto:commet.chat") {
+    if (userId == "@pluto:example.com") {
       return AssetImage("assets/images/placeholders/avatar1.jpg");
     }
 
-    if (userId == "@luna:commet.chat") {
+    if (userId == "@luna:example.com") {
       return AssetImage("assets/images/placeholders/avatar2.jpg");
     }
 
@@ -34,11 +34,11 @@ class FakeCalendarConfig extends MatrixCalendarConfig {
 
   @override
   String? getUserDisplayname(String userId) {
-    if (userId == "@pluto:commet.chat") {
+    if (userId == "@pluto:example.com") {
       return "Pluto";
     }
 
-    if (userId == "@luna:commet.chat") {
+    if (userId == "@luna:example.com") {
       return "luna";
     }
 
@@ -84,7 +84,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             width: width,
                             height: 100,
                             text: "Movies",
-                            senderId: "@luna:commet.chat",
+                            senderId: "@luna:example.com",
                           ),
                           SizedBox(
                             height: 40,
@@ -94,7 +94,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             height: 100,
                             text: "Unavailable",
                             type: "unavailability",
-                            senderId: "@pluto:commet.chat",
+                            senderId: "@pluto:example.com",
                           ),
                           SizedBox(
                             height: 20,
@@ -103,7 +103,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             width: width,
                             height: 50,
                             text: "Dinner",
-                            senderId: "@pluto:commet.chat",
+                            senderId: "@pluto:example.com",
                           )
                         ],
                       ),
@@ -118,7 +118,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             height: 250,
                             type: "unavailability",
                             text: "Work",
-                            senderId: "@luna:commet.chat"),
+                            senderId: "@luna:example.com"),
                       ],
                     ),
                     Column(
@@ -131,7 +131,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             height: 150,
                             type: "unavailability",
                             text: "work",
-                            senderId: "@pluto:commet.chat"),
+                            senderId: "@pluto:example.com"),
                         SizedBox(
                           height: 40,
                         ),
@@ -139,7 +139,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             width: width,
                             height: 70,
                             text: "Gaminggg",
-                            senderId: "@pluto:commet.chat"),
+                            senderId: "@pluto:example.com"),
                       ],
                     ),
                     Column(
@@ -151,7 +151,7 @@ class CalendarCreatorDescription extends StatelessWidget {
                             width: width,
                             height: 100,
                             text: "Beach Night",
-                            senderId: "@luna:commet.chat"),
+                            senderId: "@luna:example.com"),
                       ],
                     ),
                   ],

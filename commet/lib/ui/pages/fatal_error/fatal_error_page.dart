@@ -80,7 +80,7 @@ ${trace.toString()}
 
   void onReportButtonPressed() async {
     var data = await getErrorData();
-    var uri = Uri.https("github.com", "/commetchat/commet/issues/new", {
+    var uri = Uri.https("github.com", "/PondLabs/roscord/issues/new", {
       "title": "Fatal error occurred on app startup",
       "body": data,
       "labels": "bug",

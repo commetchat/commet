@@ -410,6 +410,7 @@ class Preferences {
       BoolPreference("enable_tenor_gif_search", defaultValue: false);
 
   //Workaround for: https://github.com/commetchat/commet/issues/202
+  // COMMET: upstream issue reference retained; the workaround is ours to keep.
   BoolPreference stickerCompatibilityMode =
       BoolPreference("sticker_compatibility_mode", defaultValue: true);
 

@@ -123,7 +123,7 @@ class WindowManagement {
     final result = [
       _currentRoomName,
       _currentSpaceName,
-      "commet",
+      "roscord",
     ].whereNot((a) => a == null).join(" | ");
     windowManager.setTitle(result);
   }

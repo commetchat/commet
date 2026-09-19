@@ -13,16 +13,9 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DesktopSettingsPage extends StatefulWidget {
-  const DesktopSettingsPage(
-      {required this.settings,
-      this.buttons,
-      this.onDonateButtonTapped,
-      this.showDonateButton = false,
-      super.key});
+  const DesktopSettingsPage({required this.settings, this.buttons, super.key});
   final List<SettingsCategory> settings;
   final List<SettingsButton>? buttons;
-  final bool showDonateButton;
-  final Function(BuildContext context)? onDonateButtonTapped;
   @override
   State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
 }
@@ -155,9 +148,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                   ),
                 ),
               ),
-              if (widget.showDonateButton)
-                buildDonateButton(context,
-                    onTap: () => widget.onDonateButtonTapped?.call(context))
+              buildAwardsButton(context)
             ],
           ),
         ),
@@ -165,16 +156,16 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
     );
   }
 
-  static String get promptDonate => Intl.message("Donate",
-      name: "promptDonate", desc: "Prompt the user to donate to the project");
-
   static String get promptDonationsRefreshAwards => Intl.message(
       "Refresh Awards",
       name: "promptDonationsRefreshAwards",
       desc:
           "Prompt the user to refresh any awards they may have received for donating to the project");
 
-  static Widget buildDonateButton(BuildContext context, {Function()? onTap}) {
+  /// Awards control. This used to be the donate button; the donate action is
+  /// gone (there is no roscord donation surface), so what remains is the
+  /// entry point to refreshing the user's awards.
+  static Widget buildAwardsButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
       child: AdaptiveContextMenu(
@@ -209,28 +200,25 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
           clipBehavior: Clip.antiAlias,
           color: m.ColorScheme.of(context).surfaceContainerLow,
           borderRadius: BorderRadius.circular(8),
-          child: m.InkWell(
-            onTap: onTap,
-            child: SizedBox(
-              width: double.infinity,
-              child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: m.Icon(
-                          m.Icons.favorite,
-                          color: m.ColorScheme.of(context).onSurfaceVariant,
-                        ),
+          child: m.SizedBox(
+            width: double.infinity,
+            child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: m.Icon(
+                        m.Icons.workspace_premium,
+                        color: m.ColorScheme.of(context).onSurfaceVariant,
                       ),
-                      tiamat.Text(
-                        promptDonate,
-                        color: m.ColorScheme.of(context).onSurface,
-                      ),
-                    ],
-                  )),
-            ),
+                    ),
+                    tiamat.Text(
+                      promptDonationsRefreshAwards,
+                      color: m.ColorScheme.of(context).onSurface,
+                    ),
+                  ],
+                )),
           ),
         ),
       ),

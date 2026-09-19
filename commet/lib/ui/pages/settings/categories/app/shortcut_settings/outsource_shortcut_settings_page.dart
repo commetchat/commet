@@ -1,5 +1,4 @@
 import 'package:commet/ui/pages/settings/categories/app/shortcut_settings/keyboard_hook_shortcuts_settings_page.dart';
-import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -13,11 +12,6 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
         name: "labelSystemKeyboardShortcutsOutsourceDescription",
       );
 
-  String get promptSystemKeyboardShortcutsMoreInfo => Intl.message("More Info",
-      name: "promptSystemKeyboardShortcutsMoreInfo",
-      desc:
-          "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup");
-
   @override
   Widget build(BuildContext context) {
     return tiamat.Panel(
@@ -30,11 +24,6 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
           tiamat.Text(
             labelSystemKeyboardShortcutsOutsourceDescription,
           ),
-          tiamat.Button.secondary(
-            text: promptSystemKeyboardShortcutsMoreInfo,
-            onTap: () => LinkUtils.open(
-                Uri.parse("https://commet.chat/info/keyboard-shortcuts")),
-          )
         ],
       ),
     );
