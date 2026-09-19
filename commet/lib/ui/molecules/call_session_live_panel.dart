@@ -140,6 +140,7 @@ class _CallSessionLivePanelState extends State<CallSessionLivePanel> {
         );
       case VoipStreamType.video:
       case VoipStreamType.audio:
+      case VoipStreamType.music:
         return _StopControl(
           key: const ValueKey("live-stop-video"),
           tooltip: tooltipStopCamera,

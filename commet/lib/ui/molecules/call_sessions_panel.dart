@@ -118,7 +118,8 @@ class _CallSessionPanelState extends State<CallSessionPanel>
       .where((stream) =>
           stream.direction == VoipStreamDirection.outgoing &&
           stream.type != VoipStreamType.screenshare &&
-          stream.type != VoipStreamType.screenshareAudio)
+          stream.type != VoipStreamType.screenshareAudio &&
+          stream.type != VoipStreamType.music)
       .fold(0.0, (level, stream) => max(level, stream.audiolevel));
 
   void openRoom() {

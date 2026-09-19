@@ -1,0 +1,13 @@
+[package]
+name = "dj_audio"
+version = "0.1.0"
+edition = "2021"
+description = "Commet DJ: decode a local music file to 48 kHz stereo and serve it to the WebRTC music track. C ABI."
+license = "AGPL-3.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+symphonia = { version = "0.6", default-features = false, features = ["aac", "isomp4", "mp3", "ogg", "vorbis", "flac", "wav", "pcm", "mkv"] }

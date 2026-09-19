@@ -5,6 +5,7 @@ import 'package:commet/client/components/voip/audio_processing/audio_dsp_setting
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_session.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/debug/log.dart';
 // ignore: depend_on_referenced_packages
 import 'package:dart_webrtc/dart_webrtc.dart' show MediaStreamTrackWeb;
@@ -246,6 +247,10 @@ class WebAudioProcessingManager extends AudioProcessingManager {
     final wanted = <String, web.MediaStreamTrack>{};
     for (final participant in room.remoteParticipants.values) {
       for (final pub in participant.audioTrackPublications) {
+        // The DJ booth's music plays without a break: as far-end it would
+        // keep the ducker on for as long as the music lasts, whatever the
+        // listener set its volume to. The browser's echo canceller has it.
+        if (pub.name == MatrixLivekitVoipStream.musicTrackName) continue;
         final track = pub.track?.mediaStreamTrack;
         if (track is MediaStreamTrackWeb) {
           wanted[track.jsTrack.id] = track.jsTrack;

@@ -517,6 +517,19 @@ class Preferences {
   DoublePreference soundboardVolume =
       DoublePreference("soundboard_volume", defaultValue: 80.0);
 
+  /// How loud the DJ booth's music plays for this user (0..1): the room's
+  /// music as a listener, their own music as the DJ. Local-only.
+  DoublePreference djMusicVolume =
+      DoublePreference("dj_music_volume", defaultValue: 0.6);
+
+  /// Level the booth's mute button goes back to.
+  DoublePreference djMusicPremuteVolume =
+      DoublePreference("dj_music_premute_volume", defaultValue: 0.6);
+
+  /// When yt-dlp, managed by the booth, last updated itself (ms since epoch).
+  DoublePreference djToolsLastUpdate =
+      DoublePreference("dj_tools_last_update", defaultValue: 0);
+
   /// Favorite soundboard sound ids, oldest first. Local-only.
   StringListPreference soundboardFavorites =
       StringListPreference("soundboard_favorites", defaultValue: []);

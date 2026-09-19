@@ -187,7 +187,8 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
       muted: track.muted,
       stream: buildStreamId(publishOptions, track.source),
       disableDtx: !publishOptions.dtx,
-      disableRed: room.e2eeManager != null ? true : publishOptions.red ?? true,
+      // COMMET: `red: true` means RED on; this sent it as `disableRed`.
+      disableRed: room.e2eeManager != null ? true : !(publishOptions.red ?? true),
       encryption: room.roomOptions.lkEncryptionType,
     );
 
@@ -195,7 +196,13 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
     req.audioFeatures.addAll([
       if (!publishOptions.dtx) lk_models.AudioTrackFeature.TF_NO_DTX,
       if (publishOptions.preConnect) lk_models.AudioTrackFeature.TF_PRECONNECT_BUFFER,
+      // COMMET: the server then offers subscribers stereo for this track.
+      if (publishOptions.stereo) lk_models.AudioTrackFeature.TF_STEREO,
     ]);
+    // COMMET: and our offer asks the encoder for it.
+    if (publishOptions.stereo) {
+      room.engine.publisher?.setTrackStereo(track.getCid());
+    }
 
     Future<lk_models.TrackInfo> negotiate() async {
       track.transceiver = await room.engine.createTransceiverRTCRtpSender(track, publishOptions!, encodings);

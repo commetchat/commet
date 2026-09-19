@@ -324,6 +324,10 @@ class AudioPublishOptions extends PublishOptions {
   /// Used to populate protobuf audioFeatures (TF_PRECONNECT_BUFFER).
   final bool preConnect;
 
+  // COMMET: send two channels (music). Opus only encodes stereo when the SDP
+  // asks for it, which the SDK does not do on its own.
+  final bool stereo;
+
   const AudioPublishOptions({
     super.name,
     super.stream,
@@ -331,6 +335,7 @@ class AudioPublishOptions extends PublishOptions {
     this.dtx = true,
     this.red = true,
     this.preConnect = false,
+    this.stereo = false,
   });
 
   AudioPublishOptions copyWith({
@@ -340,6 +345,7 @@ class AudioPublishOptions extends PublishOptions {
     String? stream,
     bool? red,
     bool? preConnect,
+    bool? stereo,
   }) =>
       AudioPublishOptions(
         encoding: encoding ?? this.encoding,
@@ -348,6 +354,7 @@ class AudioPublishOptions extends PublishOptions {
         stream: stream ?? this.stream,
         red: red ?? this.red,
         preConnect: preConnect ?? this.preConnect,
+        stereo: stereo ?? this.stereo,
       );
 
   @override

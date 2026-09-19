@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/components/dj/dj_session.dart';
+import 'package:commet/client/matrix/components/dj/dj_booths.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
@@ -9,6 +11,8 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/ui/organisms/dj/dj_booth_panel.dart';
+import 'package:commet/ui/organisms/dj/dj_member_ui.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_emoji_overlay.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_overlay_registry.dart';
 import 'package:flutter/foundation.dart';
@@ -71,8 +75,16 @@ class _VoipStreamViewState extends State<VoipStreamView> {
       widget.session.onUpdateVolumeVisualizers.listen((_) => timer()),
     ];
     user = room.getMemberOrFallback(widget.stream.streamUserId);
+    // The right-click menu follows the booth (who is DJ, who asked).
+    _dj = DjBooths.of(widget.session)?..addListener(_onDjChanged);
 
     super.initState();
+  }
+
+  DjSession? _dj;
+
+  void _onDjChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -92,6 +104,7 @@ class _VoipStreamViewState extends State<VoipStreamView> {
   @override
   void dispose() {
     for (var sub in subs) sub.cancel();
+    _dj?.removeListener(_onDjChanged);
     super.dispose();
   }
 
@@ -118,8 +131,17 @@ class _VoipStreamViewState extends State<VoipStreamView> {
           alignment: Alignment.topRight,
           children: [
             AdaptiveContextMenu(
-              items: streamContextMenuItems(widget.stream, user,
-                  audioStream: widget.audioStream),
+              items: [
+                ...streamContextMenuItems(widget.stream, user,
+                    audioStream: widget.audioStream),
+                // The booth's actions belong to the person, so only on
+                // their voice tile, not on their camera or screen.
+                if (widget.stream.type == VoipStreamType.audio)
+                  ...djMemberMenuItems(_dj,
+                      userId: user.identifier,
+                      displayName: user.displayName,
+                      musicVolume: DjMusicVolume(session: widget.session)),
+              ],
               child: Container(
                   clipBehavior: Clip.antiAlias,
                   foregroundDecoration: widget.borderColor != null
@@ -314,6 +336,13 @@ class _VoipStreamViewState extends State<VoipStreamView> {
                   ),
                 ),
               ),
+              // The DJ's record and a raised hand, at the avatar's top left.
+              Positioned(
+                left: 4,
+                top: 4,
+                child: DjMemberBadges(
+                    dj: _dj, userId: user.identifier, size: 28),
+              ),
               AnimatedScale(
                 scale: showBadge ? 1.0 : 0.0,
                 curve: showBadge ? Curves.bounceOut : Curves.easeInExpo,
@@ -351,8 +380,10 @@ class _VoipStreamViewState extends State<VoipStreamView> {
         );
 
       case VoipStreamType.screenshareAudio:
-        // Never a tile of its own: the call grid folds it into the screen
-        // share tile (see callGridTiles).
+      case VoipStreamType.music:
+        // Never a tile of its own: the call grid folds screen share audio
+        // into the screen share tile and leaves music out (see
+        // callGridTiles).
         return const SizedBox.shrink();
     }
   }

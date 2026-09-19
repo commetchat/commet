@@ -11,6 +11,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
+import 'package:commet/client/matrix/components/dj/dj_booths.dart';
 import 'package:commet/client/matrix/components/voip_room/call_membership_writes.dart';
 import 'package:commet/client/matrix/components/voip_room/call_membership_publisher.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_call_membership.dart';
@@ -146,6 +147,8 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     });
     _dspWatchdog =
         Timer.periodic(const Duration(seconds: 1), (_) => _checkDspAlive());
+
+    DjBooths.open(this, livekitRoom);
 
     startHeartbeat().catchError((Object e, StackTrace s) {
       Log.onError(e, s, content: "Could not start the membership heartbeat");
@@ -880,6 +883,14 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     if (state == VoipState.ended) return;
     Log.i("Hanging up call");
 
+    // While still connected: a DJ leaving tells the room the booth is free,
+    // and stops publishing the music before the room goes away.
+    await DjBooths.close(this)
+        .timeout(const Duration(seconds: 5))
+        .catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Could not close the DJ booth on hang up");
+    });
+
     // The captures belong to this session, and the room's dispose only
     // unpublishes what the SDK still has in its map — empty in exactly the
     // reconnect window that leaves the OS capture running. Stop them before
@@ -1468,10 +1479,12 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
 
   @override
   double get generalAudioLevel {
-    // Shared screen audio is not someone talking, so it must not light up
-    // the call indicator.
+    // Shared screen audio and the DJ's music are not someone talking, so
+    // they must not light up the call indicator.
     double result = streams
-        .where((stream) => stream.type != VoipStreamType.screenshareAudio)
+        .where((stream) =>
+            stream.type != VoipStreamType.screenshareAudio &&
+            stream.type != VoipStreamType.music)
         .fold(0.0, (value, stream) => max(value, stream.audiolevel));
     return result;
   }

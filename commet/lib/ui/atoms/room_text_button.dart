@@ -7,6 +7,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
+import 'package:commet/client/matrix/components/dj/dj_booths.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -19,6 +20,8 @@ import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/organisms/dj/dj_booth_panel.dart';
+import 'package:commet/ui/organisms/dj/dj_member_ui.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -126,6 +129,10 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       if (isVoiceRoom && clientManager != null)
         clientManager!.callManager.currentSessions.onListUpdated
             .listen((_) => attachVoiceSession()),
+      if (isVoiceRoom)
+        DjBooths.onChanged.listen((_) {
+          if (mounted) setState(() {});
+        }),
     ];
 
     if (isVoiceRoom) attachVoiceSession();
@@ -197,6 +204,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
             .where((stream) =>
                 stream.type != VoipStreamType.screenshare &&
                 stream.type != VoipStreamType.screenshareAudio &&
+                stream.type != VoipStreamType.music &&
                 stream.audiolevel > 0.5)
             .map((stream) => stream.streamUserId)
             .toSet();
@@ -429,7 +437,10 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
     bool canShowActivityIcons = activitySessions != null && showActivityIcons;
 
-    return SizedBox(
+    // Only in our own call: the booth is heard over its data channel.
+    final dj = showActivityIcons ? DjBooths.of(voiceSession) : null;
+
+    final row = SizedBox(
       height: height,
       child: tiamat.TextButton(
         member.displayName,
@@ -452,6 +463,11 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                 child: Row(
                   children: [
+                    if (dj != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                        child: DjMemberBadges(dj: dj, userId: identifier),
+                      ),
                     if (voiceState.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
@@ -488,6 +504,20 @@ class _RoomTextButtonState extends State<RoomTextButton> {
               )
             : null,
       ),
+    );
+
+    if (dj == null) return row;
+    // Built when the menu opens, so it matches the booth at that moment.
+    return ListenableBuilder(
+      listenable: dj,
+      builder: (context, child) => AdaptiveContextMenu(
+        items: djMemberMenuItems(dj,
+            userId: identifier,
+            displayName: member.displayName,
+            musicVolume: DjMusicVolume(session: voiceSession!)),
+        child: child!,
+      ),
+      child: row,
     );
   }
 

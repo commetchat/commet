@@ -27,7 +27,8 @@ List<CallGridTile> callGridTiles(Iterable<VoipStream> streams) {
 
   return [
     for (final s in streams)
-      if (s.type != VoipStreamType.screenshareAudio)
+      if (s.type != VoipStreamType.screenshareAudio &&
+          s.type != VoipStreamType.music)
         CallGridTile(s,
             audioStream: s.type == VoipStreamType.screenshare
                 ? screenAudioByUser[s.streamOwnerId]

@@ -9,6 +9,10 @@ enum VoipStreamType {
   /// member as their [screenshare] stream and is never drawn as its own
   /// tile; the call grid folds it into the screen share tile.
   screenshareAudio,
+
+  /// The DJ booth's music. Nobody's voice: no tile, no speaking indicator,
+  /// and one volume for all of it, set in the booth.
+  music,
 }
 
 enum VoipStreamDirection { incoming, outgoing }
