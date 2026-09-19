@@ -15,13 +15,15 @@ import 'package:http/http.dart' as http;
 ///
 /// This goes through the unauthenticated GitHub API. That is rate limited to 60
 /// requests per hour per IP, which is ample for one request per launch on a
-/// desktop install, but it is the reason [shouldCheckForUpdates] exists and the
-/// reason the result is cached for the process lifetime ([foundUpdate]).
+/// desktop install. Startup uses [checkForUpdatesOncePerLaunch] to preserve
+/// that cadence, while [checkForUpdates] remains available to an explicit
+/// caller that needs a fresh result later in the session.
 ///
 /// Note that `releases/latest` excludes prereleases, so a release tagged as a
 /// prerelease is invisible here by design.
 class UpdateChecker {
-  static bool foundUpdate = false;
+  static bool _automaticCheckStarted = false;
+  static final UpdateCheckState _state = UpdateCheckState();
 
   /// The project whose releases we check.
   static const String releasesApiUrl =
@@ -40,10 +42,22 @@ class UpdateChecker {
       name: "descriptionUpdateAvailable",
       args: [version],
       desc:
-          "describes the update, showing the version code for the available update. The alert has no button, so the text says what tapping it does");
+          "Update alert body. Keep the version value unchanged and tell the user that tapping opens the release page");
+
+  /// Runs the automatic startup check at most once during this app launch.
+  ///
+  /// Home screens can be recreated, so the call site alone cannot provide the
+  /// once-per-launch guarantee. The flag is set before awaiting the request so
+  /// two screens created close together cannot start duplicate checks.
+  static Future<void> checkForUpdatesOncePerLaunch() async {
+    if (_automaticCheckStarted) return;
+
+    _automaticCheckStarted = true;
+    await checkForUpdates();
+  }
 
   static Future<void> checkForUpdates() async {
-    if (foundUpdate) return;
+    if (_state.foundUpdate) return;
 
     if (!shouldCheckForUpdates) {
       return;
@@ -56,7 +70,8 @@ class UpdateChecker {
     String? latest;
     try {
       var response = await http.get(Uri.parse(releasesApiUrl), headers: {
-        // The API rejects requests without a User-Agent.
+        // Request GitHub's stable JSON media type. Dart supplies its own
+        // User-Agent, so this client does not need to add one explicitly.
         "Accept": "application/vnd.github+json",
       });
 
@@ -78,9 +93,7 @@ class UpdateChecker {
 
     if (latest == null || latest.isEmpty) return;
 
-    foundUpdate = true;
-
-    if (!isNewer(latest, BuildConfig.VERSION_TAG)) {
+    if (!_state.shouldAlertFor(latest, BuildConfig.VERSION_TAG)) {
       Log.i("Up to date: running ${BuildConfig.VERSION_TAG}, latest $latest");
       return;
     }
@@ -161,5 +174,20 @@ class UpdateChecker {
   /// deliberately stops at telling the user and taking them to the download.
   static doUpdateAction(BuildContext context) async {
     LinkUtils.open(Uri.parse(releasesPageUrl), context: context);
+  }
+}
+
+/// Tracks whether this process has already alerted for an available update.
+///
+/// An up-to-date result deliberately does not latch: a later explicit check in
+/// the same session must still be able to discover a newly published release.
+class UpdateCheckState {
+  bool foundUpdate = false;
+
+  bool shouldAlertFor(String candidate, String current) {
+    if (foundUpdate) return false;
+
+    foundUpdate = UpdateChecker.isNewer(candidate, current);
+    return foundUpdate;
   }
 }

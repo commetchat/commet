@@ -82,4 +82,30 @@ void main() {
       expect(UpdateChecker.isNewer("nightly", "v0.10.2"), isFalse);
     });
   });
+
+  group('UpdateCheckState', () {
+    test('a no-update result does not hide a later release', () {
+      var state = UpdateCheckState();
+
+      expect(state.shouldAlertFor("v0.10.2", "v0.10.2"), isFalse);
+      expect(state.foundUpdate, isFalse);
+      expect(state.shouldAlertFor("v0.10.3", "v0.10.2"), isTrue);
+      expect(state.foundUpdate, isTrue);
+    });
+
+    test('repeated no-update results do not alert', () {
+      var state = UpdateCheckState();
+
+      expect(state.shouldAlertFor("v0.10.2", "v0.10.2"), isFalse);
+      expect(state.shouldAlertFor("v0.10.2", "v0.10.2"), isFalse);
+      expect(state.foundUpdate, isFalse);
+    });
+
+    test('an update only alerts once', () {
+      var state = UpdateCheckState();
+
+      expect(state.shouldAlertFor("v0.10.3", "v0.10.2"), isTrue);
+      expect(state.shouldAlertFor("v0.10.3", "v0.10.2"), isFalse);
+    });
+  });
 }

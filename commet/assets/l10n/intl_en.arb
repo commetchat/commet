@@ -2082,7 +2082,7 @@
   },
   "descriptionUpdateAvailable": "There is a newer version of roscord available: {version}. Tap to open the release page.",
   "@descriptionUpdateAvailable": {
-    "description": "describes the update, showing the version code for the available update",
+    "description": "Update alert body. Keep the version value unchanged and tell the user that tapping opens the release page",
     "type": "text",
     "placeholders": {
       "version": {}
