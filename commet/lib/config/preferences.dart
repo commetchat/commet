@@ -456,6 +456,10 @@ class Preferences {
   BoolPreference automaticallyOpenSpace =
       BoolPreference("open_space_on_room_navigation", defaultValue: true);
 
+  BoolPreference extractSpaceColorSchemeFromAvatar =
+      BoolPreference("extract_space_colorscheme_from_avatar", defaultValue: true);
+
+
   BoolPreference autoRotateImages =
       BoolPreference("lightbox_rotate_images", defaultValue: false);
 

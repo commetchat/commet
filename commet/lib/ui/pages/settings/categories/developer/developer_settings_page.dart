@@ -68,6 +68,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
             BooleanPreferenceToggle(
                 preference: preferences.debugTranslations,
                 title: "Debug Translations"),
+            BooleanPreferenceToggle(
+                preference: preferences.extractSpaceColorSchemeFromAvatar,
+                title: "Extract space colorscheme from avatar"),
             DoublePreferenceSlider(
               preference: preferences.customOnscreenKeyboardViewOffset,
               title: "Keyboard Offset",
