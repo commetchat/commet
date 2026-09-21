@@ -16,6 +16,7 @@ import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_native_implementations.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
@@ -62,6 +63,13 @@ class MatrixClient extends Client {
   final Map<String, Peer> _peersMap = {};
 
   final StreamController _onSync = StreamController.broadcast();
+
+  final StreamController<(Room, TimelineEvent)> onTimelineEventController =
+      StreamController.broadcast();
+
+  @override
+  Stream<(Room, TimelineEvent<Client>)> get onTimelineEvent =>
+      onTimelineEventController.stream;
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
       ? const matrix.NativeImplementationsDummy()

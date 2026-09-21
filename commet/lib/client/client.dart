@@ -7,6 +7,7 @@ import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
@@ -138,6 +139,8 @@ abstract class Client {
 
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
+
+  Stream<(Room, TimelineEvent)> get onTimelineEvent;
 
   NotifyingListFilter<Room> get favoriteRooms;
 

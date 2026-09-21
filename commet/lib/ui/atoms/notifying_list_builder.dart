@@ -13,12 +13,14 @@ class NotifyingListBuilder<T> extends StatefulWidget {
       this.implicitlyAnimated = true,
       this.sortFunction,
       this.physics,
+      this.onSortStream,
       super.key});
 
   final INotifyingList<T> list;
   final Widget Function(BuildContext context,
       {required List<T> list, required Widget child})? builder;
   final Widget Function(BuildContext context, T value) itemBuilder;
+  final Stream? onSortStream;
   final bool shrinkWrap;
   final bool implicitlyAnimated;
   final ScrollPhysics? physics;
@@ -41,6 +43,8 @@ class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
       widget.list.onItemUpdated.listen(onItemUpdated),
       widget.list.onRemove.listen(onRemove),
       widget.list.onListUpdated.listen(onListUpdated),
+      if (widget.onSortStream != null)
+        widget.onSortStream!.listen((_) => doSort()),
     ];
 
     items = widget.list;
@@ -58,6 +62,15 @@ class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
     for (var sub in subs) sub.cancel();
 
     super.dispose();
+  }
+
+  void doSort() {
+    if (widget.sortFunction != null) {
+      setState(() {
+        items = widget.list.toList();
+        items.sort(widget.sortFunction);
+      });
+    }
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 
@@ -20,6 +21,12 @@ class ClientManager {
 
   final AlertManager alertManager = AlertManager();
   late CallManager callManager;
+
+  final StreamController<(Client, Room, TimelineEvent)> _onEventReceived =
+      StreamController.broadcast();
+
+  Stream<(Client, Room, TimelineEvent)> get onEventReceived =>
+      _onEventReceived.stream;
 
   late final DirectMessagesAggregator directMessages;
 
@@ -121,6 +128,8 @@ class ClientManager {
 
       _clientSubscriptions[client] = [
         client.onSync.listen((_) => _synced()),
+        client.onTimelineEvent
+            .listen((i) => _onEventReceived.add((client, i.$1, i.$2))),
         client.onRoomAdded.listen((room) => _onClientAddedRoom(client, room)),
         client.onRoomRemoved
             .listen((room) => _onClientRemovedRoom(client, room)),
