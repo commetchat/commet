@@ -155,6 +155,12 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
                   "Automatically focus on the message input text field when opening a chat",
             ),
             BooleanPreferenceToggle(
+              preference: preferences.selectAutoCompleteSuggestion,
+              title: "Select first auto-complete suggestion",
+              description:
+                  "When typing a message, if there are any auto-complete suggestions, the first one will be highlighted by default",
+            ),
+            BooleanPreferenceToggle(
               preference: preferences.automaticallyOpenSpace,
               title: "Always open space",
               description:
