@@ -21,7 +21,6 @@ use wry::WebViewBuilder;
 
 use crate::widget_runner;
 mod transceiver;
-mod webrtc;
 
 #[derive(Debug)]
 enum RuntimeMessage {
@@ -30,8 +29,6 @@ enum RuntimeMessage {
 
 #[derive(Debug)]
 enum UserEvent {
-    ResolvePromise(String, String),
-    RaiseEvent(String, String),
     PostMessage(String),
 }
 
@@ -39,7 +36,6 @@ enum UserEvent {
 #[serde(tag = "type")]
 pub enum IpcMessage {
     Widget { data: String },
-    WebRTC { data: String },
 }
 
 pub fn run() {
@@ -73,8 +69,6 @@ pub fn run() {
     let event_loop: EventLoop<UserEvent> = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let event_proxy = event_loop.create_proxy();
 
-    let apply_webrtc_patch = true;
-
     thread::spawn(move || {
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -95,38 +89,10 @@ pub fn run() {
 
                             match msg {
                                 IpcMessage::Widget { data } => {
-                                    let result = widget_runner::transceiver::handle(
+                                    widget_runner::transceiver::handle(
                                         data,
-                                        event_proxy.clone(),
                                     )
                                     .await;
-
-                                    if let Some(result) = result {
-                                        event_proxy
-                                            .send_event(UserEvent::ResolvePromise(
-                                                result.promise_id,
-                                                serde_json::to_string(&result.value).unwrap(),
-                                            ))
-                                            .unwrap();
-                                    }
-                                }
-                                IpcMessage::WebRTC { data } => {
-                                    if apply_webrtc_patch == false {
-                                        return;
-                                    }
-
-                                    let result =
-                                        widget_runner::webrtc::handle(data, event_proxy.clone())
-                                            .await;
-
-                                    if let Some(result) = result {
-                                        event_proxy
-                                            .send_event(UserEvent::ResolvePromise(
-                                                result.promise_id,
-                                                serde_json::to_string(&result.value).unwrap(),
-                                            ))
-                                            .unwrap();
-                                    }
                                 }
                             }
                         }
@@ -213,12 +179,6 @@ pub fn run() {
     let _webview = builder.build(&window).unwrap();
 
     #[cfg(target_os = "linux")]
-    if apply_webrtc_patch {
-        builder =
-            builder.with_initialization_script(include_str!("../javascript/webrtc_polyfill.js"));
-    }
-
-    #[cfg(target_os = "linux")]
     let _webview = {
         use tao::platform::unix::WindowExtUnix;
         use wry::WebViewBuilderExtUnix;
@@ -242,25 +202,6 @@ pub fn run() {
                 _ => {}
             },
             Event::UserEvent(event) => match event {
-                UserEvent::ResolvePromise(id, value) => {
-                    view.clone()
-                        .evaluate_script(
-                            format!("window.toWebView.resolvePromise(\"{}\", {})", id, value)
-                                .as_str(),
-                        )
-                        .unwrap();
-                }
-                UserEvent::RaiseEvent(callback_id, value) => {
-                    view.clone()
-                        .evaluate_script(
-                            format!(
-                                "window.toWebView.invokeEvent(\"{}\", {})",
-                                callback_id, value
-                            )
-                            .as_str(),
-                        )
-                        .unwrap();
-                }
                 UserEvent::PostMessage(content) => {
                     trace!("Handling post message user event");
 

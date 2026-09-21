@@ -1,12 +1,12 @@
 use std::process::exit;
 
-use log::{info, trace};
+use log::{trace};
 use serde::{Deserialize, Serialize};
 use tao::event_loop::EventLoopProxy;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::{self, AsyncWriteExt, BufReader};
 
-use crate::widget_runner::{webrtc::ResolvedPromise, UserEvent};
+use crate::widget_runner::{UserEvent};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
@@ -45,9 +45,8 @@ pub async fn read_stdin(event_sender: EventLoopProxy<UserEvent>) {
 }
 
 pub async fn handle(
-    command: String,
-    event_sender: EventLoopProxy<UserEvent>,
-) -> Option<ResolvedPromise> {
+    command: String
+) {
     let msg = serde_json::from_str::<JsToRust>(&command).unwrap();
     trace!("Received command: {:?}", msg);
 
@@ -59,6 +58,4 @@ pub async fn handle(
             let _ = stdout.write_all(result.as_bytes()).await;
         }
     }
-
-    None
 }
