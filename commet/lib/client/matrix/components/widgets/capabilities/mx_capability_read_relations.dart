@@ -3,6 +3,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_capabiliti
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:matrix/matrix_api_lite.dart';
+import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
   @override
@@ -62,10 +63,18 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     String? from = message.data.tryGet<String>("from");
     String? to = message.data.tryGet<String>("to");
 
-    if (eventType != null && relType != null) {
+    var requestEventType = eventType;
+
+    // if the room is encrypted, all events will use m.encrypted type, so filtering by type would fail here.
+    // remember to filter out irrelevant events once receiving the response and decrypting!
+    if (runner.room!.isE2EE) {
+      requestEventType = null;
+    }
+
+    if (requestEventType != null && relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelTypeAndEventType(
-              runner.room!.identifier, eventId, relType, eventType,
+              runner.room!.identifier, eventId, relType, requestEventType,
               from: from, to: to, limit: limit);
 
       chunk = result.chunk;
@@ -88,6 +97,21 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
       chunk = result.chunk;
       prevBatch = result.prevBatch;
       nextBatch = result.nextBatch;
+    }
+
+    if (runner.room!.isE2EE) {
+      for (var i = 0; i < chunk.length; i++) {
+        try {
+          var ev =
+              matrix.Event.fromMatrixEvent(chunk[i], runner.room!.matrixRoom);
+          chunk[i] = await runner.room!.matrixRoom.client.encryption!
+              .decryptRoomEvent(ev);
+        } catch (_) {}
+      }
+    }
+
+    if (eventType != null) {
+      chunk = chunk.where((i) => i.type == eventType).toList();
     }
 
     var allowedEvents = chunk.where((i) => capabilities.canWidgetReadEvent(i));
