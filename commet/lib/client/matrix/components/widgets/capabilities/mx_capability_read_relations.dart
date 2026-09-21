@@ -65,7 +65,7 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
 
     var requestEventType = eventType;
 
-    // if the room is encrypted, all events will use m.encrypted type, so filtering by type would fail here.
+    // if the room is encrypted, all events will use m.room.encrypted type, so filtering by type would fail here.
     // remember to filter out irrelevant events once receiving the response and decrypting!
     if (runner.room!.isE2EE) {
       requestEventType = null;
