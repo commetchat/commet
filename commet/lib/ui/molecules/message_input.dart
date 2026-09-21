@@ -265,7 +265,9 @@ class MessageInputState extends State<MessageInput> {
     setState(() {
       autoFillResults = result;
 
-      if (MediaQuery.of(context).desktop && result?.isNotEmpty == true) {
+      if (MediaQuery.of(context).desktop &&
+          result?.isNotEmpty == true &&
+          preferences.selectAutoCompleteSuggestion.value) {
         autoFillSelection = 0;
       } else {
         autoFillSelection = null;
