@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix_background/matrix_background_direct_messages_component.dart';
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -284,4 +285,9 @@ class MatrixBackgroundClient implements Client {
     // TODO: implement hasServerDisabledEncryption
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement onTimelineEvent
+  Stream<(Room, TimelineEvent)> get onTimelineEvent =>
+      throw UnimplementedError();
 }

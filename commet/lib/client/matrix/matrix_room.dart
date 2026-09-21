@@ -289,6 +289,9 @@ class MatrixRoom extends Room {
       }
 
       var event = convertEvent(roomEvent);
+
+      (client as MatrixClient).onTimelineEventController.add((this, event));
+
       if (lastEvent == null) {
         lastEvent = event;
         _onUpdate.add(null);

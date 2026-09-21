@@ -69,6 +69,8 @@ class ImportantRoomsList extends StatelessWidget {
             sortFunction: (p0, p1) {
               return p1.lastEventTimestamp.compareTo(p0.lastEventTimestamp);
             },
+            onSortStream:
+                state.clientManager.directMessages.onEventReceived.stream,
             builder: (context, {required child, required list}) {
               if (list.isNotEmpty) {
                 return Column(

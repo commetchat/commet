@@ -145,7 +145,7 @@ class MainPageState extends State<MainPage> {
       return item.client == filterClient;
     }, onFilterParamsChanged: [
       onFilterClientChanged.stream,
-      allFavoriteRooms.onListUpdated
+      allFavoriteRooms.onListUpdated,
     ]);
 
     singleRooms = NotifyingListFilter(clientManager.rooms, where: (item) {
