@@ -118,12 +118,14 @@ class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
 
   @override
   void didUpdateWidget(covariant SingleTypingIndicatorBlob oldWidget) {
-    if (widget.playing) {
-      controller.reset();
-      controller.forward();
-    } else {
-      controller.value = 0;
-      controller.stop();
+    if (oldWidget.playing != widget.playing) {
+      if (widget.playing) {
+        controller.reset();
+        controller.forward();
+      } else {
+        controller.value = 0;
+        controller.stop();
+      }
     }
 
     super.didUpdateWidget(oldWidget);
