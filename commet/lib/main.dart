@@ -182,6 +182,7 @@ void appMain() async {
       await loading;
     }
 
+    CustomURI.init();
     SystemWideShortcuts.init();
 
     await startGui();

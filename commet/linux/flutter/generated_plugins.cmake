@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
   flutter_timezone
   flutter_webrtc
+  gtk
   hotkey_manager_linux
   livekit_client
   media_kit_libs_linux
