@@ -5,7 +5,7 @@ import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:commet/main.dart';
 
 class AudioPlayer extends StatefulWidget {
   const AudioPlayer(
@@ -33,7 +33,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
   void initState() {
     super.initState();
 
-    _loadPreferences();
+    setVolume(preferences.playerVolume.value);
+    if (preferences.isPlayerMuted.value) toggleIsMuted();
 
     subs = [
       player.stream.playing.listen(onPlayingChanged),
@@ -63,29 +64,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
   double? downloadProgress;
 
   bool isMuted = false;
-  double volume = 50;
-  double preMuteVolume = 50;
-
-  Future<void> _savePreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('audio_muted', isMuted);
-    await prefs.setDouble('audio_volume', preMuteVolume);
-  }
-
-  Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedMuted = prefs.getBool('audio_muted') ?? false;
-    final savedVolume = prefs.getDouble('audio_volume') ?? 100.0;
-
-    setState(() {
-      volume = savedVolume;
-      preMuteVolume = savedVolume;
-    });
-    player.setVolume(savedVolume);
-    if (savedMuted) {
-      toggleMute();
-    }
-  }
+  double volume = 100;
+  double preMuteVolume = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -174,8 +154,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
                 tiamat.IconButton(
                   icon: isMuted ? Icons.volume_mute : volume == 0 ? Icons.volume_off : Icons.volume_up,
                   onPressed: (() {
-                    toggleMute();
-                    _savePreferences();
+                    toggleIsMuted();
+                    preferences.isPlayerMuted.set(isMuted);
                   }),
                 ),
                 SizedBox(
@@ -183,7 +163,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
                   child: tiamat.Slider(
                     value: volume / 100,
                     onChanged: (value) => setVolume(value * 100),
-                    onChangeEnd: (value) => _savePreferences(),
+                    onChangeEnd: (value) => preferences.playerVolume.set(preMuteVolume),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -260,7 +240,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
     }
   }
 
-  void toggleMute() {
+  void toggleIsMuted() {
     if (!isMuted) {
       setState(() {
         isMuted = true;
