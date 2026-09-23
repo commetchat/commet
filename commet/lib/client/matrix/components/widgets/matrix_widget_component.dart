@@ -148,7 +148,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
   @override
   WidgetHostType get defaultHostType {
     if (PlatformUtils.isWindows) {
-      return WidgetHostType.embedded;
+      return WidgetHostType.childProcess;
     }
 
     if (PlatformUtils.isAndroid) {
