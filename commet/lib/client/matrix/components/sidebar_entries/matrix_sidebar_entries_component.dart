@@ -44,12 +44,9 @@ class MatrixSidebarEntriesComponent
   void _onSync(SyncUpdate event) {
     if (event.accountData == null) return;
 
-    bool changed = false;
-
     for (var ev in event.accountData!) {
       if (ev.type == key) {
         loadFromContent(ev.content);
-        changed = true;
       }
     }
   }
