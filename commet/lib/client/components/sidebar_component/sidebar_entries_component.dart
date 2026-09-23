@@ -110,6 +110,8 @@ abstract class SidebarEntriesComponent<T extends Client>
 
   String createFolder(Space space);
 
+  void save();
+
   addToFolder(Space space, String folderId, int index);
 
   removeFromFolder(Space space, String folderId);

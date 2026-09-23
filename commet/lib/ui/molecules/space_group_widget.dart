@@ -342,6 +342,8 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                                     "Adding ${space.space.displayName} to folder at index: $i");
                                 component!.addToFolder(
                                     space.space, widget.folderId, index);
+
+                                component.save();
                               }
                             }
                           }

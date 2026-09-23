@@ -5,6 +5,7 @@ import 'package:commet/client/space.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/rng.dart';
+import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:uuid/uuid.dart';
 
@@ -36,7 +37,18 @@ class MatrixSidebarEntriesComponent
     } catch (e, s) {
       Log.onError(e, s);
     }
-    SidebarEntriesComponent.onOrderChanged.listen(onChanged);
+
+    client.matrixClient.onSync.stream.listen(_onSync);
+  }
+
+  void _onSync(SyncUpdate event) {
+    if (event.accountData == null) return;
+
+    for (var ev in event.accountData!) {
+      if (ev.type == key) {
+        loadFromContent(ev.content);
+      }
+    }
   }
 
   void loadOrderFromAccountData() {
@@ -45,7 +57,10 @@ class MatrixSidebarEntriesComponent
     if (data == null) return;
 
     var content = data.content as Map<String, dynamic>;
+    loadFromContent(content);
+  }
 
+  void loadFromContent(Map<String, dynamic> content) {
     var spaceData = content.tryGetMap<String, dynamic>("spaces");
 
     if (spaceData != null) {
@@ -102,10 +117,6 @@ class MatrixSidebarEntriesComponent
 
   static const key = "chat.commet.sidebar_ordering";
 
-  void onChanged(event) {
-    serializeDebouncer.run(serialize);
-  }
-
   void serialize() {
     var spaces = client.spaces.where((i) => i.isTopLevel);
 
@@ -149,8 +160,6 @@ class MatrixSidebarEntriesComponent
 
     client.matrixClient
         .setAccountData(client.matrixClient.userID!, key, result);
-
-    Log.i("Order data: ${result}");
   }
 
   @override
@@ -232,5 +241,10 @@ class MatrixSidebarEntriesComponent
   removeFromFolder(Space space, String folderId) {
     spaceToFolder.remove(space.identifier);
     getOrder(space);
+  }
+
+  @override
+  void save() {
+    serializeDebouncer.run(serialize);
   }
 }
