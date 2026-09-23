@@ -168,6 +168,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
           var component = space.client.getComponent<SidebarEntriesComponent>()!;
 
           component.removeFromFolder(space, data.currentFolder!);
+          component.save();
         }
 
         int i = adjustIndex(index, data.entry.id);
@@ -217,12 +218,17 @@ class SpaceSelectorState extends State<SpaceSelector> {
 
           var componentA =
               i.space.client.getComponent<SidebarEntriesComponent>()!;
+
           var folderId = componentA.createFolder(i.space);
 
           var space = (details.data.entry as SpaceSidebarEntry).space;
           var componentB =
               space.client.getComponent<SidebarEntriesComponent>()!;
+
           componentB.addToFolder(space, folderId, 1);
+
+          componentA.save();
+          componentB.save();
         }, builder: (context, candidateData, rejectedData) {
           return tiamat.Tooltip(
             text: i.space.displayName,
@@ -269,6 +275,7 @@ class SpaceSelectorState extends State<SpaceSelector> {
             var component =
                 space.client.getComponent<SidebarEntriesComponent>()!;
             component.addToFolder(space, i.id, 0);
+            component.save();
           },
           builder: (BuildContext context, List<Object?> candidateData,
               List<dynamic> rejectedData) {
