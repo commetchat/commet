@@ -124,7 +124,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     var roomId = event.$2;
     var threadId = event.$3;
 
-    EventBus.doOpenRoom(roomId, clientId: clientId);
+    EventBus.doOpenRoom(roomId, clientId: clientId, threadId: threadId);
 
     setState(() {
       _currentThreadId = threadId;
