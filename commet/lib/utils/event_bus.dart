@@ -8,11 +8,14 @@ import 'package:flutter/material.dart';
 class RoomOpenArgs {
   String roomId;
   String? clientId;
+  String? threadId;
   bool bypassSpecialRoomTypes;
   bool openInSpace;
 
   RoomOpenArgs(this.roomId, this.clientId,
-      {this.bypassSpecialRoomTypes = false, this.openInSpace = true});
+      {this.bypassSpecialRoomTypes = false,
+      this.threadId,
+      this.openInSpace = true});
 }
 
 class EventBus {
@@ -23,8 +26,10 @@ class EventBus {
   static void doOpenRoom(String roomId,
       {String? clientId,
       bool bypassSpecialRoomType = false,
+      String? threadId,
       bool openInSpace = true}) {
     openRoom.add(RoomOpenArgs(roomId, clientId,
+        threadId: threadId,
         bypassSpecialRoomTypes: bypassSpecialRoomType,
         openInSpace: openInSpace));
   }

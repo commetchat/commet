@@ -50,6 +50,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
+
     EventBus.openThread.stream.listen((event) {
       panelsKey.currentState?.reveal(RevealSide.right);
     });
@@ -62,8 +63,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       panelsKey.currentState?.reveal(RevealSide.main);
     });
 
-    EventBus.openRoom.stream.listen((_) {
-      panelsKey.currentState?.reveal(RevealSide.main);
+    EventBus.openRoom.stream.listen((a) {
+      if (a.threadId == null) {
+        panelsKey.currentState?.reveal(RevealSide.main);
+      } else {
+        panelsKey.currentState?.reveal(RevealSide.right);
+      }
     });
 
     super.initState();
