@@ -135,6 +135,7 @@ dependencies:
   launcher_entry:
     git: https://github.com/commetchat/launcher_entry.git
   app_links: ^7.0.0
+  win32_registry: ^2.1.0
 
 
 dependency_overrides:

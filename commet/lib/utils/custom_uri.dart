@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
+import 'package:win32_registry/win32_registry.dart';
 
 class CustomURI {
   static StreamController<Uri> _onLinked = StreamController.broadcast();
@@ -15,6 +18,29 @@ class CustomURI {
       Log.i("Received custom app link: ${uri}");
       _onLinked.add(uri);
     });
+
+    if (PlatformUtils.isWindows) {
+      register("commetchat");
+    }
+  }
+
+  static Future<void> register(String scheme) async {
+    String appPath = Platform.resolvedExecutable;
+
+    String protocolRegKey = 'Software\\Classes\\$scheme';
+    RegistryValue protocolRegValue = const RegistryValue.string(
+      'URL Protocol',
+      '',
+    );
+    String protocolCmdRegKey = 'shell\\open\\command';
+    RegistryValue protocolCmdRegValue = RegistryValue.string(
+      '',
+      '"$appPath" "%1"',
+    );
+
+    final regKey = Registry.currentUser.createKey(protocolRegKey);
+    regKey.createValue(protocolRegValue);
+    regKey.createKey(protocolCmdRegKey).createValue(protocolCmdRegValue);
   }
 
   static Stream<Uri> get onLinked => _onLinked.stream;
@@ -50,6 +76,7 @@ class CustomURI {
       var widgetType = uri.queryParameters.tryGet<String>("type");
       var widgetName = uri.queryParameters.tryGet<String>("name");
       var preview = uri.queryParameters.tryGet<String>("preview");
+
       if (url != null) {
         return AddWidgetURI(
             widgetUrl: Uri.decodeComponent(url),
