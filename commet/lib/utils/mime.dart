@@ -6,6 +6,12 @@ import 'package:matrix/matrix.dart';
 import 'package:mime/mime.dart' as mime;
 
 class Mime {
+  static final mime.MimeTypeResolver _resolver = mime.MimeTypeResolver()
+    ..addMagicNumber([0x42, 0x4d], "image/bmp")
+    ..addMagicNumber([0x3c, 0x73, 0x76, 0x67], "image/svg+xml");
+
+  static int get magicNumbersMaxLength => _resolver.magicNumbersMaxLength;
+
   static const displayableImageTypes = {
     "image/jpeg",
     "image/png",
@@ -85,11 +91,6 @@ class Mime {
   }
 
   static String? lookupType(String filepath, {Uint8List? data}) {
-    var resolver = mime.MimeTypeResolver();
-    resolver.addMagicNumber([0x42, 0x4d], "image/bmp");
-    resolver.addMagicNumber([0x3c, 0x73, 0x76, 0x67], "image/svg+xml"); // '<svg
-    var type = resolver.lookup(filepath);
-    type ??= resolver.lookup(filepath, headerBytes: data);
-    return type;
+    return _resolver.lookup(filepath, headerBytes: data);
   }
 }

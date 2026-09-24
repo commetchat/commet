@@ -33,6 +33,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion flutter.compileSdkVersion
+    ndkVersion = "28.2.13676358"
     namespace = "chat.commet.commetapp"
 
     compileOptions {
