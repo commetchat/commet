@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_mixin_per_message_profile.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_mixin_reactions.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_mixin_related.dart';
 import 'package:commet/client/timeline.dart';
@@ -23,7 +24,10 @@ import 'package:matrix/matrix.dart' as matrix;
 import 'package:html/parser.dart' as html_parser;
 
 class MatrixTimelineEventMessage extends MatrixTimelineEvent
-    with MatrixTimelineEventRelated, MatrixTimelineEventReactions
+    with
+        MatrixTimelineEventRelated,
+        MatrixTimelineEventReactions,
+        MatrixTimelineEventPerMessageProfile
     implements TimelineEventMessage {
   MatrixTimelineEventMessage(super.event, {required super.client}) {
     attachments = _parseAnyAttachments();
@@ -38,10 +42,11 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   bool get editable => true;
 
   @override
-  String? get body => event.plaintextBody;
+  String? get body => stripFallback(event.plaintextBody);
 
-  String get formattedBody =>
-      event.formattedText != "" ? event.formattedText : event.plaintextBody;
+  String get formattedBody => event.formattedText != ""
+      ? stripFallbackHtml(event.formattedText)
+      : stripFallback(event.plaintextBody);
 
   @override
   String? get bodyFormat =>
@@ -49,9 +54,17 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
       "chat.commet.custom.matrix_plain";
 
   @override
-  String get plainTextBody => event.plaintextBody;
+  String get plainTextBody => stripFallback(event.plaintextBody);
 
-  String _getPlaintextBody({Timeline? timeline}) {
+  String _getPlaintextBody({Timeline? timeline}) =>
+      stripFallback(_getRawPlaintextBody(timeline: timeline),
+          timeline: timeline);
+
+  String _getFormattedBody({Timeline? timeline}) =>
+      stripFallbackHtml(_getRawFormattedBody(timeline: timeline),
+          timeline: timeline);
+
+  String _getRawPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
 
     if (["m.file", "m.image", "m.video", "m.audio"].contains(e.messageType)) {
@@ -77,7 +90,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     return e.plaintextBody;
   }
 
-  String _getFormattedBody({Timeline? timeline}) {
+  String _getRawFormattedBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
 
     if (["m.file", "m.image", "m.video", "m.audio"].contains(e.messageType)) {
@@ -95,7 +108,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   String getPlaintextBody(Timeline timeline) {
     var displayEvent = getDisplayEvent(timeline);
 
-    return displayEvent.plaintextBody;
+    return stripFallback(displayEvent.plaintextBody, timeline: timeline);
   }
 
   @override
@@ -226,6 +239,10 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
 
     return foundLinks;
   }
+
+  @override
+  matrix.Event getPerMessageProfileSource({Timeline? timeline}) =>
+      getDisplayEvent(timeline);
 
   matrix.Event getDisplayEvent(Timeline? tl) {
     var mx = getTimeline(tl);
