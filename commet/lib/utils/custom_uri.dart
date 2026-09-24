@@ -5,6 +5,8 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
 
+import 'package:commet/utils/register_uri/register_uri.dart';
+
 class CustomURI {
   static StreamController<Uri> _onLinked = StreamController.broadcast();
 
@@ -15,6 +17,8 @@ class CustomURI {
       Log.i("Received custom app link: ${uri}");
       _onLinked.add(uri);
     });
+
+    registerAppLinkHandlers();
   }
 
   static Stream<Uri> get onLinked => _onLinked.stream;
@@ -50,6 +54,7 @@ class CustomURI {
       var widgetType = uri.queryParameters.tryGet<String>("type");
       var widgetName = uri.queryParameters.tryGet<String>("name");
       var preview = uri.queryParameters.tryGet<String>("preview");
+
       if (url != null) {
         return AddWidgetURI(
             widgetUrl: Uri.decodeComponent(url),
