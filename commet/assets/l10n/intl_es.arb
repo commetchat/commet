@@ -11,7 +11,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptRoomAddress": "Dirección de la Sala",
+    "promptRoomAddress": "Dirección de la sala",
     "@promptRoomAddress": {
         "description": "Short label to prompt for the input of a room address",
         "type": "text",
@@ -47,7 +47,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "matrixClientEncryptionWarningTitle": "Advertencia de cifrado",
+    "matrixClientEncryptionWarningTitle": "Aviso de cifrado",
     "@matrixClientEncryptionWarningTitle": {
         "description": "Title of a warning about encryption",
         "type": "text",
@@ -79,7 +79,7 @@
             "user": {}
         }
     },
-    "promptEnableMatrixBackup": "Activar la copia de seguridad",
+    "promptEnableMatrixBackup": "Activar copias de respaldo",
     "@promptEnableMatrixBackup": {
         "description": "Button text to enable to encrypted message backup",
         "type": "text",
@@ -109,7 +109,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceGettingText": "Bienvenid@ a \n\n # {spaceName}",
+    "labelSpaceGettingText": "Le damos la bienvenida a \n\n # {spaceName}",
     "@labelSpaceGettingText": {
         "description": "Greeting to the space, supports markdown formatting",
         "type": "text",
@@ -141,7 +141,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPageFileTooLarge": "¡Este archivo es demasiado grande para subirlo!",
+    "labelChatPageFileTooLarge": "Este archivo es demasiado grande para cargarlo.",
     "@labelChatPageFileTooLarge": {
         "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
         "type": "text",
@@ -153,7 +153,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptAddAccount": "Añadir una cuenta",
+    "promptAddAccount": "Añadir cuenta",
     "@promptAddAccount": {
         "description": "Label for button in settings to add another account",
         "type": "text",
@@ -171,7 +171,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixRecoveryKeyCreateExplanation": "Tenemos que establecer una clave de seguridad, que se puede utilizar para acceder al historial de los mensajes. Podemos generar una clave para ti, o puedes elegir tu propia frase de seguridad",
+    "labelMatrixRecoveryKeyCreateExplanation": "Tenemos que establecer una clave de seguridad, que se puede utilizar para acceder al historial de los mensajes. Podemos generar una clave para usted, o usted puede elegir su propia frase de seguridad",
     "@labelMatrixRecoveryKeyCreateExplanation": {
         "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
         "type": "text",
@@ -185,7 +185,7 @@
             "user": {}
         }
     },
-    "roomVisibilityPrivateExplanation": "Sólo se podrá acceder a esta sala con invitación",
+    "roomVisibilityPrivateExplanation": "Solo se podrá acceder a esta sala con invitación",
     "@roomVisibilityPrivateExplanation": {
         "description": "Explains what 'private' room visibility means",
         "type": "text",
@@ -281,7 +281,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "typingUsers": "{howMany,plural, =1{{user1} está escribiendo...}=2{{user1} y {user2} están escribiendo...}few{{user1}, {user2}, y {user3} están escribiendo...}other{Varias personas están escribiendo...}}",
+    "typingUsers": "{howMany,plural, =1{{user1} está digitando...}=2{{user1} y {user2} están digitando...}few{{user1}, {user2}, y {user3} están digitando...}other{Varias personas están digitando...}}",
     "@typingUsers": {
         "description": "Text to display which users are currently typing",
         "type": "text",
@@ -332,13 +332,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "tooltipSpaceSettings": "Ajustes del espacio",
+    "tooltipSpaceSettings": "Configuración del espacio",
     "@tooltipSpaceSettings": {
         "description": "Tooltip for the button that opens space settings",
         "type": "text",
         "placeholders": {}
     },
-    "tooltipAddRoom": "Añadir una sala",
+    "tooltipAddRoom": "Añadir sala",
     "@tooltipAddRoom": {
         "description": "Tooltip for the button that adds a new room to a space",
         "type": "text",
@@ -356,7 +356,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptAddSpace": "Añadir un espacio",
+    "promptAddSpace": "Añadir espacio",
     "@promptAddSpace": {
         "description": "Prompt to add a new space",
         "type": "text",
@@ -436,7 +436,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "fileDragDropPrompt": "Suelte un archivo para subirlo...",
+    "fileDragDropPrompt": "Suelte un archivo para cargarlo…",
     "@fileDragDropPrompt": {
         "description": "Text that is shown when a user is dragging a file",
         "type": "text",
@@ -541,7 +541,7 @@
             "invitedUser": {}
         }
     },
-    "promptGenerateMatrixRecoveryKey": "Generar una clave",
+    "promptGenerateMatrixRecoveryKey": "Generar clave",
     "@promptGenerateMatrixRecoveryKey": {
         "description": "Button text to generate a recovery key",
         "type": "text",
@@ -583,7 +583,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptSetMatrixPassphrase": "Definir una frase",
+    "promptSetMatrixPassphrase": "Establecer frase",
     "@promptSetMatrixPassphrase": {
         "description": "Button text to set a passphrase",
         "type": "text",
@@ -595,19 +595,19 @@
         "type": "text",
         "placeholders": {}
     },
-    "directMessagesListHeaderDesktop": "Mensajes Directos",
+    "directMessagesListHeaderDesktop": "Mensajes directos",
     "@directMessagesListHeaderDesktop": {
         "description": "The header for the direct messages list on desktop",
         "type": "text",
         "placeholders": {}
     },
-    "directMessagesListHeaderMobile": "Mensajes Directos",
+    "directMessagesListHeaderMobile": "Mensajes directos",
     "@directMessagesListHeaderMobile": {
         "description": "The header for the direct messages list on desktop",
         "type": "text",
         "placeholders": {}
     },
-    "promptConfirmWipingCrossSigningKeys": "¿Estás seguro de que quieres borrar tus claves de firma cruzada?",
+    "promptConfirmWipingCrossSigningKeys": "¿Confirma que quiere borrar sus claves de firma cruzada?",
     "@promptConfirmWipingCrossSigningKeys": {
         "description": "Asks the user if they are sure they want to wipe the keys",
         "type": "text",
@@ -691,13 +691,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixAskEnableMessageBackup": "¿Desea activar la copia de seguridad online?",
+    "labelMatrixAskEnableMessageBackup": "¿Quiere activar el respaldo de claves en línea?",
     "@labelMatrixAskEnableMessageBackup": {
         "description": "Asks the user if they want to enable online backup",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixExistingMessageBackupFound": "¡Se ha encontrado una copia de seguridad!",
+    "labelMatrixExistingMessageBackupFound": "Se encontró un respaldo existente.",
     "@labelMatrixExistingMessageBackupFound": {
         "description": "Message to explain that existing backup has been found",
         "type": "text",
@@ -727,7 +727,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptDelete": "Borrar",
+    "promptDelete": "Eliminar",
     "@promptDelete": {
         "description": "Generic prompt to delete something",
         "type": "text",
@@ -757,13 +757,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "cantSentMessagePrompt": "No tienes permiso para enviar un mensaje en esta sala",
+    "cantSentMessagePrompt": "No tiene permiso para enviar un mensaje en esta sala",
     "@cantSentMessagePrompt": {
         "description": "Text that explains the user cannot send a message in this room",
         "type": "text",
         "placeholders": {}
     },
-    "unifiedPushExplainer": "# Unified Push\nEsta versión de Commet se ha creado sin los Servicios de Google Play. Para recibir notificaciones push, tendrás que utilizar [Unified Push](https://unifiedpush.org/). \n\nSi ya tienes instalada una aplicación distribuidora compatible con Unified Push, puedes configurarla a continuación\n",
+    "unifiedPushExplainer": "# Unified Push\nEsta versión de Commet se compiló sin los Servicios de Google Play. Para recibir notificaciones automáticas, tendrá que utilizar [Unified Push](https://unifiedpush.org/). \n\nSi ya tiene instalada una aplicación distribuidora compatible con Unified Push, puede configurarla a continuación\n",
     "@unifiedPushExplainer": {
         "description": "Explains the need for unified push. Supports markdown",
         "type": "text",
@@ -853,7 +853,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptEnableEncryptionRoomSettings": "Activar el cifrado",
+    "promptEnableEncryptionRoomSettings": "Activar cifrado",
     "@promptEnableEncryptionRoomSettings": {
         "description": "Short prompt to enable encryption for a room",
         "type": "text",
@@ -983,7 +983,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigningAndBackup": "Firma cruzada y copia de seguridad",
+    "labelMatrixCrossSigningAndBackup": "Firma cruzada y respaldo",
     "@labelMatrixCrossSigningAndBackup": {
         "description": "Header label for matrix cross signing and message backup section",
         "type": "text",
@@ -1001,13 +1001,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackup": "Copia de seguridad de mensajes",
+    "labelMatrixMessageBackup": "Respaldo de mensajes",
     "@labelMatrixMessageBackup": {
         "description": "TItle label for matrix message backup settings",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackupExplanation": "Mantiene una copia de seguridad de tu historial de mensajes, en caso de que pierdas todas tus sesiones. Tus mensajes serán encriptados antes de ser subidos",
+    "labelMatrixMessageBackupExplanation": "Guarda una copia de respaldo de su historial de mensajes, por si acaso perdiera todas sus sesiones. Sus mensajes se cifrarán antes de cargarlos",
     "@labelMatrixMessageBackupExplanation": {
         "description": "Explains what matrix message backup does",
         "type": "text",
@@ -1019,7 +1019,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelRestoreMatrixBackupTitle": "Restaurar copia de seguridad",
+    "labelRestoreMatrixBackupTitle": "Restaurar copia de respaldo",
     "@labelRestoreMatrixBackupTitle": {
         "description": "Title of the popup dialog for restoring message backup",
         "type": "text",
@@ -1043,13 +1043,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsWindowBehaviour": "Comportamiento de Ventana",
+    "labelSettingsWindowBehaviour": "Comportamiento de ventana",
     "@labelSettingsWindowBehaviour": {
         "description": "Label for the Window Behaviour settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppAdvanced": "Avanzado",
+    "labelSettingsAppAdvanced": "Avanzada",
     "@labelSettingsAppAdvanced": {
         "description": "Label for the App Advanced settings page",
         "type": "text",
@@ -1091,7 +1091,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsCategoryApp": "Ajustes de la aplicación",
+    "labelSettingsCategoryApp": "Configuración de la aplicación",
     "@labelSettingsCategoryApp": {
         "description": "Label for the settings category of the overall App settings/",
         "type": "text",
@@ -1103,7 +1103,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelGifSearchToggle": "Buscar Gif",
+    "labelGifSearchToggle": "Búsqueda de GIF",
     "@labelGifSearchToggle": {
         "description": "Label for the toggle for enabling and disabling gif search",
         "type": "text",
@@ -1129,7 +1129,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsWindowBehaviourTitle": "Comportamiento de la ventana",
+    "labelSettingsWindowBehaviourTitle": "Comportamiento de ventanas",
     "@labelSettingsWindowBehaviourTitle": {
         "description": "Header for the window behaviour section of settings",
         "type": "text",
@@ -1159,7 +1159,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveRoomConfirmation": "¿Estás seguro que quieres salir de {roomName}?",
+    "promptLeaveRoomConfirmation": "¿Confirma que quiere abandonar {roomName}?",
     "@promptLeaveRoomConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave",
         "type": "text",
@@ -1167,7 +1167,7 @@
             "roomName": {}
         }
     },
-    "promptLeaveSpaceConfirmation": "¿Estás seguro de que quieres salir de {spaceName}?",
+    "promptLeaveSpaceConfirmation": "¿Confirma que quiere abandonar {spaceName}?",
     "@promptLeaveSpaceConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave a space",
         "type": "text",
@@ -1199,7 +1199,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptSettings": "Ajustes",
+    "promptSettings": "Configuración",
     "@promptSettings": {
         "description": "Generic prompt for settings, usually will open a settings menu or similar",
         "type": "text",
@@ -1372,7 +1372,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Permite al usuario borrar mensajes enviados por otros",
+    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Permite al usuario eliminar mensajes enviados por otros",
     "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
         "description": "Describes the permission to delete messages",
         "type": "text",
@@ -1384,7 +1384,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomDeleteMessagesTitle": "Borrar mensajes",
+    "labelMatrixPermissionsRoomDeleteMessagesTitle": "Eliminar mensajes",
     "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
         "description": "Title for permission to delete messages",
         "type": "text",
@@ -1506,7 +1506,7 @@
             "user": {}
         }
     },
-    "labelImageContainsLocationInfo": "Advertencia: Esta imagen contiene metadatos con localización",
+    "labelImageContainsLocationInfo": "Atención: esta imagen contiene metadatos de ubicación",
     "@labelImageContainsLocationInfo": {
         "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
         "type": "text",
@@ -1550,7 +1550,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "noPinnedMessages": "¡Ningún mensaje ha sido fijado!",
+    "noPinnedMessages": "No se ha anclado ningún mensaje.",
     "@noPinnedMessages": {
         "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
         "type": "text",
@@ -1568,13 +1568,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatTitle": "Vista previa de la URL en Charlas Cifradas",
+    "labelUrlPreviewInEncryptedChatTitle": "Previsualizar URL en conversaciones cifradas",
     "@labelUrlPreviewInEncryptedChatTitle": {
         "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatDescription": "Esto expondrá cualquier URL enviada en tus chats encriptados a tu servidor local para conseguir la vista previa",
+    "labelUrlPreviewInEncryptedChatDescription": "Esto revelará cualquier URL enviado en sus charlas cifradas a su servidor local para obtener la previsualización",
     "@labelUrlPreviewInEncryptedChatDescription": {
         "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
@@ -1592,7 +1592,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewSettingsTitle": "Vista previa audiovisual",
+    "labelMediaPreviewSettingsTitle": "Previsualización audiovisual",
     "@labelMediaPreviewSettingsTitle": {
         "description": "Header for the settings tile for for media preview toggles",
         "type": "text",
@@ -1604,7 +1604,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPrivateRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y las url en las charlas privadas",
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Alternar la previsualización de imágenes, vídeos, pegatinas y enlaces en las charlas privadas",
     "@labelMediaPreviewPrivateRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for private rooms",
         "type": "text",
@@ -1616,13 +1616,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPublicRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y las url en las salas públicas",
+    "labelMediaPreviewPublicRoomsToggleDescription": "Alternar la previsualización de imágenes, vídeos, pegatinas y enlaces en las charlas públicas",
     "@labelMediaPreviewPublicRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for public rooms",
         "type": "text",
         "placeholders": {}
     },
-    "labelUseRoomAvatars": "Usar los avatares de la sala",
+    "labelUseRoomAvatars": "Usar avatares de la sala",
     "@labelUseRoomAvatars": {
         "description": "Label for enabling using room avatars instead of icons",
         "type": "text",
@@ -1664,13 +1664,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptPinMessage": "Fijar mensaje",
+    "promptPinMessage": "Anclar mensaje",
     "@promptPinMessage": {
         "description": "Label for the menu option to pin a message",
         "type": "text",
         "placeholders": {}
     },
-    "promptUnpinMessage": "Desfijar mensaje",
+    "promptUnpinMessage": "Desanclar mensaje",
     "@promptUnpinMessage": {
         "description": "Label for the menu option to unpin a message",
         "type": "text",
@@ -1756,7 +1756,7 @@
             "user": {}
         }
     },
-    "messageUserPinnedEvent": "¡{user} fijó un mensaje!",
+    "messageUserPinnedEvent": "¡{user} ancló un mensaje!",
     "@messageUserPinnedEvent": {
         "description": "Message body for when a user adds an event to the room's pinned messages",
         "type": "text",
@@ -1764,7 +1764,7 @@
             "user": {}
         }
     },
-    "messageUserUnpinnedEvent": "{user} desfijó un mensaje",
+    "messageUserUnpinnedEvent": "{user} desancló un mensaje",
     "@messageUserUnpinnedEvent": {
         "description": "Message body for when a user removes an event from the room's pinned messages",
         "type": "text",
@@ -1772,25 +1772,25 @@
             "user": {}
         }
     },
-    "promptProfileShareTimezone": "Compartir Zona Horaria",
+    "promptProfileShareTimezone": "Compartir huso horario",
     "@promptProfileShareTimezone": {
         "description": "Prompt the user to add their current timezone to their user profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearTimezone": "Eliminar Zona Horaria",
+    "promptProfileClearTimezone": "Quitar huso horario",
     "@promptProfileClearTimezone": {
         "description": "Prompt to remove the shared timezone from a users profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileEditColorScheme": "Editar Paleta de Colores",
+    "promptProfileEditColorScheme": "Editar combinación de colores",
     "@promptProfileEditColorScheme": {
         "description": "Prompt to edit the color scheme of the user's own profile",
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "No tienes ninguna insignia. Puedes obtener insignias al realizar una donación y apoyar el desarrollo de Commet",
+    "labelProfileNoBadges": "No tiene ninguna insignia. Puede obtener insignias al realizar una donación y apoyar el desarrollo de Commet",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1802,17 +1802,17 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelCreateRoom": "Crear Sala",
+    "labelCreateRoom": "Crear sala",
     "@labelCreateRoom": {
         "type": "text",
         "placeholders": {}
     },
-    "labelPickExistingRoom": "Sala Existente",
+    "labelPickExistingRoom": "Sala existente",
     "@labelPickExistingRoom": {
         "type": "text",
         "placeholders": {}
     },
-    "labelJoinRoom": "Unirse a Sala",
+    "labelJoinRoom": "Unirse a sala",
     "@labelJoinRoom": {
         "type": "text",
         "placeholders": {}
@@ -1838,7 +1838,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypePhotoAlbum": "Álbum de Fotos",
+    "labelRoomTypePhotoAlbum": "Álbum fotográfico",
     "@labelRoomTypePhotoAlbum": {
         "type": "text",
         "placeholders": {}
@@ -1878,44 +1878,44 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileChangeBanner": "Cambiar Pancarta",
+    "promptProfileChangeBanner": "Cambiar pancarta",
     "@promptProfileChangeBanner": {
         "description": "Prompt to change the banner on the user's profile",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetStatus": "Establecer Estado",
+    "promptProfileSetStatus": "Establecer estado",
     "@promptProfileSetStatus": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearStatus": "Vaciar Estado",
+    "promptProfileClearStatus": "Vaciar estado",
     "@promptProfileClearStatus": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetBadges": "Establecer Insignias",
+    "promptProfileSetBadges": "Establecer insignias",
     "@promptProfileSetBadges": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetBio": "Establecer Bio",
+    "promptProfileSetBio": "Establecer biografía",
     "@promptProfileSetBio": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearBio": "Vaciar Bio",
+    "promptProfileClearBio": "Vaciar biografía",
     "@promptProfileClearBio": {
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetColorOverride": "Anulación de Ajuste del Color",
+    "promptProfileSetColorOverride": "Establecer sustitución de color",
     "@promptProfileSetColorOverride": {
         "description": "Prompt to override the display color of a user",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearColorOverride": "Anulación de color transparente",
+    "promptProfileClearColorOverride": "Vaciar sustitución de color",
     "@promptProfileClearColorOverride": {
         "description": "Prompt to remove an override of the display color of a user",
         "type": "text",
@@ -1927,7 +1927,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmShareTimezone": "¿Seguro que desea compartir su zona horaria '{timezone}' públicamente?",
+    "labelConfirmShareTimezone": "¿Confirma que quiere compartir su huso horario «{timezone}» públicamente?",
     "@labelConfirmShareTimezone": {
         "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
         "type": "text",
@@ -1935,19 +1935,19 @@
             "timezone": {}
         }
     },
-    "promptProfileWriteBioHint": "Escribe sobre ti mismo",
+    "promptProfileWriteBioHint": "Escriba sobre usted",
     "@promptProfileWriteBioHint": {
         "description": "Hint text for the profile bio editor",
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileYourBadges": "Tus Insignias",
+    "labelProfileYourBadges": "Sus insignias",
     "@labelProfileYourBadges": {
         "description": "label for the ui to select which badges to display on the users profile",
         "type": "text",
         "placeholders": {}
     },
-    "incomingCallMessage": "¡Invocación entrante desde {callingUserName}!",
+    "incomingCallMessage": "Llamada entrante de {callingUserName}",
     "@incomingCallMessage": {
         "description": "Label to display that a user is calling",
         "type": "text",
@@ -1955,7 +1955,7 @@
             "callingUserName": {}
         }
     },
-    "labelTextChatDescription": "¡Charla de texto simple, con todas las capacidades que pudo desear! Envía mensajes, medio, pegatinas, GIF y más!",
+    "labelTextChatDescription": "¡Un chat de texto sencillo, con todas las funciones que pueda desear! ¡Envíe mensajes, multimedia, pegatinas, GIF y más!",
     "@labelTextChatDescription": {
         "type": "text",
         "placeholders": {}
@@ -2041,31 +2041,31 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptSystemKeyboardShortcutsMoreInfo": "Más Información",
+    "promptSystemKeyboardShortcutsMoreInfo": "Más información",
     "@promptSystemKeyboardShortcutsMoreInfo": {
         "description": "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
         "type": "text",
         "placeholders": {}
     },
-    "labelConfigureKeyboardShortcuts": "Configurar Atajos",
+    "labelConfigureKeyboardShortcuts": "Configurar atajos",
     "@labelConfigureKeyboardShortcuts": {
         "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
         "type": "text",
         "placeholders": {}
     },
-    "promptShortcutsPressAKeyCombination": "Presione una combinación de tecla",
+    "promptShortcutsPressAKeyCombination": "Presione una combinación de teclas",
     "@promptShortcutsPressAKeyCombination": {
         "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
         "type": "text",
         "placeholders": {}
     },
-    "promptShortcutsClearKeyboardShortcut": "Vaciar Atajo",
+    "promptShortcutsClearKeyboardShortcut": "Vaciar atajo",
     "@promptShortcutsClearKeyboardShortcut": {
         "description": "Prompt the user to clear a key combination shortcut",
         "type": "text",
         "placeholders": {}
     },
-    "shortcutNameMute": "Enmudecer",
+    "shortcutNameMute": "Silenciar",
     "@shortcutNameMute": {
         "description": "name for the system wide shortcut to activate microphone mute",
         "type": "text",
@@ -2077,7 +2077,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelAskBeforeDeletingMessageToggle": "Preguntar antes de borrar mensajes",
+    "labelAskBeforeDeletingMessageToggle": "Preguntar antes de eliminar mensajes",
     "@labelAskBeforeDeletingMessageToggle": {
         "description": "Label for the toggle for enabling and disabling message deletion confirmation",
         "type": "text",
@@ -2089,7 +2089,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelTypingIndicatorsToggle": "Teclear indicador",
+    "labelTypingIndicatorsToggle": "Indicador de digitación",
     "@labelTypingIndicatorsToggle": {
         "description": "Label for the toggle for enabling and disabling sending typing indicator",
         "type": "text",
@@ -2101,7 +2101,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelAppBehaviourTitle": "Comportamiento de App",
+    "labelAppBehaviourTitle": "Comportamiento de la aplicación",
     "@labelAppBehaviourTitle": {
         "description": "Header for the app behaviour section in settings",
         "type": "text",
@@ -2113,25 +2113,25 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaSettings": "Medio",
+    "labelMediaSettings": "Multimedia",
     "@labelMediaSettings": {
         "description": "Header for the settings tile for for media",
         "type": "text",
         "placeholders": {}
     },
-    "headerVoipSettingsCallConnection": "Conexión de Llamada",
+    "headerVoipSettingsCallConnection": "Conexión de llamada",
     "@headerVoipSettingsCallConnection": {
         "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipSettingsStunFallback": "Usar Retroceso STUN",
+    "labelVoipSettingsStunFallback": "Usar alternativa STUN",
     "@labelVoipSettingsStunFallback": {
         "description": "label for the setting to enable STUN callback for connecting calls",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipSettingsStunFallbackDescription": "Las llamadas no se pueden conectar sin un servidor STUN. Si su servidor doméstico no proporciona un servidor STUN, utilice '{stunServer}'. Su dirección IP será reventada en este servidor al establecer llamadas",
+    "labelVoipSettingsStunFallbackDescription": "Las llamadas no se pueden establecer sin un servidor STUN. Si su servidor doméstico no ofrece un servidor STUN, utilice «{stunServer}» como alternativa. Su dirección IP se revelará a este servidor al establecer las llamadas",
     "@labelVoipSettingsStunFallbackDescription": {
         "type": "text",
         "placeholders": {
@@ -2144,31 +2144,31 @@
         "type": "text",
         "placeholders": {}
     },
-    "headerVoipSettingsStreamSettings": "Ajustes de transmisión",
+    "headerVoipSettingsStreamSettings": "Configuración de transmisión",
     "@headerVoipSettingsStreamSettings": {
         "description": "Header for settings tile containing stream quality configuration",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcast": "Utilizar Simulcast",
+    "labelVoipUseSimulcast": "Usar retransmisión simultánea",
     "@labelVoipUseSimulcast": {
         "description": "label for setting toggle to enable use of Simulcast",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcastDescription": "Sube tus transmisiones en múltiples niveles de calidad diferentes, para que otros usuarios puedan decidir cual usar. Esto consumirá más ancho de banda y recursos del sistema.",
+    "labelVoipUseSimulcastDescription": "Carga sus transmisiones en varios niveles de calidad diferentes, para que los demás usuarios puedan decidir cuál usar. Esto consumirá más ancho de banda y recursos del sistema.",
     "@labelVoipUseSimulcastDescription": {
         "description": "description for setting toggle to enable use of Simulcast",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamMaximumBitrate": "Tasa de bit máxima de transmisión",
+    "labelVoipStreamMaximumBitrate": "Tasa de bits máxima de transmisión",
     "@labelVoipStreamMaximumBitrate": {
         "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamMaximumBitrateDescription": "Determina la calidad general de tu transmisión. Cuanto mayor sea el valor, mejor, pero también consumirá más recursos",
+    "labelVoipStreamMaximumBitrateDescription": "Determina la calidad general de la transmisión. Cuanto mayor sea el valor, mejor será la calidad, pero se consumirán más recursos",
     "@labelVoipStreamMaximumBitrateDescription": {
         "type": "text",
         "placeholders": {}
@@ -2179,17 +2179,17 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamFramerateDescription": "Velocidad de fotogramas por segundo destino para compartir pantalla. Una mayor velocidad proporciona un movimiento más fluido, pero puede reducir la nitidez visual.",
+    "labelVoipStreamFramerateDescription": "Fotogramas por segundo recomendables para compartir pantalla. Un valor más alto ofrece un movimiento más fluido, pero tal vez reduzca la nitidez visual.",
     "@labelVoipStreamFramerateDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodec": "Codec de flujo preferido",
+    "labelVoipStreamPreferredCodec": "Códec de transmisión preferido",
     "@labelVoipStreamPreferredCodec": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodecDescription": "Elige el formato de codificación para tu transmisión. Algunos codec pueden ejecutarse más rápido en ciertos dispositivos, mientras que otros podrían no ser compatibles. La mayoría de los dispositivos son compatibles con vp8 y h264.",
+    "labelVoipStreamPreferredCodecDescription": "Elija en qué formato quiere codificar su transmisión. Algunos códecs funcionarán más rápido en ciertos dispositivos y otros pueden no ser compatibles. La mayoría de los dispositivos deberían admitir vp8 y h264.",
     "@labelVoipStreamPreferredCodecDescription": {
         "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
         "type": "text",
@@ -2200,12 +2200,12 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamResolutionDescription": "Cuanto mayor sea la resolución de tu transmisión, mejor",
+    "labelVoipStreamResolutionDescription": "Cuanto mayor sea la resolución de su transmisión, mejor",
     "@labelVoipStreamResolutionDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelShowRoomPreviewsInSpaceSidebar": "Muestra salas no unidas dentro de barra lateral",
+    "labelShowRoomPreviewsInSpaceSidebar": "Mostrar salas a que no me he unido en barra lateral",
     "@labelShowRoomPreviewsInSpaceSidebar": {
         "description": "Label for enabling using the preview list in the space sidebar",
         "type": "text",
@@ -2217,7 +2217,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppInfo": "Acerca de…",
+    "labelSettingsAppInfo": "Acerca de",
     "@labelSettingsAppInfo": {
         "description": "Label for the app info settings page",
         "type": "text",
@@ -2231,7 +2231,7 @@
             "pref": {}
         }
     },
-    "labelDefaultTypingIndicatorsOption": "Utilice la preferencia global ({pref})",
+    "labelDefaultTypingIndicatorsOption": "Usar preferencia global ({pref})",
     "@labelDefaultTypingIndicatorsOption": {
         "description": "Label to use the global preference, showing the current global preference value",
         "type": "text",
@@ -2239,13 +2239,13 @@
             "pref": {}
         }
     },
-    "labelReadReceiptsTitle": "Leer ingresos",
+    "labelReadReceiptsTitle": "Acuses de recibo",
     "@labelReadReceiptsTitle": {
         "description": "Label for the toggle for enabling and disabling public read receipts",
         "type": "text",
         "placeholders": {}
     },
-    "labelTypingIndicatorTitle": "Indicadores de tecleo",
+    "labelTypingIndicatorTitle": "Indicadores de digitación",
     "@labelTypingIndicatorTitle": {
         "description": "Label for the toggle for enabling and disabling typing indicators",
         "type": "text",
@@ -2263,7 +2263,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsAddCalendarEventTitle": "Editar Eventos del Calendario",
+    "labelMatrixPermissionsAddCalendarEventTitle": "Editar eventos del calendario",
     "@labelMatrixPermissionsAddCalendarEventTitle": {
         "description": "Title for the permission to allow users to edit the calendar",
         "type": "text",
@@ -2311,7 +2311,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicTypingIndicatorDescription": "Dejar a los demás miembros de la sala cuando estés tecleando un mensaje.",
+    "labelPublicTypingIndicatorDescription": "Deja saber a otros miembros de una sala cuando está digitando un mensaje.",
     "@labelPublicTypingIndicatorDescription": {
         "description": "description for the toggle for enabling and disabling sending typing indicator",
         "type": "text",
@@ -2377,13 +2377,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelEnabled": "Habilitado",
+    "labelEnabled": "Activado",
     "@labelEnabled": {
         "description": "Label for enabled",
         "type": "text",
         "placeholders": {}
     },
-    "labelDisabled": "Inhabilitado",
+    "labelDisabled": "Desactivado",
     "@labelDisabled": {
         "description": "Label for disabled",
         "type": "text",
