@@ -8,6 +8,7 @@ import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
@@ -78,7 +79,7 @@ class RoomQuickAccessMenu {
               name: CommonStrings.promptSearch,
               action: (context) => EventBus.startSearch.add(null),
               icon: Icons.search),
-        if (hasWidgets)
+        if (hasWidgets && !PlatformUtils.isWeb)
           RoomQuickAccessMenuEntry(
               name: "Widgets",
               action: (context) => EventBus.openWidgets.add(null),
