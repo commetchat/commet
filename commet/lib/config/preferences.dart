@@ -563,4 +563,7 @@ class Preferences {
 
   StringListPreference expandedSpaceGroups =
       StringListPreference("expanded_space_groups", defaultValue: []);
+
+  DoublePreference playerVolume = DoublePreference("player_volume", defaultValue: 100);
+  BoolPreference isPlayerMuted = BoolPreference("is_player_muted", defaultValue: false);
 }
