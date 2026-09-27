@@ -1,22 +1,28 @@
 // Runs a program on Windows without a console window flashing up, for the
-// DJ booth's yt-dlp.
+// DJ booth's source extensions (docs/dj-extensions.md).
 //
 // Dart has no say over how a child process is given a console. Started
 // normally from a GUI app, a console program gets its own console window;
 // started detached (`ProcessStartMode.detachedWithStdio`) it gets none, but
-// then whatever *it* starts gets a fresh one instead. yt-dlp runs a
-// JavaScript runtime for YouTube's player challenges, so adding a song from
-// YouTube pops a console up for as long as the challenge takes. On Windows
-// 11 that console is a Terminal window, which ignores the hidden-window hint
-// yt-dlp asks for.
+// then whatever *it* starts gets a fresh one instead. An extension is often
+// a script runtime that starts other console programs in turn, and on
+// Windows 11 each fresh console is a Terminal window, which ignores any
+// hidden-window hint a program asks for.
 //
 // `CREATE_NO_WINDOW` is the flag that gives a child a console with no window
 // of its own, which its own children then inherit, so nothing in the tree
 // ever shows one. Dart cannot pass it, hence CreateProcessW here.
 //
+// The program also starts in a job object of its own, so killing it ends
+// everything it started too. Windows ends only the process it is told to,
+// and a runtime that ends its own children on the way out doesn't reach
+// theirs: yt-dlp.exe, say, is a launcher whose Python child would go on
+// downloading. The job doesn't kill on close, so what outlives a program
+// that ended normally (an updater it left running) is left alone.
+//
 // Output goes to files in a temporary directory rather than pipes: reading a
 // pipe means a blocking read on a thread of its own, and nothing here needs
-// what yt-dlp says sooner than the next poll.
+// what a program says sooner than the next poll.
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
@@ -26,11 +32,14 @@ import 'package:path/path.dart' as p;
 
 /// A program started by [startWindowsHidden], shaped like [Process].
 class WindowsHiddenProcess {
-  WindowsHiddenProcess._(this._handle, this.pid, this._directory) {
+  WindowsHiddenProcess._(this._handle, this._job, this.pid, this._directory) {
     unawaited(_pump());
   }
 
   final int _handle;
+
+  /// The job the program and everything it starts run in; 0 without one.
+  final int _job;
   final int pid;
   final Directory _directory;
 
@@ -43,11 +52,11 @@ class WindowsHiddenProcess {
   Stream<List<int>> get stderr => _stderr.stream;
   Future<int> get exitCode => _exit.future;
 
-  /// Ends the program. Like [Process.kill], its own children are left to
-  /// notice on their own.
+  /// Ends the program and everything it started.
   bool kill() {
     if (_killed || _exit.isCompleted) return false;
     _killed = true;
+    if (_job != 0 && _terminateJobObject(_job, 1) != 0) return true;
     return _terminateProcess(_handle, 1) != 0;
   }
 
@@ -91,6 +100,7 @@ class WindowsHiddenProcess {
       await out?.close().catchError((_) {});
       await err?.close().catchError((_) {});
       _closeHandle(_handle);
+      if (_job != 0) _closeHandle(_job);
       await _stdout.close();
       await _stderr.close();
       await _directory.delete(recursive: true).catchError((_) => _directory);
@@ -149,6 +159,7 @@ Future<WindowsHiddenProcess> startWindowsHidden(
 
       final info = arena<_ProcessInformation>();
       Pointer<Void> attributes = nullptr;
+      var job = 0;
       try {
         // Nothing here reads from the program, but a child left with no
         // input handle at all can misbehave.
@@ -174,6 +185,10 @@ Future<WindowsHiddenProcess> startWindowsHidden(
         plain.ref.hStdError = stderr;
         startup.ref.lpAttributeList = attributes;
 
+        // Started suspended, so it is in the job before it can start
+        // anything.
+        job = _createJobObjectW(nullptr, nullptr);
+
         // No application name: that way the command line's first word is
         // looked up on PATH, and `.exe` appended, as Process.start does.
         final commandLine = [executable, ...arguments]
@@ -186,9 +201,9 @@ Future<WindowsHiddenProcess> startWindowsHidden(
             nullptr,
             nullptr,
             1,
-            attributes == nullptr
-                ? _createNoWindow
-                : _createNoWindow | _extendedStartupInfoPresent,
+            _createNoWindow |
+                (attributes == nullptr ? 0 : _extendedStartupInfoPresent) |
+                (job == 0 ? 0 : _createSuspended),
             nullptr,
             workingDirectory == null
                 ? nullptr
@@ -197,10 +212,18 @@ Future<WindowsHiddenProcess> startWindowsHidden(
             info);
         if (ok == 0) {
           final error = _getLastError();
+          if (job != 0) _closeHandle(job);
           throw ProcessException(executable, arguments,
               'Could not start $executable (error $error)', error);
         }
         started = true;
+        if (job != 0) {
+          if (_assignProcessToJobObject(job, info.ref.hProcess) == 0) {
+            _closeHandle(job);
+            job = 0;
+          }
+          _resumeThread(info.ref.hThread);
+        }
       } finally {
         if (attributes != nullptr) _deleteProcThreadAttributeList(attributes);
         // The child has its own copies; ours would keep the files open and
@@ -212,7 +235,7 @@ Future<WindowsHiddenProcess> startWindowsHidden(
 
       _closeHandle(info.ref.hThread);
       return WindowsHiddenProcess._(
-          info.ref.hProcess, info.ref.dwProcessId, directory);
+          info.ref.hProcess, job, info.ref.dwProcessId, directory);
     });
   } finally {
     // The process owns the directory once it is running.
@@ -248,7 +271,7 @@ Pointer<Void> _attributeListFor(List<int> handles, Arena arena) {
 }
 
 /// Quotes [argument] the way the C runtime parses a command line back into
-/// arguments, which is what yt-dlp and Deno use.
+/// arguments, which is what most programs (Deno included) use.
 String quoteWindowsArgument(String argument) {
   if (argument.isNotEmpty && !argument.contains(RegExp(r'[ \t"]'))) {
     return argument;
@@ -279,6 +302,7 @@ String quoteWindowsArgument(String argument) {
 }
 
 const int _createNoWindow = 0x08000000;
+const int _createSuspended = 0x00000004;
 const int _extendedStartupInfoPresent = 0x00080000;
 const int _attributeHandleList = 0x00020002;
 const int _startfUseShowWindow = 0x00000001;
@@ -411,6 +435,21 @@ final int Function(int, Pointer<Uint32>) _getExitCodeProcess =
 
 final int Function(int, int) _terminateProcess = _kernel32.lookupFunction<
     Int32 Function(IntPtr, Uint32), int Function(int, int)>('TerminateProcess');
+
+final int Function(Pointer<Void>, Pointer<Utf16>) _createJobObjectW =
+    _kernel32.lookupFunction<IntPtr Function(Pointer<Void>, Pointer<Utf16>),
+        int Function(Pointer<Void>, Pointer<Utf16>)>('CreateJobObjectW');
+
+final int Function(int, int) _assignProcessToJobObject =
+    _kernel32.lookupFunction<Int32 Function(IntPtr, IntPtr),
+        int Function(int, int)>('AssignProcessToJobObject');
+
+final int Function(int, int) _terminateJobObject = _kernel32.lookupFunction<
+    Int32 Function(IntPtr, Uint32),
+    int Function(int, int)>('TerminateJobObject');
+
+final int Function(int) _resumeThread = _kernel32
+    .lookupFunction<Uint32 Function(IntPtr), int Function(int)>('ResumeThread');
 
 final int Function() _getLastError =
     _kernel32.lookupFunction<Uint32 Function(), int Function()>('GetLastError');

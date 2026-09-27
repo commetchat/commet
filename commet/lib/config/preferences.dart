@@ -494,10 +494,6 @@ class Preferences {
   DoublePreference djMusicPremuteVolume =
       DoublePreference("dj_music_premute_volume", defaultValue: 0.6);
 
-  /// When yt-dlp, managed by the booth, last updated itself (ms since epoch).
-  DoublePreference djToolsLastUpdate =
-      DoublePreference("dj_tools_last_update", defaultValue: 0);
-
   /// Favorite soundboard sound ids, oldest first. Local-only.
   StringListPreference soundboardFavorites =
       StringListPreference("soundboard_favorites", defaultValue: []);

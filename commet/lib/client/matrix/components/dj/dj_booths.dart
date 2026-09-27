@@ -16,7 +16,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/dj/dj_booth_panel.dart'
     show liveDjMusicVolume;
 import 'package:commet/ui/organisms/dj/dj_toast.dart';
-import 'package:commet/ui/organisms/dj/dj_tools_prompt.dart';
+import 'package:commet/ui/organisms/dj/dj_prompts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
@@ -60,7 +60,6 @@ class DjBooths {
       selfUserId: session.client.self?.identifier ?? '',
       engineFactory: platform.engineFactory(room),
       resolver: platform.resolver,
-      prepareToDj: platform.canDj ? ensureDjTools : null,
       acceptPass: platform.canDj
           ? (from) => askToTakeDecks(session.client
                   .getRoom(session.roomId)

@@ -222,6 +222,22 @@ void main() {
       expect(File(p.join(install.path, 'which')).readAsStringSync(), 'old');
     }, timeout: const Timeout(Duration(minutes: 2)));
 
+    test('a build with nothing where it goes is moved in all the same',
+        () async {
+      // Recovered from a staging directory with no install left beside it.
+      final install = p.join(root.path, 'roscord');
+      final work = Directory(p.join(root.path, '.roscord-update'))
+        ..createSync();
+      final staged = buildDir(work, 'v2/unpacked/roscord-v2-linux', 'new');
+
+      final result =
+          await runSwap(work: work, install: install, staged: staged.path);
+
+      expect(result.exitCode, 0, reason: result.stderr.toString());
+      expect(File(p.join(install, 'which')).readAsStringSync(), 'new');
+      expect(work.existsSync(), isFalse);
+    });
+
     test('a path with a quote in it does not break the script', () async {
       final odd = Directory(p.join(root.path, "it's here"))
         ..createSync(recursive: true);

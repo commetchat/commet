@@ -62,9 +62,13 @@ class _Session implements VoipSession {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-/// Never answers: the links stay "Adding ..." like a slow yt-dlp.
+/// Never answers: the links stay "Adding ..." like a slow source.
 class _SlowResolver implements DjResolver {
   final _never = Completer<List<DjTrack>>();
+  @override
+  String? sourceFor(DjLink link) => 'Slow source';
+  @override
+  String? get hint => null;
   @override
   Future<List<DjTrack>> resolve(DjLink link, {required String addedBy}) =>
       _never.future;
@@ -128,7 +132,7 @@ void main() {
 
     dj.addLinks([
       for (var i = 0; i < 12; i++)
-        'https://www.youtube.com/watch?v=abcdefghij$i'
+        'https://music.example/abcdefghij$i'
     ].join('\n'));
 
     await tester.pumpWidget(_app(DjBoothPanel(session: _Session(), dj: dj)));

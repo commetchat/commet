@@ -9,6 +9,7 @@ import 'package:commet/client/components/dj/dj_models.dart';
 import 'package:commet/client/components/dj/dj_session.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/dj/dj_platform.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/config/layout_config.dart';
@@ -16,8 +17,10 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/dj/dj_member_ui.dart';
+import 'package:commet/ui/organisms/dj/dj_prompts.dart';
 import 'package:commet/ui/organisms/dj/vinyl_disc.dart';
 import 'package:commet/utils/links/link_utils.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -622,12 +625,13 @@ class _NowPlayingState extends State<_NowPlaying> {
               ),
             ],
             const Spacer(),
-            IconButton(
-              tooltip: 'Open the song page',
-              icon: const Icon(Icons.open_in_new_rounded, size: 18),
-              onPressed: () =>
-                  LinkUtils.open(Uri.parse(track.pageUrl), context: context),
-            ),
+            if (track.pageUrl case final page?)
+              IconButton(
+                tooltip: 'Open the song page',
+                icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                onPressed: () =>
+                    LinkUtils.open(Uri.parse(page), context: context),
+              ),
             DjMusicVolume(session: widget.session),
           ],
         ),
@@ -726,29 +730,45 @@ class DjTrackArt extends StatelessWidget {
   }
 }
 
+/// The label a song's source extension gave it, or "File" for the DJ's own.
 class DjSourceChip extends StatelessWidget {
   const DjSourceChip(this.kind, {super.key});
 
-  final DjSource kind;
+  final String kind;
 
-  static Color colorOf(DjSource kind) => switch (kind) {
-        DjSource.youtube => const Color(0xFFE53935),
-        DjSource.soundcloud => const Color(0xFFFF7A1A),
-        DjSource.spotify => const Color(0xFF1DB954),
-        DjSource.other => const Color(0xFF7E57C2),
-      };
+  static const _palette = [
+    Color(0xFFE53935),
+    Color(0xFFFF7A1A),
+    Color(0xFF1DB954),
+    Color(0xFF1E88E5),
+    Color(0xFFD81B60),
+    Color(0xFFFDD835),
+  ];
 
-  static String nameOf(DjSource kind) => switch (kind) {
-        DjSource.youtube => 'YouTube',
-        DjSource.soundcloud => 'SoundCloud',
-        DjSource.spotify => 'Spotify',
-        DjSource.other => 'Link',
-      };
+  static Color colorOf(String kind) {
+    if (kind == DjTrack.fileKind) return const Color(0xFF26A69A);
+    if (kind == DjTrack.linkKind) return const Color(0xFF7E57C2);
+    // The same label gets the same colour on every client.
+    final hash = kind
+        .toLowerCase()
+        .codeUnits
+        .fold<int>(0, (h, c) => (h * 31 + c) & 0x7fffffff);
+    return _palette[hash % _palette.length];
+  }
+
+  static String nameOf(String kind) {
+    if (kind == DjTrack.fileKind) return 'File';
+    if (kind == DjTrack.linkKind) return 'Link';
+    // Clients from before extensions sent lowercase names.
+    return kind == kind.toLowerCase()
+        ? kind[0].toUpperCase() + kind.substring(1)
+        : kind;
+  }
 
   @override
   Widget build(BuildContext context) {
     final color = colorOf(kind);
-    final chip = DecoratedBox(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(4),
@@ -759,11 +779,6 @@ class DjSourceChip extends StatelessWidget {
             style: TextStyle(
                 color: color, fontSize: 11, fontWeight: FontWeight.w600)),
       ),
-    );
-    if (kind != DjSource.spotify) return chip;
-    return Tooltip(
-      message: "Spotify songs play from YouTube's closest match",
-      child: chip,
     );
   }
 }
@@ -857,7 +872,7 @@ class _DjMusicVolumeState extends State<DjMusicVolume> {
   }
 }
 
-/// Where the DJ pastes links.
+/// Where the DJ pastes links and adds files.
 class _AddBar extends StatefulWidget {
   const _AddBar({required this.dj, required this.enabled});
 
@@ -872,6 +887,8 @@ class _AddBarState extends State<_AddBar> {
   final TextEditingController _text = TextEditingController();
   final FocusNode _focus = FocusNode();
   List<DjLink> _links = const [];
+  final ValueListenable<List<DjSourceInfo>>? _sources =
+      DjPlatform.instance.sources?.installed;
 
   @override
   void initState() {
@@ -883,14 +900,22 @@ class _AddBarState extends State<_AddBar> {
         setState(() => _links = links);
       }
     });
+    _sources?.addListener(_onSources);
+  }
+
+  void _onSources() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    _sources?.removeListener(_onSources);
     _text.dispose();
     _focus.dispose();
     super.dispose();
   }
+
+  bool get _hasSources => _sources?.value.isNotEmpty ?? false;
 
   void _add({bool next = false}) {
     if (_links.isEmpty || !widget.enabled) return;
@@ -900,19 +925,31 @@ class _AddBarState extends State<_AddBar> {
     _focus.requestFocus();
   }
 
+  Future<void> _addFiles() async {
+    final result = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Add songs from this computer',
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: DjPlatform.audioFileExtensions,
+    );
+    final paths = [
+      for (final file in result?.files ?? const <PlatformFile>[])
+        if (file.path != null) file.path!
+    ];
+    if (paths.isEmpty || !widget.enabled) return;
+    final dj = widget.dj;
+    final tracks = await DjPlatform.instance
+        .localTracks(paths, addedBy: dj.selfUserId, newId: dj.newTrackId);
+    dj.addTracks(tracks);
+  }
+
   String _describe(List<DjLink> links) {
     if (links.length > 1) return '${links.length} links';
-    return switch (links.single.type) {
-      DjLinkType.youtubeVideo => 'YouTube video',
-      DjLinkType.youtubePlaylist => 'YouTube playlist, every song',
-      DjLinkType.soundcloudTrack => 'SoundCloud track',
-      DjLinkType.soundcloudSet => 'SoundCloud set, every song',
-      DjLinkType.spotifyTrack => 'Spotify song, played from YouTube',
-      DjLinkType.spotifyAlbum => 'Spotify album, played from YouTube',
-      DjLinkType.spotifyPlaylist =>
-        'Spotify playlist (first 50 songs), played from YouTube',
-      DjLinkType.other => 'Link, if yt-dlp knows the site',
-    };
+    final link = links.single;
+    final source = widget.dj.resolver?.sourceFor(link);
+    return source == null
+        ? 'No installed source plays links from ${link.host}'
+        : 'Played by $source';
   }
 
   @override
@@ -920,6 +957,12 @@ class _AddBarState extends State<_AddBar> {
     final scheme = Theme.of(context).colorScheme;
     final pending = widget.dj.pendingAdds;
     final canAdd = widget.enabled && _links.isNotEmpty;
+    final hint = !widget.enabled
+        ? 'Locked while the decks change hands'
+        : widget.dj.resolver?.hint ??
+            (_hasSources
+                ? 'Paste a link'
+                : 'Add songs from this computer, or a music source for links');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 6,
@@ -943,9 +986,7 @@ class _AddBarState extends State<_AddBar> {
               isDense: true,
               filled: true,
               fillColor: scheme.surfaceContainerHighest,
-              hintText: widget.enabled
-                  ? 'Paste a YouTube, SoundCloud or Spotify link'
-                  : 'Locked while the decks change hands',
+              hintText: hint,
               prefixIcon: const Icon(Icons.link_rounded, size: 18),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -953,6 +994,11 @@ class _AddBarState extends State<_AddBar> {
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  IconButton(
+                    tooltip: 'Add songs from this computer',
+                    icon: const Icon(Icons.audio_file_outlined, size: 20),
+                    onPressed: widget.enabled ? _addFiles : null,
+                  ),
                   IconButton(
                     tooltip: 'Play next (Shift+Enter)',
                     icon: const Icon(Icons.low_priority_rounded, size: 20),
@@ -973,6 +1019,15 @@ class _AddBarState extends State<_AddBar> {
             padding: const EdgeInsets.only(left: 4),
             child: tiamat.Text.tiny(_describe(_links)),
           ),
+        if (!_hasSources && _sources != null)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              icon: const Icon(Icons.extension_outlined, size: 16),
+              label: const Text('Add a music source…'),
+              onPressed: () => installDjSource(context),
+            ),
+          ),
         if (pending.isNotEmpty)
           Row(
             spacing: 8,
@@ -980,7 +1035,7 @@ class _AddBarState extends State<_AddBar> {
               const SizedBox.square(
                   dimension: 12,
                   child: CircularProgressIndicator(strokeWidth: 1.5)),
-              DjSourceChip(pending.first.link.source),
+              const DjSourceChip(DjTrack.linkKind),
               Expanded(
                 child: tiamat.Text.tiny(
                     pending.length == 1
@@ -1084,11 +1139,12 @@ class _QueueRowState extends State<_QueueRow> {
               icon: Icons.edit_rounded,
               onPressed: () => editDjTrack(context, widget.dj, track)),
         ],
-        tiamat.ContextMenuItem(
-            text: 'Open the song page',
-            icon: Icons.open_in_new_rounded,
-            onPressed: () =>
-                LinkUtils.open(Uri.parse(track.pageUrl), context: context)),
+        if (track.pageUrl case final page?)
+          tiamat.ContextMenuItem(
+              text: 'Open the song page',
+              icon: Icons.open_in_new_rounded,
+              onPressed: () =>
+                  LinkUtils.open(Uri.parse(page), context: context)),
         if (widget.editable)
           tiamat.ContextMenuItem(
               text: 'Remove',
@@ -1214,7 +1270,7 @@ class _EditTrackDialog extends StatefulWidget {
 
 class _EditTrackDialogState extends State<_EditTrackDialog> {
   late final TextEditingController _link =
-      TextEditingController(text: widget.track.pageUrl);
+      TextEditingController(text: widget.track.pageUrl ?? '');
   late final TextEditingController _title =
       TextEditingController(text: widget.track.title);
 
@@ -1244,7 +1300,7 @@ class _EditTrackDialogState extends State<_EditTrackDialog> {
               controller: _link,
               decoration: const InputDecoration(
                   labelText: 'Link',
-                  helperText: 'YouTube, SoundCloud or Spotify'),
+                  helperText: 'Played by the music source that takes it'),
             ),
           ],
         ),

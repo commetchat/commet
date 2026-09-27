@@ -105,6 +105,9 @@ class FakeEngine implements DjPlaybackEngine {
   /// Tracks whose fetch fails.
   final Set<String> failing = {};
 
+  /// Tracks this client can't play at all (another DJ's file).
+  final Set<String> unavailable = {};
+
   /// When set, prepare waits for it.
   Completer<void>? gate;
 
@@ -135,6 +138,9 @@ class FakeEngine implements DjPlaybackEngine {
     if (whole) preparedWhole.add(track.id);
     if (gate != null) await gate!.future;
     if (failing.contains(track.id)) throw Exception('no such video');
+    if (unavailable.contains(track.id)) {
+      throw const DjTrackUnavailable("it's a file on someone else's computer");
+    }
     return DjTrackInfo(durationMs: 180000, title: 'Fetched ${track.title}');
   }
 
@@ -204,6 +210,12 @@ class FakeResolver implements DjResolver {
   FakeResolver({this.count = 1});
 
   @override
+  String? sourceFor(DjLink link) => 'Fake source';
+
+  @override
+  String? get hint => null;
+
+  @override
   Future<List<DjTrack>> resolve(DjLink link, {required String addedBy}) async {
     if (failing.contains(link.url)) throw Exception('not found');
     return [
@@ -211,7 +223,8 @@ class FakeResolver implements DjResolver {
         DjTrack(
           id: 'track${_next++}',
           source: link.url,
-          kind: link.source,
+          // Labelled after the site, like an extension would.
+          kind: link.host,
           title: '${link.url} #$i',
           addedBy: addedBy,
           durationMs: 180000,
@@ -222,8 +235,8 @@ class FakeResolver implements DjResolver {
 
 DjTrack track(String id, {String? title}) => DjTrack(
       id: id,
-      source: 'https://www.youtube.com/watch?v=$id',
-      kind: DjSource.youtube,
+      source: 'https://music.example/$id',
+      kind: 'Example',
       title: title ?? 'Song $id',
       addedBy: '@a:x',
       durationMs: 180000,

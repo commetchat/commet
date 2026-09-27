@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show File, HttpServer, InternetAddress, ContentType, Platform;
+import 'dart:io' show HttpServer, InternetAddress, ContentType, Platform;
 
 import 'package:commet/browser_runtime.dart';
 import 'package:commet/cache/file_provider.dart';
@@ -42,26 +42,6 @@ class VideoPlaybackDialog extends StatefulWidget {
 
   /// Looked up once: the bundle does not change while the app runs.
   static final bool _cefBundled = isBundledBrowserRuntimeAvailable();
-
-  /// Whether YouTube can play in the native player instead: mpv hands a
-  /// YouTube page to yt-dlp itself, when it is installed. This is the Linux
-  /// fallback when the build bundles no CEF host.
-  static bool get canPlayYouTubeNatively =>
-      !kIsWeb && Platform.isLinux && _ytDlpInstalled;
-
-  /// Looked up once: installing yt-dlp takes a restart to be noticed.
-  static final bool _ytDlpInstalled = _onPath(const ["yt-dlp", "youtube-dl"]);
-
-  static bool _onPath(List<String> programs) {
-    final path = Platform.environment["PATH"] ?? "";
-    for (final dir in path.split(":")) {
-      if (dir.isEmpty) continue;
-      for (final program in programs) {
-        if (File("$dir/$program").existsSync()) return true;
-      }
-    }
-    return false;
-  }
 
   static Future<void> show(
     BuildContext context, {

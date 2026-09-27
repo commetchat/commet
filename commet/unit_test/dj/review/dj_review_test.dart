@@ -44,8 +44,8 @@ class NoisyResolver extends FakeResolver {
       for (var i = 0; i < count; i++)
         DjTrack(
             id: 'n$i',
-            source: 'https://www.youtube.com/watch?v=${noise()}',
-            kind: DjSource.youtube,
+            source: 'https://music.example/${noise()}',
+            kind: 'Example',
             title: noise(),
             addedBy: addedBy,
             durationMs: 180000),
@@ -167,7 +167,7 @@ void main() {
     });
     await settle();
     await a.becomeDj();
-    a.addLinks('https://youtu.be/aaaaaaaaaaa');
+    a.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
     expect(a.current?.id, 'track0');
 
@@ -193,7 +193,7 @@ void main() {
     final b = make(call.join('@b:x:B'));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://youtu.be/aaaaaaaaaaa https://youtu.be/bbbbbbbbbbb');
+    a.addLinks('https://music.example/aaaaaaaaaaa https://music.example/bbbbbbbbbbb');
     await settle();
     await a.stopDjing();
     await settle();
@@ -224,7 +224,7 @@ void main() {
     final b = make(net.join('@b:x:B'));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://youtu.be/aaaaaaaaaaa');
+    a.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
 
     // a reconnects: b sees it leave and the booth vacant.
@@ -273,7 +273,7 @@ void main() {
     });
     await settle();
     await a.becomeDj();
-    a.addLinks('https://youtu.be/aaaaaaaaaaa');
+    a.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
 
     a.passTo('@b:x:B');
@@ -294,7 +294,7 @@ void main() {
     final b = make(call.join('@b:x:B'));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://www.youtube.com/playlist?list=PLlong');
+    a.addLinks('https://music.example/playlist/PLlong');
     await settle();
     final parts = DjProtocol.split({'t': 'state', ...a.snapshot.toJson()})!;
     expect(parts.length, greaterThan(1));
@@ -317,7 +317,7 @@ void main() {
             engine = GatedEngine('@a:x:A')..playGates['track0'] = gate);
     await settle();
     await a.becomeDj();
-    a.addLinks('https://www.youtube.com/playlist?list=PL2');
+    a.addLinks('https://music.example/playlist/PL2');
     await settle();
     expect(a.current?.id, 'track0');
     expect(a.isBuffering, isTrue);
@@ -376,7 +376,7 @@ void main() {
   });
 
   test('R9c: DjLinks.parseAll on malformed percent-encoding', () {
-    expect(() => DjLinks.parseAll('https://www.youtube.com/watch?v=%zz'),
+    expect(() => DjLinks.parseAll('https://music.example/%zz'),
         returnsNormally);
     expect(() => DjLinks.parseAll('https://example.com/a?b=%E0%A4%A'),
         returnsNormally);

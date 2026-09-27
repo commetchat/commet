@@ -47,9 +47,11 @@ a .deb or a distro package (`/usr`), a snap and a nix store path all belong to
 something else and are refused (`isSelfInstallable`); so are Android and the
 web. There, the button opens the release page, which is all the app ever did.
 
-1. **Download** the archive for this platform to `.roscord-update/` beside the
-   install, or the temp directory when that is not writable. Beside it means
-   putting it in place is a rename rather than a copy between filesystems.
+1. **Download** the archive for this platform to `.roscord-update/<tag>/`
+   beside the install, or the temp directory when that is not writable.
+   Beside it means putting it in place is a rename rather than a copy
+   between filesystems. Where the install is comes from `updateTargetFor`
+   (below).
 2. **Verify** it against the `sha256` GitHub reports for the asset. An asset
    without one is not installed: there would be no way to know what arrived,
    and this unpacks over the app.
@@ -61,13 +63,41 @@ web. There, the button opens the release page, which is all the app ever did.
 4. **Swap**, when the user says to. A running program cannot replace its own
    directory on Windows, so a script is written next to the staged build and
    started detached: it waits for the process to go, moves the install aside,
-   moves the new one in, starts it, and clears up. If the new one will not go
-   in, the old one is moved back — a failure leaves the build that was
-   already working.
+   moves the new one in, starts it, and clears up all of `.roscord-update/`.
+   If the new one will not go in, the old one is moved back — a failure
+   leaves the build that was already working, and on Windows starts it
+   again and keeps `install-<stamp>.log` in `.roscord-update/`.
+
+On Windows:
+
+- The script is started in the temp directory. It used to inherit the app's
+  working directory, which is the install when Explorer starts it, and
+  Windows will not rename a directory a process is working in: no swap ever
+  happened, and people ran the staged build from `.roscord-update/` instead.
+- Moves are `[System.IO.Directory]::Move`, retried for 30 seconds while the
+  install is busy (the CEF helpers closing, a virus scanner). `Move-Item`
+  moves a directory with a busy file in it one file at a time and leaves
+  half an install.
+
+### Where the install is
+
+`updateTargetFor` works it out from the running executable:
+
+- **Its own directory**, normally.
+- **Run from inside `.roscord-update/`** (a swap that never happened, the
+  staged build started by hand, maybe more than once, each staging the next
+  inside itself): the build left beside the outermost `.roscord-update/` is
+  replaced, and the whole nest is cleared with the swap.
+- **Run from a zip opened in Explorer**, which unpacks it under the temp
+  directory: the update goes to `%LOCALAPPDATA%\Programs\roscord`, with a
+  Start menu shortcut, since the next click on the zip would start the old
+  build again. The button says so before the restart.
 
 The swap scripts are `windowsSwapScript` and `linuxSwapScript`, kept as
-plain functions so `unit_test/updater/self_updater_test.dart` can run them
-for real against directories that are not an install.
+plain functions so `unit_test/updater/self_updater_test.dart` (Linux) and
+`windows_swap_test.dart` (Windows, started the way the app starts it, from
+inside the install) can run them for real against directories that are not
+an install.
 
 ## Known gaps
 

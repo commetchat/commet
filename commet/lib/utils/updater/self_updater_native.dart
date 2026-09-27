@@ -80,6 +80,94 @@ Directory? singleRootOf(Directory unpacked) {
   return only is Directory ? only : null;
 }
 
+/// Where an update goes, worked out from where the running build is.
+class UpdateTarget {
+  const UpdateTarget(
+      {required this.install, required this.workRoot, this.shortcut});
+
+  /// The directory the new build takes the place of. It may not exist yet
+  /// (a build that is moving somewhere lasting).
+  final String install;
+
+  /// [updateDirName] beside [install]: downloads are unpacked in there, so
+  /// putting one in place is a rename, and the swap clears all of it,
+  /// whatever earlier attempts left behind.
+  final String workRoot;
+
+  /// A Start menu shortcut to point at the new build, for one that moved.
+  final String? shortcut;
+
+  bool get moves => shortcut != null;
+}
+
+/// Name of the directory updates are staged in, beside the install.
+const updateDirName = '.roscord-update';
+
+/// Where the build at [executable] is updated to.
+///
+/// - Run from inside [updateDirName] (an earlier swap never happened and the
+///   staged build was started by hand, maybe more than once, each one
+///   staging the next inside itself): the install is the build left beside
+///   the outermost [updateDirName], and the whole nest goes with the swap.
+/// - Run from a zip opened in Explorer, which unpacks it into the temp
+///   directory ([tempDir]): the update goes to `Programs\roscord` in
+///   [localAppData], with a Start menu shortcut, since the next click on the
+///   zip would start the old build again.
+/// - Otherwise the build's own directory.
+///
+/// Reads the file system (the recovery looks for the build that was left
+/// behind) but changes nothing, so it can be tried on directories that are
+/// not an install.
+UpdateTarget updateTargetFor(
+  String executable, {
+  required bool windows,
+  required String tempDir,
+  String? localAppData,
+  String? startMenu,
+}) {
+  final context = windows ? p.windows : p.posix;
+  final exeName = context.basename(executable);
+  final installDir = context.dirname(executable);
+  final parts = context.split(installDir);
+
+  final nested = parts.indexOf(updateDirName);
+  if (nested > 0) {
+    final outer = context.joinAll(parts.take(nested));
+    String? left;
+    try {
+      for (final entry in Directory(outer).listSync()) {
+        if (entry is Directory &&
+            context.basename(entry.path) != updateDirName &&
+            File(context.join(entry.path, exeName)).existsSync()) {
+          left = entry.path;
+          break;
+        }
+      }
+    } catch (_) {}
+    return UpdateTarget(
+      install: left ?? context.join(outer, parts.last),
+      workRoot: context.join(outer, updateDirName),
+    );
+  }
+
+  if (windows &&
+      localAppData != null &&
+      startMenu != null &&
+      context.isWithin(tempDir, installDir)) {
+    final programs = context.join(localAppData, 'Programs');
+    return UpdateTarget(
+      install: context.join(programs, 'roscord'),
+      workRoot: context.join(programs, updateDirName),
+      shortcut: context.join(startMenu, 'roscord.lnk'),
+    );
+  }
+
+  return UpdateTarget(
+    install: installDir,
+    workRoot: context.join(context.dirname(installDir), updateDirName),
+  );
+}
+
 class NativeSelfUpdater implements SelfUpdater {
   @override
   final ValueNotifier<UpdateProgress> progress =
@@ -97,8 +185,20 @@ class NativeSelfUpdater implements SelfUpdater {
           ? 'macos'
           : 'linux';
 
-  Directory get _installDir =>
-      File(Platform.resolvedExecutable).parent.absolute;
+  late final UpdateTarget _target = updateTargetFor(
+    File(Platform.resolvedExecutable).absolute.path,
+    windows: Platform.isWindows,
+    tempDir: Directory.systemTemp.absolute.path,
+    localAppData: Platform.environment['LOCALAPPDATA'],
+    startMenu: Platform.environment['APPDATA'] == null
+        ? null
+        : p.join(Platform.environment['APPDATA']!, 'Microsoft', 'Windows',
+            'Start Menu', 'Programs'),
+  );
+
+  /// What the swap clears up after itself: [UpdateTarget.workRoot], or the
+  /// temp directory's when that could not be written.
+  String? _workRoot;
 
   @override
   bool get canInstall =>
@@ -194,7 +294,13 @@ class NativeSelfUpdater implements SelfUpdater {
         throw StateError('no $_executableName in the archive');
       }
       _staged = root;
-      _set(UpdateStage.ready, release: release);
+      _set(UpdateStage.ready,
+          release: release,
+          message: _target.moves
+              ? '${release.tag} is ready. Restarting moves roscord to '
+                  '${_target.install}, with a Start menu shortcut, so it no '
+                  'longer runs from the zip.'
+              : null);
       Log.i('Update: ${release.tag} is unpacked at ${root.path}');
     } catch (e, s) {
       Log.onError(e, s, content: 'Update: could not stage ${release.tag}');
@@ -208,21 +314,25 @@ class NativeSelfUpdater implements SelfUpdater {
 
   String get _executableName => p.basename(Platform.resolvedExecutable);
 
+  /// A fresh directory for [tag] under the work root. Fresh, because the
+  /// root may hold what earlier attempts left (the running build, even).
   Future<Directory> _workDirectory(String tag) async {
-    final beside =
-        Directory(p.join(_installDir.parent.path, '.roscord-update'));
-    try {
-      await beside.create(recursive: true);
+    Future<Directory> fresh(String root) async {
+      final work = Directory(p.join(root, tag));
+      if (await work.exists()) await work.delete(recursive: true);
+      await work.create(recursive: true);
       // Writable in practice, not only on paper.
-      final probe = File(p.join(beside.path, '.probe'));
+      final probe = File(p.join(work.path, '.probe'));
       await probe.writeAsString('');
       await probe.delete();
-      return beside;
+      _workRoot = root;
+      return work;
+    }
+
+    try {
+      return await fresh(_target.workRoot);
     } catch (_) {
-      final temp =
-          Directory(p.join(Directory.systemTemp.path, 'roscord-update-$tag'));
-      await temp.create(recursive: true);
-      return temp;
+      return fresh(p.join(Directory.systemTemp.path, 'roscord-update'));
     }
   }
 
@@ -262,7 +372,7 @@ class NativeSelfUpdater implements SelfUpdater {
     if (staged == null || !await staged.exists()) return false;
     try {
       final script = await _writeSwapScript(staged);
-      await _spawnDetached(script);
+      await startSwapScript(script);
       Log.i('Update: handed the swap to ${script.path}');
       return true;
     } catch (e, s) {
@@ -291,49 +401,63 @@ class NativeSelfUpdater implements SelfUpdater {
   }
 
   Future<File> _writeSwapScript(Directory staged) async {
-    final install = _installDir.path;
+    final install = _target.install;
     final exe = p.join(install, _executableName);
     final stamp = DateTime.now().millisecondsSinceEpoch;
-    final script = File(p.join(
-        staged.parent.path, Platform.isWindows ? 'install.ps1' : 'install.sh'));
+    final work = staged.parent.parent;
+    final workRoot = _workRoot ?? work.path;
+    final script = File(
+        p.join(work.path, Platform.isWindows ? 'install.ps1' : 'install.sh'));
     await script.writeAsString(Platform.isWindows
         ? windowsSwapScript(
             waitFor: pid,
             staged: staged.path,
             install: install,
             exe: exe,
-            work: staged.parent.parent.path,
-            stamp: stamp)
+            work: workRoot,
+            stamp: stamp,
+            shortcut: _target.shortcut,
+            restart: Platform.resolvedExecutable)
         : linuxSwapScript(
             waitFor: pid,
             staged: staged.path,
             install: install,
             exe: exe,
-            work: staged.parent.parent.path,
+            work: workRoot,
             stamp: stamp));
     if (!Platform.isWindows) {
       await Process.run('chmod', ['+x', script.path]);
     }
     return script;
   }
+}
 
-  Future<void> _spawnDetached(File script) async {
-    if (Platform.isWindows) {
-      // No console window: this outlives the app and the user should not
-      // see a terminal flash up as it closes.
-      await startWindowsHidden('powershell.exe', [
-        '-NoProfile',
-        '-ExecutionPolicy',
-        'Bypass',
-        '-WindowStyle',
-        'Hidden',
-        '-File',
-        script.path,
-      ]);
-    } else {
-      await Process.start('/bin/sh', [script.path],
-          mode: ProcessStartMode.detached);
-    }
+/// Starts the swap [script] so that it outlives the app.
+///
+/// In the temp directory, never the app's working directory: that is
+/// usually the install itself (Explorer starts a program in its own folder),
+/// and Windows will not rename a directory a process is working in. The
+/// script inheriting it kept every swap on Windows from happening.
+Future<void> startSwapScript(File script) async {
+  final outside = Directory.systemTemp.path;
+  if (Platform.isWindows) {
+    // No console window: this outlives the app and the user should not
+    // see a terminal flash up as it closes.
+    await startWindowsHidden(
+        'powershell.exe',
+        [
+          '-NoProfile',
+          '-ExecutionPolicy',
+          'Bypass',
+          '-WindowStyle',
+          'Hidden',
+          '-File',
+          script.path,
+        ],
+        workingDirectory: outside);
+  } else {
+    await Process.start('/bin/sh', [script.path],
+        mode: ProcessStartMode.detached, workingDirectory: outside);
   }
 }
 
@@ -350,6 +474,13 @@ String _sh(String value) => "'${value.replaceAll("'", r"'\''")}'";
 ///
 /// Pulled out of the updater so the scripts can be read, and run against a
 /// directory that is not an install, in tests.
+///
+/// [install] need not exist (a build moving out of the temp directory);
+/// [shortcut], when given, is a Start menu shortcut made to point at [exe].
+/// When the swap fails, [restart] (the build that was running) is started
+/// again, so restarting to update never leaves roscord closed. What
+/// happened goes in `install-<stamp>.log` in [work], which is only cleared
+/// when the swap worked.
 String windowsSwapScript({
   required int waitFor,
   required String staged,
@@ -357,29 +488,88 @@ String windowsSwapScript({
   required String exe,
   required String work,
   required int stamp,
+  String? shortcut,
+  String? restart,
 }) =>
     '''
 \$ErrorActionPreference = 'Stop'
+\$work = ${_ps(work)}
+\$log  = Join-Path \$work 'install-$stamp.log'
+function Say(\$what) {
+  Add-Content -LiteralPath \$log -Value "\$(Get-Date -Format o) \$what" -ErrorAction SilentlyContinue
+}
+# Out of every directory this moves or deletes: Windows will not rename a
+# directory some process, this one included, is working in.
+Set-Location -LiteralPath ([System.IO.Path]::GetTempPath())
+
 # Wait for roscord to go: its directory cannot be renamed while it runs.
+Say 'waiting for roscord (process $waitFor) to close'
 \$deadline = (Get-Date).AddSeconds(60)
 while ((Get-Process -Id $waitFor -ErrorAction SilentlyContinue) -and
        ((Get-Date) -lt \$deadline)) {
   Start-Sleep -Milliseconds 200
 }
+
+# A rename, whole or not at all. Move-Item is not that: when a file inside
+# is busy it moves the rest one by one and leaves half an install behind.
+# The directory can stay busy for a moment after roscord has gone (its
+# browser helpers closing, a virus scanner looking at the new files), so
+# the rename is tried again for a while.
+function Rename-Patiently(\$from, \$to) {
+  \$until = (Get-Date).AddSeconds(30)
+  while (\$true) {
+    try {
+      [System.IO.Directory]::Move(\$from, \$to)
+      return
+    } catch {
+      if ((Get-Date) -ge \$until) { throw }
+      Start-Sleep -Milliseconds 500
+    }
+  }
+}
+
 \$install = ${_ps(install)}
 \$staged  = ${_ps(staged)}
 \$old     = ${_ps('$install.old-$stamp')}
-Move-Item -LiteralPath \$install -Destination \$old
 try {
-  Move-Item -LiteralPath \$staged -Destination \$install
+  \$hadOld = Test-Path -LiteralPath \$install
+  if (\$hadOld) {
+    Rename-Patiently \$install \$old
+  } else {
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent \$install) | Out-Null
+  }
+  try {
+    if ([System.IO.Path]::GetPathRoot(\$staged) -eq [System.IO.Path]::GetPathRoot(\$install)) {
+      Rename-Patiently \$staged \$install
+    } else {
+      # Staged on another drive (the install's own could not be written
+      # to): a copy, which is not whole until it has finished.
+      Copy-Item -LiteralPath \$staged -Destination \$install -Recurse
+    }
+  } catch {
+    # Put back what was working and leave the update where it is.
+    if (Test-Path -LiteralPath \$install) {
+      Remove-Item -LiteralPath \$install -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    if (\$hadOld) { [System.IO.Directory]::Move(\$old, \$install) }
+    throw
+  }
 } catch {
-  # Put back what was working and leave the update where it is.
-  Move-Item -LiteralPath \$old -Destination \$install
-  throw
+  Say "the swap failed: \$_"
+${restart == null ? '' : '  Start-Process -FilePath ${_ps(restart)} -WorkingDirectory (Split-Path -Parent ${_ps(restart)})\n'}  exit 1
 }
-Start-Process -FilePath ${_ps(exe)} -WorkingDirectory \$install
+Say 'swapped'
+${shortcut == null ? '' : '''try {
+  \$link = (New-Object -ComObject WScript.Shell).CreateShortcut(${_ps(shortcut)})
+  \$link.TargetPath = ${_ps(exe)}
+  \$link.WorkingDirectory = \$install
+  \$link.Save()
+} catch {
+  Say "no Start menu shortcut: \$_"
+}
+'''}Start-Process -FilePath ${_ps(exe)} -WorkingDirectory \$install
 Remove-Item -LiteralPath \$old -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath ${_ps(work)} -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath \$work -Recurse -Force -ErrorAction SilentlyContinue
 ''';
 
 String linuxSwapScript({
@@ -407,9 +597,15 @@ fi
 install=${_sh(install)}
 staged=${_sh(staged)}
 old=${_sh('$install.old-$stamp')}
-mv "\$install" "\$old" || exit 1
+# The install may not be there: a recovered one can be moving out of the
+# staging directory it was run from.
+if [ -e "\$install" ]; then
+  mv "\$install" "\$old" || exit 1
+else
+  mkdir -p "\$(dirname "\$install")" || exit 1
+fi
 if ! mv "\$staged" "\$install"; then
-  mv "\$old" "\$install"
+  [ -e "\$old" ] && mv "\$old" "\$install"
   exit 1
 fi
 (cd "\$install" && exec ${_sh(exe)}) &

@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:commet/client/components/dj/dj_engine.dart';
+import 'package:commet/client/components/dj/dj_models.dart';
 import 'package:commet/client/components/dj/dj_session.dart';
 import 'package:commet/client/matrix/components/dj/dj_platform.dart';
-import 'package:commet/client/matrix/components/dj/native/dj_link_resolver.dart';
+import 'package:commet/client/matrix/components/dj/native/dj_extension_resolver.dart';
+import 'package:commet/client/matrix/components/dj/native/dj_extensions.dart';
+import 'package:commet/client/matrix/components/dj/native/dj_local_files.dart';
 import 'package:commet/client/matrix/components/dj/native/dj_music_player.dart';
-import 'package:commet/client/matrix/components/dj/native/dj_tools.dart';
 import 'package:commet/client/matrix/components/dj/native/native_dj_engine.dart';
 import 'package:commet/main.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
@@ -31,34 +33,20 @@ class _NativeDjPlatform implements DjPlatform {
   }
 
   @override
-  late final DjResolver? resolver = canDj ? NativeDjLinkResolver() : null;
+  late final DjResolver? resolver =
+      canDj ? DjExtensionResolver(DjExtensions.instance) : null;
 
   @override
-  Future<DjToolsCheck?> checkTools() async {
-    if (!canDj) return null;
-    if (await DjTools.instance.locate() != null) return null;
-    final missing = await DjTools.instance.missing();
-    return DjToolsCheck([
-      if (missing.contains(DjTool.ytDlp))
-        ('yt-dlp', DjTools.downloadSizes[DjTool.ytDlp]!),
-      if (missing.contains(DjTool.jsRuntime))
-        ('Deno', DjTools.downloadSizes[DjTool.jsRuntime]!),
-    ]);
-  }
+  DjSources? get sources => canDj ? DjExtensions.instance : null;
 
   @override
-  Future<void> installTools(
-      {void Function(String step, double? progress)? onProgress,
-      DjToolsCancel? cancel}) async {
-    final downloads = DjDownloadCancel();
-    cancel?.onCancel = downloads.cancel;
-    try {
-      await DjTools.instance.install(
-          cancel: downloads,
-          onProgress: (tool, progress) => onProgress?.call(
-              tool == DjTool.ytDlp ? 'yt-dlp' : 'Deno', progress));
-    } on DjDownloadCancelled {
-      throw const DjToolsCancelled();
-    }
+  Future<List<DjTrack>> localTracks(List<String> paths,
+      {required String addedBy, required String Function() newId}) async {
+    if (!canDj) return const [];
+    return [
+      for (final path in paths)
+        await DjLocalFiles.instance
+            .track(path, id: newId(), addedBy: addedBy),
+    ];
   }
 }

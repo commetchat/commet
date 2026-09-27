@@ -157,8 +157,8 @@ class BigResolver extends FakeResolver {
       for (var i = 0; i < count; i++)
         DjTrack(
             id: 'n$i',
-            source: 'https://www.youtube.com/watch?v=${noise()}',
-            kind: DjSource.youtube,
+            source: 'https://music.example/${noise()}',
+            kind: 'Example',
             title: noise(),
             addedBy: addedBy,
             durationMs: 180000),
@@ -199,7 +199,7 @@ void main() {
     final l = make(net.join('@l:x:L'));
     await settle();
     await d.becomeDj();
-    d.addLinks('https://youtu.be/aaaaaaaaaaa');
+    d.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
     expect(l.djIdentity, '@d:x:D');
 
@@ -238,7 +238,7 @@ void main() {
     final c = make(net.join('@c:x:C'));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://youtu.be/aaaaaaaaaaa');
+    a.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
 
     a.passTo('@b:x:B');
@@ -271,7 +271,7 @@ void main() {
     final c = make(net.join('@c:x:C'));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://youtu.be/aaaaaaaaaaa');
+    a.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
 
     a.passTo('@b:x:B');
@@ -301,7 +301,7 @@ void main() {
     final l = make(net.join('@l:x:L'));
     await settle();
     await d.becomeDj();
-    d.addLinks('https://youtu.be/aaaaaaaaaaa');
+    d.addLinks('https://music.example/aaaaaaaaaaa');
     await settle();
 
     // l sees the DJ leave; the state the DJ sends on its way back is lost.
@@ -333,7 +333,7 @@ void main() {
             }));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://www.youtube.com/playlist?list=PLbig');
+    a.addLinks('https://music.example/playlist/PLbig');
     await settle();
     await Future<void>.delayed(const Duration(milliseconds: 50));
     await settle();
@@ -350,7 +350,7 @@ void main() {
         reason: "b's music started while a's was still playing");
   });
 
-  // The guard is meant to keep a peer's state from pointing yt-dlp at a
+  // The guard is meant to keep a peer's state from pointing an extension at a
   // machine; glibc (and Python's socket) read these as 127.0.0.1.
   for (final url in [
     'https://127.1/x',
@@ -359,7 +359,7 @@ void main() {
   ]) {
     test('N6: a loopback address is never fetched: $url', () async {
       // Refused outright, or (a DNS name) refused once resolved; either way
-      // yt-dlp never sees it.
+      // the extension never sees it.
       final host = Uri.parse(url).host;
       expect(
           !DjSongCache.isFetchable(url) ||

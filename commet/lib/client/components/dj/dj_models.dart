@@ -3,33 +3,26 @@
 // over the LiveKit data channel (see dj_protocol.dart), so it has no Flutter
 // or Matrix dependency.
 
-/// Where a track came from. Decides the badge in the queue and how the DJ's
-/// client fetches it.
-enum DjSource {
-  youtube,
-  soundcloud,
-  spotify,
-  other;
-
-  static DjSource fromName(String? name) =>
-      DjSource.values.where((s) => s.name == name).firstOrNull ?? other;
-}
-
 /// One song in the queue (or playing).
 class DjTrack {
   /// Stable id of this queue entry, so the same song queued twice is two
   /// entries.
   final String id;
 
-  /// What the DJ's client hands yt-dlp: the YouTube or SoundCloud link, or a
-  /// `ytsearch1:` query for a Spotify track (Spotify audio is DRM protected,
-  /// so its songs are played from YouTube).
+  /// How the DJ's client gets the song (see docs/dj-extensions.md): a local
+  /// file (`file:<id>`, known only to the DJ who added it), or what a source
+  /// extension gave for it (`ext:<extension id>:<its source>`). Clients from
+  /// before extensions queued plain links.
   final String source;
 
-  /// The link the DJ pasted, when it is not [source] (Spotify).
+  /// The page to open for the song, when it is not [source]. A track with
+  /// one keeps the title and artist it was queued with.
   final String? link;
 
-  final DjSource kind;
+  /// The chip shown with the song: [fileKind], or a label its extension
+  /// gave (`Radio`, say). Clients from before extensions sent lowercase
+  /// names.
+  final String kind;
   final String title;
   final String? artist;
   final int? durationMs;
@@ -50,8 +43,42 @@ class DjTrack {
     this.thumbnail,
   });
 
-  /// The page to open for this track.
-  String get pageUrl => link ?? source;
+  static const fileKind = 'file';
+  static const linkKind = 'link';
+  static const filePrefix = 'file:';
+  static const extensionPrefix = 'ext:';
+
+  /// Longest [kind] kept.
+  static const maxKind = 16;
+
+  /// The page to open for this track, when it has one.
+  String? get pageUrl {
+    final page = link ?? extensionSource ?? source;
+    final uri = Uri.tryParse(page);
+    return uri != null && (uri.scheme == 'https' || uri.scheme == 'http')
+        ? page
+        : null;
+  }
+
+  /// A file on the disk of the DJ who added it.
+  bool get isLocalFile => source.startsWith(filePrefix);
+
+  /// The extension that fetches this track, for `ext:<id>:<source>`.
+  String? get extensionId {
+    if (!source.startsWith(extensionPrefix)) return null;
+    final end = source.indexOf(':', extensionPrefix.length);
+    return end > extensionPrefix.length
+        ? source.substring(extensionPrefix.length, end)
+        : null;
+  }
+
+  /// What the extension gave as the source, for `ext:<id>:<source>`.
+  String? get extensionSource {
+    final id = extensionId;
+    return id == null
+        ? null
+        : source.substring(extensionPrefix.length + id.length + 1);
+  }
 
   DjTrack copyWith({
     String? id,
@@ -62,7 +89,7 @@ class DjTrack {
     String? thumbnail,
     bool clearLink = false,
     String? link,
-    DjSource? kind,
+    String? kind,
   }) =>
       DjTrack(
         id: id ?? this.id,
@@ -80,7 +107,7 @@ class DjTrack {
         'i': id,
         'u': source,
         if (link != null) 'l': link,
-        'k': kind.name,
+        'k': kind,
         't': title,
         if (artist != null) 'a': artist,
         if (durationMs != null) 'd': durationMs,
@@ -104,7 +131,7 @@ class DjTrack {
       id: id,
       source: source,
       link: djString(json['l'], maxUrl),
-      kind: DjSource.fromName(djString(json['k'], 16)),
+      kind: djString(json['k'], maxKind) ?? linkKind,
       title: title,
       artist: djString(json['a'], maxText),
       durationMs: djInt(json['d']),

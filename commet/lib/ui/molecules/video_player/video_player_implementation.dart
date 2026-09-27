@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/cache/file_provider.dart';
-import 'package:commet/utils/mpv/mpv_property.dart';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -236,13 +235,6 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
       final shouldPlay =
           widget.autoPlay || (!widget.decodeFirstFrame && !widget.autoPlay);
-
-      // A YouTube page (Linux, see VideoPlaybackDialog.canPlayYouTubeNatively)
-      // is resolved by mpv through yt-dlp, which picks the best stream there
-      // is: 4K and often AV1, more than many machines decode smoothly. 1080p
-      // is plenty here. Only pages go through yt-dlp; direct media ignores it.
-      await setMpvProperty(player, 'ytdl-format',
-          'bestvideo[height<=?1080][vcodec!^=av01]+bestaudio/best[height<=?1080]/best');
 
       await player.open(
         Playlist([

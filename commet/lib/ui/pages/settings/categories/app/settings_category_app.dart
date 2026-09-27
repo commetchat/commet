@@ -1,10 +1,12 @@
 import 'package:commet/client/components/voip/voip_component.dart';
+import 'package:commet/client/matrix/components/dj/dj_platform.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/experiments.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/dj_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/experiments_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/shortcut_settings/shortcut_settings_page.dart';
@@ -65,6 +67,10 @@ class SettingsCategoryApp implements SettingsCategory {
       name: "labelSettingsAppSoundboard",
       desc: "Label for the App soundboard settings page");
 
+  String get labelSettingsAppDj => Intl.message("DJ",
+      name: "labelSettingsAppDj",
+      desc: "Label for the App DJ booth settings page");
+
   bool get hasVoip =>
       clientManager?.clients
           .any((e) => e.getComponent<VoipComponent>() != null) ==
@@ -100,6 +106,13 @@ class SettingsCategoryApp implements SettingsCategory {
               icon: m.Icons.speaker,
               pageBuilder: (context) {
                 return const SoundboardSettingsPage();
+              }),
+        if (hasVoip && DjPlatform.instance.sources != null)
+          SettingsTab(
+              label: labelSettingsAppDj,
+              icon: m.Icons.album_outlined,
+              pageBuilder: (context) {
+                return const DjSettingsPage();
               }),
         if (PlatformUtils.isLinux || PlatformUtils.isWindows)
           SettingsTab(
