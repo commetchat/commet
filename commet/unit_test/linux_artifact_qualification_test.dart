@@ -217,10 +217,7 @@ void main() {
   group('Linux official video plays through the bundled CEF host', () {
     test('video routes through CEF like Windows', () {
       expect(linuxOfficialVideoPath, 'cef-official-embed');
-      expect(
-        linuxOfficialVideoFallback,
-        'native-yt-dlp-mpv-or-deliberate-external',
-      );
+      expect(linuxOfficialVideoFallback, 'deliberate-external');
       expect(linuxOfficialVideoUsesCef, isTrue);
       expect(
         mediaEmbedUsesCef(isWeb: false, isWindows: false, isLinux: true),

@@ -1,21 +1,20 @@
 # DJ booth
 
 Music everyone in a voice room hears at the same moment, played by one
-member (the DJ) from YouTube, SoundCloud and Spotify links, with a queue
-everyone can see and a volume each listener sets for themselves. It replaces
-Discord's music bots, which YouTube and Discord have shut down one after the
-other.
+member (the DJ) from files on their computer, or from links a source
+extension they installed can play (`docs/dj-extensions.md`), with a queue
+everyone can see and a volume each listener sets for themselves.
 
 ## Shape
 
-The DJ's desktop client downloads each song with yt-dlp, plays it while it
-downloads, decodes it in Rust and publishes it as its own stereo LiveKit
-track
+The DJ's desktop client plays each song from its file (a local one, or one
+a source extension downloads, played while it downloads), decodes it in
+Rust and publishes it as its own stereo LiveKit track
 (`commet-dj-music`, 128 kbps Opus, DTX and RED off). Listeners just receive
 that track, so:
 
 - everyone is in sync by construction, and late joiners hear the song live;
-- browsers and Android listen without yt-dlp, and without YouTube's ads;
+- browsers and Android listen without any extension or file of their own;
 - the music arrives through WebRTC playout, so the echo canceller removes it
   from every listener's microphone, loudspeaker users included;
 - each listener's volume is the playback volume of that one track
@@ -24,9 +23,8 @@ that track, so:
   listener's own business.
 
 Only desktop (Linux, Windows) can DJ: it needs the Rust player
-(`librust_lib_commet` is not built for Android or web) and to run yt-dlp.
-The download happens on the DJ's home connection, which YouTube treats far
-better than the datacenter addresses the bots ran from.
+(`librust_lib_commet` is not built for Android or web), and reads files and
+runs extensions.
 
 The DJ hears their own music through a second, in-process WebRTC connection
 receiving the same track (`_LocalMonitor` in `native_dj_engine.dart`). A
@@ -39,11 +37,11 @@ send the music back into the room through their microphone.
 |-------|------|
 | `commet/lib/client/components/dj/` | Platform-free booth: models, wire protocol, link parsing, the `DjSession` state machine. Unit tested in `commet/unit_test/dj/`. |
 | `commet/lib/client/matrix/components/dj/` | LiveKit transport, `DjBooths` (one booth per call, opened and closed by `MatrixLivekitVoipSession`), platform switch (`dj_platform*.dart`). |
-| `.../dj/native/` | Desktop only: `DjTools` (yt-dlp and Deno, found on PATH or downloaded with consent), `YtDlp`, `NativeDjLinkResolver` (yt-dlp, Spotify embed pages), `DjSongCache`, `NativeDjEngine`, FFI bindings. |
+| `.../dj/native/` | Desktop only: `DjExtensions` (installs and runs source extensions), `DjExtensionResolver`, `DjLocalFiles` (what `file:<id>` points at), `DjSongCache`, `NativeDjEngine`, FFI bindings. |
 | `rust/dj_audio` | The player: symphonia decode (Opus in WebM/Ogg, AAC/MP4 incl. fragmented, MP3, Vorbis, FLAC, WAV) of whole files or files still downloading (`growing.rs`), resampling to 48 kHz stereo, a ring buffer filled by a decoder thread, fades, gain. C ABI `commet_music_*`, linked into `librust_lib_commet`. Opus is `opus.rs`, on the pure-Rust `opus-rs`. |
 | `third_party/flutter-webrtc` | `commetCreateMusicTrack` / `commetStopMusicTrack` and `commet_music_source.h`: a kCustom audio source fed by a 10 ms pacing thread calling `commet_music_pull`. |
 | `third_party/livekit-client-sdk-flutter` | `AudioPublishOptions.stereo`: `TF_STEREO` on the track, `stereo=1;sprop-stereo=1` in our offer, and the subscriber answer mirrors stereo where the server offers it. |
-| `commet/lib/ui/organisms/dj/` | Booth panel, now-playing pill, spinning record, member badges and right-click actions, tools prompt, the listener's music volume. |
+| `commet/lib/ui/organisms/dj/` | Booth panel, now-playing pill, spinning record, member badges and right-click actions, the extension install prompt, the listener's music volume. Installed extensions are listed in Settings, App, DJ. |
 
 ## Who is the DJ
 
@@ -93,73 +91,65 @@ How the epoch moves:
 
 This is not a security boundary (a modified client can say anything on the
 data channel) but it keeps honest clients consistent. What a peer's state
-can make a new DJ fetch is limited: https links to public hosts and
-`ytsearch1:` queries only, and without yt-dlp's generic extractor.
+can make a new DJ fetch is limited: files only by the id this computer gave
+them, extension sources only through an extension this user installed,
+told the source is untrusted, and web links only to public hosts.
 
 Booth messages (a song that failed, a handoff that didn't happen) show as a
 toast on the root navigator's overlay, wherever the user is: the app has no
 Scaffold for snack bars.
 
-## yt-dlp
+## Songs
 
-- Found on PATH, else downloaded from its GitHub releases into
-  `<app support>/dj-tools/` after the user agrees; the managed copy runs
-  `yt-dlp -U` once a day.
-- YouTube needs a JavaScript runtime: Deno ≥ 2.3 or Node ≥ 22 from PATH, else
-  Deno is downloaded the same way (about 45 MB).
-- Formats are picked for the Rust decoder: Opus in WebM at 96 kbps or more
-  first (YouTube itag 251), then AAC in MP4 over plain HTTP (itag 140), MP3
-  (SoundCloud), Vorbis, FLAC — all over plain HTTP, highest bitrate first
-  (`--format-sort abr,asr`), and each download's codec, bitrate and sample
-  rate go in the log.
-- Opus is preferred because YouTube's is about the same bitrate as its AAC
-  and keeps roughly 4 kHz more treble, and because it needs no second lossy
-  stage beyond the 128 kbps the room's track is published at. Below 96 kbps
-  the AAC is the better of the two, so that is where the line sits.
-- Spotify's audio is DRM protected: its public embed page gives title,
-  artists and length (album and playlist pages list about 50 tracks), and
-  each song plays from yt-dlp's `ytsearch1:` best YouTube match.
-- Songs play while they download, as a video does. yt-dlp writes the file
-  in place (`--no-part`, `--fixup never`) and prints its name and size
-  (`--print before_dl:`) before the first byte; Dart hands both to the
-  player (`commet_music_file_growing`), which reads the file as it grows
-  and waits for bytes that haven't arrived, then says when yt-dlp is done
-  (`commet_music_file_done`). YouTube's audio is fragmented MP4 with its
-  index up front, so it starts after the first few KB. Opening and seeking
-  such a file happen on the decoder thread, so nothing waits on the
-  network in the UI.
+- Files: the add bar's file button picks audio files. Each is queued as
+  `file:<id>`, the id a hash of its path, and the path is remembered in
+  `<app support>/dj-local-files.json`. The file is played where it is, never
+  copied. Another client can't play it: a DJ who takes over skips such songs
+  (`DjTrackUnavailable`, which doesn't count towards stopping the booth), and
+  the decks can't be handed over while one is playing.
+- Links go to the source extension whose `hosts` take them, which lists the
+  songs (`resolve`) and downloads each one when its turn comes (`fetch`). See
+  `docs/dj-extensions.md` for the protocol and the package.
+- Songs play while they download, as a video does. The extension writes the
+  file in place and names it, with its size when it knows it exactly,
+  before the first byte; Dart hands both to the player
+  (`commet_music_file_growing`), which reads the file as it grows and waits
+  for bytes that haven't arrived, then says when the download is done
+  (`commet_music_file_done`). Fragmented MP4 with its index up front starts
+  after the first few KB. Opening and seeking such a file happen on the
+  decoder thread, so nothing waits on the network in the UI.
 - A download that breaks off plays what arrived, then the song fails with
-  yt-dlp's reason. One that fails before writing anything (YouTube answers
-  HTTP 403 now and then) is tried once more.
-- Songs are cached in `<app cache>/dj-songs/` (1.5 GB, oldest first), keyed
-  by source, and the next two queued songs are fetched ahead. Only a
-  finished download gets a record (`<key>.json`); anything else under its
-  key is deleted before fetching again.
-- On Windows the booth starts yt-dlp itself, with `CreateProcessW` and
-  `CREATE_NO_WINDOW` (`windows_hidden_process.dart`), and reads its output
+  the extension's reason.
+- Downloaded songs are cached in `<app cache>/dj-songs/` (1.5 GB, oldest
+  first), keyed by source, and the next two queued songs are fetched ahead.
+  Only a finished download gets a record (`<key>.json`); anything else under
+  its key is deleted before fetching again.
+- On Windows the booth starts extensions itself, with `CreateProcessW` and
+  `CREATE_NO_WINDOW` (`windows_hidden_process.dart`), and reads their output
   from files in a temporary directory. Dart can only start a child normally,
   which gives a console app its own console window, or detached, which gives
-  it none and so hands a fresh console to whatever *it* starts — and yt-dlp
-  starts the JavaScript runtime for every YouTube link. `CREATE_NO_WINDOW`
-  gives a console with no window, which the whole tree inherits.
+  it none and so hands a fresh console to whatever *it* starts.
+  `CREATE_NO_WINDOW` gives a console with no window, which the whole tree
+  inherits. Each extension also runs in a job object of its own, so a
+  request killed for running too long ends everything it started
+  (yt-dlp.exe, for one, is a launcher whose Python child would go on
+  downloading otherwise).
 
 ## Known gaps
 
 - The queue lives only in the call: when everyone leaves, it is gone.
 - Only the DJ edits the queue.
-- Spotify playlists beyond the embed page's first ~50 tracks are not read.
-- A song whose only formats are YouTube HLS in MPEG-TS can't be decoded.
+- A song only in MPEG-TS can't be decoded.
 - Opus is decoded by `opus-rs`, which plays CELT within 82 dB of libopus but
   SILK only within 15 dB, and mis-reads some multi-frame packets. The booth
   works around both: `opus.rs` splits packets into frames itself, and turns
-  down any stream that is not CELT, which is why only Opus at 96 kbps and
-  up is downloaded. A stream that switches to SILK part way through, or
-  that changes how many channels it codes (which `opus-rs` will not
-  decode), stops with "its audio format isn't supported" instead of
-  sounding wrong.
-- An MP4 with its index at the end (not YouTube's) only starts once it has
-  all downloaded, and so does fragmented MP4 whose size the site doesn't
-  give.
+  down any stream that is not CELT, which is why extensions should hand it
+  Opus only at 96 kbps and up, and why a low-bitrate Opus file of the DJ's
+  may not play. A stream that switches to SILK part way through, or that
+  changes how many channels it codes (which `opus-rs` will not decode),
+  stops with "its audio format isn't supported" instead of sounding wrong.
+- A local file's length shows once it plays: nothing reads it before.
+- An MP4 with its index at the end only starts once it has all downloaded,
+  and so does fragmented MP4 whose size the extension doesn't give.
 - Listening on web depends on the LiveKit audio element volume (0..100 %); on
   desktop the music can be boosted to 150 %.
-- Downloading YouTube audio without ads is against YouTube's terms.

@@ -15,9 +15,9 @@ void main() {
         for (var i = 0; i < 900; i++)
           DjTrack(
               id: 'id$i',
-              source:
-                  'https://www.youtube.com/watch?v=${'$i'.padLeft(11, 'x')}',
-              kind: DjSource.youtube,
+              source: 'ext:org.example.music:'
+                  'https://music.example/${'$i'.padLeft(11, 'x')}',
+              kind: 'Example',
               // Long enough to need many parts.
               title: 'Title ${i * 7919 % 10007} ${i.toRadixString(36)}',
               addedBy: '@a:x'),
@@ -66,9 +66,9 @@ void main() {
     test('a snapshot survives the round trip', () {
       const track = DjTrack(
           id: 'a',
-          source: 'ytsearch1:Rick Astley - Never Gonna Give You Up',
-          link: 'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT',
-          kind: DjSource.spotify,
+          source: 'ext:org.example.music:search:Rick Astley - Never Gonna',
+          link: 'https://songs.example/track/1',
+          kind: 'Songs',
           title: 'Never Gonna Give You Up',
           artist: 'Rick Astley',
           durationMs: 213573,
@@ -92,85 +92,84 @@ void main() {
       expect(back.positionMs, 1234);
       expect(back.requests, ['@b:x:E']);
       expect(back.passTo, '@b:x:E');
-      expect(track.pageUrl, startsWith('https://open.spotify.com'));
+      expect(track.pageUrl, 'https://songs.example/track/1');
+    });
+  });
+
+  group('DjTrack sources', () {
+    DjTrack t(String source, {String? link}) =>
+        DjTrack(id: 'a', source: source, link: link, kind: 'x', title: 'T', addedBy: '@a:x');
+
+    test("an extension's track names the extension and its own source", () {
+      final track = t('ext:org.example.music:https://music.example/a?b=c:d');
+      expect(track.extensionId, 'org.example.music');
+      expect(track.extensionSource, 'https://music.example/a?b=c:d');
+      expect(track.isLocalFile, isFalse);
+      expect(track.pageUrl, 'https://music.example/a?b=c:d');
+    });
+
+    test('a page to open only when there is a web one', () {
+      expect(t('ext:org.example.music:search:x').pageUrl, isNull);
+      expect(t('ext:org.example.music:search:x', link: 'https://songs.example/1').pageUrl,
+          'https://songs.example/1');
+      expect(t('file:0123456789abcdef0123').pageUrl, isNull);
+      // Queued by a client from before extensions.
+      expect(t('https://music.example/a').pageUrl, 'https://music.example/a');
+      expect(t('https://music.example/a').extensionId, isNull);
+    });
+
+    test('local files', () {
+      final track = t('file:0123456789abcdef0123');
+      expect(track.isLocalFile, isTrue);
+      expect(track.extensionId, isNull);
+    });
+
+    test('a kind from an older client is kept as it came', () {
+      final back = DjTrack.fromJson({'i': 'a', 'u': 'https://x.example/1', 't': 'T', 'k': 'youtube'})!;
+      expect(back.kind, 'youtube');
+      final none = DjTrack.fromJson({'i': 'a', 'u': 'https://x.example/1', 't': 'T'})!;
+      expect(none.kind, DjTrack.linkKind);
+      final long = DjTrack.fromJson({'i': 'a', 'u': 'u', 't': 'T', 'k': 'k' * 40})!;
+      expect(long.kind.length, DjTrack.maxKind);
     });
   });
 
   group('DjLinks', () {
     DjLink? p(String s) => DjLinks.parse(s);
 
-    test('YouTube videos in all their forms', () {
-      for (final url in [
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        'https://youtube.com/watch?v=dQw4w9WgXcQ&t=42s',
-        'https://m.youtube.com/watch?v=dQw4w9WgXcQ',
-        'https://music.youtube.com/watch?v=dQw4w9WgXcQ&list=RDAMVM',
-        'https://youtu.be/dQw4w9WgXcQ?si=abc',
-        'https://www.youtube.com/shorts/dQw4w9WgXcQ',
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLx&index=3',
-      ]) {
-        final link = p(url);
-        expect(link?.type, DjLinkType.youtubeVideo, reason: url);
-        expect(link?.url, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            reason: url);
-      }
+    test('links are normalised, tracking parameters dropped', () {
+      final link = p('http://music.example/track/1?utm_source=x&si=abc&t=42');
+      expect(link?.url, 'https://music.example/track/1?t=42');
+      expect(p('https://Music.Example/a')?.host, 'music.example');
+      expect(p('https://music.example/a?si=x')?.url, 'https://music.example/a');
     });
 
-    test('YouTube playlists', () {
-      final link = p('https://www.youtube.com/playlist?list=PLabc123');
-      expect(link?.type, DjLinkType.youtubePlaylist);
-      expect(link?.url, 'https://www.youtube.com/playlist?list=PLabc123');
-      expect(link?.isCollection, isTrue);
-    });
-
-    test('SoundCloud tracks and sets', () {
-      expect(p('https://soundcloud.com/artist/track-name?utm_source=x')?.url,
-          'https://soundcloud.com/artist/track-name');
-      expect(p('https://soundcloud.com/artist/sets/my-set')?.type,
-          DjLinkType.soundcloudSet);
-      expect(p('https://on.soundcloud.com/AbCdE')?.type,
-          DjLinkType.soundcloudTrack);
-      expect(p('https://soundcloud.com/discover/sets/x')?.type,
-          DjLinkType.soundcloudSet);
-      expect(p('https://soundcloud.com/you/likes'), isNull);
-    });
-
-    test('Spotify tracks, albums and playlists', () {
-      expect(
-          p('https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT?si=x')?.url,
-          'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT');
-      expect(
-          p('https://open.spotify.com/intl-de/album/4LH4d3cOWNNsVw41Gqt2kv')
-              ?.type,
-          DjLinkType.spotifyAlbum);
-      expect(
-          p('https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M')?.source,
-          DjSource.spotify);
-      expect(
-          p('https://open.spotify.com/artist/0gxyHStUsqpMadRV0Di1Qt'), isNull);
-      expect(p('https://open.spotify.com/'), isNull);
-    });
-
-    test('pasted text with several links, some bare, keeps order', () {
+    test('pasted text with several links keeps order, without repeats', () {
       final links = DjLinks.parseAll('''
 Queue these:
-https://youtu.be/dQw4w9WgXcQ,
-youtube.com/watch?v=aaaaaaaaaaa
-(https://soundcloud.com/a/b)
-https://youtu.be/dQw4w9WgXcQ
-not a link
+https://music.example/a,
+(https://tunes.example/b/c)
+https://music.example/a
+not a link, nor is music.example/bare
 ''');
       expect(links.map((l) => l.url), [
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        'https://www.youtube.com/watch?v=aaaaaaaaaaa',
-        'https://soundcloud.com/a/b',
+        'https://music.example/a',
+        'https://tunes.example/b/c',
       ]);
     });
 
-    test('other links are passed on, garbage is not', () {
-      expect(p('https://bandcamp.com/track/x')?.type, DjLinkType.other);
+    test('garbage is not a link', () {
       expect(p('ftp://x'), isNull);
       expect(p('hello'), isNull);
+      expect(p('https://'), isNull);
+    });
+
+    test('hosts match themselves and what is under them', () {
+      expect(DjLinks.hostMatches('music.example', 'music.example'), isTrue);
+      expect(DjLinks.hostMatches('www.music.example', 'music.example'), isTrue);
+      expect(DjLinks.hostMatches('WWW.Music.Example', 'music.example'), isTrue);
+      expect(DjLinks.hostMatches('notmusic.example', 'music.example'), isFalse);
+      expect(DjLinks.hostMatches('music.example.evil', 'music.example'), isFalse);
     });
   });
 }

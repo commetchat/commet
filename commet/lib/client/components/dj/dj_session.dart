@@ -120,6 +120,9 @@ class DjSession extends ChangeNotifier {
 
   String get selfIdentity => transport.selfIdentity;
 
+  /// An id for a new queue entry.
+  String newTrackId() => _newId();
+
   // ---------------------------------------------------------------------
   // State
 
@@ -902,6 +905,12 @@ class DjSession extends ChangeNotifier {
     if (capsOf(identity)?.canDj != true || !transport.isPresent(identity)) {
       return;
     }
+    // The new DJ starts with the playing song, which they don't have.
+    if (_snap.current?.isLocalFile ?? false) {
+      _notice("The decks can be handed over once your file has played: "
+          "it's only on your computer");
+      return;
+    }
     final passId = _newId();
     _snap = _snap.copyWith(passTo: identity, passId: passId);
     _startPassTimer(passId);
@@ -1269,6 +1278,11 @@ class DjSession extends ChangeNotifier {
       _sendState();
       _prefetch();
       _notify();
+    } on DjTrackUnavailable catch (e) {
+      if (overtaken()) return;
+      _loading = false;
+      _notice('Skipped ${track.title}: ${e.message}');
+      _advance();
     } catch (e) {
       if (overtaken()) return;
       _loading = false;
@@ -1298,12 +1312,14 @@ class DjSession extends ChangeNotifier {
     _notify();
   }
 
-  /// Fills in what fetching taught us about a track (title and length for
-  /// SoundCloud sets, the real length of a Spotify song's YouTube match).
+  /// Fills in what fetching taught us about a track (title and length of a
+  /// playlist entry that was only listed). A track with a [DjTrack.link]
+  /// was named by that page and plays from somewhere else, so only its
+  /// length changes.
   void _mergeInfo(String id, DjTrackInfo info) {
     DjTrack merge(DjTrack t) {
       if (t.id != id) return t;
-      if (t.kind == DjSource.spotify) {
+      if (t.link != null) {
         return t.copyWith(
             durationMs: info.durationMs ?? t.durationMs,
             thumbnail: t.thumbnail ?? info.thumbnail);

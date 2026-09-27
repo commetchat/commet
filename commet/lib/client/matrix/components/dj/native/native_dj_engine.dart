@@ -1,7 +1,7 @@
-// The DJ's player on desktop: songs are downloaded with yt-dlp and played
-// as they arrive, decoded by the Rust player, and published as a stereo
-// LiveKit track named MatrixLivekitVoipStream.musicTrackName, apart from the
-// DJ's microphone.
+// The DJ's player on desktop: the DJ's own files, and songs a source
+// extension downloads (docs/dj-extensions.md), played as they arrive,
+// decoded by the Rust player, and published as a stereo LiveKit track named
+// MatrixLivekitVoipStream.musicTrackName, apart from the DJ's microphone.
 //
 // The DJ hears their own music through a second, in-process WebRTC
 // connection that receives the same track (_LocalMonitor). Playing it
@@ -14,9 +14,10 @@ import 'dart:io';
 
 import 'package:commet/client/components/dj/dj_engine.dart';
 import 'package:commet/client/components/dj/dj_models.dart';
+import 'package:collection/collection.dart';
+import 'package:commet/client/matrix/components/dj/native/dj_extensions.dart';
+import 'package:commet/client/matrix/components/dj/native/dj_local_files.dart';
 import 'package:commet/client/matrix/components/dj/native/dj_music_player.dart';
-import 'package:commet/client/matrix/components/dj/native/dj_tools.dart';
-import 'package:commet/client/matrix/components/dj/native/yt_dlp.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/debug/log.dart';
 import 'package:crypto/crypto.dart';
@@ -75,12 +76,12 @@ class DjSongCache {
   static String _keyOf(String source) =>
       sha1.convert(utf8.encode(source)).toString().substring(0, 20);
 
-  /// Only what the booth itself would queue: web links, and the YouTube
-  /// searches Spotify songs become. A state from another client names the
-  /// songs a new DJ fetches, and must not point it anywhere else.
-  static bool isFetchable(String source) {
-    if (source.startsWith('ytsearch1:')) return source.length > 10;
-    final uri = Uri.tryParse(source);
+  /// Whether a web link names a site rather than a machine: https, a name
+  /// with a dot in it, no address. A state from another client names the
+  /// songs a new DJ fetches, and must not point its extensions at this
+  /// computer or its network.
+  static bool isFetchable(String url) {
+    final uri = Uri.tryParse(url);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return false;
     final host = uri.host.toLowerCase();
     // No addresses: a link names a site, not a machine on someone's network.
@@ -130,13 +131,11 @@ class DjSongCache {
   /// The song's audio file, downloading it once however many ask. Ready as
   /// soon as it can start playing: the download may still be under way
   /// ([DjSong.complete]), and the player reads the file as it grows.
-  /// [trusted] sources (queued by this user) may use yt-dlp's generic
-  /// extractor, which fetches any web page; others, which came from another
-  /// client's state, only reach the sites yt-dlp knows.
+  /// [trusted] sources were queued by this user; others came from another
+  /// client's state, and their extension is told so (it must then only
+  /// reach the sites it knows).
   Future<DjSong> fetch(String source, {bool trusted = false}) {
-    if (!isFetchable(source)) {
-      return Future.error(StateError("that link can't be played"));
-    }
+    if (source.startsWith(DjTrack.filePrefix)) return _local(source);
     final key = _keyOf(source);
     _used.add(key);
     final existing = _inFlight[key];
@@ -153,6 +152,43 @@ class DjSongCache {
     return song;
   }
 
+  /// A file the DJ queued from this computer: played where it is.
+  static Future<DjSong> _local(String source) async {
+    final path = await DjLocalFiles.instance.pathOf(source);
+    if (path == null) {
+      throw const DjTrackUnavailable(
+          "it's a file on the computer of whoever queued it");
+    }
+    if (!await File(path).exists()) {
+      throw const DjTrackUnavailable('the file is no longer there');
+    }
+    return DjSong(path, const {}, Future<void>.value());
+  }
+
+  /// The extension that fetches [source], and what to hand it.
+  static Future<(InstalledDjExtension, String)> _route(String source) async {
+    final extensions = DjExtensions.instance;
+    await extensions.load();
+    const prefix = DjTrack.extensionPrefix;
+    if (source.startsWith(prefix)) {
+      final end = source.indexOf(':', prefix.length);
+      final id = end < 0 ? '' : source.substring(prefix.length, end);
+      final extension = extensions.byId(id);
+      if (extension == null) {
+        throw DjTrackUnavailable('it needs the "$id" source extension');
+      }
+      return (extension, source.substring(end + 1));
+    }
+    // Queued by a client from before extensions: a plain link.
+    final host = Uri.tryParse(source)?.host ?? '';
+    final extension = (host.isEmpty ? null : extensions.forHost(host)) ??
+        extensions.extensions.value.firstOrNull;
+    if (extension == null) {
+      throw const DjTrackUnavailable('no source extension is installed');
+    }
+    return (extension, source);
+  }
+
   static int _positiveInt(Object? value) =>
       value is num && value.isFinite && value > 0 ? value.round() : 0;
 
@@ -165,8 +201,8 @@ class DjSongCache {
         final info = jsonDecode(await infoFile.readAsString());
         final path = info is Map ? info['filepath'] : null;
         if (path is String && await File(path).exists()) {
-          Log.i('DJ booth: playing a cached '
-              '${describeDownloadedAudio(Map<String, Object?>.from(info))}');
+          Log.i('DJ booth: playing a cached song, '
+              '${info['audio'] ?? 'audio of an unreported kind'}');
           // Touched, so trimming keeps what is played often.
           final now = DateTime.now();
           await infoFile.setLastModified(now);
@@ -178,38 +214,38 @@ class DjSongCache {
     }
 
     // No record of a finished download: whatever is there under this key
-    // is left from one that was cut short, and yt-dlp would take it as done.
+    // is left from one that was cut short, and must not pass for a song.
     await for (final entry in dir.list()) {
       if (entry is File && p.basename(entry.path).startsWith('$key.')) {
         await entry.delete().catchError((_) => entry);
       }
     }
 
-    if (!trusted && !source.startsWith('ytsearch1:')) {
-      final host = Uri.parse(source).host;
-      if (!await hostIsPublic(host)) {
-        throw StateError("that link can't be played");
-      }
+    final (extension, given) = await _route(source);
+    final uri = Uri.tryParse(given);
+    if (!trusted &&
+        uri != null &&
+        (uri.scheme == 'https' || uri.scheme == 'http') &&
+        (!isFetchable(given) || !await hostIsPublic(uri.host))) {
+      throw StateError("that link can't be played");
     }
 
-    final tools = await DjTools.instance.locate();
-    if (tools == null) throw StateError('The DJ tools are not set up');
-    final fetch = YtDlp(tools).fetch(source,
-        directory: dir.path, name: key, knownSitesOnly: !trusted);
-    final started = await fetch.started;
-    final path = started.path;
-    Log.i('DJ booth: downloading ${describeDownloadedAudio(started.info)}');
+    final fetch = DjExtensions.fetch(extension, given,
+        directory: dir.path, name: key, trusted: trusted);
+    final (path, info) = await fetch.started;
+    Log.i('DJ booth: ${extension.id} is downloading '
+        '${info['audio'] ?? 'audio of an unreported kind'}');
 
-    // The player reads the file as yt-dlp writes it, until told it is done.
+    // The player reads the file as it is written, until told it is done.
     final bindings = DjMusicBindings.load();
     bindings?.markGrowing(path,
-        totalBytes: _positiveInt(started.info['filesize']),
-        durationMs: _positiveInt(started.info['duration']) * 1000);
+        totalBytes: _positiveInt(info['size']),
+        durationMs: _positiveInt(info['durationMs']));
     late final DjSong song;
-    final complete = fetch.finished.then((download) async {
-      bindings?.markDone(path, ok: p.equals(download.path, path));
+    final complete = fetch.finished.then((done) async {
+      bindings?.markDone(path, ok: p.equals(done, path));
       try {
-        await infoFile.writeAsString(jsonEncode(download.info));
+        await infoFile.writeAsString(jsonEncode({...info, 'filepath': done}));
       } catch (e, s) {
         Log.onError(e, s, content: 'DJ booth: could not record a song');
       }
@@ -220,7 +256,7 @@ class DjSongCache {
       await File(path).delete().catchError((_) => File(path));
       Error.throwWithStackTrace(e, s);
     });
-    song = DjSong(path, started.info, complete);
+    song = DjSong(path, info, complete);
     // Nothing here reads a file while it grows.
     if (bindings == null) await complete;
     return song;
@@ -415,17 +451,18 @@ class NativeDjEngine implements DjPlaybackEngine {
       return v is String && v.trim().isNotEmpty ? v.trim() : null;
     }
 
-    final duration = info['duration'];
+    // What the extension reported (`started`); records written before
+    // extensions give the length in seconds instead.
+    final ms = info['durationMs'];
+    final seconds = info['duration'];
     return DjTrackInfo(
       title: text('title'),
-      artist: (text('artist') ??
-              text('creator') ??
-              text('uploader') ??
-              text('channel'))
-          ?.replaceFirst(RegExp(r'\s+-\s+Topic$'), ''),
-      durationMs: duration is num && duration.isFinite && duration > 0
-          ? (duration * 1000).round()
-          : null,
+      artist: text('artist'),
+      durationMs: ms is num && ms.isFinite && ms > 0
+          ? ms.round()
+          : seconds is num && seconds.isFinite && seconds > 0
+              ? (seconds * 1000).round()
+              : null,
       thumbnail: text('thumbnail'),
     );
   }

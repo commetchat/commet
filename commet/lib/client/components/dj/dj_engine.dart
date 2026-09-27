@@ -122,8 +122,28 @@ abstract class DjPlaybackEngine {
   set monitorVolume(double volume);
 }
 
-/// Turns pasted links into tracks.
+/// Thrown by [DjPlaybackEngine.prepare] for a track this client can't play
+/// at all, however often it tries: a file on another DJ's machine, a song
+/// from a source extension it hasn't installed. The booth skips such a track
+/// without counting it as a failure.
+class DjTrackUnavailable implements Exception {
+  final String message;
+
+  const DjTrackUnavailable(this.message);
+
+  @override
+  String toString() => message;
+}
+
+/// Turns pasted links into tracks, through the source extensions this client
+/// has installed.
 abstract class DjResolver {
+  /// Name of the source that takes [link], or null when none does.
+  String? sourceFor(DjLink link);
+
+  /// What the add bar suggests pasting, when a source has something to say.
+  String? get hint;
+
   Future<List<DjTrack>> resolve(DjLink link, {required String addedBy});
 }
 

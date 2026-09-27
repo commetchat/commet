@@ -141,7 +141,7 @@ bool mediaEmbedIsAllowedNavigation(
 /// This is deliberately independent of Flutter widgets so URL/policy
 /// construction is testable at the BrowserRuntime seam. Only
 /// [OfficialVideoEmbedSource] enters CEF: native direct-stream sources keep
-/// using the media-kit player (including the Linux yt-dlp/mpv path) and are
+/// using the media-kit player and are
 /// never adapted. Presentation is always embedded; there is no standalone
 /// official-video surface, so requesting one is an error rather than a
 /// fallback.

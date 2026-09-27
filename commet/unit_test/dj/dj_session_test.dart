@@ -109,28 +109,28 @@ void main() {
     test('songs added to an empty booth start playing, in pasted order',
         () async {
       final a = await djWith('@a:x:DEV1', [
-        'https://youtu.be/aaaaaaaaaaa',
-        'https://soundcloud.com/artist/song',
-        'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT',
+        'https://music.example/aaaaaaaaaaa',
+        'https://tunes.example/artist/song',
+        'https://songs.example/track/1',
       ]);
       final b = join('@b:x:DEV2');
       await settle();
 
       expect(a.session.current?.source,
-          'https://www.youtube.com/watch?v=aaaaaaaaaaa');
+          'https://music.example/aaaaaaaaaaa');
       expect(a.session.isPlaying, isTrue);
       expect(a.engine!.played.single.$1, a.session.current!.id);
       expect(b.session.current?.id, a.session.current!.id);
       expect(b.session.queue.map((t) => t.kind),
-          [DjSource.soundcloud, DjSource.spotify]);
+          ['tunes.example', 'songs.example']);
       expect(b.session.isPlaying, isTrue);
     });
 
     test('what fetching learned is announced (the title of a set entry)',
         () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       expect(a.session.current!.title,
-          startsWith('Fetched https://www.youtube.com/watch'));
+          startsWith('Fetched https://music.example/'));
     });
 
     test('two claims at once end with the smaller identity as DJ', () async {
@@ -165,7 +165,7 @@ void main() {
         () async {
       // Honest clients only claim an empty booth; whatever happens, every
       // client applies the same rule and they end up agreeing.
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       final c = join('@c:x:DEV3');
       await settle();
@@ -185,7 +185,7 @@ void main() {
     });
 
     test('a newcomer who claims without knowing the DJ steps down', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       // n hears nothing from the DJ at first: it believes the booth is
       // empty and claims epoch 1.
       final t = call.join('@n:x:N');
@@ -210,7 +210,7 @@ void main() {
     });
 
     test('a listener that reconnects asks for the booth again', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       // LiveKit made the DJ "leave" during b's reconnect.
@@ -227,9 +227,9 @@ void main() {
   group('requests and passing', () {
     test('a request shows for everyone and the DJ can pass to them', () async {
       final a = await djWith('@a:x:DEV1', [
-        'https://youtu.be/aaaaaaaaaaa',
-        'https://youtu.be/bbbbbbbbbbb',
-        'https://youtu.be/ccccccccccc',
+        'https://music.example/aaaaaaaaaaa',
+        'https://music.example/bbbbbbbbbbb',
+        'https://music.example/ccccccccccc',
       ]);
       final b = join('@b:x:DEV2');
       final c = join('@c:x:DEV3');
@@ -272,7 +272,7 @@ void main() {
     });
 
     test('the DJ keeps playing while the target fetches the song', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       FakeEngine? bEngine;
       final b = join('@b:x:DEV2', onEngine: (e) {
         bEngine = e;
@@ -297,7 +297,7 @@ void main() {
 
     test('the new DJ has the whole song before picking it up mid-way',
         () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       // The DJ itself starts songs while they download.
@@ -310,7 +310,7 @@ void main() {
     });
 
     test('a paused booth is handed over paused', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       a.session.setPaused(true);
@@ -325,7 +325,7 @@ void main() {
     });
 
     test('a failed takeover leaves the DJ in charge and tells them', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final current = a.session.current!.id;
       final b = join('@b:x:DEV2', onEngine: (e) => e.failing.add(current));
       await settle();
@@ -344,7 +344,7 @@ void main() {
     });
 
     test('passing to a web client is refused', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final w = join('@w:x:WEB', caps: web);
       await settle();
 
@@ -356,7 +356,7 @@ void main() {
     });
 
     test('a web client cannot ask for the booth', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final w = join('@w:x:WEB', caps: web);
       await settle();
       w.session.requestDj(true);
@@ -384,7 +384,7 @@ void main() {
     });
 
     test('the DJ can call a pass off', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       FakeEngine? bEngine;
       final b = join('@b:x:DEV2', onEngine: (e) {
         bEngine = e;
@@ -409,8 +409,8 @@ void main() {
     test('keeps the queue, paused, and the next DJ carries on from it',
         () async {
       final a = await djWith('@a:x:DEV1', [
-        'https://youtu.be/aaaaaaaaaaa',
-        'https://youtu.be/bbbbbbbbbbb',
+        'https://music.example/aaaaaaaaaaa',
+        'https://music.example/bbbbbbbbbbb',
       ]);
       final b = join('@b:x:DEV2');
       await settle();
@@ -439,7 +439,7 @@ void main() {
     });
 
     test('stopping DJing hands the room an empty booth', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       await a.session.stopDjing();
@@ -451,8 +451,8 @@ void main() {
 
     test('a newcomer gets the booth from the DJ', () async {
       final a = await djWith('@a:x:DEV1', [
-        'https://youtu.be/aaaaaaaaaaa',
-        'https://youtu.be/bbbbbbbbbbb',
+        'https://music.example/aaaaaaaaaaa',
+        'https://music.example/bbbbbbbbbbb',
       ]);
       final late = join('@late:x:DEV9', caps: web);
       await settle();
@@ -469,7 +469,7 @@ void main() {
       final a = join('@a:x:DEV1', resolver: resolver);
       await settle();
       await a.session.becomeDj();
-      a.session.addLinks('https://www.youtube.com/playlist?list=PL1');
+      a.session.addLinks('https://music.example/playlist/PL1');
       await settle();
       // track0 plays, track1..3 queued.
       expect(a.session.queue.map((t) => t.id), ['track1', 'track2', 'track3']);
@@ -499,8 +499,8 @@ void main() {
         'the next song starts when one ends, and the booth idles after the last',
         () async {
       final a = await djWith('@a:x:DEV1', [
-        'https://youtu.be/aaaaaaaaaaa',
-        'https://youtu.be/bbbbbbbbbbb',
+        'https://music.example/aaaaaaaaaaa',
+        'https://music.example/bbbbbbbbbbb',
       ]);
       final first = a.session.current!.id;
       a.engine!.finish();
@@ -521,7 +521,7 @@ void main() {
       await settle();
       await a.session.becomeDj();
       a.session.addLinks(
-          'https://youtu.be/aaaaaaaaaaa https://youtu.be/bbbbbbbbbbb');
+          'https://music.example/aaaaaaaaaaa https://music.example/bbbbbbbbbbb');
       await settle();
       expect(a.session.current!.id, 'track1');
       expect(a.notices.single.message, contains("Couldn't play"));
@@ -530,8 +530,8 @@ void main() {
     test('a song whose download breaks off is skipped with the reason',
         () async {
       final a = await djWith('@a:x:DEV1', [
-        'https://youtu.be/aaaaaaaaaaa',
-        'https://youtu.be/bbbbbbbbbbb',
+        'https://music.example/aaaaaaaaaaa',
+        'https://music.example/bbbbbbbbbbb',
       ]);
       final first = a.session.current!.id;
       a.engine!.fail('HTTP Error 403: Forbidden');
@@ -542,7 +542,7 @@ void main() {
     });
 
     test('pause and resume reach the engine and the room', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       a.session.togglePause();
@@ -561,7 +561,7 @@ void main() {
       final b = join('@b:x:DEV2');
       await settle();
       await a.session.becomeDj();
-      a.session.addLinks('https://www.youtube.com/playlist?list=PLlong');
+      a.session.addLinks('https://music.example/playlist/PLlong');
       await settle();
       expect(call.log.any((m) => m.$2['t'] == 'part'), isTrue);
       expect(b.session.queue.length, 399);
@@ -569,7 +569,7 @@ void main() {
     });
 
     test('listeners follow the position from ticks', () async {
-      final a = await djWith('@a:x:DEV1', ['https://youtu.be/aaaaaaaaaaa']);
+      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       a.engine!.advance(60000);
@@ -581,12 +581,12 @@ void main() {
     test('a link that cannot be resolved is reported, the others are added',
         () async {
       final resolver = FakeResolver()
-        ..failing.add('https://www.youtube.com/watch?v=bbbbbbbbbbb');
+        ..failing.add('https://music.example/bbbbbbbbbbb');
       final a = join('@a:x:DEV1', resolver: resolver);
       await settle();
       await a.session.becomeDj();
       final found = a.session.addLinks(
-          'https://youtu.be/aaaaaaaaaaa https://youtu.be/bbbbbbbbbbb https://youtu.be/ccccccccccc');
+          'https://music.example/aaaaaaaaaaa https://music.example/bbbbbbbbbbb https://music.example/ccccccccccc');
       expect(found, 3);
       expect(a.session.pendingAdds.length, 3);
       await settle();
@@ -594,6 +594,53 @@ void main() {
       expect(a.notices.single.isError, isTrue);
       expect(a.session.current, isNotNull);
       expect(a.session.queue.length, 1);
+    });
+  });
+
+  group("songs this DJ can't have", () {
+    test('are skipped without counting as failures', () async {
+      // More in a row than stop the booth when they fail.
+      final unplayable = [
+        for (var i = 0; i < DjSession.maxFailuresInARow + 1; i++) 'track$i'
+      ];
+      final a = join('@a:x:DEV1',
+          onEngine: (engine) => engine.unavailable.addAll(unplayable));
+      await settle();
+      await a.session.becomeDj();
+      a.session.addLinks([
+        for (var i = 0; i <= unplayable.length; i++) 'https://music.example/$i'
+      ].join('\n'));
+      await settle();
+
+      expect(a.session.current?.id, 'track${unplayable.length}');
+      expect(a.session.isPlaying, isTrue);
+      expect(a.notices.where((n) => n.message.startsWith('Skipped')),
+          hasLength(unplayable.length));
+      expect(a.notices.where((n) => n.isError), isEmpty);
+    });
+
+    test("the decks aren't handed over while the DJ's own file plays",
+        () async {
+      final a = join('@a:x:DEV1');
+      final b = join('@b:x:DEV2');
+      await settle();
+      await a.session.becomeDj();
+      a.session.addTracks([
+        const DjTrack(
+            id: 'mine',
+            source: 'file:0123456789abcdef0123',
+            kind: DjTrack.fileKind,
+            title: 'My song',
+            addedBy: '@a:x'),
+      ]);
+      await settle();
+      expect(a.session.current?.id, 'mine');
+
+      a.session.passTo('@b:x:DEV2');
+      await settle();
+      expect(a.session.snapshot.passTo, isNull);
+      expect(b.session.isDj, isFalse);
+      expect(a.notices.last.message, contains('only on your computer'));
     });
   });
 }

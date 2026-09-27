@@ -10,8 +10,8 @@ import 'browser_runtime.dart';
 /// through CEF windowless/off-screen rendering with CPU `OnPaint` copied into
 /// client-owned memory. Clean environments without WebKitGTK or host CEF
 /// still pass, and Linux official video plays the provider's own embed
-/// through the bundled CEF host, like Windows; only a build without CEF falls
-/// back to yt-dlp/mpv or a deliberate external browser.
+/// through the bundled CEF host, like Windows; only a build without CEF hands
+/// it to the external browser.
 ///
 /// This library owns the pure qualification policy; the out-of-process
 /// `cef_host` enforces the staged-payload and sandbox rules at launch while
@@ -104,8 +104,7 @@ const Set<String> sandboxBypassFlags = {
 const String linuxOfficialVideoPath = 'cef-official-embed';
 
 /// What a build without a bundled CEF host does with official video instead.
-const String linuxOfficialVideoFallback =
-    'native-yt-dlp-mpv-or-deliberate-external';
+const String linuxOfficialVideoFallback = 'deliberate-external';
 
 /// Parses a released native package id. Matching is exact and lowercase so an
 /// unknown package cannot silently qualify as a released artifact.
