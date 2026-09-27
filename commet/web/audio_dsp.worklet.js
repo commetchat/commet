@@ -21,6 +21,11 @@ const DELAY = 2 * BLOCK;
 // A worker that stalled and then caught up leaves blocks queued; beyond
 // this many the oldest are dropped, so the delay does not stay long.
 const MAX_QUEUED = 4;
+// No block back from the worker for this long (it died, hung, or its
+// context was lost): the microphone goes out unprocessed until blocks come
+// back, rather than silence the user cannot hear. The app's microphone
+// watch notices the DSP's frame counter stop and builds a new graph.
+const STARVED_LIMIT = 20 * BLOCK;
 // Buffers going back and forth; more are made if the worker holds on to
 // these.
 const POOL = 8;
@@ -42,6 +47,8 @@ class CommetDspProcessor extends AudioWorkletProcessor {
     this.head = 0;
     // Silence still to play before the first block.
     this.silence = 0;
+    // Samples played since the last block came back.
+    this.starved = 0;
 
     this.port.onmessage = (e) => {
       const msg = e.data || {};
@@ -62,6 +69,7 @@ class CommetDspProcessor extends AudioWorkletProcessor {
         return;
       }
       this.queue.push(new Float32Array(msg.buf, 0, BLOCK));
+      this.starved = 0;
       while (this.queue.length > MAX_QUEUED) {
         this.pool.push(this.queue.shift().buffer);
         this.head = 0;
@@ -103,8 +111,9 @@ class CommetDspProcessor extends AudioWorkletProcessor {
     }
   }
 
-  // Fills [out] from the processed blocks.
-  play(out) {
+  // Fills [out] from the processed blocks, or with [mic] once the worker
+  // has sent nothing back for STARVED_LIMIT.
+  play(out, mic) {
     const n = out.length;
     let k = 0;
     while (k < n) {
@@ -117,6 +126,11 @@ class CommetDspProcessor extends AudioWorkletProcessor {
       }
       const front = this.queue[0];
       if (!front) {
+        this.starved += n - k;
+        if (this.starved > STARVED_LIMIT && mic) {
+          out.set(mic.subarray(k, n), k);
+          return;
+        }
         // The worker is late: this is silence, and the delay grows by it.
         out.fill(0, k, n);
         return;
@@ -147,7 +161,7 @@ class CommetDspProcessor extends AudioWorkletProcessor {
     }
 
     this.send(mic, inputs[1] && inputs[1][0], out[0].length);
-    this.play(out[0]);
+    this.play(out[0], mic);
     for (let c = 1; c < out.length; c++) out[c].set(out[0]);
     return true;
   }

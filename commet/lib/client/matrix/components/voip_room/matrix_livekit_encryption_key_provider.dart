@@ -1,27 +1,40 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:commet/client/matrix/components/voip_room/call_key_distributor.dart';
+import 'package:commet/client/matrix/components/voip_room/call_key_messages.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/debug/log.dart';
 import 'package:livekit_client/livekit_client.dart' hide KeyProvider;
 import 'package:webrtc_interface/src/frame_cryptor.dart';
 
 import 'package:matrix/matrix.dart' as mx;
-import 'package:matrix/src/utils/crypto/crypto.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as rtc;
 import 'package:livekit_client/livekit_client.dart' as lk;
 
-class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
+/// Media keys of an encrypted voice room: ours go out to everyone in the
+/// call through [CallKeyDistributor], theirs come in as to-device messages.
+/// See docs/voice-call-health.md.
+class MatrixLivekitEncryptionKeyProvider
+    implements BaseKeyProvider, CallKeyTransport {
   mx.Room room;
-  BaseKeyProvider _keyProvider;
+  final BaseKeyProvider _keyProvider;
 
-  late lk.Room lkRoom;
-  int indexCounter = 0;
+  lk.Room? _lkRoom;
 
   String? localParticipant;
 
-  late List<StreamSubscription> subs;
+  late final List<StreamSubscription> subs;
+
+  late final CallKeyDistributor distributor =
+      CallKeyDistributor(transport: this, keyRingSize: options.keyRingSize);
+
+  late final IncomingCallKeys _incoming = IncomingCallKeys(
+      apply: (member, index, key) =>
+          setRawKey(key, participantId: member.participantId, keyIndex: index));
+
+  Timer? _tick;
+  bool _disposed = false;
 
   MatrixLivekitEncryptionKeyProvider(this._keyProvider, this.room) {
     subs = [
@@ -32,6 +45,9 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
   void dispose() {
     Log.i("Disposing key provider");
+    _disposed = true;
+    _tick?.cancel();
+    distributor.dispose();
     for (var sub in subs) {
       sub.cancel();
     }
@@ -118,161 +134,189 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
   void init(String localParticipantId, lk.Room livekitRoom) {
     localParticipant = localParticipantId;
-    lkRoom = livekitRoom;
+    _lkRoom = livekitRoom;
 
-    createNewKey(waitBeforeUsingKey: false);
+    distributor.start(currentMembers()).catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Voice keys: could not start");
+    });
+    _tick = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!_disposed) distributor.tick();
+    });
   }
 
-  Uint8List? currentKey;
-  DateTime? keyCreationTime;
-
-  void rotateKeys() {
-    createNewKey(waitBeforeUsingKey: true);
-  }
-
-  void createNewKey({bool waitBeforeUsingKey = false}) async {
-    var index = indexCounter % options.keyRingSize;
-    indexCounter++;
-
-    var bytes = secureRandomBytes(16);
-
-    currentKey = bytes;
-    keyCreationTime = DateTime.now();
-
-    sendKeyToParticipants(bytes, index);
-
-    if (waitBeforeUsingKey) {
-      await Future.delayed(Duration(seconds: 5));
-    }
-
-    setRawKey(bytes, participantId: localParticipant!, keyIndex: index);
-    lkRoom.e2eeManager
-        ?.setKeyIndex(index, participantIdentity: localParticipant!);
-  }
-
-  Future<void> sendKeyToParticipants(Uint8List bytes, int keyIndex) async {
+  /// Who is in the call now, from the room state: every live membership of
+  /// the room's call but this device's.
+  Map<CallMember, DateTime?> currentMembers() {
     final state = room.states[MatrixVoipRoomComponent.callMemberStateEvent];
-    if (state == null) {
+    return callMembersFromState(
+      [
+        for (final event in state?.values ?? const <mx.StrippedStateEvent>[])
+          (
+            sender: event.senderId,
+            content: event.content,
+            sentAt: event is mx.Event ? event.originServerTs : null,
+          ),
+      ],
+      ownUserId: room.client.userID!,
+      ownDeviceId: room.client.deviceID!,
+      now: DateTime.now(),
+    );
+  }
+
+  String? _curve25519Of(CallMember member) => room
+      .client
+      .userDeviceKeys[member.userId]
+      ?.deviceKeys[member.deviceId]
+      ?.curve25519Key;
+
+  @override
+  Future<Set<CallMember>> sendKey(
+      Set<CallMember> to, int index, Uint8List key) async {
+    final devices = <mx.DeviceKeys>[];
+    final reached = <CallMember>{};
+    final unknown = <String>{};
+    for (final member in to) {
+      final device = room
+          .client.userDeviceKeys[member.userId]?.deviceKeys[member.deviceId];
+      if (device == null) {
+        unknown.add(member.userId);
+      } else {
+        devices.add(device);
+        reached.add(member);
+      }
+    }
+    if (unknown.isNotEmpty) {
+      // A device that just joined (a fresh login) whose keys have not been
+      // downloaded yet: ask for them, and the next attempt reaches it.
+      Log.w("Voice keys: no device keys yet for ${unknown.join(", ")}");
+      unawaited(room.client
+          .updateUserDeviceKeys(additionalUsers: unknown)
+          .catchError((Object e, StackTrace s) {
+        Log.onError(e, s, content: "Voice keys: could not fetch device keys");
+      }));
+    }
+    if (devices.isEmpty) return reached;
+    await room.client.sendToDeviceEncrypted(
+        devices,
+        callKeysEventType,
+        callKeyContent(
+          roomId: room.id,
+          ownDeviceId: room.client.deviceID!,
+          index: index,
+          key: key,
+          now: DateTime.now(),
+        ));
+    // The SDK drops, without a word, blocked devices and those it could not
+    // start an olm session with (no one-time keys): only a device we hold a
+    // session with was sent the key. The others are tried again.
+    final olm = room.client.encryption?.olmManager.olmSessions;
+    bool sent(mx.DeviceKeys d) =>
+        !d.blocked && (olm?[d.curve25519Key]?.isNotEmpty ?? false);
+    reached.removeWhere((member) {
+      final device = room
+          .client.userDeviceKeys[member.userId]?.deviceKeys[member.deviceId];
+      return device == null || !sent(device);
+    });
+    Log.i("Voice keys: sent key $index to ${reached.join(", ")}");
+    return reached;
+  }
+
+  @override
+  Future<void> useKey(int index, Uint8List key) async {
+    final local = localParticipant;
+    if (local == null) return;
+    await setRawKey(key, participantId: local, keyIndex: index);
+    await _lkRoom?.e2eeManager?.setKeyIndex(index, participantIdentity: local);
+    Log.i("Voice keys: encrypting with key $index");
+  }
+
+  final Map<String, DateTime> _requested = {};
+
+  /// How often we ask one participant for its key.
+  static const requestEvery = Duration(seconds: 10);
+
+  /// We cannot decrypt [participantIdentity] (LiveKit reports a missing key
+  /// or failed decryption): ask it for its key. A roscord client sends it
+  /// at once; without this we waited for its next scheduled resend.
+  Future<void> requestKeyFrom(String participantIdentity) async {
+    if (_disposed) return;
+    final member = CallMember.fromParticipantId(participantIdentity);
+    if (member == null) return;
+    final now = DateTime.now();
+    final last = _requested[participantIdentity];
+    if (last != null && now.difference(last) < requestEvery) return;
+    _requested[participantIdentity] = now;
+    final device =
+        room.client.userDeviceKeys[member.userId]?.deviceKeys[member.deviceId];
+    if (device == null) {
+      Log.w("Voice keys: cannot ask $member for its key, no device keys");
       return;
     }
-
-    var content = {
-      "keys": {
-        "index": keyIndex,
-        "key": base64Encode(bytes),
-      },
-      "member": {"claimed_device_id": room.client.deviceID!},
-      "room_id": room.id,
-      "sent_ts": DateTime.now().millisecondsSinceEpoch,
-      "session": {
-        "application": "m.call",
-        "call_id": "",
-        "scope": "m.room",
-      }
-    };
-
-    List<mx.DeviceKeys> sendToDevices = List.empty(growable: true);
-
-    for (var event in state.values) {
-      if (event.content.isEmpty) continue;
-
-      var device = event.content.tryGet<String>("device_id");
-
-      if (device == null) continue;
-
-      if (event.senderId == room.client.userID &&
-          device == room.client.deviceID) {
-        Log.i("Dont need to send key to ourself");
-        continue;
-      }
-
-      final deviceKey =
-          room.client.userDeviceKeys[event.senderId]?.deviceKeys[device];
-
-      if (deviceKey != null) {
-        sendToDevices.add(deviceKey);
-        Log.i("Sending keys: $content to ${deviceKey.userId}");
-      }
-    }
-
-    if (sendToDevices.isNotEmpty) {
-      room.client.sendToDeviceEncrypted(
-          sendToDevices, "io.element.call.encryption_keys", content);
-    }
+    Log.i("Voice keys: cannot decrypt $member, asking it for its key");
+    await room.client.sendToDeviceEncrypted(
+        [device],
+        callKeyRequestEventType,
+        callKeyRequestContent(
+            roomId: room.id, ownDeviceId: room.client.deviceID!));
   }
 
   void onToDeviceEvent(mx.ToDeviceEvent event) {
-    Log.i(
-      "Received to device event: ${event.toJson()}",
+    if (event.type != callKeysEventType &&
+        event.type != callKeyRequestEventType) {
+      return;
+    }
+    final message = CallToDevice(
+      type: event.type,
+      sender: event.senderId,
+      content: event.content,
+      encrypted: event.encryptedContent != null,
+      senderKey: event.encryptedContent?["sender_key"] as String?,
     );
 
-    if (event.type == "io.element.call.encryption_keys") {
-      var data = event.content["keys"] as Map<String, dynamic>;
-      Log.i("Setting encryption key");
-      Log.i(data);
-
-      var index = data["index"];
-      var key = data["key"] as String;
-
-      var b = base64Decode(key);
-
-      var deviceId = (event.content["member"]
-          as Map<String, dynamic>)["claimed_device_id"] as String;
-
-      var participantId = event.senderId + ":" + deviceId;
-
-      Log.i("Particpant: $participantId");
-
-      setRawKey(b, participantId: participantId, keyIndex: index);
-    }
-  }
-
-  void onSync(mx.SyncUpdate event) {
-    var roomUpdate = event.rooms?.join?[room.id];
-    if (roomUpdate == null) {
+    final request = parseCallKeyRequest(message,
+        roomId: room.id, deviceCurve25519: _curve25519Of);
+    if (request != null) {
+      distributor.keyRequested(request);
       return;
     }
 
-    if (roomUpdate.timeline?.events == null) return;
-
-    bool membershipsChanged = false;
-
-    for (var state in roomUpdate.timeline!.events!) {
-      if (state.type != MatrixVoipRoomComponent.callMemberStateEvent) continue;
-
-      Log.i("Got membership state change: ${state.toJson()}");
-
-      if (state.content.isEmpty) {
-        Log.i("Someone left the call");
-        membershipsChanged = true;
-        continue;
+    final key = CallKeyMessage.parse(message,
+        roomId: room.id, deviceCurve25519: _curve25519Of);
+    if (key == null) {
+      // Another room's call, or not one we can trust.
+      if (event.content["room_id"] == room.id) {
+        Log.w("Voice keys: ignored a key message from ${event.senderId}");
       }
+      return;
+    }
+    Log.i("Voice keys: got key ${key.index} of ${key.from}");
+    _incoming
+        .receive(key, fromMember: distributor.members.contains(key.from))
+        .catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Voice keys: could not set a key");
+    });
+  }
 
-      var application = state.content["application"];
-      var callid = state.content["call_id"];
+  void onSync(mx.SyncUpdate event) {
+    if (_disposed) return;
+    final roomUpdate = event.rooms?.join?[room.id];
+    if (roomUpdate == null) return;
 
-      if (application != "m.call") {
-        Log.w(
-            "Received membership state change for invalid application, not sending key");
-      }
-
-      if (callid != "") {
-        Log.w(
-            "Received membership state change for invalid call id, not sending key");
-        continue;
-      }
-
-      Log.i("Someone joined the call");
-
-      membershipsChanged = true;
+    bool touches(List<mx.BasicEvent>? events) =>
+        events?.any(
+            (e) => e.type == MatrixVoipRoomComponent.callMemberStateEvent) ??
+        false;
+    // A gappy sync puts membership changes in the state section.
+    if (!touches(roomUpdate.timeline?.events) && !touches(roomUpdate.state)) {
+      return;
     }
 
-    if (membershipsChanged) {
-      Log.d("Call memberships changed");
-
-      Future.delayed(Duration(milliseconds: 16)).then((_) {
-        rotateKeys();
-      });
-    }
+    final members = currentMembers();
+    distributor.updateMembers(members);
+    _incoming
+        .membersChanged(members.keys.toSet())
+        .catchError((Object e, StackTrace s) {
+      Log.onError(e, s, content: "Voice keys: could not set a held key");
+    });
   }
 }

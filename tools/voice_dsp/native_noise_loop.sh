@@ -4,7 +4,10 @@
 # Makes a PulseAudio microphone for this run only, which plays the noisy
 # speech fixture (a null sink fed by paplay, remapped into a source), and
 # runs the app's microphone test on it
-# (commet/integration_test/voice_dsp/native_noise_test.dart): the fixture
+# (commet/integration_test/voice_dsp/native_noise_test.dart), which also
+# kills the app's recording stream mid-capture and checks that the call's
+# microphone watch brings it back (pacmd on PulseAudio, pw-cli on
+# PipeWire; docs/voice-call-health.md): the fixture
 # goes through WebRTC's audio device and processing modules and our hook in
 # librust_lib_commet, and is encoded and sent over a local peer connection.
 # The test samples WebRTC's own measure of what is encoded and of what is
@@ -28,6 +31,9 @@ tag="nsloop$$"
 modules=()
 
 cleanup() {
+  # Anything still playing into the loop's sinks first: once they are gone
+  # PipeWire moves it to the machine's own speakers.
+  pkill -f "[p]aplay --device=${tag}_" 2>/dev/null || true
   for m in "${modules[@]}"; do pactl unload-module "$m" 2>/dev/null || true; done
   rm -rf "$work"
 }
@@ -81,5 +87,6 @@ if [ "$status" != 0 ]; then
   exit "$status"
 fi
 echo "DSP report (rate frames flags): $(cat "$work/results/report.txt")"
+echo "A recording that died mid-call: $(cat "$work/results/recording_died.txt")"
 echo "WebRTC processing of the microphone around a custom audio source: $(cat "$work/results/custom_source.txt")"
 node "$repo/tools/voice_dsp/measure_stats.mjs" "$work/results"

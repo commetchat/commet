@@ -495,6 +495,17 @@ class NativeAudioProcessingManager extends AudioProcessingManager {
   webrtc.MediaStreamTrack? get debugMicTestMicrophone =>
       _loopback?.mic.getAudioTracks().firstOrNull;
 
+  /// The sender of the microphone test's capture, for the native noise
+  /// loop's microphone watch.
+  @visibleForTesting
+  Future<webrtc.RTCRtpSender?> debugMicTestSender() async {
+    final lb = _loopback;
+    final mic = debugMicTestMicrophone;
+    if (lb == null || mic == null) return null;
+    return (await lb.send.getSenders())
+        .firstWhereOrNull((s) => s.track?.id == mic.id);
+  }
+
   /// Sends [track] next to the microphone test's microphone, as a call
   /// sends the DJ booth's music or a screen share's audio next to it, for
   /// the native noise loop.

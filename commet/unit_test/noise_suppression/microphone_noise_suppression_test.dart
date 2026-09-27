@@ -248,6 +248,51 @@ void main() {
       expect(failures, 1);
     });
 
+    // Windows' capture thread dying starves the DSP along with everything
+    // else. The microphone watch repairs the capture; giving up on our DSP
+    // for it spent the call's only fallback, and the next death had no
+    // watchdog left to restart anything.
+    test('a capture that went quiet is not blamed on the DSP', () async {
+      bool? flowing = false;
+      ns = MicrophoneNoiseSuppression(
+        dsp: dsp,
+        microphone: () => mic,
+        preference: () => preference,
+        onDspFailed: () => failures++,
+        captureFlowing: () => flowing,
+        now: () => now,
+      );
+      dsp.processing = false;
+      await liveFor(const Duration(seconds: 30));
+      expect(ns.dspFailed, isFalse);
+      expect(mic!.restarts, isEmpty);
+
+      // The capture flows again and the DSP still gets nothing: that is ours.
+      flowing = true;
+      await liveFor(const Duration(seconds: 5));
+      expect(ns.dspFailed, isTrue);
+      expect(failures, 1);
+    });
+
+    // Just after a repair the watch does not know yet whether the capture
+    // flows; a repair that takes a few seconds must not make us give up on
+    // the DSP.
+    test(
+        'while the watch does not know whether the capture flows, the DSP '
+        'is not blamed', () async {
+      ns = MicrophoneNoiseSuppression(
+        dsp: dsp,
+        microphone: () => mic,
+        preference: () => preference,
+        onDspFailed: () => failures++,
+        captureFlowing: () => null,
+        now: () => now,
+      );
+      dsp.processing = false;
+      await liveFor(const Duration(seconds: 30));
+      expect(ns.dspFailed, isFalse);
+    });
+
     test('muted time is not a stall', () async {
       dsp.processing = false;
       mic!.muted = true;

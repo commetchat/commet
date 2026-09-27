@@ -80,6 +80,7 @@ class AudioDspReport {
   static const int flagSpeakerBleed = 1 << 4;
   static const int flagReference = 1 << 5;
   static const int flagDeepFilter = 1 << 6;
+  static const int flagRecovered = 1 << 7;
 
   /// Microphone level after noise suppression, before the gate, in dBFS.
   final double levelDb;
@@ -124,6 +125,10 @@ class AudioDspReport {
   /// still loading (the first half second natively), or the machine was too
   /// slow for it.
   bool get deepFilterActive => flags & flagDeepFilter != 0;
+
+  /// The DSP rebuilt its state at least once, after a sample that was not a
+  /// number got into it (`audio_dsp::REPORT_FLAG_RECOVERED`).
+  bool get recovered => flags & flagRecovered != 0;
 
   @override
   String toString() =>

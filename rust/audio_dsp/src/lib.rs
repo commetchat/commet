@@ -108,6 +108,32 @@ pub const REPORT_FLAG_REFERENCE: u32 = 1 << 5;
 /// DeepFilterNet suppressed noise in the last block. Noise suppression
 /// without it is RNNoise alone.
 pub const REPORT_FLAG_DEEP_FILTER: u32 = 1 << 6;
+/// State that went bad (a sample that was not a number got in) was rebuilt
+/// at least once since the DSP was made (`Dsp::recoveries`).
+pub const REPORT_FLAG_RECOVERED: u32 = 1 << 7;
+
+/// The largest magnitude a sample may have at int16 scale, a little over
+/// 12 dB above full scale. A sample that is not a finite number is taken as
+/// silence, and larger ones are clipped here: one NaN or infinity used to
+/// spread into every recursive state of the DSP for good (the model's
+/// normalisation, RNNoise, the filters, the gate), and the call went silent
+/// until the user rejoined it.
+pub const INPUT_LIMIT: f32 = 4.0 * 32768.0;
+
+/// Rebuilds after which DeepFilterNet is given up on, and after which noise
+/// suppression is (the gate still runs, on levels).
+const RECOVERIES_BEFORE_NO_MODEL: u32 = 3;
+const RECOVERIES_BEFORE_NO_SUPPRESSION: u32 = 10;
+
+/// `x` as a sample the DSP can take: finite and within `limit`.
+#[inline]
+fn sane(x: f32, limit: f32) -> f32 {
+    if x.is_finite() {
+        x.clamp(-limit, limit)
+    } else {
+        0.0
+    }
+}
 
 /// Snapshot for meters and debugging. Written by the audio thread, read by
 /// anyone.
@@ -157,6 +183,8 @@ struct Shared {
     sample_rate: AtomicU32,
     frames: AtomicU32,
     flags: AtomicU32,
+    /// How many times state that went bad was rebuilt.
+    recoveries: AtomicU32,
 }
 
 fn f2u(f: f32) -> u32 {
@@ -202,12 +230,29 @@ impl Shared {
             sample_rate: AtomicU32::new(0),
             frames: AtomicU32::new(0),
             flags: AtomicU32::new(0),
+            recoveries: AtomicU32::new(0),
         };
         s.set_params(p);
         s
     }
 
     fn set_params(&self, p: &Params) {
+        // A parameter that is not a number used to stick in the gate's gain
+        // even after it was corrected: the default stands in for it.
+        let d = Params::default();
+        let or = |v: f32, default: f32| if v.is_finite() { v } else { default };
+        let p = &Params {
+            input_scale: if p.input_scale.is_finite() && p.input_scale > 0.0 {
+                p.input_scale
+            } else {
+                d.input_scale
+            },
+            gate_threshold_db: or(p.gate_threshold_db, d.gate_threshold_db),
+            gate_floor_db: or(p.gate_floor_db, d.gate_floor_db),
+            duck_depth_db: or(p.duck_depth_db, d.duck_depth_db),
+            duck_far_threshold_db: or(p.duck_far_threshold_db, d.duck_far_threshold_db),
+            ..*p
+        };
         self.noise_suppression.store(p.noise_suppression as u32, Ordering::Relaxed);
         self.gate_mode.store(p.gate_mode as u32, Ordering::Relaxed);
         self.far_end_ducking.store(p.far_end_ducking as u32, Ordering::Relaxed);
@@ -346,6 +391,36 @@ pub enum ModelLoad {
 
 /// A model built off the audio thread, or why it could not be.
 struct LoadedModel(Result<Box<DeepFilter>, String>);
+
+type ModelSlot = Arc<Mutex<Option<LoadedModel>>>;
+
+/// DeepFilterNet's model as `load` says: built now, or on its way from a
+/// thread of its own.
+fn load_model(load: ModelLoad) -> (Option<Box<DeepFilter>>, Option<ModelSlot>) {
+    match load {
+        ModelLoad::Never => (None, None),
+        ModelLoad::Now => (DeepFilter::new().ok().map(Box::new), None),
+        ModelLoad::Background if cfg!(target_arch = "wasm32") => {
+            (DeepFilter::new().ok().map(Box::new), None)
+        }
+        ModelLoad::Background => {
+            let slot = Arc::new(Mutex::new(None));
+            let loaded = Arc::clone(&slot);
+            let spawned = std::thread::Builder::new()
+                .name("commet-dsp-model".into())
+                .spawn(move || {
+                    let model = LoadedModel(DeepFilter::new().map(Box::new));
+                    if let Ok(mut s) = loaded.lock() {
+                        *s = Some(model);
+                    }
+                });
+            match spawned {
+                Ok(_) => (None, Some(slot)),
+                Err(_) => (DeepFilter::new().ok().map(Box::new), None),
+            }
+        }
+    }
+}
 // SAFETY: tract's tensors are reference counted with `Rc`. The loading
 // thread builds the model, moves all of it into the slot and keeps no
 // reference; from then on one thread at a time owns it.
@@ -353,6 +428,8 @@ unsafe impl Send for LoadedModel {}
 
 pub struct Dsp {
     shared: Shared,
+    /// How the model was built, to build it again after its state went bad.
+    model_load: ModelLoad,
     /// Suppresses noise when the model is not running, and judges speech on
     /// the model's output when it is.
     denoise: Box<DenoiseState<'static>>,
@@ -366,7 +443,7 @@ pub struct Dsp {
     /// blocks, oldest first (`dfn::DeepFilter::process`).
     recent_snr_db: [f32; 4],
     /// Where a model loading in the background arrives.
-    pending_model: Option<Arc<Mutex<Option<LoadedModel>>>>,
+    pending_model: Option<ModelSlot>,
     /// Blocks the model still runs beside RNNoise before its output is used.
     /// Its lookahead and overlap hold the last audio it heard: a model that
     /// arrives mid-stream, is switched back on, or follows the capture to
@@ -374,6 +451,9 @@ pub struct Dsp {
     deep_filter_warmup: u32,
     /// Noise suppression was on for the last block.
     suppressing: bool,
+    /// Suppression kept producing NaN however often it was rebuilt: off for
+    /// the rest of this DSP's life (`recover`).
+    suppression_broken: bool,
     /// How long the model takes per block, to give way to RNNoise on a
     /// machine too slow for it (`watch_deep_filter_cost`).
     #[cfg(not(target_arch = "wasm32"))]
@@ -419,30 +499,9 @@ impl Dsp {
     }
 
     pub fn with_model(params: Params, load: ModelLoad) -> Box<Dsp> {
-        let (deep_filter, pending_model) = match load {
-            ModelLoad::Never => (None, None),
-            ModelLoad::Now => (DeepFilter::new().ok().map(Box::new), None),
-            ModelLoad::Background if cfg!(target_arch = "wasm32") => {
-                (DeepFilter::new().ok().map(Box::new), None)
-            }
-            ModelLoad::Background => {
-                let slot = Arc::new(Mutex::new(None));
-                let loaded = Arc::clone(&slot);
-                let spawned = std::thread::Builder::new()
-                    .name("commet-dsp-model".into())
-                    .spawn(move || {
-                        let model = LoadedModel(DeepFilter::new().map(Box::new));
-                        if let Ok(mut s) = loaded.lock() {
-                            *s = Some(model);
-                        }
-                    });
-                match spawned {
-                    Ok(_) => (None, Some(slot)),
-                    Err(_) => (DeepFilter::new().ok().map(Box::new), None),
-                }
-            }
-        };
+        let (deep_filter, pending_model) = load_model(load);
         let mut dsp = Box::new(Dsp {
+            model_load: load,
             shared: Shared::new(&params),
             denoise: DenoiseState::new(),
             denoise_raw: DenoiseState::new(),
@@ -452,6 +511,7 @@ impl Dsp {
             pending_model,
             deep_filter_warmup: 0,
             suppressing: true,
+            suppression_broken: false,
             #[cfg(not(target_arch = "wasm32"))]
             deep_filter_cost: None,
             gate: Gate::new(NATIVE_RATE),
@@ -478,16 +538,87 @@ impl Dsp {
             stream_out_len: 0,
             stream_primed: false,
         });
-        // Warm up: the first RNNoise frame builds its FFT plan. Do it here so
-        // the audio thread never allocates.
+        dsp.warm_up_rnnoise();
+        dsp.shared.sample_rate.store(NATIVE_RATE as u32, Ordering::Relaxed);
+        dsp
+    }
+
+    /// The first RNNoise frame builds its FFT plan. Done up front so the
+    /// audio thread never allocates.
+    fn warm_up_rnnoise(&mut self) {
         let mut warm = [0.0f32; FRAME_SIZE];
         let warm_in = [0.0f32; FRAME_SIZE];
         for _ in 0..3 {
-            dsp.denoise.process_frame(&mut warm, &warm_in);
-            dsp.denoise_raw.process_frame(&mut warm, &warm_in);
+            self.denoise.process_frame(&mut warm, &warm_in);
+            self.denoise_raw.process_frame(&mut warm, &warm_in);
         }
-        dsp.shared.sample_rate.store(NATIVE_RATE as u32, Ordering::Relaxed);
-        dsp
+    }
+
+    /// How many times state that went bad was rebuilt ([`REPORT_FLAG_RECOVERED`]).
+    pub fn recoveries(&self) -> u32 {
+        self.shared.recoveries.load(Ordering::Relaxed)
+    }
+
+    /// Rebuilds every stage that carries state from block to block, after
+    /// a block came out that was not a number. The input is checked, so
+    /// this is for what that check did not foresee; it allocates, which the
+    /// audio thread otherwise never does, and only happens then. The model
+    /// is built again the way it first was; RNNoise suppresses meanwhile.
+    fn recover(&mut self) {
+        let recoveries = self.shared.recoveries.fetch_add(1, Ordering::Relaxed) + 1;
+        // A stage that keeps producing NaN would have everything rebuilt
+        // every block. The model goes for good after a few rebuilds, and
+        // after more RNNoise too: the gate alone keeps the voice going.
+        if recoveries >= RECOVERIES_BEFORE_NO_MODEL {
+            self.disable_deep_filter();
+        }
+        if recoveries >= RECOVERIES_BEFORE_NO_SUPPRESSION {
+            self.suppression_broken = true;
+        }
+        self.denoise = DenoiseState::new();
+        self.denoise_raw = DenoiseState::new();
+        self.warm_up_rnnoise();
+        self.highpass.reset();
+        self.gate.reset();
+        self.gate.set_rate(NATIVE_RATE);
+        self.mic_band.reset();
+        self.bleed_render.reset();
+        self.bleed_reference.reset();
+        self.render_hold.reset();
+        self.render_band_hold.reset();
+        self.reference_hold.reset();
+        self.recent_snr_db = [f32::NEG_INFINITY; 4];
+        if let Some(up) = self.up.as_mut() {
+            up.reset();
+        }
+        if let Some(down) = self.down.as_mut() {
+            down.reset();
+        }
+        let allowed = self.shared.deep_filter_allowed.load(Ordering::Relaxed) != 0;
+        if allowed && (self.deep_filter.is_some() || self.pending_model.is_some()) {
+            let (model, pending) = load_model(self.model_load);
+            self.deep_filter = model;
+            self.pending_model = pending;
+            self.deep_filter_warmup = dfn::WARMUP_BLOCKS;
+        } else {
+            self.deep_filter = None;
+            self.pending_model = None;
+        }
+    }
+
+    /// Runs a block that is not a number through the stages ahead of
+    /// RNNoise that keep state (the model, the high-pass), past the input
+    /// check, the way a bug in one of them would spread it. For tests of
+    /// the recovery.
+    #[doc(hidden)]
+    pub fn debug_poison_state(&mut self) {
+        let nan = [f32::NAN; FRAME_SIZE];
+        let mut out = [0.0f32; FRAME_SIZE];
+        let mut buf = nan;
+        self.highpass.process(&mut buf);
+        if let Some(model) = self.deep_filter.as_mut() {
+            model.process(&nan, &mut out);
+        }
     }
 
     pub fn set_params(&mut self, p: &Params) {
@@ -648,7 +779,8 @@ impl Dsp {
         self.shared.render_mailbox.fetch_max(level_mailbox_encode(level), Ordering::Relaxed);
         let rate = if SUPPORTED_RATES.contains(&(buf.len() * 100)) { buf.len() * 100 } else { NATIVE_RATE };
         if let Ok(mut band) = self.render_band.lock() {
-            let db = band.measure(rate, buf.iter().map(|s| s * scale));
+            // Its filters keep state too: nothing that is not a number.
+            let db = band.measure(rate, buf.iter().map(|s| sane(s * scale, INPUT_LIMIT)));
             self.shared.render_band_mailbox.fetch_max(level_mailbox_encode(db), Ordering::Relaxed);
         }
     }
@@ -659,7 +791,7 @@ impl Dsp {
     /// own thread.
     pub fn feed_reference(&self, buf: &[f32], sample_rate: usize) {
         if let Ok(mut band) = self.reference_band.lock() {
-            let db = band.measure(sample_rate, buf.iter().copied());
+            let db = band.measure(sample_rate, buf.iter().map(|s| sane(*s, INPUT_LIMIT)));
             self.shared.reference_mailbox.fetch_max(level_mailbox_encode(db), Ordering::Relaxed);
         }
     }
@@ -693,6 +825,13 @@ impl Dsp {
         let p = self.shared.params();
         let mut flags = 0u32;
 
+        // 0. only finite samples in a sane range get anywhere (INPUT_LIMIT).
+        let scale = p.input_scale;
+        let limit = INPUT_LIMIT / scale;
+        for x in buf.iter_mut() {
+            *x = sane(*x, limit);
+        }
+
         if !SUPPORTED_RATES.contains(&rate) {
             flags |= REPORT_FLAG_UNSUPPORTED_RATE;
             self.shared.flags.store(flags, Ordering::Relaxed);
@@ -701,7 +840,6 @@ impl Dsp {
         }
 
         // 1. bring to int16 scale at 48 kHz
-        let scale = p.input_scale;
         if let Some(up) = self.up.as_mut() {
             if scale != 1.0 {
                 for (d, s) in self.scratch_back[..buf.len()].iter_mut().zip(buf.iter()) {
@@ -746,12 +884,13 @@ impl Dsp {
         };
 
         // 3. noise suppression
+        let mut poisoned = false;
         self.collect_model();
         if p.noise_suppression != 0 && !self.suppressing {
             self.deep_filter_warmup = dfn::WARMUP_BLOCKS;
         }
         self.suppressing = p.noise_suppression != 0;
-        let (vad, have_vad) = if p.noise_suppression != 0 {
+        let (vad, have_vad) = if p.noise_suppression != 0 && !self.suppression_broken {
             flags |= REPORT_FLAG_NS_ACTIVE;
             // Heard beside the model from the moment there is one, so that
             // its state is current when it counts.
@@ -763,6 +902,13 @@ impl Dsp {
             let v = if self.run_deep_filter() {
                 flags |= REPORT_FLAG_DEEP_FILTER;
                 self.highpass.process(&mut self.scratch_out);
+                // RNNoise must never see what is not a number: its FFT
+                // assumes it never does (undefined behaviour, an abort in
+                // debug builds).
+                if !self.scratch_out.iter().all(|x| x.is_finite()) {
+                    self.scratch_out.fill(0.0);
+                    poisoned = true;
+                }
                 let clean = self.denoise.process_frame(&mut self.scratch_vad, &self.scratch_out);
                 self.gate_vad(clean, raw_vad)
             } else {
@@ -791,6 +937,18 @@ impl Dsp {
             flags |= REPORT_FLAG_DUCKING;
         }
 
+        // Something the input check did not foresee made a stage produce
+        // what is not a number: that stage's state is poisoned for good, and
+        // everything after it. This block goes out silent and every stage
+        // is rebuilt.
+        if poisoned || !self.scratch_out.iter().all(|x| x.is_finite()) || !gain_db.is_finite() {
+            self.scratch_out.fill(0.0);
+            self.recover();
+        }
+        if self.recoveries() > 0 {
+            flags |= REPORT_FLAG_RECOVERED;
+        }
+
         // 5. back to caller rate and scale
         let inv = 1.0 / scale;
         if let Some(down) = self.down.as_mut() {
@@ -804,9 +962,11 @@ impl Dsp {
             }
         }
 
-        self.shared.level_db.store(f2u(level), Ordering::Relaxed);
-        self.shared.vad.store(f2u(vad), Ordering::Relaxed);
-        self.shared.gain_db.store(f2u(gain_db), Ordering::Relaxed);
+        // The report is read by meters that cannot draw what is not a number.
+        let finite = |v: f32, otherwise: f32| if v.is_finite() { v } else { otherwise };
+        self.shared.level_db.store(f2u(finite(level, -120.0)), Ordering::Relaxed);
+        self.shared.vad.store(f2u(finite(vad, 0.0)), Ordering::Relaxed);
+        self.shared.gain_db.store(f2u(finite(gain_db, 0.0)), Ordering::Relaxed);
         self.shared.flags.store(flags, Ordering::Relaxed);
         self.shared.frames.fetch_add(1, Ordering::Relaxed);
     }

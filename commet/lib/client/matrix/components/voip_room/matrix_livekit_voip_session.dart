@@ -9,6 +9,8 @@ import 'package:commet/client/components/voip/audio_processing/audio_processing_
 import 'package:commet/client/components/voip/audio_processing/microphone_noise_suppression.dart';
 import 'package:commet/client/components/voip/audio_processing/noise_suppression_notice.dart';
 import 'package:commet/client/components/voip/deafen_rule.dart';
+import 'package:commet/client/components/voip/microphone_health_notice.dart';
+import 'package:commet/client/components/voip/remote_audio_watch.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/user_presence/user_idle_watcher.dart';
@@ -28,6 +30,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -110,7 +113,12 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   /// the global one, and a hang up that finishes late must not report to it.
   late final CallManager? _callManager = clientManager?.callManager;
 
-  MatrixLivekitVoipSession(this.room, this.livekitRoom, {this.keyProvider}) {
+  /// The clock of the once-a-second checks; tests stand one in.
+  final DateTime Function() _now;
+
+  MatrixLivekitVoipSession(this.room, this.livekitRoom,
+      {this.keyProvider, @visibleForTesting DateTime Function()? now})
+      : _now = now ?? DateTime.now {
     // First: if this throws, nothing was registered or started yet, so no
     // half built session is left behind in the call manager.
     keyProvider?.init(livekitRoom.localParticipant!.identity, livekitRoom);
@@ -137,6 +145,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     listener.on(onRoomConnected);
     listener.on(onRoomDisconnected);
     listener.on(onSubscriptionPermissionChanged);
+    listener.on(onTrackE2EEState);
 
     _volumeTimer = Timer.periodic(Duration(milliseconds: 200), (timer) {
       if (state == VoipState.ended) timer.cancel();
@@ -146,11 +155,12 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     // Whatever changed (the preference, the DSP), the microphone is brought
     // in line; and once a second, which is also the DSP watchdog and what
     // catches up with a change that came while the microphone was muted or
-    // not yet published.
+    // not yet published. The same second checks that the microphone still
+    // reaches the call.
     _settingsSub =
         preferences.onSettingChanged.listen((_) => _noiseSuppression.update());
     _dspWatchdog = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (state != VoipState.ended) _noiseSuppression.update();
+      if (state != VoipState.ended) _watchVoice();
     });
 
     // Being away from the machine is part of what our membership says, so
@@ -179,11 +189,153 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   late final MicrophoneNoiseSuppression _noiseSuppression =
       MicrophoneNoiseSuppression(
     dsp: AudioProcessingManager.instance,
-    microphone: () => LivekitMicrophone.of(livekitRoom.localParticipant),
+    microphone: () => LivekitMicrophone.of(livekitRoom.localParticipant,
+        changes: _captureChanges),
     preference: () => preferences.voipNoiseSuppression.value,
     onDspFailed: warnNoiseSuppressionFellBack,
+    // A capture that hands over no audio starves the DSP too: that is the
+    // microphone watch's to repair, not a reason to give up on the DSP.
+    captureFlowing: () => _microphoneHealth.monitor.captureFlowing,
   );
   Timer? _dspWatchdog;
+
+  /// Noise suppression restarts and microphone repairs, one at a time.
+  final CaptureChanges _captureChanges = CaptureChanges();
+
+  /// Whether the user wants to be heard, set as soon as they mute, unmute,
+  /// deafen or undeafen, before LiveKit has caught up: a repair in flight
+  /// must not bring back a microphone they just turned off.
+  bool _microphoneWanted = true;
+
+  /// Checks once a second that our microphone still reaches the call, and
+  /// repairs it (docs/voice-call-health.md).
+  late final LivekitMicrophoneHealth _microphoneHealth =
+      LivekitMicrophoneHealth(
+    participant: () => livekitRoom.localParticipant,
+    // Hanging up counts as not wanting to be heard: LiveKit unpublishes the
+    // microphone on its way out, and a repair must not open a new one.
+    wanted: () => _microphoneWanted && !_isDeafened && !_leaving,
+    connected: _connected,
+    captureOptions: () async => prepareMicrophoneCaptureOptions(
+      dsp: AudioProcessingManager.instance,
+      noiseSuppressionPreference: preferences.voipNoiseSuppression.value,
+      deviceId: await WebrtcDefaultDevices.getDefaultMicrophoneId(),
+    ),
+    talking: _dspHearsSpeech,
+    processing: _dspKeepsUp,
+    changes: _captureChanges,
+    onGaveUp: (_) => warnMicrophoneNotGettingThrough(),
+    onRecovered: noticeMicrophoneBack,
+    now: _now,
+  );
+
+  /// Whether our DSP hears the user speaking right now: its gate opened in
+  /// the last few reports.
+  static bool _dspHearsSpeech() {
+    final dsp = AudioProcessingManager.instance;
+    final openAt = dsp.lastGateOpenAt;
+    return dsp.isProcessing &&
+        openAt != null &&
+        DateTime.now().difference(openAt) < const Duration(milliseconds: 600);
+  }
+
+  /// Whether the DSP between the capture and the sender, where there is
+  /// one (the web's track processor), is processing. On desktop it sits
+  /// inside WebRTC's own pipeline and only stops with the capture, which
+  /// the capture's own counters already tell.
+  static bool _dspKeepsUp() {
+    final dsp = AudioProcessingManager.instance;
+    return !kIsWeb || !dsp.isActive || dsp.isProcessing;
+  }
+
+  bool _watchingVoice = false;
+
+  bool _connected() =>
+      livekitRoom.connectionState == lk.ConnectionState.connected;
+
+  /// Checks that we still receive everyone we are meant to hear.
+  late final RemoteAudioWatch _remoteAudio = RemoteAudioWatch(now: _now);
+
+  Future<void> _watchRemoteAudio() async {
+    // Reconnecting, nothing arrives; LiveKit resubscribes once it is back
+    // (and so does _resyncRemoteStreams).
+    if (!_connected()) return;
+    final vitals = <RemoteAudioVitals>[];
+    final publications = <String, lk.RemoteTrackPublication>{};
+    for (final participant in livekitRoom.remoteParticipants.values) {
+      for (final publication in participant.trackPublications.values) {
+        if (publication.kind != lk.TrackType.AUDIO) continue;
+        publications[publication.sid] = publication;
+        final track = publication.track;
+        int? packets;
+        if (track is lk.RemoteAudioTrack) {
+          try {
+            packets = (await track
+                    .getReceiverStats()
+                    .timeout(const Duration(seconds: 2)))
+                ?.packetsReceived
+                ?.toInt();
+          } catch (_) {
+            // Unknown: judged on the track's arrival alone.
+          }
+        }
+        vitals.add(RemoteAudioVitals(
+          id: publication.sid,
+          wanted: _watchList.shouldSubscribe(
+                  participant.identity, publication.source) &&
+              publication.subscriptionState !=
+                  lk.TrackSubscriptionState.notAllowed,
+          hasTrack: publication.subscribed,
+          muted: publication.muted,
+          speaking: participant.isSpeaking,
+          packetsReceived: packets,
+          isMicrophone: publication.source == lk.TrackSource.microphone,
+        ));
+      }
+    }
+    if (state == VoipState.ended) return;
+
+    for (final sid in _remoteAudio.check(vitals).keys) {
+      final publication = publications[sid]!;
+      bool stillWanted() =>
+          state != VoipState.ended &&
+          _watchList.shouldSubscribe(
+              publication.participant.identity, publication.source);
+      unawaited(publication
+          .resubscribe(stillWanted: stillWanted)
+          .catchError((Object e, StackTrace s) {
+        Log.onError(e, s, content: "Could not subscribe to $sid again");
+      }));
+    }
+  }
+
+  /// One pass of the once-a-second checks, for tests.
+  @visibleForTesting
+  Future<void> debugWatchVoice() => _watchVoice();
+
+  /// One pass of the call's once-a-second checks, never two at once: the
+  /// microphone first, so the noise suppression watchdog knows whether its
+  /// DSP or the capture itself is what went quiet.
+  Future<void> _watchVoice() async {
+    if (_watchingVoice || _leaving) return;
+    _watchingVoice = true;
+    try {
+      await _microphoneHealth.check();
+      if (_leaving) return;
+      // Bounded: a restart it waits on can hang, and must not stop the
+      // other checks for the rest of the call.
+      await _noiseSuppression
+          .update()
+          .timeout(const Duration(seconds: 5), onTimeout: () {});
+      if (_leaving) return;
+      await _watchRemoteAudio();
+      _askForUndecryptableKeys();
+    } catch (e, s) {
+      Log.onError(e, s, content: "Voice: the call's checks failed");
+    } finally {
+      _watchingVoice = false;
+    }
+  }
 
   lk.EventsListener<lk.RoomEvent>? _roomListener;
   Timer? _volumeTimer;
@@ -462,6 +614,51 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     if (state == VoipState.ended) return;
     Log.w("Livekit room disconnected (${event.reason}), ending the call");
     hangUpCall();
+  }
+
+  /// Remote publications we cannot decrypt right now, by sid, with their
+  /// owner's identity: we ask the owner for its key, again every few
+  /// seconds (the key provider spaces the requests) until it works.
+  final Map<String, String> _undecryptable = {};
+
+  /// LiveKit's frame cryptor says how decryption of a track goes. A track
+  /// we lack the key for plays silence: its owner "can't talk" to us.
+  void onTrackE2EEState(lk.TrackE2EEStateEvent event) {
+    final sid = event.publication.sid;
+    final identity = event.participant.identity;
+    final failing = event.state == lk.E2EEState.kMissingKey ||
+        event.state == lk.E2EEState.kDecryptionFailed;
+    if (event.participant is! lk.RemoteParticipant) {
+      if (event.state != lk.E2EEState.kOk && event.state != lk.E2EEState.kNew) {
+        Log.w("Voice keys: our track $sid is ${event.state.name}");
+      }
+      return;
+    }
+    if (!failing) {
+      if (_undecryptable.remove(sid) != null) {
+        Log.i("Voice keys: decrypting $identity's track $sid again");
+      }
+      return;
+    }
+    Log.w("Voice keys: cannot decrypt $identity's track $sid "
+        "(${event.state.name})");
+    _undecryptable[sid] = identity;
+    _askForUndecryptableKeys();
+  }
+
+  void _askForUndecryptableKeys() {
+    final provider = keyProvider;
+    if (provider == null || state == VoipState.ended) return;
+    final present = {
+      for (final p in livekitRoom.remoteParticipants.values)
+        for (final sid in p.trackPublications.keys) sid,
+    };
+    _undecryptable.removeWhere((sid, _) => !present.contains(sid));
+    for (final identity in _undecryptable.values.toSet()) {
+      provider.requestKeyFrom(identity).catchError((Object e, StackTrace s) {
+        Log.onError(e, s, content: "Voice keys: could not ask for a key");
+      });
+    }
   }
 
   /// A sharer allowed us to subscribe after refusing: LiveKit ignored the
@@ -954,8 +1151,21 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   bool get isCameraEnabled =>
       livekitRoom.localParticipant?.isCameraEnabled() ?? false;
 
+  /// The microphone's own publication decides, not LiveKit's `isMuted`,
+  /// which reads whichever audio publication came first: with the DJ
+  /// booth's music or a screen share's audio published before the
+  /// microphone (a microphone published again, or late), the mute button
+  /// showed the music's state and a toggle could never unmute.
   @override
-  bool get isMicrophoneMuted => livekitRoom.localParticipant?.isMuted ?? false;
+  bool get isMicrophoneMuted {
+    final participant = livekitRoom.localParticipant;
+    if (participant == null) return false;
+    // A microphone that went missing while the user wants to be heard is
+    // being published again (the microphone watch): showing "muted" there
+    // made a toggle "unmute" and a deafen remember a mute nobody chose.
+    return microphonePublication(participant)?.muted ??
+        !(_microphoneWanted && _microphoneHealth.hadMicrophone);
+  }
 
   /// Whether a screen capture this session owns is still running.
   bool get _hasActiveCapture => _captureTracks.any((track) => track.isActive);
@@ -1012,6 +1222,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
       return;
     }
 
+    _microphoneWanted = !state;
     await livekitRoom.localParticipant?.setMicrophoneEnabled(!state,
         audioCaptureOptions: await _micOptions(enabling: !state));
     // A noise suppression change made while muted is applied now.
@@ -1033,6 +1244,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   Future<void> _applyDeafened({required bool micMuted}) async {
+    _microphoneWanted = !micMuted;
     await livekitRoom.localParticipant?.setMicrophoneEnabled(!micMuted,
         audioCaptureOptions: await _micOptions(enabling: !micMuted));
     // A noise suppression change made while muted is applied now.
