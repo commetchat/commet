@@ -7,7 +7,10 @@
 # 3. a noisy recording through that build's own audio_dsp.js, worklet and
 #    wasm in Chrome (web_noise_loop.mjs);
 # 4. the same through the web app's own Dart and the vendored LiveKit, a
-#    microphone restart and a legacy 1:1 call (web_noise_loop.mjs --app).
+#    microphone restart and a legacy 1:1 call (web_noise_loop.mjs --app);
+# 5. the DSP keeps the microphone going out when its own worker traps or
+#    hangs and when the browser suspends its audio context
+#    (web_health_loop.mjs, docs/voice-call-health.md).
 #
 #   tools/voice_dsp/web_loops.sh
 #
@@ -25,6 +28,7 @@ python3 tools/voice_dsp/check_contracts.py
 
 cd "$repo/commet"
 scripts/build-audio-dsp-wasm.sh
+node "$repo/tools/voice_dsp/web_health_loop.mjs" --web-root "$repo/commet/web" --chrome "$chrome"
 # A second web build into another directory reuses the first one's "copy
 # web/" step as up to date and leaves audio_dsp.* out: every build starts
 # from a clean build cache.

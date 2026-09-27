@@ -13,13 +13,16 @@
 @TestOn('linux')
 library;
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager.dart';
 import 'package:commet/client/components/voip/audio_processing/audio_processing_manager_native.dart';
 import 'package:commet/client/components/voip/audio_processing/shared_audio_processing.dart';
+import 'package:commet/client/components/voip/microphone_health.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
+import 'package:commet/client/components/voip/webrtc_microphone.dart';
 import 'package:commet/client/matrix/components/dj/native/dj_music_player.dart';
 import 'package:commet/main.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -365,4 +368,220 @@ void main() {
               'ReselectRecordingDevice in the vendored flutter-webrtc');
     });
   });
+
+  // Windows' audio device module ends its capture thread for good on any
+  // WASAPI error or half a second without audio (a Bluetooth headset
+  // switching profiles, a USB hiccup, sleep, a driver reset), and Linux
+  // PulseAudio's does the same when its recording stream goes away, while
+  // WebRTC goes on believing it records. The call then sent nothing until
+  // the user left and rejoined it. The loop kills the app's recording
+  // stream (pactl kill-source-output) and lets the call's microphone watch
+  // (MicrophoneHealthMonitor, with the repair calls use first) bring it
+  // back.
+  testWidgets('a microphone whose recording died is heard again',
+      (tester) async {
+    expect(_fixture, isNotEmpty,
+        reason: 'run tools/voice_dsp/native_noise_loop.sh');
+
+    await tester.runAsync(() async {
+      await preferences.init();
+      await preferences.voipNoiseSuppression.set(true);
+      await preferences.voipInputSensitivityAuto.set(true);
+      await preferences.voipFarEndDucking.set(false);
+      await preferences.voipSpeakerBleed.set(false);
+      await preferences.voipDefaultAudioInput.set(_mic);
+      await preferences.voipDefaultAudioOutput.set(_out);
+
+      final dsp =
+          AudioProcessingManager.instance as NativeAudioProcessingManager;
+      await WebrtcDefaultDevices.selectOutputDevice();
+      expect(await dsp.startMicTest(), isTrue);
+      await dsp.setMicTestMonitor(false);
+      // ignore: invalid_use_of_visible_for_testing_member
+      final mic = dsp.debugMicTestMicrophone!;
+      // ignore: invalid_use_of_visible_for_testing_member
+      final sender = (await dsp.debugMicTestSender())!;
+
+      // The user talks all along. Looped from here rather than by a shell,
+      // and stopped by a tear-down, so it ends with the test whatever
+      // happens: a shell loop left behind by a failed run went on playing,
+      // and once the loop's sink was gone PipeWire played it through the
+      // machine's own speakers.
+      var talking = true;
+      Process? playing;
+      final voice = () async {
+        while (talking) {
+          final p = playing =
+              await Process.start('paplay', ['--device=$_micSink', _fixture]);
+          if (await p.exitCode != 0) break;
+        }
+      }();
+      Future<void> stopTalking() async {
+        talking = false;
+        playing?.kill();
+        await voice;
+      }
+
+      addTearDown(stopTalking);
+
+      final started = DateTime.now();
+      double now() => DateTime.now().difference(started).inMilliseconds / 1000;
+      final samples = <({double t, double energy, double duration})>[];
+      var sampling = true;
+      final sampler = () async {
+        double? lastE, lastD;
+        while (sampling) {
+          for (final r in await sender.getStats()) {
+            final v = r.values;
+            if (r.type != 'media-source' || v['kind'] != 'audio') continue;
+            final e = (v['totalAudioEnergy'] as num?)?.toDouble();
+            final d = (v['totalSamplesDuration'] as num?)?.toDouble();
+            if (e != null && d != null && lastE != null && d > lastD!) {
+              samples.add((t: now(), energy: e - lastE, duration: d - lastD));
+            }
+            lastE = e;
+            lastD = d;
+          }
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+        }
+      }();
+
+      /// Seconds of audio the sender got per second, over [from, to).
+      double rate(double from, double to) =>
+          samples
+              .where((s) => s.t >= from && s.t < to)
+              .fold(0.0, (sum, s) => sum + s.duration) /
+          (to - from);
+      double level(double from, double to) {
+        var e = 0.0, d = 0.0;
+        for (final s in samples.where((s) => s.t >= from && s.t < to)) {
+          e += s.energy;
+          d += s.duration;
+        }
+        return d > 0
+            ? 10 * math.log(e / d) / math.ln10
+            : double.negativeInfinity;
+      }
+
+      Future<void> until(double t) => Future<void>.delayed(
+          Duration(milliseconds: math.max(0, ((t - now()) * 1000).round())));
+
+      // A real PulseAudio hands the first audio over up to 1.5 s late.
+      await until(6);
+      final before = (rate: rate(3, 6), level: level(3, 6));
+
+      final killed = await _killOwnRecordingStreams();
+      expect(killed, isNotEmpty,
+          reason: 'no PulseAudio recording stream of this process (pid $pid)');
+      final killedAt = now();
+
+      // WebRTC does not notice by itself.
+      await until(killedAt + 5);
+      final dead = rate(killedAt + 1, killedAt + 5);
+
+      final repairs = <MicrophoneRepair>[];
+      final monitor = MicrophoneHealthMonitor(
+        ladder: const [MicrophoneRepair.reopen],
+        read: () async {
+          final counters = await readSenderCounters(sender);
+          return MicrophoneVitals(
+            sending: true,
+            capturedSeconds: counters.capturedSeconds,
+            packetsSent: counters.packetsSent,
+          );
+        },
+        repair: (repair) async {
+          repairs.add(repair);
+          await reopenCapture(mic);
+        },
+      );
+      final watchFrom = now();
+      while (now() < watchFrom + 20) {
+        await monitor.check();
+        if (repairs.isNotEmpty &&
+            monitor.fault == null &&
+            monitor.captureFlowing == true) {
+          break;
+        }
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
+      final revivedAt = now();
+      await until(revivedAt + 4);
+      final after = (
+        rate: rate(revivedAt + 1, revivedAt + 4),
+        level: level(revivedAt + 1, revivedAt + 4)
+      );
+
+      sampling = false;
+      await sampler;
+      await stopTalking();
+      await dsp.stopMicTest();
+
+      final summary = 'before: ${before.rate.toStringAsFixed(2)} s/s at '
+          '${before.level.toStringAsFixed(1)} dB; recording killed: '
+          '${dead.toStringAsFixed(2)} s/s; after ${repairs.length} '
+          'repair(s) in ${(revivedAt - watchFrom).toStringAsFixed(1)} s: '
+          '${after.rate.toStringAsFixed(2)} s/s at '
+          '${after.level.toStringAsFixed(1)} dB';
+      await File('$_results/recording_died.txt').writeAsString('$summary\n');
+      // ignore: avoid_print
+      print('recording died: $summary');
+
+      expect(before.rate, greaterThan(0.8), reason: summary);
+      expect(dead, lessThan(MicrophoneHealthMonitor.minCaptureRate),
+          reason: 'killing the recording stream no longer stops the capture, '
+              'so this test no longer reproduces a dead capture: $summary');
+      expect(repairs, isNotEmpty, reason: summary);
+      expect(after.rate, greaterThan(0.8),
+          reason: 'the capture did not come back: $summary');
+      expect(after.level, closeTo(before.level, 6),
+          reason: 'the voice did not come back: $summary');
+    });
+  });
+}
+
+/// Kills this process's recording streams, as a device error does, and
+/// returns what it killed. PulseAudio kills a source output through pacmd.
+/// PipeWire's pulse server has no command for it, and destroying the
+/// stream's node does the same.
+Future<List<String>> _killOwnRecordingStreams() async {
+  Future<ProcessResult?> run(String exe, List<String> args) async {
+    try {
+      return await Process.run(exe, args);
+    } on ProcessException {
+      return null;
+    }
+  }
+
+  final pacmd = await run('pacmd', ['list-source-outputs']);
+  if (pacmd != null && pacmd.exitCode == 0) {
+    final own = [
+      for (final block in (pacmd.stdout as String).split('index: ').skip(1))
+        if (block.contains('application.process.id = "$pid"'))
+          block.split(RegExp(r'\s')).first,
+    ];
+    for (final index in own) {
+      final kill = await run('pacmd', ['kill-source-output', index]);
+      expect(kill?.exitCode, 0, reason: '${kill?.stderr}');
+    }
+    return own.map((i) => 'source output $i').toList();
+  }
+
+  final dump = await run('pw-dump', []);
+  expect(dump?.exitCode, 0,
+      reason: 'neither pacmd nor pw-dump can list the recording streams');
+  final own = [
+    for (final o in (jsonDecode(dump!.stdout as String) as List)
+        .cast<Map<String, dynamic>>())
+      if (o['type'] == 'PipeWire:Interface:Node')
+        if ((o['info'] as Map?)?['props'] case final Map props)
+          if ('${props['application.process.id']}' == '$pid' &&
+              props['media.class'] == 'Stream/Input/Audio')
+            '${o['id']}',
+  ];
+  for (final id in own) {
+    final kill = await run('pw-cli', ['destroy', id]);
+    expect(kill?.exitCode, 0, reason: '${kill?.stderr}');
+  }
+  return own.map((i) => 'node $i').toList();
 }

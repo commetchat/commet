@@ -13,7 +13,20 @@ class FakeWebrtcChannel {
 
   final List<Map<String, dynamic>> getUserMediaCalls = [];
   final List<String> stoppedTracks = [];
+
+  /// `trackId=enabled` for every mediaStreamTrackSetEnable, in order.
+  final List<String> enableCalls = [];
+
+  /// Runs while the platform handles a mediaStreamTrackSetEnable.
+  void Function(String trackId, bool enabled)? onEnable;
   int _next = 0;
+
+  /// How many of the next getUserMedia calls fail, as one does when the
+  /// device is gone or held by another application.
+  int failGetUserMedia = 0;
+
+  /// Runs while the platform opens a capture.
+  Future<void> Function()? onGetUserMedia;
 
   void install() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -23,6 +36,12 @@ class FakeWebrtcChannel {
         case 'getUserMedia':
           getUserMediaCalls
               .add(Map<String, dynamic>.from(args['constraints'] as Map));
+          await onGetUserMedia?.call();
+          if (failGetUserMedia > 0) {
+            failGetUserMedia--;
+            throw PlatformException(
+                code: 'getUserMediaFailed', message: 'device unavailable');
+          }
           final n = ++_next;
           return {
             'streamId': 'mic-stream-$n',
@@ -31,6 +50,12 @@ class FakeWebrtcChannel {
             ],
             'videoTracks': [],
           };
+        case 'mediaStreamTrackSetEnable':
+          enableCalls.add('${args['trackId']}=${args['enabled']}');
+          onEnable?.call(args['trackId'] as String, args['enabled'] as bool);
+          return null;
+        // MediaStreamTrackNative.stop().
+        case 'trackDispose':
         case 'mediaStreamTrackStop':
           stoppedTracks.add(args['trackId'] as String);
           return null;
@@ -72,6 +97,9 @@ class FakeSender implements rtc.RTCRtpSender {
 
   final List<rtc.MediaStreamTrack?> history = [];
 
+  /// What getStats answers.
+  List<rtc.StatsReport> stats = [];
+
   @override
   Future<void> replaceTrack(rtc.MediaStreamTrack? t) async {
     track = t;
@@ -79,7 +107,7 @@ class FakeSender implements rtc.RTCRtpSender {
   }
 
   @override
-  Future<List<rtc.StatsReport>> getStats() async => [];
+  Future<List<rtc.StatsReport>> getStats() async => stats;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

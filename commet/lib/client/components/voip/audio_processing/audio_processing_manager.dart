@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/audio_processing/audio_dsp_settings.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
@@ -177,7 +178,14 @@ abstract class AudioProcessingManager {
   /// recommended.
   Future<void> setMicTestMonitor(bool enabled);
 
+  bool _recoveryLogged = false;
+
   void publishReport(AudioDspReport report) {
+    if (report.recovered && !_recoveryLogged) {
+      _recoveryLogged = true;
+      Log.w("Voice DSP: a sample that was not a number reached it, and it "
+          "rebuilt its state (the microphone would have gone silent)");
+    }
     _lastReport = report;
     if (report.frames != _lastFrames) {
       _lastFrames = report.frames;

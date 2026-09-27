@@ -27,7 +27,7 @@ DF = "third_party/deep_filter"
 
 # `// COMMET` markers must never go down: a merge that loses one loses a
 # change. Raise these when you add markers.
-MARKER_FLOOR = {LK: 60, FW: 31, DF: 13}
+MARKER_FLOOR = {LK: 70, FW: 31, DF: 13}
 
 # Local changes noise suppression depends on, each as (file, pattern, why).
 MUST_CONTAIN = [
@@ -67,6 +67,34 @@ MUST_CONTAIN = [
      "flutter-webrtc owns the system audio reference"),
     (f"{FW}/common/cpp/src/flutter_webrtc.cc", r"ReselectRecordingDevice\(\);",
      "an unmute records from the selected microphone, not from whatever took its place in the device list"),
+    (f"{LK}/lib/src/track/local/local.dart", r"newTrack\.onEnded = \(\) \{",
+     "a capture a restart made is watched for its end (docs/voice-call-health.md)"),
+    (f"{LK}/lib/src/participant/local.dart",
+     r"if \(event\.track\.source == TrackSource\.microphone\) return;",
+     "a microphone whose capture ended stays published for the microphone watch to "
+     "repair (docs/voice-call-health.md)"),
+    (f"{LK}/lib/src/participant/local.dart",
+     r"LocalTrackPublication\? getTrackPublicationBySource\(TrackSource source\) \{\n    if \(source == TrackSource\.unknown\) return null;\n    for",
+     "the local microphone is never taken for the DJ booth's music, which has no "
+     "source (docs/voice-call-health.md)"),
+    (f"{LK}/lib/src/track/local/local.dart", r"if \(muted\) await disable\(\);",
+     "a mute that lands during a restart holds on the new capture"),
+    ("commet/lib/client/matrix/components/voip_room/matrix_livekit_voip_session.dart",
+     r"await _microphoneHealth\.check\(\);",
+     "the call checks every second that its microphone gets through "
+     "(docs/voice-call-health.md)"),
+    ("commet/lib/client/matrix/components/voip_room/matrix_livekit_voip_session.dart",
+     r"await _watchRemoteAudio\(\);",
+     "the call checks every second that it still receives everyone "
+     "(docs/voice-call-health.md)"),
+    ("rust/audio_dsp/src/lib.rs", r"\*x = sane\(\*x, limit\);",
+     "a sample that is not a number never reaches the DSP's state, which it "
+     "would silence for good (tests/non_finite.rs)"),
+    ("commet/web/audio_dsp.worklet.js", r"this\.starved > STARVED_LIMIT && mic",
+     "the web DSP passes the microphone through when its worker stops, "
+     "instead of silence"),
+    ("commet/web/audio_dsp.js", r"ctx\.onstatechange = ",
+     "the web DSP resumes an audio context the browser suspended"),
     ("rust/rust/src/lib.rs", r"^pub use audio_dsp;",
      "the commet_dsp_* symbols ship inside librust_lib_commet"),
     ("rust/rust/Cargo.toml", r'^audio_dsp = \{ path = "\.\./audio_dsp" \}',
@@ -128,10 +156,29 @@ def check_must_contain(problems):
             problems.append(f"{rel} no longer has /{pattern}/: {why}")
 
 
+def check_restart_makes_before_breaking(problems):
+    text = read(f"{LK}/lib/src/track/local/local.dart") or ""
+    body = text[text.find("Future<void> restartTrack("):]
+    native = body[max(body.find("make before break on desktop"), 0):]
+    create = native.find("await LocalTrack.createStream(")
+    stop = native.find("await stop();")
+    options = body.find("currentOptions = nextOptions;")
+    if "make before break on desktop" not in body or create < 0 or stop < 0 or create > stop:
+        problems.append(
+            f"{LK}/lib/src/track/local/local.dart: restartTrack must open the new "
+            "capture before it stops the old one on desktop: a capture that cannot "
+            "be opened left the call sending a stopped track (docs/voice-call-health.md)")
+    if options < 0 or options < body.find("await LocalTrack.createStream("):
+        problems.append(
+            f"{LK}/lib/src/track/local/local.dart: restartTrack must take the new "
+            "options only once the new capture exists, or a failed restart is "
+            "never tried again (docs/voice-call-health.md)")
+
+
 def check_restart_keeps_processor(problems):
     text = read(f"{LK}/lib/src/track/local/local.dart") or ""
     body = text[text.find("Future<void> restartTrack("):]
-    take = body.find("final processor = _processor;")
+    take = body.find("final processor = _processor")
     stop = body.find("await stop();")
     if take < 0 or stop < 0 or take > stop:
         problems.append(
@@ -282,6 +329,7 @@ def main():
     check_markers(problems)
     check_must_contain(problems)
     check_restart_keeps_processor(problems)
+    check_restart_makes_before_breaking(problems)
     check_symbols(problems)
     check_abi(problems)
     check_channels(problems)

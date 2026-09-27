@@ -251,6 +251,11 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
     final listener = track.createListener();
     listener.on((TrackEndedEvent event) async {
       logger.fine('TrackEndedEvent: ${event.track}');
+      // COMMET: a microphone whose capture ended stays published. Removing
+      // it made the user look muted and nothing brought it back; the app's
+      // microphone watch (MicrophoneHealthMonitor) opens a new capture for
+      // it instead, as LiveKit's JS SDK does.
+      if (event.track.source == TrackSource.microphone) return;
       await removePublishedTrack(pub.sid);
     });
 
@@ -535,6 +540,11 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
     final listener = track.createListener();
     listener.on((TrackEndedEvent event) async {
       logger.fine('TrackEndedEvent: ${event.track}');
+      // COMMET: a microphone whose capture ended stays published. Removing
+      // it made the user look muted and nothing brought it back; the app's
+      // microphone watch (MicrophoneHealthMonitor) opens a new capture for
+      // it instead, as LiveKit's JS SDK does.
+      if (event.track.source == TrackSource.microphone) return;
       await removePublishedTrack(pub.sid);
     });
 
@@ -780,11 +790,16 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
     return null;
   }
 
+  // COMMET: our own publications always carry their source. The fallback to
+  // a publication without one is for other SDKs' remote tracks; locally it
+  // found the DJ booth's music (published without a source) as the
+  // microphone whenever the microphone was not published, so publishing one
+  // again unmuted the music instead and mute and unmute went to the music.
   @override
   LocalTrackPublication? getTrackPublicationBySource(TrackSource source) {
-    final track = super.getTrackPublicationBySource(source);
-    if (track != null) {
-      return track;
+    if (source == TrackSource.unknown) return null;
+    for (final publication in trackPublications.values) {
+      if (publication.source == source) return publication;
     }
     return null;
   }
@@ -853,7 +868,15 @@ class LocalParticipant extends Participant<LocalTrackPublication> {
         } else if (source == TrackSource.microphone) {
           final AudioCaptureOptions captureOptions = audioCaptureOptions ?? room.roomOptions.defaultAudioCaptureOptions;
           final track = await LocalAudioTrack.create(captureOptions);
-          return await _publishAudioTrack(track);
+          // COMMET: a publish that fails (the room went away meanwhile) must
+          // not leave the microphone it just opened capturing, with nothing
+          // left that could stop it.
+          try {
+            return await _publishAudioTrack(track);
+          } catch (_) {
+            await track.stop();
+            rethrow;
+          }
         } else if (source == TrackSource.screenShareVideo) {
           ScreenShareCaptureOptions captureOptions =
               screenShareCaptureOptions ?? room.roomOptions.defaultScreenShareCaptureOptions;

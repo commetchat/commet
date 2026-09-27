@@ -460,12 +460,19 @@ class CommetWebTrackProcessor
       manager.onGraphReady(this);
       Log.i("Voice DSP: AudioWorklet graph running (${g.state})");
     } catch (e, s) {
+      graph = null;
+      _processedTrack = null;
+      // The capture ended before the graph was built (a restart racing a
+      // device that went away): nothing is wrong with the DSP, and the
+      // microphone watch opens a new capture.
+      if ("$e".contains("CaptureEnded")) {
+        Log.w("Voice DSP: the microphone ended before its graph was built");
+        return;
+      }
       // No processed track: LiveKit sends the raw microphone, whose browser
       // suppressor was turned off for ours. The session's next update puts
       // it back once the manager says the DSP cannot run.
       Log.onError(e, s, content: "Voice DSP: failed to build the audio graph");
-      graph = null;
-      _processedTrack = null;
       manager._graphFailed("$e");
     }
   }

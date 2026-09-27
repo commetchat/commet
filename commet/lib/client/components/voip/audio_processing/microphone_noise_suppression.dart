@@ -56,11 +56,19 @@ class MicrophoneNoiseSuppression {
 
   final DateTime Function() _now;
 
+  /// Whether the capture itself hands audio over (MicrophoneHealthMonitor),
+  /// null when not known. A capture that went quiet starves our DSP as
+  /// well, and giving up on the DSP for it used to spend the one fallback
+  /// of the call on something the DSP did not do. The DSP is only judged
+  /// while this says true.
+  final bool? Function()? captureFlowing;
+
   MicrophoneNoiseSuppression({
     required this.dsp,
     required this.microphone,
     required this.preference,
     this.onDspFailed,
+    this.captureFlowing,
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now;
 
@@ -101,7 +109,10 @@ class MicrophoneNoiseSuppression {
       _stalledSince = null;
       return;
     }
-    if (dsp.isProcessing) {
+    // With a microphone watch, only a capture known to flow can starve the
+    // DSP: stalled, just repaired or not known yet, it is the watch's.
+    final flowing = captureFlowing;
+    if (dsp.isProcessing || (flowing != null && flowing() != true)) {
       _stalledSince = null;
       return;
     }

@@ -120,6 +120,13 @@
   async function create(track, params) {
     if (!supported) throw new Error("AudioWorklet or WebAssembly not supported");
     if (!track || track.kind !== "audio") throw new Error("expected an audio MediaStreamTrack");
+    // A capture that ended (a restart racing a device that went away) would
+    // make a graph that runs and sends silence, and look like a success.
+    if (track.readyState === "ended") {
+      const e = new Error("CaptureEnded: the microphone track has already ended");
+      e.name = "CaptureEnded";
+      throw e;
+    }
 
     // Own context: the DSP runs at 48 kHz and LiveKit's context runs at the
     // device rate.
@@ -149,6 +156,18 @@
       const farEnd = new Map();
       // Microphone test: the processed signal can also go to the speakers.
       let monitoring = false;
+      let destroyed = false;
+      // The browser suspends or interrupts a context on its own (an output
+      // device going away, the OS taking the audio session, Safari's
+      // interruptions), and the processed track then carries nothing:
+      // nothing resumed it but a rejoin.
+      ctx.onstatechange = () => {
+        if (destroyed) return;
+        if (ctx.state === "suspended" || ctx.state === "interrupted") {
+          console.warn("commetAudioDsp: the audio context is " + ctx.state + ", resuming it");
+          ctx.resume().catch((e) => console.error("commetAudioDsp: could not resume: " + e));
+        }
+      };
       let readyResolve;
       let failure = null;
       const ready = new Promise((res) => (readyResolve = res));
@@ -193,6 +212,7 @@
           return ctx.state;
         },
         async destroy() {
+          destroyed = true;
           monitoring = false;
           try { source.disconnect(); } catch (e) {}
           try { node.disconnect(); } catch (e) {}

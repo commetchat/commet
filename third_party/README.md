@@ -51,6 +51,19 @@ microphone was restarted to change one option. `LocalTrack.restartTrack`
 (`lib/src/track/local/local.dart`) takes the processor before `stop()`,
 which drops it (upstream reads it after, so every restart lost it), and
 puts it on before touching the sender, so the raw capture never goes out.
+`restartTrack` also takes the new options only once the new capture exists
+(upstream took them first, so a capture that could not be opened was never
+tried again), opens the new capture before it stops the old one on desktop
+and mobile (a failed open leaves the old one sending; the browser has to
+close the old one first, or the new one gets its processing), keeps a web
+processor across a failed restart, keeps a track that was muted during the
+restart muted, and watches the capture it made for its end. A microphone whose capture ended
+stays published (`lib/src/participant/local.dart`), for the app's microphone
+watch to repair, instead of being unpublished; a microphone opened for a
+publish that failed is stopped; and the local participant's lookup by source
+no longer falls back to a publication without a source (it took the DJ
+booth's music for the microphone). See
+`docs/voice-call-health.md`.
 
 `deep_filter` is libDF, DeepFilterNet's Rust library, which the voice DSP
 (`rust/audio_dsp/src/dfn.rs`) suppresses noise with; crates.io only has an

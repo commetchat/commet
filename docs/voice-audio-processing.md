@@ -509,6 +509,8 @@ tools/voice_dsp/native_noise_loop.sh
 | Screen audio and DJ music do not leave the microphone without WebRTC's processing: restored after negotiation, not for the mic itself, not while muted, desktop only | `shared_audio_processing_test.dart` | ci `test` |
 | ... and inside the real WebRTC, with the DJ's music track: restored to within 3 dB of before (the libwebrtc internal it relies on still holds) | `native_noise_loop.sh` | integration-test |
 | After a mute during which a device listed before the microphone went away, the microphone is heard again, within 3 dB of before (`ReselectRecordingDevice`) | `native_noise_loop.sh` | integration-test |
+| One NaN, infinity or huge input sample leaves the voice as it was a second later (it used to silence the DSP for good); state that went bad is rebuilt | `tests/non_finite.rs` | ci `test` |
+| A capture WebRTC stopped recording from, a web DSP whose worker traps or hangs, a suspended audio context: the call repairs them or keeps the microphone going (docs/voice-call-health.md) | `native_noise_loop.sh`, `web_health_loop.mjs`, `unit_test/voice_health/` | integration-test, ci |
 
 `publish` in ci.yml waits for `voice-dsp`: a release does not go out with
 browser suppression broken. The Rust and Dart tests run in `test`, which

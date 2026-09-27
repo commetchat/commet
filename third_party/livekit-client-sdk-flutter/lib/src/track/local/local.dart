@@ -165,6 +165,10 @@ abstract class LocalTrack extends Track {
 
   TrackProcessor? _processor;
 
+  // COMMET: the processor of a web restart whose new capture could not be
+  // opened, for the next restart to put back.
+  TrackProcessor? _processorOfFailedRestart;
+
   TrackProcessor? get processor => _processor;
 
   LocalTrack(TrackType kind, TrackSource source, rtc.MediaStream mediaStream, rtc.MediaStreamTrack mediaStreamTrack)
@@ -295,26 +299,61 @@ abstract class LocalTrack extends Track {
       throw Exception('options must be a ${currentOptions.runtimeType}');
     }
 
-    currentOptions = options ?? currentOptions;
+    // COMMET: the options only change once the new capture exists. Upstream
+    // set them first: a capture that could not be opened (the device gone
+    // for a moment, another application holding it) left options saying the
+    // restart had happened, so nothing ever tried it again, and the sender
+    // on a stopped track, silent until the user rejoined the call.
+    final nextOptions = options ?? currentOptions;
 
     // COMMET: taken before stop(), which already stops the processor and
     // forgets it. Taken after, as upstream does, it was always null: every
     // restart (a microphone switch, the noise suppression preference
     // flipping mid-call) went on without the web voice DSP, sending the raw
     // microphone with the browser's suppressor off.
-    final processor = _processor;
+    final processor = _processor ?? _processorOfFailedRestart;
+    _processorOfFailedRestart = null;
 
-    // stop if not already stopped...
-    await stop();
-
-    // create new track with options
-    final newStream = await LocalTrack.createStream(currentOptions);
+    final rtc.MediaStream newStream;
+    if (kIsWeb) {
+      // The browser hands a capture of a device that is already open the
+      // processing of the capture it has, whatever the new constraints ask:
+      // the old capture has to close first. A failed open leaves the track
+      // stopped, which the app's microphone watch sees and repairs; the
+      // processor stop() dropped goes on the capture that repair makes.
+      await stop();
+      try {
+        newStream = await LocalTrack.createStream(nextOptions);
+      } catch (_) {
+        _processorOfFailedRestart = processor;
+        rethrow;
+      }
+    } else {
+      // COMMET: make before break on desktop and mobile, where every
+      // capture shares WebRTC's one audio device module: a capture that
+      // cannot be opened leaves the old one sending.
+      newStream = await LocalTrack.createStream(nextOptions);
+      await stop();
+    }
     final newTrack = newStream.getTracks().first;
+    currentOptions = nextOptions;
+    // COMMET: a new capture comes enabled. Muted meanwhile (the mute
+    // disabled the old one, or did nothing at all while this track was
+    // stopped), it must not go out: without a processor it is what the
+    // sender carries, off before it gets there.
+    if (muted && processor == null) newTrack.enabled = false;
 
     await stopProcessor();
 
     // set new stream & track to this object
     updateMediaStreamAndTrack(newStream, newTrack);
+    // COMMET: the constructor only watched the first capture. A capture
+    // that a restart made and that then ended (the device unplugged, the
+    // permission revoked) went unnoticed, and the call sent its silence.
+    newTrack.onEnded = () {
+      logger.fine('MediaStreamTrack.onEnded()');
+      events.emit(TrackEndedEvent(track: this));
+    };
 
     // COMMET: the processor before the sender. setProcessor puts its
     // processed track on the sender, so the sender goes from the old
@@ -339,6 +378,10 @@ abstract class LocalTrack extends Track {
 
     // mark as started
     await start();
+
+    // COMMET: and with one, what the sender carries is the processed track,
+    // turned off here, once it is there.
+    if (muted) await disable();
 
     // notify so VideoView can re-compute mirror mode if necessary
     events.emit(LocalTrackOptionsUpdatedEvent(

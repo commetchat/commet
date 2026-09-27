@@ -129,21 +129,39 @@ function postReport() {
   });
 }
 
+// A DSP that throws (a wasm trap) must not take the microphone with it:
+// the block goes back as it came, the frame counter stops, and the app's
+// microphone watch sees that and builds a new graph. Told at most once
+// every ERROR_EVERY_MS: a trap on every block is a hundred a second.
+const ERROR_EVERY_MS = 5000;
+let lastErrorAt = -Infinity;
+
 // One block from the worklet: processed in place and sent back.
 function processBlock(port, msg) {
   const buf = msg.buf;
   if (!ex || !(buf instanceof ArrayBuffer)) return;
   const block = new Float32Array(buf);
-  if (msg.far) {
-    new Float32Array(ex.memory.buffer, farPtr, BLOCK).set(block.subarray(BLOCK));
-    ex.commet_dsp_feed_render(handle, farPtr, BLOCK);
+  let took;
+  try {
+    if (msg.far) {
+      new Float32Array(ex.memory.buffer, farPtr, BLOCK).set(block.subarray(BLOCK));
+      ex.commet_dsp_feed_render(handle, farPtr, BLOCK);
+    }
+    new Float32Array(ex.memory.buffer, micPtr, BLOCK).set(block.subarray(0, BLOCK));
+    const started = performance.now();
+    ex.commet_dsp_process_block(handle, micPtr, BLOCK);
+    took = performance.now() - started;
+    // memory.buffer is replaced when the module grows its memory.
+    block.set(new Float32Array(ex.memory.buffer, micPtr, BLOCK));
+  } catch (err) {
+    port.postMessage({ buf }, [buf]);
+    const now = performance.now();
+    if (now - lastErrorAt >= ERROR_EVERY_MS) {
+      lastErrorAt = now;
+      self.postMessage({ type: "error", message: "processing a block: " + ((err && err.message) || err) });
+    }
+    return;
   }
-  new Float32Array(ex.memory.buffer, micPtr, BLOCK).set(block.subarray(0, BLOCK));
-  const started = performance.now();
-  ex.commet_dsp_process_block(handle, micPtr, BLOCK);
-  const took = performance.now() - started;
-  // memory.buffer is replaced when the module grows its memory.
-  block.set(new Float32Array(ex.memory.buffer, micPtr, BLOCK));
   port.postMessage({ buf }, [buf]);
 
   blocks++;
