@@ -24,7 +24,8 @@ class DjExtensionResolver implements DjResolver {
   static const maxSource = 900;
 
   @override
-  String? sourceFor(DjLink link) => extensions.forHost(link.host)?.manifest.name;
+  String? sourceFor(DjLink link) =>
+      extensions.forHost(link.host)?.manifest.name;
 
   @override
   String? get hint {

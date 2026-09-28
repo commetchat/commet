@@ -31,8 +31,8 @@ void main() {
   test("a request's JSON, with a folder ending in a backslash", () {
     // jsonEncode({'d': r'C:\a\'}): the two backslashes before the closing
     // quote of the JSON string double, and the quote is escaped.
-    expect(quoteWindowsArgument(r'{"d":"C:\\a\\"}'),
-        r'"{\"d\":\"C:\\a\\\\\"}"');
+    expect(
+        quoteWindowsArgument(r'{"d":"C:\\a\\"}'), r'"{\"d\":\"C:\\a\\\\\"}"');
   });
 
   test('backslashes only double where they would escape a quote', () {

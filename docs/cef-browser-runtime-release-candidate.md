@@ -17,7 +17,7 @@ backend, and `X` is prohibited in the production target graph or artifact.
 | --- | --- | --- | --- | --- | --- |
 | Matrix widget / embedded | G: OSR/CPU Flutter texture | G: OSR/CPU Flutter texture | G: OSR/CPU Flutter texture | G: OSR/CPU Flutter texture | G: OSR/CPU Flutter texture |
 | Matrix widget / standalone owned window | G: windowed CEF in owned HWND | G: OSR/CPU in owned window | G: OSR/CPU in owned window | G: OSR/CPU in owned window | G: OSR/CPU in owned window |
-| Official video / embedded | G: CEF with loopback origin/Referer | P: native yt-dlp/mpv or external | P: native yt-dlp/mpv or external | P: native yt-dlp/mpv or external | P: native yt-dlp/mpv or external |
+| Official video / embedded | G: CEF with loopback origin/Referer | P: external browser | P: external browser | P: external browser | P: external browser |
 | Official video / standalone | N/A | N/A | N/A | N/A | N/A |
 | Remote-device, external links, SSO | P: deliberate external | P: deliberate external | P: deliberate external | P: deliberate external | P: deliberate external |
 | WebView2, WebKitGTK/Wry, system CEF, runtime download, unowned browser | X | X | X | X | X |

@@ -116,8 +116,7 @@ void main() {
       final b = join('@b:x:DEV2');
       await settle();
 
-      expect(a.session.current?.source,
-          'https://music.example/aaaaaaaaaaa');
+      expect(a.session.current?.source, 'https://music.example/aaaaaaaaaaa');
       expect(a.session.isPlaying, isTrue);
       expect(a.engine!.played.single.$1, a.session.current!.id);
       expect(b.session.current?.id, a.session.current!.id);
@@ -128,7 +127,8 @@ void main() {
 
     test('what fetching learned is announced (the title of a set entry)',
         () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       expect(a.session.current!.title,
           startsWith('Fetched https://music.example/'));
     });
@@ -165,7 +165,8 @@ void main() {
         () async {
       // Honest clients only claim an empty booth; whatever happens, every
       // client applies the same rule and they end up agreeing.
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       final c = join('@c:x:DEV3');
       await settle();
@@ -185,7 +186,8 @@ void main() {
     });
 
     test('a newcomer who claims without knowing the DJ steps down', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       // n hears nothing from the DJ at first: it believes the booth is
       // empty and claims epoch 1.
       final t = call.join('@n:x:N');
@@ -210,7 +212,8 @@ void main() {
     });
 
     test('a listener that reconnects asks for the booth again', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       // LiveKit made the DJ "leave" during b's reconnect.
@@ -272,7 +275,8 @@ void main() {
     });
 
     test('the DJ keeps playing while the target fetches the song', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       FakeEngine? bEngine;
       final b = join('@b:x:DEV2', onEngine: (e) {
         bEngine = e;
@@ -297,7 +301,8 @@ void main() {
 
     test('the new DJ has the whole song before picking it up mid-way',
         () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       // The DJ itself starts songs while they download.
@@ -310,7 +315,8 @@ void main() {
     });
 
     test('a paused booth is handed over paused', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       a.session.setPaused(true);
@@ -325,7 +331,8 @@ void main() {
     });
 
     test('a failed takeover leaves the DJ in charge and tells them', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final current = a.session.current!.id;
       final b = join('@b:x:DEV2', onEngine: (e) => e.failing.add(current));
       await settle();
@@ -344,7 +351,8 @@ void main() {
     });
 
     test('passing to a web client is refused', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final w = join('@w:x:WEB', caps: web);
       await settle();
 
@@ -356,7 +364,8 @@ void main() {
     });
 
     test('a web client cannot ask for the booth', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final w = join('@w:x:WEB', caps: web);
       await settle();
       w.session.requestDj(true);
@@ -384,7 +393,8 @@ void main() {
     });
 
     test('the DJ can call a pass off', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       FakeEngine? bEngine;
       final b = join('@b:x:DEV2', onEngine: (e) {
         bEngine = e;
@@ -439,7 +449,8 @@ void main() {
     });
 
     test('stopping DJing hands the room an empty booth', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       await a.session.stopDjing();
@@ -542,7 +553,8 @@ void main() {
     });
 
     test('pause and resume reach the engine and the room', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       a.session.togglePause();
@@ -569,7 +581,8 @@ void main() {
     });
 
     test('listeners follow the position from ticks', () async {
-      final a = await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
+      final a =
+          await djWith('@a:x:DEV1', ['https://music.example/aaaaaaaaaaa']);
       final b = join('@b:x:DEV2');
       await settle();
       a.engine!.advance(60000);

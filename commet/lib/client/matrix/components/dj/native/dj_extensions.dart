@@ -270,8 +270,8 @@ class DjExtensions implements DjSources {
         await _makeExecutable(program.path);
       }
 
-      await File(p.join(staging.path, 'installed.json')).writeAsString(
-          jsonEncode({
+      await File(p.join(staging.path, 'installed.json'))
+          .writeAsString(jsonEncode({
         if (pkg.from != null) 'from': pkg.from,
         'at': DateTime.now().toIso8601String(),
       }));
@@ -360,8 +360,8 @@ class DjExtensions implements DjSources {
   static Future<void> _fetchProgram(DjExtensionFile file, File program,
       void Function(double?) onProgress, DjSourceCancel? cancel) async {
     // The unpacker goes by the name, so a zip is named one.
-    final download = File(
-        '${program.path}.download${file.unzip == null ? '' : '.zip'}');
+    final download =
+        File('${program.path}.download${file.unzip == null ? '' : '.zip'}');
     try {
       final sink = download.openWrite();
       try {
@@ -461,13 +461,16 @@ class DjExtensions implements DjSources {
   /// Starts [extension] on [verb] with [request], and gives each JSON
   /// object it prints to [onMessage]. Completes with what it wrote to
   /// stderr once it has ended; kills it after [timeout].
-  static Future<String> _run(InstalledDjExtension extension, String verb,
-      Map<String, Object?> request, Duration timeout,
+  static Future<String> _run(
+      InstalledDjExtension extension,
+      String verb,
+      Map<String, Object?> request,
+      Duration timeout,
       void Function(Map<String, Object?>) onMessage) async {
     final data = Directory(extension.dataPath);
     if (!await data.exists()) await data.create(recursive: true);
-    final line = extension.manifest.commandLine(
-        dir: extension.dir.path, dep: extension.depPath);
+    final line = extension.manifest
+        .commandLine(dir: extension.dir.path, dep: extension.depPath);
     final QuietProcess process;
     try {
       process = await startQuietly(
@@ -531,8 +534,8 @@ class DjExtensions implements DjSources {
   static Future<List<Map<String, Object?>>> resolve(
       InstalledDjExtension extension, String url) async {
     Map<String, Object?>? answer;
-    final stderr = await _run(extension, 'resolve', {'url': url},
-        resolveTimeout, (message) {
+    final stderr = await _run(
+        extension, 'resolve', {'url': url}, resolveTimeout, (message) {
       if (answer == null &&
           (message.containsKey('tracks') || message.containsKey('error'))) {
         answer = message;
@@ -603,7 +606,8 @@ class DjExtensions implements DjSources {
         if (path == null || !await File(path).exists()) {
           throw _silent(extension, stderr);
         }
-        if (!started.isCompleted) started.complete((path, const <String, Object?>{}));
+        if (!started.isCompleted)
+          started.complete((path, const <String, Object?>{}));
         finished.complete(path);
       } catch (e) {
         fail(e);

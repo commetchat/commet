@@ -39,8 +39,7 @@ void main() {
     expect(target.moves, isFalse);
   });
 
-  test('run from the staging directory, the build left behind is replaced',
-      () {
+  test('run from the staging directory, the build left behind is replaced', () {
     // The swap to v2 never happened; v2 was started from where it was
     // staged, and staged v3 inside itself, and v3 was started from there.
     final outer = p.join('Downloads', 'roscord-v1');
@@ -55,8 +54,7 @@ void main() {
     expect(target.moves, isFalse);
   });
 
-  test('run from staging with nothing left behind, it moves out beside it',
-      () {
+  test('run from staging with nothing left behind, it moves out beside it', () {
     final staged =
         build(p.join('here', '.roscord-update', 'v2', 'unpacked', 'roscord'));
     final target = targetOf(staged);
@@ -64,7 +62,8 @@ void main() {
     expect(target.workRoot, p.join(root.path, 'here', '.roscord-update'));
   });
 
-  test('run out of a zip Explorer unpacked into temp, it moves somewhere lasting',
+  test(
+      'run out of a zip Explorer unpacked into temp, it moves somewhere lasting',
       () {
     final temp = p.join(root.path, 'Temp');
     final inZip = build(p.join('Temp', 'Temp1_roscord-v1.zip', 'roscord-v1'));
@@ -87,7 +86,8 @@ void main() {
       windows: true,
       tempDir: r'C:\Users\a\AppData\Local\Temp',
       localAppData: r'C:\Users\a\AppData\Local',
-      startMenu: r'C:\Users\a\AppData\Roaming\Microsoft\Windows\Start Menu\Programs',
+      startMenu:
+          r'C:\Users\a\AppData\Roaming\Microsoft\Windows\Start Menu\Programs',
     );
     expect(target.install, r'C:\Users\a\AppData\Local\Programs\roscord');
     expect(target.shortcut,

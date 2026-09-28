@@ -139,8 +139,7 @@ release as embedded.
 (`commet/lib/client/components/video_embed/media_embed_adapter.dart`)
 migrates Windows official-video playback through the same four-operation seam.
 Only `OfficialVideoEmbedSource` enters CEF; native direct-stream sources keep
-using the media-kit player, including the Linux yt-dlp/mpv path, which is
-never adapted.
+using the media-kit player and are never adapted.
 
 - `MediaEmbedLaunch` is the immutable caller record: provider embed URL,
   autoplay flag, `official-video` shared persistent profile (third-party
@@ -166,8 +165,8 @@ never adapted.
   and the loopback server: no profile, host, or owned-window leak.
 - Windows and Linux route through CEF (`mediaEmbedUsesCef`:
   `!isWeb && (isWindows || isLinux)`) when the build bundles the host. A
-  Linux build without it, or where CEF's sandbox cannot start, keeps native
-  yt-dlp/mpv when available or a deliberate external browser. Web, macOS,
+  Linux build without it, or where CEF's sandbox cannot start, opens the
+  video in the external browser. Web, macOS,
   Android, and iOS keep their existing paths. There is no standalone
   official-video surface. The legacy WebView
   branches were deleted at the cutover (#132); desktop routing is now

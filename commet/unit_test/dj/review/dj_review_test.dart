@@ -193,7 +193,8 @@ void main() {
     final b = make(call.join('@b:x:B'));
     await settle();
     await a.becomeDj();
-    a.addLinks('https://music.example/aaaaaaaaaaa https://music.example/bbbbbbbbbbb');
+    a.addLinks(
+        'https://music.example/aaaaaaaaaaa https://music.example/bbbbbbbbbbb');
     await settle();
     await a.stopDjing();
     await settle();
@@ -376,8 +377,8 @@ void main() {
   });
 
   test('R9c: DjLinks.parseAll on malformed percent-encoding', () {
-    expect(() => DjLinks.parseAll('https://music.example/%zz'),
-        returnsNormally);
+    expect(
+        () => DjLinks.parseAll('https://music.example/%zz'), returnsNormally);
     expect(() => DjLinks.parseAll('https://example.com/a?b=%E0%A4%A'),
         returnsNormally);
   });

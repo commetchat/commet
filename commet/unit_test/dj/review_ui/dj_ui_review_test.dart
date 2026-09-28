@@ -131,8 +131,7 @@ void main() {
     expect(dj.isDj, isTrue);
 
     dj.addLinks([
-      for (var i = 0; i < 12; i++)
-        'https://music.example/abcdefghij$i'
+      for (var i = 0; i < 12; i++) 'https://music.example/abcdefghij$i'
     ].join('\n'));
 
     await tester.pumpWidget(_app(DjBoothPanel(session: _Session(), dj: dj)));

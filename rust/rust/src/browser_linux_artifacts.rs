@@ -10,7 +10,7 @@
 //! into client-owned memory. Clean environments without WebKitGTK or host
 //! CEF still pass, and Linux official video plays the provider's own embed
 //! through the bundled CEF host, like Windows; only a build without CEF
-//! falls back to yt-dlp/mpv or a deliberate external browser.
+//! hands it to the external browser.
 //!
 //! This module owns the pure qualification policy; the Linux `cef_host`
 //! enforces the staged-payload and sandbox rules at launch (`validate_cef_root`
@@ -129,7 +129,7 @@ pub const SANDBOX_BYPASS_FLAGS: &[&str] = &[
 pub const LINUX_OFFICIAL_VIDEO_PATH: &str = "cef-official-embed";
 
 /// What a build without a bundled CEF host does with official video instead.
-pub const LINUX_OFFICIAL_VIDEO_FALLBACK: &str = "native-yt-dlp-mpv-or-deliberate-external";
+pub const LINUX_OFFICIAL_VIDEO_FALLBACK: &str = "deliberate-external";
 
 /// Parses a released native package id. Matching is exact and lowercase so
 /// an unknown package cannot silently qualify as a released artifact.
@@ -532,7 +532,7 @@ mod tests {
         assert_eq!(LINUX_OFFICIAL_VIDEO_PATH, "cef-official-embed");
         assert_eq!(
             LINUX_OFFICIAL_VIDEO_FALLBACK,
-            "native-yt-dlp-mpv-or-deliberate-external"
+            "deliberate-external"
         );
         assert!(linux_official_video_uses_cef());
         assert!(assert_linux_video_uses_cef(true).is_ok());

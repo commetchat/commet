@@ -45,8 +45,7 @@ class _NativeDjPlatform implements DjPlatform {
     if (!canDj) return const [];
     return [
       for (final path in paths)
-        await DjLocalFiles.instance
-            .track(path, id: newId(), addedBy: addedBy),
+        await DjLocalFiles.instance.track(path, id: newId(), addedBy: addedBy),
     ];
   }
 }
