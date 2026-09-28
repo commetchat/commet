@@ -38,8 +38,9 @@ Map<String, Object?> manifest() => {
 DjExtensionManifest parse(Map<String, Object?> json) =>
     DjExtensionManifest.parse(jsonEncode(json));
 
-Matcher refused(String containing) => throwsA(isA<DjExtensionManifestException>()
-    .having((e) => e.message, 'message', contains(containing)));
+Matcher refused(String containing) =>
+    throwsA(isA<DjExtensionManifestException>()
+        .having((e) => e.message, 'message', contains(containing)));
 
 void main() {
   test('a whole manifest reads back', () {
@@ -73,8 +74,7 @@ void main() {
 
   test('the command line fills in its folder and downloads', () {
     final m = parse(manifest());
-    expect(
-        m.commandLine(dir: '/ext', dep: (id) => '/ext/deps/$id'),
+    expect(m.commandLine(dir: '/ext', dep: (id) => '/ext/deps/$id'),
         ['/ext/deps/runtime', 'run', '/ext/main.ts', '--data=/ext/x']);
   });
 

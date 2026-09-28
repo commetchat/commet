@@ -25,9 +25,8 @@ runner, and no CEF-owned surface silently substitutes another backend.
 Linux official video plays through the bundled CEF host, as on Windows
 (`mediaEmbedUsesCef` covers Windows and Linux; `linuxOfficialVideoUsesCef` is
 true). A build without the host, or a system where CEF's sandbox cannot start
-(`linuxCefSandboxUsable`), keeps the older path: the native yt-dlp/mpv
-player, then a deliberate external browser
-(`native-yt-dlp-mpv-or-deliberate-external`). There is no standalone
+(`linuxCefSandboxUsable`), opens the video in the external browser
+(`deliberate-external`). There is no standalone
 official-video surface on any platform (N/A boundary).
 
 ## Shared media paths

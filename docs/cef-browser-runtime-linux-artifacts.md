@@ -118,9 +118,8 @@ Linux official video is an embedded CEF surface, as on Windows
 (`cef-official-embed`; `mediaEmbedUsesCef` is true on Linux). It is used when
 the build bundles the host and runtime and CEF's sandbox can start
 (`isBundledBrowserRuntimeAvailable`, `linuxCefSandboxUsable`). Otherwise the
-old path remains: the native yt-dlp/mpv player when yt-dlp is installed, and
-a deliberate external browser after that
-(`native-yt-dlp-mpv-or-deliberate-external`). There is no standalone
+video opens in the external browser (`deliberate-external`). There is no
+standalone
 official-video presentation. `assertLinuxVideoUsesCef`/
 `assert_linux_video_uses_cef` fail closed if a caller marks the Linux video
 path as not CEF-backed.

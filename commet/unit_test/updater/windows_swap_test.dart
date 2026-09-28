@@ -25,9 +25,9 @@ Future<int> deadPid() async {
 Directory buildDir(String path, String marker, String ran) {
   final dir = Directory(path)..createSync(recursive: true);
   File(p.join(dir.path, 'which')).writeAsStringSync(marker);
-  File(p.join(dir.path, 'commet.vbs')).writeAsStringSync(
-      'CreateObject("Scripting.FileSystemObject")'
-      '.CreateTextFile("$ran").Close\r\n');
+  File(p.join(dir.path, 'commet.vbs'))
+      .writeAsStringSync('CreateObject("Scripting.FileSystemObject")'
+          '.CreateTextFile("$ran").Close\r\n');
   return dir;
 }
 
@@ -83,8 +83,8 @@ void main() {
     final install =
         buildDir(p.join(root.path, 'roscord-v1', 'roscord-v1'), 'old', ran);
     final work = Directory(p.join(root.path, 'roscord-v1', '.roscord-update'));
-    final staged = buildDir(
-        p.join(work.path, 'v2', 'unpacked', 'roscord-v2'), 'new', ran);
+    final staged =
+        buildDir(p.join(work.path, 'v2', 'unpacked', 'roscord-v2'), 'new', ran);
     final script =
         await writeScript(work, install: install.path, staged: staged.path);
 
@@ -128,8 +128,7 @@ void main() {
     final ran = p.join(root.path, 'ran');
     final restarted = p.join(root.path, 'restarted');
     final install = buildDir(p.join(root.path, 'roscord'), 'old', restarted);
-    final work = Directory(p.join(root.path, '.roscord-update'))
-      ..createSync();
+    final work = Directory(p.join(root.path, '.roscord-update'))..createSync();
     final script = await writeScript(work,
         install: install.path,
         // Never unpacked: the move cannot succeed.

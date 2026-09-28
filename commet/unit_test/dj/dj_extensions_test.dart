@@ -111,8 +111,8 @@ void main() {
       final extension = await _fakeExtension(temp);
       expect(
           DjExtensions.resolve(extension, 'https://music.example/bad'),
-          throwsA(isA<DjExtensionException>().having((e) => e.message,
-              'message', 'Nothing playable in that link')));
+          throwsA(isA<DjExtensionException>().having(
+              (e) => e.message, 'message', 'Nothing playable in that link')));
     });
 
     test('silence ends with what it said on stderr', () async {

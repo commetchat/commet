@@ -440,9 +440,9 @@ final int Function(Pointer<Void>, Pointer<Utf16>) _createJobObjectW =
     _kernel32.lookupFunction<IntPtr Function(Pointer<Void>, Pointer<Utf16>),
         int Function(Pointer<Void>, Pointer<Utf16>)>('CreateJobObjectW');
 
-final int Function(int, int) _assignProcessToJobObject =
-    _kernel32.lookupFunction<Int32 Function(IntPtr, IntPtr),
-        int Function(int, int)>('AssignProcessToJobObject');
+final int Function(int, int) _assignProcessToJobObject = _kernel32
+    .lookupFunction<Int32 Function(IntPtr, IntPtr), int Function(int, int)>(
+        'AssignProcessToJobObject');
 
 final int Function(int, int) _terminateJobObject = _kernel32.lookupFunction<
     Int32 Function(IntPtr, Uint32),

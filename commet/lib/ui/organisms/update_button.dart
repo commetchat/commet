@@ -89,8 +89,8 @@ class _UpdateButtonState extends State<UpdateButton> {
           : "Downloading $tag… ${(progress.fraction! * 100).round()}%",
       UpdateStage.verifying => "Checking the download…",
       UpdateStage.unpacking => "Unpacking $tag…",
-      UpdateStage.ready => progress.message ??
-          "$tag is ready. It goes in when roscord restarts.",
+      UpdateStage.ready =>
+        progress.message ?? "$tag is ready. It goes in when roscord restarts.",
       UpdateStage.available => progress.message ?? "$tag is available.",
       UpdateStage.upToDate => progress.message ?? "$version is the latest.",
       UpdateStage.failed => progress.message ?? "The update failed.",

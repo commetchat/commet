@@ -81,8 +81,8 @@ Future<void> _install(BuildContext context, String? link) async {
   if (yes != true || !context.mounted) return;
 
   try {
-    final done = await _withProgress<bool>(
-        context, 'Installing ${info.name}', (onProgress, cancel) async {
+    final done = await _withProgress<bool>(context, 'Installing ${info.name}',
+        (onProgress, cancel) async {
       await sources.install(package, onProgress: onProgress, cancel: cancel);
       return true;
     });
@@ -164,8 +164,7 @@ class _ChooseSourceDialogState extends State<_ChooseSourceDialog> {
         ),
       ),
       actions: [
-        TextButton(
-            onPressed: _pickFile, child: const Text('Open a file…')),
+        TextButton(onPressed: _pickFile, child: const Text('Open a file…')),
         TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel')),

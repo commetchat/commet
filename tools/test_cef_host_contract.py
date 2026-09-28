@@ -1905,7 +1905,7 @@ class CefHostContractTests(unittest.TestCase):
             "linuxOfficialVideoUsesCef",
             "assertLinuxVideoUsesCef",
             "cef-official-embed",
-            "native-yt-dlp-mpv-or-deliberate-external",
+            "deliberate-external",
         ):
             self.assertIn(token, LINUX_ARTIFACT_DART)
         for token in (
@@ -1913,7 +1913,7 @@ class CefHostContractTests(unittest.TestCase):
             "linux_official_video_uses_cef",
             "assert_linux_video_uses_cef",
             "cef-official-embed",
-            "native-yt-dlp-mpv-or-deliberate-external",
+            "deliberate-external",
         ):
             self.assertIn(token, LINUX_ARTIFACT_RUST)
         self.assertIn("mediaEmbedUsesCef", LINUX_ARTIFACT_TEST)

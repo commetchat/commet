@@ -85,8 +85,8 @@ def mandatory_g_cells() -> tuple[str, ...]:
     return WINDOWS_G_CELLS + native_g_cells() + flatpak_g_cells()
 
 
-#: Preserved non-CEF Linux official-video flows (native yt-dlp/mpv or
-#: deliberate external browser), one per native package/compositor.
+#: Preserved non-CEF Linux official-video flows (the external browser),
+#: one per native package/compositor.
 def linux_video_p_cells() -> tuple[str, ...]:
     return tuple(
         f"native-{package}/{compositor}/official-video/preserved"

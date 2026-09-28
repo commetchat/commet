@@ -97,8 +97,13 @@ void main() {
   });
 
   group('DjTrack sources', () {
-    DjTrack t(String source, {String? link}) =>
-        DjTrack(id: 'a', source: source, link: link, kind: 'x', title: 'T', addedBy: '@a:x');
+    DjTrack t(String source, {String? link}) => DjTrack(
+        id: 'a',
+        source: source,
+        link: link,
+        kind: 'x',
+        title: 'T',
+        addedBy: '@a:x');
 
     test("an extension's track names the extension and its own source", () {
       final track = t('ext:org.example.music:https://music.example/a?b=c:d');
@@ -110,7 +115,9 @@ void main() {
 
     test('a page to open only when there is a web one', () {
       expect(t('ext:org.example.music:search:x').pageUrl, isNull);
-      expect(t('ext:org.example.music:search:x', link: 'https://songs.example/1').pageUrl,
+      expect(
+          t('ext:org.example.music:search:x', link: 'https://songs.example/1')
+              .pageUrl,
           'https://songs.example/1');
       expect(t('file:0123456789abcdef0123').pageUrl, isNull);
       // Queued by a client from before extensions.
@@ -125,11 +132,14 @@ void main() {
     });
 
     test('a kind from an older client is kept as it came', () {
-      final back = DjTrack.fromJson({'i': 'a', 'u': 'https://x.example/1', 't': 'T', 'k': 'youtube'})!;
+      final back = DjTrack.fromJson(
+          {'i': 'a', 'u': 'https://x.example/1', 't': 'T', 'k': 'youtube'})!;
       expect(back.kind, 'youtube');
-      final none = DjTrack.fromJson({'i': 'a', 'u': 'https://x.example/1', 't': 'T'})!;
+      final none =
+          DjTrack.fromJson({'i': 'a', 'u': 'https://x.example/1', 't': 'T'})!;
       expect(none.kind, DjTrack.linkKind);
-      final long = DjTrack.fromJson({'i': 'a', 'u': 'u', 't': 'T', 'k': 'k' * 40})!;
+      final long =
+          DjTrack.fromJson({'i': 'a', 'u': 'u', 't': 'T', 'k': 'k' * 40})!;
       expect(long.kind.length, DjTrack.maxKind);
     });
   });
@@ -169,7 +179,8 @@ not a link, nor is music.example/bare
       expect(DjLinks.hostMatches('www.music.example', 'music.example'), isTrue);
       expect(DjLinks.hostMatches('WWW.Music.Example', 'music.example'), isTrue);
       expect(DjLinks.hostMatches('notmusic.example', 'music.example'), isFalse);
-      expect(DjLinks.hostMatches('music.example.evil', 'music.example'), isFalse);
+      expect(
+          DjLinks.hostMatches('music.example.evil', 'music.example'), isFalse);
     });
   });
 }
