@@ -4,10 +4,12 @@ import 'dart:math';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/anchored_popover.dart';
 import 'package:commet/ui/atoms/speaking_indicator.dart';
 import 'package:commet/ui/molecules/call_session_live_panel.dart';
+import 'package:commet/ui/molecules/screen_share_stop_reporting.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_button.dart';
 import 'package:commet/ui/organisms/soundboard/soundboard_call_controller.dart';
@@ -85,6 +87,24 @@ class _CallSessionPanelState extends State<CallSessionPanel>
   late AnimationController audioLevel;
   Room? room;
   late final SoundboardCallController soundboard;
+  bool _screenShareBusy = false;
+
+  String get tooltipShareScreen => Intl.message("Share your screen",
+      name: "tooltipShareScreen",
+      desc: "Tooltip on the voice panel button that starts screen sharing");
+
+  String get tooltipStopSharingScreen => Intl.message("Stop sharing",
+      name: "tooltipStopSharingScreen",
+      desc: "Tooltip on the voice panel button that stops screen sharing");
+
+  String get tooltipSelectingScreen => Intl.message("Selecting screen",
+      name: "tooltipSelectingScreen",
+      desc: "Tooltip on the voice panel button while the screen picker is open");
+
+  String get messageCouldNotShareScreen => Intl.message(
+      "Could not share your screen.",
+      name: "messageCouldNotShareScreen",
+      desc: "Shown when starting a screen share fails");
 
   @override
   void initState() {
@@ -133,6 +153,32 @@ class _CallSessionPanelState extends State<CallSessionPanel>
   void openRoom() {
     EventBus.doOpenRoom(widget.session.roomId,
         clientId: widget.session.client.identifier);
+  }
+
+  Future<void> toggleScreenShare() async {
+    if (!mounted || _screenShareBusy) return;
+    setState(() => _screenShareBusy = true);
+
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      if (widget.session.isSharingScreen) {
+        await stopScreenshareOrReportFailure(context, widget.session);
+        return;
+      }
+
+      final source = await widget.session.pickScreenCapture(context);
+      if (source != null && mounted) {
+        await widget.session.setScreenShare(source);
+      }
+    } catch (e, s) {
+      Log.onError(e, s, content: "Could not start screen sharing");
+      if (mounted && messenger != null && messenger.mounted) {
+        messenger.showSnackBar(
+            SnackBar(content: Text(messageCouldNotShareScreen)));
+      }
+    } finally {
+      if (mounted) setState(() => _screenShareBusy = false);
+    }
   }
 
   @override
@@ -225,6 +271,29 @@ class _CallSessionPanelState extends State<CallSessionPanel>
                                 ? Icons.headset_off_rounded
                                 : Icons.headset_rounded)),
                   ),
+                  if (widget.session.supportsScreenshare)
+                    SizedBox(
+                      width: widget.height,
+                      height: widget.height,
+                      child: Tooltip(
+                        message: _screenShareBusy
+                            ? tooltipSelectingScreen
+                            : widget.session.isSharingScreen
+                                ? tooltipStopSharingScreen
+                                : tooltipShareScreen,
+                        child: tiamat.IconButton(
+                          onPressed:
+                              _screenShareBusy ? null : toggleScreenShare,
+                          size: iconSize,
+                          iconColor: widget.session.isSharingScreen
+                              ? SpeakingIndicator.color
+                              : null,
+                          icon: widget.session.isSharingScreen
+                              ? Icons.stop_screen_share_rounded
+                              : Icons.screen_share_outlined,
+                        ),
+                      ),
+                    ),
                   SizedBox(
                     width: widget.height,
                     height: widget.height,
