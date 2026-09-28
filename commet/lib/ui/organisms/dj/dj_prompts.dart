@@ -180,9 +180,23 @@ class _ChooseSourceDialogState extends State<_ChooseSourceDialog> {
   }
 }
 
-/// Runs [task] under a dialog showing its progress, with a Cancel button.
-/// Null when the user cancelled.
 Future<T?> _withProgress<T>(
+        BuildContext context,
+        String title,
+        Future<T> Function(
+                void Function(String step, double? progress) onProgress,
+                DjSourceCancel cancel)
+            task) =>
+    runWithProgressDialog(context, title, task);
+
+/// Runs [task] under a dialog showing its progress, with a Cancel button.
+/// Null when the user cancelled. The dialog is gone by the time this
+/// returns, so the caller can show the next one.
+///
+/// It removes its own route, never whatever is on top: a quick task (reading
+/// a small file) can finish before the dialog has even been built, and a
+/// plain pop() then closed the dialog the caller showed next.
+Future<T?> runWithProgressDialog<T>(
     BuildContext context,
     String title,
     Future<T> Function(void Function(String step, double? progress) onProgress,
@@ -190,14 +204,13 @@ Future<T?> _withProgress<T>(
         task) async {
   final progress = ValueNotifier<(String, double?)>(('', null));
   final cancel = DjSourceCancel();
-  final done = Completer<void>();
-  unawaited(showDialog<void>(
+  final shown = Completer<Route<dynamic>>();
+  final closed = showDialog<void>(
     context: context,
     barrierDismissible: false,
     builder: (dialogContext) {
-      done.future.whenComplete(() {
-        if (dialogContext.mounted) Navigator.of(dialogContext).pop();
-      });
+      final route = ModalRoute.of(dialogContext);
+      if (route != null && !shown.isCompleted) shown.complete(route);
       return AlertDialog(
         title: Text(title),
         content: ValueListenableBuilder(
@@ -218,7 +231,7 @@ Future<T?> _withProgress<T>(
         ],
       );
     },
-  ));
+  );
   try {
     return await task((step, value) => progress.value = (step, value), cancel);
   } on DjSourceCancelled {
@@ -227,7 +240,18 @@ Future<T?> _withProgress<T>(
     if (cancel.cancelled) return null;
     rethrow;
   } finally {
-    done.complete();
+    final route = await shown.future;
+    final navigator = route.navigator;
+    if (navigator != null && route.isActive) {
+      // Popped normally when it is on top, so it animates out; taken out
+      // from under whatever else is showing otherwise.
+      if (route.isCurrent) {
+        navigator.pop();
+        await closed;
+      } else {
+        navigator.removeRoute(route);
+      }
+    }
   }
 }
 
