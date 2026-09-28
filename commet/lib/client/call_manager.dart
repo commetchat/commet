@@ -48,6 +48,10 @@ class CallManager {
   Player? muteSoundPlayer;
   Player? unmuteSoundPlayer;
 
+  /// Screen share and camera sounds: a player of their own, so one does not
+  /// cut off someone's join sound.
+  Player? cueSoundPlayer;
+
   void _onClientAdded(int index) {
     var client = clientManager.clients[index];
 
@@ -358,6 +362,24 @@ class CallManager {
     player?.setPlaylistMode(PlaylistMode.none);
   }
 
+  /// Someone in the call started sharing their screen. Like joining, it is
+  /// the room's noise: not for a deafened user.
+  void screenShareStartedSound() => _playCue("screenshare_started.ogg");
+
+  /// Someone in the call turned their camera on.
+  void cameraOnSound() => _playCue("camera_on.ogg");
+
+  void _playCue(String sound) {
+    if (isDeafened) return;
+    try {
+      cueSoundPlayer ??= Player(configuration: PlayerConfiguration());
+      cueSoundPlayer!.setVolume(preferences.notificationsVolume.value);
+      cueSoundPlayer!.open(Media("asset:///assets/sound/$sound"));
+    } catch (e) {
+      Log.w("Could not play a call sound: $e");
+    }
+  }
+
   /// Releases the sound players. The client manager calls this when it is
   /// closed, which an app refresh does on every refresh.
   void dispose() {
@@ -366,6 +388,8 @@ class CallManager {
     muteSoundPlayer = null;
     unmuteSoundPlayer?.dispose();
     unmuteSoundPlayer = null;
+    cueSoundPlayer?.dispose();
+    cueSoundPlayer = null;
   }
 
   void stopRingtone() {

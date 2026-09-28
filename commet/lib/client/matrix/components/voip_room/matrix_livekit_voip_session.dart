@@ -11,6 +11,7 @@ import 'package:commet/client/components/voip/audio_processing/noise_suppression
 import 'package:commet/client/components/voip/deafen_rule.dart';
 import 'package:commet/client/components/voip/microphone_health_notice.dart';
 import 'package:commet/client/components/voip/remote_audio_watch.dart';
+import 'package:commet/client/components/voip/share_cues.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/user_presence/user_idle_watcher.dart';
@@ -146,6 +147,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     listener.on(onRoomDisconnected);
     listener.on(onSubscriptionPermissionChanged);
     listener.on(onTrackE2EEState);
+    _updateShareCues(quiet: true);
 
     _volumeTimer = Timer.periodic(Duration(milliseconds: 200), (timer) {
       if (state == VoipState.ended) timer.cancel();
@@ -401,6 +403,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
+    _updateShareCues();
     // LiveKit only reports a mute for a publication that has its track. One
     // muted while unsubscribed is dealt with in [onTrackSubscribed]. A muted
     // screen share keeps its tile: it hosts the volume control of the system
@@ -421,6 +424,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
+    _updateShareCues();
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
@@ -453,6 +457,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
+    _updateShareCues();
     if (event.publication.source == lk.TrackSource.screenShareVideo &&
         _watchList.onScreenSharePublished(event.participant.identity)) {
       // Auto-watch started watching now: the screen audio may have been
@@ -598,13 +603,20 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   /// the publications announced while it was reconnecting. With auto
   /// subscribe off (issue #50) nobody subscribes to those for us, so the
   /// call would stay silent until rejoining.
-  void onRoomReconnected(lk.RoomReconnectedEvent event) =>
-      _resyncRemoteStreams();
+  void onRoomReconnected(lk.RoomReconnectedEvent event) {
+    _shareCues.reconnected();
+    _updateShareCues(quiet: true);
+    _resyncRemoteStreams();
+  }
 
   /// Emitted again after a reconnect rebuilt the participants, which is the
   /// point at which their publications can be seen. RoomReconnectedEvent
   /// alone can arrive while that rebuild is still running.
-  void onRoomConnected(lk.RoomConnectedEvent event) => _resyncRemoteStreams();
+  void onRoomConnected(lk.RoomConnectedEvent event) {
+    _shareCues.reconnected();
+    _updateShareCues(quiet: true);
+    _resyncRemoteStreams();
+  }
 
   /// LiveKit gave up: it ran out of reconnect attempts, or the server closed
   /// the room. Nothing else noticed, so the call stayed on screen with no
@@ -794,6 +806,53 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
     _stateChanged.add(());
   }
 
+  /// The screen share and camera sounds (share_cues.dart).
+  late final ShareCueTracker _shareCues = ShareCueTracker(now: _now);
+
+  /// Who shows their screen or camera right now, us included.
+  Map<String, Set<ShareCue>> _liveShareMedia() {
+    final live = <String, Set<ShareCue>>{};
+    void add(lk.Participant participant) {
+      for (final publication in participant.trackPublications.values) {
+        if (publication.kind != lk.TrackType.VIDEO || publication.muted) {
+          continue;
+        }
+        final cue = switch (publication.source) {
+          lk.TrackSource.screenShareVideo => ShareCue.screenShare,
+          lk.TrackSource.camera => ShareCue.camera,
+          _ => null,
+        };
+        if (cue != null) (live[participant.identity] ??= {}).add(cue);
+      }
+    }
+
+    final local = livekitRoom.localParticipant;
+    if (local != null) add(local);
+    livekitRoom.remoteParticipants.values.forEach(add);
+    return live;
+  }
+
+  /// Plays the sound for a screen share or camera that just started. Quiet
+  /// while reconnecting: what LiveKit brings back was already live.
+  void _updateShareCues({bool quiet = false}) {
+    if (state == VoipState.ended) return;
+    try {
+      final cues =
+          _shareCues.update(_liveShareMedia(), quiet: quiet || !_connected());
+      for (final cue in cues) {
+        switch (cue) {
+          case ShareCue.screenShare:
+            _callManager?.screenShareStartedSound();
+          case ShareCue.camera:
+            _callManager?.cameraOnSound();
+        }
+      }
+    } catch (e, s) {
+      // A sound must never get in the way of the call's bookkeeping.
+      Log.onError(e, s, content: "Could not work out the share sounds");
+    }
+  }
+
   void onParticipantConnected(lk.ParticipantConnectedEvent event) {
     _callManager?.joinCallSound();
     // Newcomers have no way of knowing we were already deafened.
@@ -803,6 +862,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onParticipantDisconnected(lk.ParticipantDisconnectedEvent event) {
+    _updateShareCues();
     _deafenedIdentities.remove(event.participant.identity);
     _callManager?.endCallSound();
   }
@@ -907,6 +967,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   Future<void> onLocalTrackPublished(lk.LocalTrackPublishedEvent event) async {
+    _updateShareCues();
     final track = event.publication.track;
     if (track != null) {
       _ownCaptureTrack(track);
@@ -951,6 +1012,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
+    _updateShareCues();
     _removeStreamsWithSid(event.publication.sid);
 
     _stateChanged.add(());
@@ -1008,6 +1070,7 @@ class MatrixLivekitVoipSession implements VoipSession, ScreenShareWatching {
   }
 
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
+    _updateShareCues();
     _removeStreamsWithSid(event.publication.sid);
 
     _subscriptionRetries.remove(event.publication.sid);
