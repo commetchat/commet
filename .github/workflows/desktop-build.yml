@@ -50,7 +50,7 @@ jobs:
       matrix:
         platform: ${{ fromJSON(inputs.platforms) }}
     # Blacksmith has no macOS image, so that one leg runs on GitHub's.
-    runs-on: ${{ matrix.platform == 'windows' && 'blacksmith-4vcpu-windows-2025' || matrix.platform == 'macos' && 'macos-15' || 'blacksmith-4vcpu-ubuntu-2404' }}
+    runs-on: ${{ matrix.platform == 'windows' && 'windows-2025' || matrix.platform == 'macos' && 'macos-15' || 'ubuntu-24.04' }}
     # macOS is the newest target and the least tested, so it does not get to
     # hold up a release: the leg goes red on its own and publish still runs,
     # with whatever it managed to upload. Not when it was asked for by hand,

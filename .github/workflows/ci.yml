@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
   # The release waits for it. See docs/voice-audio-processing.md, "What the
   # tests guard".
   voice-dsp:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -156,7 +156,7 @@ jobs:
         run: tools/voice_dsp/web_loops.sh
 
   version:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.next.outputs.version }}
     steps:
@@ -214,7 +214,7 @@ jobs:
 
   publish:
     needs: [test, voice-dsp, version, build-release]
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
@@ -247,7 +247,7 @@ jobs:
 
   attach-debug:
     needs: [version, publish, build-debug]
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:

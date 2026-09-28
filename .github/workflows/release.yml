@@ -12,7 +12,7 @@ env:
 
 jobs:
   release-windows:
-    runs-on: blacksmith-4vcpu-windows-2025
+    runs-on: windows-2025
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -97,7 +97,7 @@ jobs:
 
 
   release-android:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -181,7 +181,7 @@ jobs:
           path: commet/build/app/outputs/flutter-apk/app-release.apk
 
   release-android-google-services:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -271,7 +271,7 @@ jobs:
   
     strategy:
       matrix:
-        os: [blacksmith-4vcpu-ubuntu-2204, blacksmith-4vcpu-ubuntu-2404]
+        os: [ubuntu-22.04, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     steps:
       # we were having issues running out of disk space on workers, so...
@@ -358,7 +358,7 @@ jobs:
           path: commet-pkg/roscord-linux-x64.deb
 
   release-linux-flatpak:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -472,7 +472,7 @@ jobs:
           path: commet/linux/flatpak/chat.commet.commetapp.flatpak
 
   release-linux-portable:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -553,7 +553,7 @@ jobs:
 
 
   release-web:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -623,7 +623,7 @@ jobs:
     # or withheld together; rollback withdraws/stops the complete desktop
     # set and installs the last known-good complete application without
     # reviving a legacy engine.
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
