@@ -52,6 +52,11 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 
+# Visual Studio 2026 (MSVC 14.51, on GitHub's windows-2025 runners) refuses
+# <experimental/coroutine> unless told to take it, and permission_handler_windows
+# still includes it. Set for the whole directory, so every plugin below gets it.
+add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
