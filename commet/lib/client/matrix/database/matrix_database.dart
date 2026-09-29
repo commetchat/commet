@@ -4,8 +4,10 @@ import 'matrix_database_stub.dart'
 
 import 'package:matrix/matrix.dart';
 
-Future<DatabaseApi> getMatrixDatabase(String clientName) {
-  return getMatrixDatabaseImplementation(clientName);
+Future<DatabaseApi> getMatrixDatabase(String clientName,
+    {bool onDatabaseIsolate = true, bool readOnly = false}) {
+  return getMatrixDatabaseImplementation(clientName,
+      onDatabaseIsolate: onDatabaseIsolate, readOnly: readOnly);
 }
 
 Future<DatabaseApi?> getLegacyMatrixDatabase(String clientName) {

@@ -1,81 +1,65 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/stale_info.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/debug/log.dart';
+import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_list_mapped.dart';
 
 class DirectMessagesAggregator implements DirectMessagesInterface {
   ClientManager clientManager;
 
   @override
-  late List<Room> directMessageRooms;
+  late INotifyingList<Room> directMessageRooms;
 
   @override
-  late List<Room> highlightedRoomsList;
-
-  @override
-  Stream<void> get onHighlightedRoomsListUpdated =>
-      highlightedUpdateController.stream;
-
-  @override
-  Stream<void> get onRoomsListUpdated => updatedController.stream;
+  late INotifyingList<Room> highlightedRoomsList;
 
   final StreamController updatedController = StreamController.broadcast();
 
   final StreamController highlightedUpdateController =
       StreamController.broadcast();
 
+  final StreamController<void> onEventReceived = StreamController.broadcast();
+
   DirectMessagesAggregator(this.clientManager) {
-    updateDirectMessageRooms();
-    for (var client in clientManager.clients) {
-      final comp = client.getComponent<DirectMessagesComponent>();
-      comp?.onRoomsListUpdated.listen(onClientUpdatedList);
-      comp?.onHighlightedRoomsListUpdated.listen(onHighlightedListUpdated);
+    directMessageRooms = NotifyingListMapped<Room, Client>(
+      baseList: clientManager.clients,
+      map: (value) {
+        final comp = value.getComponent<DirectMessagesComponent>();
+        return comp!.directMessageRooms;
+      },
+    );
+
+    highlightedRoomsList = NotifyingListMapped<Room, Client>(
+      baseList: clientManager.clients,
+      map: (value) {
+        final comp = value.getComponent<DirectMessagesComponent>();
+        return comp!.highlightedRoomsList;
+      },
+    );
+
+    clientManager.onEventReceived.listen(_onEvent);
+
+    highlightedRoomsList.onListUpdated.listen((_) {
+      Log.i("Highlihgted rooms list updated!");
+    });
+  }
+
+  void _onEvent((Client, Room, TimelineEvent) event) {
+    if (event.$3 is! TimelineEventMessage) {
+      return;
     }
 
-    clientManager.onClientAdded.stream.listen(onClientAdded);
-    clientManager.onClientRemoved.stream.listen(onClientRemoved);
-  }
+    var client = event.$1;
 
-  void updateDirectMessageRooms() {
-    var list = List<Room>.empty(growable: true);
-    var highlightedList = List<Room>.empty(growable: true);
+    var comp = client.getComponent<DirectMessagesComponent>();
 
-    for (var client in clientManager.clients) {
-      final comp = client.getComponent<DirectMessagesComponent>();
-      if (comp == null) continue;
-
-      list.addAll(comp.directMessageRooms);
-      highlightedList.addAll(comp.highlightedRoomsList);
+    if (comp?.isRoomDirectMessage(event.$2) == true) {
+      onEventReceived.add(null);
     }
-
-    directMessageRooms = list;
-    highlightedRoomsList = highlightedList;
-
-    updatedController.add(null);
-    highlightedUpdateController.add(null);
-  }
-
-  void onClientUpdatedList(void event) {
-    updateDirectMessageRooms();
-  }
-
-  void onClientAdded(int index) {
-    var client = clientManager.clients[index];
-    final comp = client.getComponent<DirectMessagesComponent>();
-    if (comp != null) {
-      comp.onRoomsListUpdated.listen(onClientUpdatedList);
-      comp.onHighlightedRoomsListUpdated.listen(onHighlightedListUpdated);
-      updateDirectMessageRooms();
-    }
-  }
-
-  void onClientRemoved(StalePeerInfo event) {
-    updateDirectMessageRooms();
-  }
-
-  void onHighlightedListUpdated(void event) {
-    updateDirectMessageRooms();
   }
 }

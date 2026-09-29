@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/space.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
-import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -15,6 +14,7 @@ class SpaceIcon extends StatefulWidget {
       this.showUser = false,
       this.onUpdate,
       required this.spaceId,
+      required this.clientId,
       this.avatar,
       this.placeholderColor,
       this.notificationCount = 0,
@@ -27,6 +27,7 @@ class SpaceIcon extends StatefulWidget {
   final void Function()? onTap;
   final bool showUser;
   final String spaceId;
+  final String clientId;
   final Stream<void>? onUpdate;
   final String displayName;
   final Color? placeholderColor;
@@ -60,7 +61,8 @@ class _SpaceIconState extends State<SpaceIcon> {
 
   void onSelectedSpaceChanged(Space? event) {
     setState(() {
-      selected = event?.identifier == widget.spaceId;
+      selected = event?.identifier == widget.spaceId &&
+          event?.client.identifier == widget.clientId;
     });
   }
 
@@ -74,22 +76,22 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      SideNavigationBar.tooltip(
-          widget.displayName,
-          ImageButton(
-            border: selected
-                ? Border.all(
-                    color: ColorScheme.of(context).inverseSurface,
-                    width: 3,
-                    strokeAlign: 0.5)
-                : null,
-            image: widget.avatar,
-            onTap: widget.onTap,
-            size: widget.width,
-            placeholderColor: widget.placeholderColor,
-            placeholderText: widget.displayName,
-          ),
-          context),
+      AspectRatio(
+        aspectRatio: 1.0,
+        child: ImageButton(
+          border: selected
+              ? Border.all(
+                  color: ColorScheme.of(context).inverseSurface,
+                  width: 3,
+                  strokeAlign: 0.5)
+              : null,
+          image: widget.avatar,
+          onTap: widget.onTap,
+          size: widget.width,
+          placeholderColor: widget.placeholderColor,
+          placeholderText: widget.displayName,
+        ),
+      ),
       if (widget.showUser) avatarOverlay(),
       if (widget.highlightedNotificationCount > 0) notificationOverlay(),
     ]);
@@ -125,11 +127,7 @@ class _SpaceIconState extends State<SpaceIcon> {
     return Positioned(
       right: 0,
       top: 0,
-      child: SizedBox(
-        width: 20,
-        height: 20,
-        child: NotificationBadge(widget.highlightedNotificationCount),
-      ),
+      child: NotificationBadge(widget.highlightedNotificationCount),
     );
   }
 

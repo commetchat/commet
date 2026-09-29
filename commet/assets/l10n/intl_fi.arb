@@ -1,0 +1,170 @@
+{
+    "labelRoomsList": "Huoneet",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "Vedä ja tiputa tiedosto ladataksesi...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Viimeaikainen toiminta",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Hälytykset",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Huoneet",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Kutsut",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Ei kiinnitettyjä viestejä!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "Käyttäjän {user} kutsut",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelInvitations": "Kutsut",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOpenDirectMessage": "Viesti",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Vaihda Banneri",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Aseta Status",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "Poista Status",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "Aseta kuvaus",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "Poista kuvaus",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Jaa aikavyöhyke",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Poista aikavyöhyke",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Muokkaa värimaailmaa",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "Näytä profiili raakamuodossa",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "Haluatko varmasti jakaa aikavyöhykkeesi '{timezone}' julkisesti?",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "Kerro itsestäsi",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Tiedoston koko on liian suuri ladattavaksi!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Tiedoston enimmäiskoko ylitetty",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "Lähetä salattu viesti",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "Lähetä viesti",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Sinulta puuttuu oikeudet lähettää viestejä tähän huoneeseen",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "Lisää huone",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "Huoneet",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    }
+}

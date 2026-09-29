@@ -339,7 +339,7 @@ class _RoomCreatorWidgetState extends State<RoomCreatorWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: Layout.desktop ? 500 : null,
+      width: MediaQuery.of(context).desktop ? 500 : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 16,

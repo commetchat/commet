@@ -9,7 +9,7 @@ class RoomQuickAccessMenuViewMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final menu = RoomQuickAccessMenu(room: room);
+    final menu = RoomQuickAccessMenu(room: room, context: context);
 
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerLow,

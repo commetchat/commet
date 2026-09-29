@@ -110,7 +110,7 @@ class _CallViewState extends State<CallView> {
       bool canHangUp = false,
       bool canToggleCamera = false,
       required Widget child}) {
-    final buttonRadius = Layout.mobile ? 24.0 : 18.0;
+    final buttonRadius = MediaQuery.of(context).mobile ? 24.0 : 18.0;
     return MouseRegion(
       onEnter: (event) {
         setState(() {
@@ -127,7 +127,7 @@ class _CallViewState extends State<CallView> {
         children: [
           child,
           AnimatedOpacity(
-            opacity: Layout.mobile || isMouseHovering ? 1 : 0,
+            opacity: MediaQuery.of(context).mobile || isMouseHovering ? 1 : 0,
             duration: const Duration(milliseconds: 200),
             child: Padding(
               padding: const EdgeInsets.all(8.0),

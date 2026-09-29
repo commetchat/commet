@@ -12,12 +12,15 @@ import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/add_widget_dialog/add_widget_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/utils/color_utils.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/matrix_api_lite/generated/model.dart';
-import 'package:uuid/uuid.dart';
 
 class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
@@ -142,26 +145,22 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
       matrix.CommandArgs args, StringBuffer? out) async {
     if (args.room == null) return null;
 
-    var url = Uri.parse(args.msg);
-    var uuid = const Uuid();
-    var id = uuid.v4();
+    var custom = CustomURI.parse(args.msg);
 
-    var content = {
-      "type": "m.custom",
-      "url": url.toString(),
-      "name": "Custom",
-      "id": id,
-      "creatorUserId": client.self!.identifier,
-      "roomId": args.room!.id,
-    };
-
-    if (url.host == "calendar-widget.commet.chat") {
-      content["type"] = "chat.commet.widgets.calendar";
-      content["name"] = "Calendar";
+    if (custom == null) {
+      var url = Uri.parse(args.msg);
+      custom = AddWidgetURI(
+          widgetUrl: url.toString(),
+          widgetName: "Custom",
+          widgetType: "m.custom");
     }
 
-    await client.matrixClient.setRoomStateWithKey(
-        args.room!.id, "im.vector.modular.widgets", id, content);
+    if (custom case AddWidgetURI widgetUri) {
+      AdaptiveDialog.show(navigator.currentContext!, builder: (dialogContext) {
+        return AddWidgetDialog(
+            widgetUri: widgetUri, room: client.getRoom(args.room!.id)!);
+      }, title: 'Add "${widgetUri.widgetName ?? "Widget"}"?');
+    }
 
     return null;
   }

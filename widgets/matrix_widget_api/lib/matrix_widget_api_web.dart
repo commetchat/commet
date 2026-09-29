@@ -45,7 +45,6 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
     required this.userId,
     String supportedOrigins = "*",
   }) {
-    print("Starting Widget API: $widgetId");
     w = WidgetApi(widgetId, supportedOrigins);
   }
 

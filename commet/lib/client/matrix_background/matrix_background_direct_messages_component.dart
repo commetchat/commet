@@ -4,6 +4,7 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/matrix_background/matrix_background_client.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/notifying_list.dart';
 
 class MatrixBackgroundClientDirectMessagesComponent
     extends DirectMessagesComponent<MatrixBackgroundClient> {
@@ -16,9 +17,6 @@ class MatrixBackgroundClientDirectMessagesComponent
   Future<Room?> createDirectMessage(String userId) {
     throw UnimplementedError();
   }
-
-  @override
-  List<Room> get directMessageRooms => throw UnimplementedError();
 
   @override
   String? getDirectMessagePartnerId(Room room) {
@@ -42,9 +40,6 @@ class MatrixBackgroundClientDirectMessagesComponent
 
     return null;
   }
-
-  @override
-  List<Room> get highlightedRoomsList => throw UnimplementedError();
 
   @override
   bool isRoomDirectMessage(Room room) {
@@ -71,8 +66,10 @@ class MatrixBackgroundClientDirectMessagesComponent
   }
 
   @override
-  Stream<void> get onHighlightedRoomsListUpdated => throw UnimplementedError();
+  // TODO: implement directMessageRooms
+  INotifyingList<Room> get directMessageRooms => throw UnimplementedError();
 
   @override
-  Stream<void> get onRoomsListUpdated => throw UnimplementedError();
+  // TODO: implement highlightedRoomsList
+  INotifyingList<Room> get highlightedRoomsList => throw UnimplementedError();
 }

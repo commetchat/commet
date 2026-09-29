@@ -1,5 +1,5 @@
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/app/theme_settings/theme_settings_widget.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -57,6 +57,39 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       name: "labelShowRoomPreviewsInSpaceSidebarDescription",
       desc:
           "Description for enabling using the preview list in the space sidebar");
+
+  String get labelShowRoomStateEvents => Intl.message("Show state events",
+      name: "labelShowRoomStateEvents",
+      desc:
+          "Label for enabling visibility of state events in the room timeline");
+
+  String get labelShowRoomStateEventsDescription => Intl.message(
+      "Show changes to the room state, such as members joining and leaving, in the chat timeline",
+      name: "labelShowRoomStateEventsDescription",
+      desc:
+          "Description for enabling using visibility of room state events in the timeline");
+
+  String get labelCollapseStateEvents => Intl.message("Collapse state events",
+      name: "labelCollapseStateEvents",
+      desc:
+          "Label for enabling collapsing of state events in the room timeline");
+
+  String get labelCollapseStateEventsDescription => Intl.message(
+      "Group changes to room state in to a single timeline event",
+      name: "labelCollapseStateEventsDescription",
+      desc:
+          "Description for enabling using collapsing of room state events in the timeline");
+
+  String get labelShowRoomsInSidebar => Intl.message("Show rooms in sidebar",
+      name: "labelShowRoomsInSidebar",
+      desc:
+          "Label for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
+
+  String get labelShowRoomsInSidebarDescription => Intl.message(
+      "Add an entry to the sidebar that shows all rooms which are not contained in a space",
+      name: "labelShowRoomsInSidebarDescription",
+      desc:
+          "Description for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
 
   @override
   void initState() {
@@ -119,6 +152,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 ),
                 const Seperator(),
                 BooleanPreferenceToggle(
+                  preference: preferences.showRoomsInSidebar,
+                  title: labelShowRoomsInSidebar,
+                  description: labelShowRoomsInSidebarDescription,
+                ),
+                const Seperator(),
+                BooleanPreferenceToggle(
                   preference: preferences.showRoomAvatars,
                   title: labelUseRoomAvatars,
                   description: labelEnableRoomIconsDescription,
@@ -128,6 +167,17 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.usePlaceholderRoomAvatars,
                   title: labelUseRoomAvatarPlaceholders,
                   description: labelUseRoomAvatarPlaceholdersDescription,
+                ),
+                const Seperator(),
+                BooleanPreferenceToggle(
+                  preference: preferences.showStateEvents,
+                  title: labelShowRoomStateEvents,
+                  description: labelShowRoomStateEventsDescription,
+                ),
+                BooleanPreferenceToggle(
+                  preference: preferences.collapseStateEvents,
+                  title: labelCollapseStateEvents,
+                  description: labelCollapseStateEventsDescription,
                 )
               ],
             ),

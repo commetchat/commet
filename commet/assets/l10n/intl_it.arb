@@ -1,0 +1,590 @@
+{
+    "labelRoomsList": "Stanze",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "Rilascia un file per caricarlo...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Attività recenti",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Avvisi",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Stanze",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Inviti",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Non é stato fissato nessun messaggio!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "Inviti per {user}",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelInvitations": "Inviti",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOpenDirectMessage": "Messaggio",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Cambia Insegna",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Imposta Stato",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "Rimuovi Stato",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "Imposta Medaglie",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "Imposta Biografia",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "Rimuovi Biografia",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Condividi Fuso Orario",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Rimuovi Fuso Orario",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Cambia Schema Colori",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "Imposta Colore Forzato",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "Rimuovi Colore Forzato",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "Mostra Profilo Grezzo",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "Vuoi davvero condividere il tuo fuso orario '{timezone}' pubblicamente?",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "Scrivi su di te",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "Le tue Medaglie",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "Non hai nessuna medaglia. Puoi ottenerne donando ed aiutando lo sviluppo di Commet",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Questo file é troppo grande da caricare!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Dimensione massima file superata",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "Manda un messaggio cifrato",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "Manda un messaggio",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Non hai il permesso per mandare messaggi in questa stanza",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipSpaceSettings": "Impostazioni Spazio",
+    "@tooltipSpaceSettings": {
+        "description": "Tooltip for the button that opens space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "Aggiungi stanza",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "Stanze",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "Spazi",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "Stanze disponibili",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "Spazio pubblico",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "Spazio privato",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Spazio limitato",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceGettingText": "Benvenut* in\n\n # {spaceName}",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptAddSpace": "Aggiungi Spazio",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Chiamata in arrivo da {callingUserName}!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "promptAttachmentProcessingSendOriginal": "Manda Originale",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Attenzione: questa immagina contiene dati sulla posizione",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTextChatDescription": "Semplice chat testuale, con tutte le funzionalità che potresti desiderare! Manda messaggi, file multimediali, adesivi, GIF e altro!",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoiceChatDescription": "Una stanza dedicata a chiamate vocali, per una o più persone",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "Crea un calendario condiviso per tenere traccia dei tuoi piani, e importa il tuo programma da altri calendari per far sapere ai tuoi amici quando non sei disponibile.",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Crea Stanza",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Stanza esistente",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Unisciti alla Stanza",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Chat testuale",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Chat vocale",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Album di foto",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Calendario",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Spazio",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "Entra nella Stanza!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "Indirizzi della Stanza",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#stanza-fantastica",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomName": "Nome della Stanza",
+    "@promptRoomName": {
+        "description": "Prompt to enter a room name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptTopic": "Tema (opzionale)",
+    "@promptTopic": {
+        "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "Attiva Cifratura",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "Se abilitata, la cifratura non puó più essere disattivata",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPrivateExplanation": "Questa stanza sarà accessibile solo tramite invito",
+    "@roomVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' room visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPublicExplanation": "Questa stanza sarà accessibile pubblicamente da chiunque sull'internet",
+    "@roomVisibilityPublicExplanation": {
+        "description": "Explains what 'public' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "Privata",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Pubblica",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "Questa stanza sarà disponibile per chiunque faccia parte dello spazio che la contiene",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityRestricted": "Ristretta",
+    "@labelVisibilityRestricted": {
+        "description": "Short label for room visibility restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Crea Stanza!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "Condividi foto e video con amici o gruppi!",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Messaggi Diretti",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Messaggi Diretti",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "In attesa che l'altro dispositivo accetti la richiesta",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** ha richiesto di verificare la tua sessione",
+    "@messageMatrixSessionVerificationRequest": {
+        "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        "type": "text",
+        "placeholders": {
+            "username": {}
+        }
+    },
+    "messageSasEmojiVerificationPrompt": "Controlla che le emoji siano le stesse, e nello stesso ordine che sull'altro dispositivo",
+    "@messageSasEmojiVerificationPrompt": {
+        "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmEmojiMatches": "Sono le stesse!",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "Sono diverse",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageVerificationComplete": "Verifica Completa!",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "# Unified Push\nQuesta versione di Commet è stata compilata senza Google Play Services. Per poter ricevere notifiche push, devi usare [Unified Push](https://unifiedpush.org/).\n\nSe hai già installato un provider compatibile con Unified Push, puoi configurarlo sotto\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Attiva Unified Push",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Indirizzo",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "Nessun server trovato, qualcosa è andato storto :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUsername": "Nome utente",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Password",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "Accedi",
+    "@promptSubmitLogin": {
+        "description": "Prompt to submit the username and password, and attempt to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginFailed": "Accesso fallito...",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageAlreadyLoggedIn": "Hai già acceduto a questo account",
+    "@messageAlreadyLoggedIn": {
+        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageInvalidUsernameOrPassword": "Nome utente o Password non validi",
+    "@messageInvalidUsernameOrPassword": {
+        "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+        "type": "text",
+        "placeholders": {}
+    },
+    "titleConfirmingDonation": "Confermando Donazione",
+    "@titleConfirmingDonation": {
+        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationInstructions": "Segui le istruzioni nel tuo browser. Sii paziente, potrebbe richiedere un minuto o due per far apparire la tua medaglia una volta che la donazione è stata ricevuta.",
+    "@labelDonationInstructions": {
+        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationSucceeded": "Grazie per la tua generosa donazione!",
+    "@labelDonationConfirmationSucceeded": {
+        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationFailed": "Impossibile trovare donazioni :( Per favore considera donare per supportare lo sviluppo di Commet!",
+    "@labelDonationConfirmationFailed": {
+        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmCancelDonationConfirmation": "Davvero vuoi cancellare senza accettare nessun premio?",
+    "@labelConfirmCancelDonationConfirmation": {
+        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelNoAccount": "Nessun Account",
+    "@labelNoAccount": {
+        "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPickDonationAccount": "Scegli un account da cui donare",
+    "@promptPickDonationAccount": {
+        "description": "Prompt the user to select an account to link to their donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonateAnonymously": "Dona senza associare un account",
+    "@labelDonateAnonymously": {
+        "description": "Prompt the user to donate to the project, without linking to their user account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonate": "Dona",
+    "@promptDonate": {
+        "description": "Prompt the user to donate to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonationsRefreshAwards": "Ricarica Premi",
+    "@promptDonationsRefreshAwards": {
+        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpace": "Lascia Spazio",
+    "@promptLeaveSpace": {
+        "description": "Text on a button to leave a space",
+        "type": "text",
+        "placeholders": {}
+    }
+}

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 
 class SystemProcessesUtils {
   static Future<List<ProcessInfo>> getProcessList() async {
@@ -21,6 +22,43 @@ class SystemProcessesUtils {
     }
 
     return [];
+  }
+
+  static Future<Process> spawnSubprocess(String name, List<String> args) async {
+    if (BuildConfig.IS_FLATPAK) {
+      if (PlatformUtils.isDisplayServer(DisplayServer.Wayland)) {
+        args = ["WAYLAND_DISPLAY=wayland-0", name, ...args];
+        name = "env";
+      }
+
+      if (PlatformUtils.isDisplayServer(DisplayServer.X11)) {
+        args = ["DISPLAY=:0", name, ...args];
+        name = "env";
+      }
+
+      Log.i("Spawning subprocess: ${name} ${args}");
+      var result =
+          await Process.start("flatpak-spawn", ["--host", name, ...args]);
+
+      return result;
+    }
+
+    Log.i("Spawning subprocess: ${name} ${args}");
+
+    return Process.start(name, args);
+  }
+
+  static Future<ProcessResult> runSubprocess(
+      String name, List<String> args) async {
+    Log.i("Spawning subprocess: ${name} ${args}");
+
+    if (BuildConfig.IS_FLATPAK) {
+      var result =
+          await Process.run("flatpak-spawn", ["--host", name, ...args]);
+      return result;
+    }
+
+    return Process.run(name, args);
   }
 
   static List<ProcessInfo> parseLinuxPS(String output) {

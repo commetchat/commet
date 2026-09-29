@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
@@ -59,40 +60,44 @@ class AndroidNotifier implements Notifier {
     var roomId = message["room_id"] as String?;
     var eventId = message["event_id"] as String?;
     var counts = message["counts"];
+    var localClientId = message["local_client_id"] as String?;
+
+    Log.i("Received message: ${jsonEncode(message)}");
 
     if (roomId == null || eventId == null) {
       Log.w("TODO: Handle counts: $counts");
       return;
     }
 
-    var client = clientManager!.clients
-        .firstWhereOrNull((element) => element.hasRoom(roomId));
+    if (localClientId == null) {
+      var cache = preferences.getRoomsListCache();
+      var id =
+          cache.entries.firstWhereOrNull((i) => i.value.contains(roomId))?.key;
+      Log.i("Found client id from rooms list cache: $id");
+      localClientId = id;
+    }
 
-    if (client == null) {
-      client = clientManager!.clients.firstWhereOrNull((client) =>
-          client
-              .getComponent<InvitationComponent>()
-              ?.invitations
-              .any((i) => i.roomId == roomId) ==
-          true);
+    if (localClientId == null) {
+      Log.w("Received notification did not contain a client id!");
 
-      for (client in clientManager!.clients) {
-        final comp = client.getComponent<InvitationComponent>();
+      return;
+    }
 
-        var invite =
-            comp?.invitations.firstWhereOrNull((i) => i.roomId == roomId);
+    var client = clientManager!.getClient(localClientId);
 
-        if (invite != null) {
-          var content = GenericRoomInviteNotificationContent(
-            content: "You received an invitation to chat!",
-            title: "Room Invite",
-          );
+    if (client == null) return;
 
-          await NotificationManager.notify(content);
+    final comp = client.getComponent<InvitationComponent>();
 
-          return;
-        }
-      }
+    var invite = comp?.invitations.firstWhereOrNull((i) => i.roomId == roomId);
+
+    if (invite != null) {
+      var content = GenericRoomInviteNotificationContent(
+        content: "You received an invitation to chat!",
+        title: "Room Invite",
+      );
+
+      await NotificationManager.notify(content);
 
       return;
     }
@@ -124,16 +129,18 @@ class AndroidNotifier implements Notifier {
     }
   }
 
-  Future<void> checkPermission() async {
+  Future<bool> checkPermission() async {
     var android = flutterLocalNotificationsPlugin!
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()!;
 
     hasPermission = await android.requestNotificationsPermission() ?? false;
+
+    return hasPermission;
   }
 
   @override
-  Future<void> notify(NotificationContent notification) async {
+  Future<void> notify(NotificationContent notification, {Room? room}) async {
     switch (notification) {
       case MessageNotificationContent _:
         return displayMessageNotification(notification);
@@ -149,10 +156,15 @@ class AndroidNotifier implements Notifier {
 
   Future<void> displayMessageNotification(
       MessageNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
-    var room = client?.getRoom(content.roomId);
+    var room = content.room;
 
     if (room == null) {
+      var client = clientManager?.getClient(content.clientId);
+      room = client?.getRoom(content.roomId);
+    }
+
+    if (room == null) {
+      Log.w("Could not get room for notification");
       return;
     }
 
@@ -364,7 +376,7 @@ class AndroidNotifier implements Notifier {
 
         session?.acceptCall(withMicrophone: true);
 
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.doOpenRoom(uri.roomId, clientId: uri.clientId);
       }
 
       if (uri case DeclineCallUri _) {
@@ -385,7 +397,7 @@ class AndroidNotifier implements Notifier {
     if (details.notificationResponseType ==
         NotificationResponseType.selectedNotification) {
       if (uri is OpenRoomURI) {
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.doOpenRoom(uri.roomId, clientId: uri.clientId);
       }
     }
   }

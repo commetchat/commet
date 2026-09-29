@@ -1,0 +1,9 @@
+New Features:
+- Added support for Widgets
+- Added space folders and reorganizing the side bar
+- Added nicknaming
+- Added experimental support for encrypted Element Call
+
+Changes:
+- Fixed reliability issue with cross-signing keys
+- Reduced power usage due to long running animations

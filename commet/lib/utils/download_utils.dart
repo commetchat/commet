@@ -122,7 +122,9 @@ class DownloadUtils {
 
     if (attachment is FileAttachment) {
       file = attachment.file;
-      name = attachment.name;
+      if (attachment.name != null) {
+        name = attachment.name!;
+      }
     } else {
       return;
     }

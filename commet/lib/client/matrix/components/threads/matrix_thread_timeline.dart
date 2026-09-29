@@ -319,4 +319,12 @@ class MatrixThreadTimeline implements Timeline {
     var e = event as MatrixTimelineEvent;
     return e.event.getDisplayEvent(mainRoomTimeline.matrixTimeline!).redacted;
   }
+
+  @override
+  String getDisplayId(TimelineEvent<Client> event) {
+    var e = event as MatrixTimelineEvent;
+    var ev = e.event.getDisplayEvent(mainRoomTimeline.matrixTimeline!);
+
+    return "thread-${threadRootId}-${event.eventId}-${ev.eventId}";
+  }
 }

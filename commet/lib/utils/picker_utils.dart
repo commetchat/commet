@@ -85,7 +85,7 @@ class ImageCropView extends StatelessWidget {
   Widget build(BuildContext context) {
     var buttons = [
       Expanded(
-        flex: Layout.desktop ? 1 : 0,
+        flex: MediaQuery.of(context).desktop ? 1 : 0,
         child: tiamat.Button.secondary(
           text: useWithoutCroppingPrompt,
           onTap: () async {
@@ -94,7 +94,7 @@ class ImageCropView extends StatelessWidget {
         ),
       ),
       Expanded(
-        flex: Layout.desktop ? 1 : 0,
+        flex: MediaQuery.of(context).desktop ? 1 : 0,
         child: tiamat.Button(
           text: CommonStrings.promptSubmit,
           onTap: () async {
@@ -157,12 +157,12 @@ class ImageCropView extends StatelessWidget {
                 ],
               ),
             ),
-            if (Layout.desktop)
+            if (MediaQuery.of(context).desktop)
               Row(
                   spacing: 8,
                   mainAxisSize: MainAxisSize.max,
                   children: buttons),
-            if (Layout.mobile)
+            if (MediaQuery.of(context).mobile)
               Column(
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,

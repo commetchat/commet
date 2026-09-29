@@ -192,7 +192,7 @@ class GetOrCreateRoom extends StatefulWidget {
           )
         : null;
 
-    if (Layout.mobile) {
+    if (MediaQuery.of(context).mobile) {
       _RoomSourceOptions? source;
       if (initialRoomAddress != null) {
         source = _RoomSourceOptions.join;
@@ -298,7 +298,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
 
   @override
   Widget build(BuildContext context) {
-    if (Layout.mobile)
+    if (MediaQuery.of(context).mobile)
       return IgnorePointer(
         ignoring: loading,
         child: Opacity(

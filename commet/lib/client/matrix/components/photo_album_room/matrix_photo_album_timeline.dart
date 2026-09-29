@@ -19,13 +19,13 @@ class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
   MatrixPhotoAlbumTimeline(this.room);
 
   @override
-  Stream<int> get onAdded => _photos.onAdd;
+  Stream<Photo> get onAdded => _photos.onAdd;
 
   @override
-  Stream<int> get onChanged => _photos.onItemUpdated;
+  Stream<Photo> get onChanged => _photos.onItemUpdated;
 
   @override
-  Stream<int> get onRemoved => _photos.onRemove;
+  Stream<Photo> get onRemoved => _photos.onRemove;
 
   Future<void> initTimeline() async {
     matrixTimeline = await room.getTimeline();

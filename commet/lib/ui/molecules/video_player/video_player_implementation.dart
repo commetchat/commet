@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:commet/cache/file_provider.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -12,10 +14,12 @@ class VideoPlayerImplementation extends StatefulWidget {
       {required this.controller,
       required this.videoFile,
       this.decodeFirstFrame = false,
+      this.streamUrl,
       this.width = 640,
       this.height = 340,
       super.key});
   final FileProvider videoFile;
+  final Uri? streamUrl;
   final int width;
   final int height;
   final bool decodeFirstFrame;
@@ -58,23 +62,55 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
     controller = VideoController(player);
 
-    Future.microtask(() async {
-      widget.controller.setBuffering(true);
-      var sub = widget.videoFile.onProgressChanged?.listen((data) {
-        widget.controller.setBufferingProgress(data);
+    if (widget.streamUrl == null) {
+      Future.microtask(() async {
+        widget.controller.setBuffering(true);
+        var sub = widget.videoFile.onProgressChanged?.listen((data) {
+          widget.controller.setBufferingProgress(data);
+        });
+        file = await widget.videoFile.resolve();
+
+        sub?.cancel();
+
+        await player.open(Playlist([Media(file.toString())]),
+            play: !widget.decodeFirstFrame);
+        widget.controller.setBuffering(false);
+
+        setState(() {
+          loaded = true;
+        });
       });
-      file = await widget.videoFile.resolve();
+    } else {
+      Future.microtask(() async {
+        widget.controller.setBuffering(true);
 
-      sub?.cancel();
+        var host = widget.streamUrl!.host;
 
-      await player.open(Playlist([Media(file.toString())]),
-          play: !widget.decodeFirstFrame);
-      widget.controller.setBuffering(false);
+        bool allowed = preferences.allowedRemoteVideoHosts.value.contains(host);
 
-      setState(() {
-        loaded = true;
+        if (!allowed) {
+          bool? confirmation = await AdaptiveDialog.confirmation(context,
+              dangerous: true,
+              title: "Stream Remote Video",
+              prompt:
+                  "Do you want to allow connections to `${widget.streamUrl!.host}` to stream this video?");
+
+          allowed = confirmation == true;
+          preferences.allowedRemoteVideoHosts.add(host);
+        }
+
+        if (allowed) {
+          await player.open(Playlist([Media(widget.streamUrl!.toString())]),
+              play: !widget.decodeFirstFrame);
+        }
+
+        widget.controller.setBuffering(false);
+
+        setState(() {
+          loaded = true;
+        });
       });
-    });
+    }
   }
 
   @override
@@ -87,7 +123,7 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
   Widget build(BuildContext context) {
     if (loaded) {
       return Video(
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         controller: controller!,
         controls: null,
       );

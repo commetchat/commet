@@ -53,7 +53,7 @@ class _IconButtonState extends State<IconButton> {
       child: material.Material(
           color: widget.backgroundColor,
           child: material.InkWell(
-            onTap: () => widget.onPressed?.call(),
+            onTap: widget.onPressed == null ? null : () => widget.onPressed?.call(),
             child: MouseRegion(
               onEnter: (event) {
                 setState(() {

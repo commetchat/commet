@@ -47,12 +47,12 @@ class LinkUtils {
       if (result != null && clientId != null) {
         switch (result.$1) {
           case MatrixLinkType.room:
-            return EventBus.openRoom.add((result.$3, clientId));
+            return EventBus.doOpenRoom(result.$3, clientId: clientId);
           case MatrixLinkType.user:
             return EventBus.openUserProfile
                 .add((result.$2, clientId, contextRoomId));
           case MatrixLinkType.roomAlias:
-            return EventBus.openRoom.add((result.$3, clientId));
+            return EventBus.doOpenRoom(result.$3, clientId: clientId);
         }
       }
     }

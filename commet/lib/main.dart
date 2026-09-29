@@ -16,7 +16,9 @@ import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
+import 'package:commet/rust/frb_generated.dart';
 import 'package:commet/single_instance.dart';
+import 'package:commet/ui/organisms/overlay_windows/overlay_window_manager.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -44,6 +46,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
@@ -135,11 +138,13 @@ void main(List<String> args) async {
     return;
   }
 
-  if (BuildConfig.RELEASE) {
-    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
-  } else {
-    appMain();
-  }
+  final format = DateFormat('HH:mm:ss');
+
+  Logger.root.onRecord.listen((record) {
+    print('${format.format(record.time)} ${record.level} : ${record.message}');
+  });
+
+  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
 }
 
 void appMain() async {
@@ -177,6 +182,7 @@ void appMain() async {
       await loading;
     }
 
+    CustomURI.init();
     SystemWideShortcuts.init();
 
     await startGui();
@@ -201,12 +207,18 @@ Future<void> initNecessary() async {
   await preferences.init();
   await initDatabaseServer();
 
+  if (PlatformUtils.isWindows || PlatformUtils.isLinux) {
+    await RustLib.init();
+  }
+
   fileCache = FileCache.getFileCacheInstance();
 
   await Future.wait([
     if (fileCache != null) fileCache!.init(),
     GlobalConfig.init(),
   ]);
+
+  fileCache?.clean();
 
   clientManager = await ClientManager.init();
   Diagnostics.setPostInit();
@@ -255,7 +267,7 @@ Future<void> startGui() async {
       Log.i("Received intent: ${initialIntent}");
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
+        EventBus.doOpenRoom(uri.roomId, clientId: uri.clientId);
       }
     });
 
@@ -280,6 +292,16 @@ Future<void> startGui() async {
   if (preferences.checkForUpdates.value == null &&
       UpdateChecker.shouldCheckForUpdates) {
     FirstTimeSetup.registerPostLoginSetup(UpdateCheckerSetup());
+  }
+
+  if (PlatformUtils.isAndroid) {
+    var roomsListCache = Map<String, List<String>>.new();
+    for (var client in clientManager!.clients) {
+      roomsListCache[client.identifier] =
+          client.rooms.map((i) => i.identifier).toList();
+    }
+
+    preferences.storeRoomsListCache(roomsListCache);
   }
 
   runApp(App(
@@ -323,37 +345,41 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomSafeArea(
-      child: FocusNodeMonitor(
-        child: TextScaleChanger(
-          child: ThemeChanger(
-              shouldFollowSystemTheme: () =>
-                  preferences.shouldFollowSystemTheme.value,
-              getDarkTheme: () {
-                return preferences.resolveTheme(
-                    overrideBrightness: Brightness.dark);
-              },
-              getLightTheme: () {
-                return preferences.resolveTheme(
-                    overrideBrightness: Brightness.light);
-              },
-              initialTheme: initialTheme ?? ThemeDark.theme,
-              materialAppBuilder: (context, theme) {
-                return MaterialApp(
-                  title: 'Commet',
-                  theme: theme,
-                  debugShowCheckedModeBanner: false,
-                  navigatorKey: navigator,
-                  builder: (context, child) => Provider<ClientManager>(
-                    create: (context) => clientManager,
-                    child: child,
-                  ),
-                  home: AppView(
-                    clientManager: clientManager,
-                    initialClientId: initialClientId,
-                    initialRoom: initialRoom,
-                  ),
-                );
-              }),
+      child: OverlayWindowsManager(
+        child: FocusNodeMonitor(
+          child: TextScaleChanger(
+            child: ThemeChanger(
+                shouldFollowSystemTheme: () =>
+                    preferences.shouldFollowSystemTheme.value,
+                getDarkTheme: () {
+                  return preferences.resolveTheme(
+                      overrideBrightness: Brightness.dark);
+                },
+                getLightTheme: () {
+                  return preferences.resolveTheme(
+                      overrideBrightness: Brightness.light);
+                },
+                initialTheme: initialTheme ?? ThemeDark.theme,
+                materialAppBuilder: (context, theme) {
+                  return MaterialApp(
+                    title: 'Commet',
+                    theme: theme,
+                    showPerformanceOverlay:
+                        preferences.showPerformanceOverlay.value,
+                    debugShowCheckedModeBanner: false,
+                    navigatorKey: navigator,
+                    builder: (context, child) => Provider<ClientManager>(
+                      create: (context) => clientManager,
+                      child: child,
+                    ),
+                    home: AppView(
+                      clientManager: clientManager,
+                      initialClientId: initialClientId,
+                      initialRoom: initialRoom,
+                    ),
+                  );
+                }),
+          ),
         ),
       ),
     );
@@ -377,6 +403,7 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   StreamSubscription? _onClientRemovedSubscription;
   StreamSubscription? _onClientAddedSubscription;
+  late bool isInitiallyLoggedIn;
 
   @override
   void initState() {
@@ -392,6 +419,8 @@ class _AppViewState extends State<AppView> {
         widget.clientManager.onClientAdded.stream.listen((_) {
       setState(() {});
     });
+
+    isInitiallyLoggedIn = widget.clientManager.isLoggedIn();
   }
 
   @override
@@ -408,6 +437,7 @@ class _AppViewState extends State<AppView> {
             widget.clientManager,
             initialClientId: widget.initialClientId,
             initialRoom: widget.initialRoom,
+            wasLoggedInAtStartup: isInitiallyLoggedIn,
           )
         : LoginPage(onSuccess: (_) {
             setState(() {});

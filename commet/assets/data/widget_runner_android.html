@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>$RUNNER_PAGE_TITLE</title>
+</head>
+
+<style>
+    :root {
+        --pad-top: env(safe-area-inset-top);
+        --pad-left: env(safe-area-inset-left);
+        --pad-right: env(safe-area-inset-right);
+        --pad-bottom: env(safe-area-inset-bottom);
+    }
+</style>
+
+<body style="margin: 0px; overflow: hidden;">
+
+    <iframe id="widget-frame" allow="fullscreen" src="$IFRAME_URL"
+        style="width: 100vw; height: 100dvh; border: none; overflow: hidden;"></iframe>
+
+    <script>
+
+        //${WIDGETS_COMMON}
+        const iframe = document.getElementById('widget-frame')
+
+        let target = `$IFRAME_URL`;
+        let widgetID = `$WIDGET_ID`;
+
+        let targetUrl = new URL(target);
+        console.log("Widget id: ", widgetID);
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
+        function sendIpc(msg) {
+            WidgetRunner.send(msg)
+        }
+
+        function initFrame() {
+            const childWindow = iframe.contentWindow;
+
+            window.addEventListener("message", (message) => {
+                if (message.source !== childWindow) {
+                    return; // Skip message in this event listener
+                }
+
+                let converted = encodeArrayBuffers(message.data);
+
+                sendIpc(JSON.stringify(converted))
+            })
+        }
+
+        window.onMessagePolyfill = (data) => {
+            var text = atob(data);
+            var message = JSON.parse(text);
+
+            const frame = document.getElementById('widget-frame')
+            const childWindow = frame.contentWindow;
+
+            decodeArrayBuffers(message).then((value) => {
+                childWindow.postMessage(value, targetUrl.origin);
+            });
+        }
+
+        function randomRequestId() {
+            let num = Math.floor(Math.random() * 10000000000);
+            return `widgetapi-internal-${num}`;
+        }
+
+        window.updateSafeAreas = () => {
+            console.log("Updating safe area!");
+
+            console.log("GETTING WINDOW INSETS:!!!")
+            console.log("--------------------------------")
+            var element = window.getComputedStyle(document.documentElement);
+
+            var padTop = element.getPropertyValue('--safe-area-inset-top');
+            var padLeft = element.getPropertyValue('--safe-area-inset-left');
+            var padRight = element.getPropertyValue('--safe-area-inset-right');
+            var padBottom = element.getPropertyValue('--safe-area-inset-bottom');
+
+            console.log("Pad top: ", padTop);
+            console.log("Pad left: ", padLeft);
+            console.log("Pad Right: ", padRight);
+            console.log("Pad Bottom: ", padBottom);
+            console.log("--------------------------------")
+            var safeAreaStr = `${padLeft},${padTop},${padRight},${padBottom}`;
+
+
+            const childWindow = iframe.contentWindow;
+
+            childWindow.postMessage({
+                "api": "toWidget",
+                "widgetId": widgetID,
+                "requestId": randomRequestId(),
+                "action": "chat.commet.safe_area_changed",
+                "data": {
+                    "safeArea": safeAreaStr
+                },
+            }, targetUrl.origin);
+        }
+
+        initFrame();
+    </script>
+</body>
+
+</html>

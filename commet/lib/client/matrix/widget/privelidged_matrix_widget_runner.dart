@@ -35,8 +35,6 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
   @override
   Future<void> requestCapabilities(List<String> capabilities) async {
-    Log.i("Widget requested capabilities: ${capabilities}");
-
     for (var capability in capabilities) {
       if (grantedCapabilities.contains(capability)) {
         continue;
@@ -53,7 +51,7 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
         "org.matrix.msc2762.receive.state_event:",
         "",
       );
-      Log.i("Sending state events: $state");
+
       sendExistingStateEvents(state);
     }
   }
@@ -62,7 +60,7 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
     await room.postLoad();
 
     var states = room.states[stateType];
-    Log.i("Found states: $stateType  = $states");
+
     if (states == null) {
       return;
     }
@@ -81,8 +79,6 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
     String fromWidgetAction,
     Map<String, dynamic> data,
   ) async {
-    Log.i("[${room.id}] Action requested: $fromWidgetAction");
-
     if (fromWidgetAction == FromWidgetAction.sendEvent) {
       return handleSendEvent(data);
     }
@@ -100,7 +96,6 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
       return;
     }
 
-    Log.i("Starting Widget Runner: ${room.id}");
     syncStreamSub = client.onSync.stream.listen(onSync);
     client.onTimelineEvent.stream
         .where((event) => event.roomId == room.id)
@@ -123,14 +118,13 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
   Future<Map<String, dynamic>> handleSendEvent(
     Map<String, dynamic> data,
   ) async {
-    Log.i("Handling send event");
     var type = data["type"];
 
     var state_key = data["state_key"];
     var content = jsonDecode(jsonEncode(data["content"]));
 
     String? eventId;
-    Log.i(data);
+
     if (state_key != null) {
       eventId = await client.setRoomStateWithKey(
         room.id,
@@ -294,7 +288,7 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
   Future<Map<String, dynamic>> handleReadRelations(
       Map<String, dynamic> data) async {
-    Log.i("Handling read relations");
+    print("Handling read relations");
 
     var eventId = data["event_id"];
     var eventType = data["event_type"];

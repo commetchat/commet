@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;

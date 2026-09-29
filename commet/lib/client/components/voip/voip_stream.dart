@@ -19,6 +19,8 @@ abstract class VoipStream {
 
   String get streamId;
 
+  String get stats;
+
   double get audiolevel;
 
   bool get isMuted;

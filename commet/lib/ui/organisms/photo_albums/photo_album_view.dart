@@ -43,7 +43,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
 
   late List<StreamSubscription> subs;
 
-  void onAdded(int event) {
+  void onAdded(Photo event) {
     setState(() {
       numItems = timeline!.photos.length;
     });
@@ -194,7 +194,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       }
     }
 
-    var callback = Layout.desktop
+    var callback = MediaQuery.of(context).desktop
         ? null
         : () {
             if (widget.component is MatrixPhotoAlbumRoomComponent) {
@@ -212,6 +212,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
                         menu: TimelineEventMenu(
                           timeline: tl,
                           event: event,
+                          context: context,
                           onActionFinished: () => Navigator.of(context).pop(),
                         ),
                       ));
@@ -298,10 +299,11 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
     if (result != null) {
       if (widget.component is MatrixPhotoAlbumRoomComponent) {
         var menu = TimelineEventMenu(
+            context: context,
             timeline: (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline,
             event: (item as MatrixPhoto).event);
 
-        if (Layout.desktop) {
+        if (MediaQuery.of(context).desktop) {
           result = tiamat.ContextMenu(
             items: (menu.primaryActions + menu.secondaryActions)
                 .map((e) => tiamat.ContextMenuItem(
@@ -397,13 +399,13 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
         builder: (_) => PhotosAlbumUploadView(f, widget.component));
   }
 
-  void onChanged(int event) {
+  void onChanged(Photo event) {
     setState(() {
       numItems = timeline!.photos.length;
     });
   }
 
-  void onRemoved(int event) {
+  void onRemoved(Photo event) {
     setState(() {
       numItems = timeline!.photos.length;
     });

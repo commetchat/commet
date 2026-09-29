@@ -1,78 +1,48 @@
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/event_search/event_search_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:commet/utils/mime.dart';
-// ignore: implementation_imports
-import 'package:matrix/src/event.dart';
+import 'package:commet/utils/notifying_list.dart';
+import 'package:matrix/matrix.dart' as matrix;
 
-class MatrixEventSearchSession extends EventSearchSession {
+class MatrixEncryptedRoomEventSearchSession extends EventSearchSession {
   MatrixTimeline timeline;
   String? currentSearchTerm;
-  String? prevBatch;
+  String? lastPrevBatch;
 
-  MatrixEventSearchSession(this.timeline);
+  MatrixEncryptedRoomEventSearchSession(this.timeline);
 
   @override
   bool currentlySearching = false;
 
-  bool _requireUrl = false;
-  bool _requireImage = false;
-  bool _requireVideo = false;
-  bool _requireAttachment = false;
-  String? _requiredType;
-  String? _requiredSender;
-
-  static const String hasLinkString = 'has:link';
-  static const String hasImageString = 'has:image';
-  static const String hasVideoString = 'has:video';
-  static const String hasFileString = 'has:file';
-
-  List<String>? _words;
+  List<TimelineEvent<Client>> results = List.empty(growable: true);
 
   @override
-  Stream<List<TimelineEvent<Client>>> startSearch(String searchTerm) async* {
+  Stream<List<TimelineEvent<Client>>> startSearch(String searchTerm,
+      {String? nextBatch}) async* {
     currentSearchTerm = searchTerm.toLowerCase();
 
+    if (nextBatch == null) {
+      results = List.empty(growable: true);
+    }
+
     currentlySearching = true;
-    _words = currentSearchTerm!.split(' ');
 
-    var typeMatch = _words!.where((w) => w.startsWith("type:")).firstOrNull;
+    var params = MatrixSearchParameters.parse(searchTerm);
 
-    if (typeMatch != null) {
-      _requiredType = typeMatch.split('type:').last;
-    }
+    var search = timeline.matrixTimeline!.startSearch(
+        searchTerm: searchTerm,
+        searchFunc: (ev) => searchFunc(params, ev),
+        prevBatch: nextBatch);
 
-    var userMatch = _words!.where((w) => w.startsWith("from:")).firstOrNull;
-    if (userMatch != null) {
-      _requiredSender = userMatch.split('from:').last;
-    }
-
-    if (_words!.contains(hasLinkString)) _requireUrl = true;
-    if (_words!.contains(hasImageString)) _requireImage = true;
-    if (_words!.contains(hasVideoString)) _requireVideo = true;
-    if (_words!.contains(hasFileString)) _requireAttachment = true;
-
-    _words = _words!
-        .where((w) =>
-            [
-              typeMatch,
-              hasLinkString,
-              hasImageString,
-              hasVideoString,
-              hasFileString
-            ].contains(w) ==
-            false)
-        .toList();
-
-    var search = timeline.matrixTimeline!
-        .startSearch(searchTerm: searchTerm, searchFunc: searchFunc);
-    List<TimelineEvent<Client>> result = List.empty();
     await for (final chunk in search) {
-      result = chunk.$1
+      var result = chunk.$1
           .map((e) => (timeline.room as MatrixRoom).convertEvent(e))
           .toList();
 
@@ -86,66 +56,234 @@ class MatrixEventSearchSession extends EventSearchSession {
       }
 
       if (chunk.$2 != null) {
-        prevBatch = chunk.$2;
+        lastPrevBatch = chunk.$2;
       }
 
       result = m.values.toList();
       result.sort((a, b) => b.originServerTs.compareTo(a.originServerTs));
 
-      yield result;
+      results.addAll(
+          result.where((i) => !results.any((e) => i.eventId == e.eventId)));
+
+      yield results;
     }
 
     currentlySearching = false;
-    yield result;
+    yield results;
   }
 
-  bool searchFunc(Event event) {
-    final numMatchingWords = _words!
+  bool searchFunc(MatrixSearchParameters params, matrix.Event event) {
+    final numMatchingWords = params.words
         .where((w) => event.plaintextBody.toLowerCase().contains(w))
         .length;
 
-    if (_requireAttachment) {
+    if (params.requireAttachment) {
       if (event.hasAttachment == false) {
         return false;
       }
     }
 
-    if (_requireImage) {
+    if (params.requireImage) {
       if (!Mime.imageTypes.contains(event.attachmentMimetype)) {
         return false;
       }
     }
 
-    if (_requireVideo) {
+    if (params.requireVideo) {
       if (!Mime.videoTypes.contains(event.attachmentMimetype)) {
         return false;
       }
     }
 
-    if (_requireUrl) {
+    if (params.requireUrl) {
       if (!(event.plaintextBody.contains("https://") ||
           event.plaintextBody.contains("http://"))) {
         return false;
       }
     }
 
-    if (_requiredType != null) {
-      if (event.type != _requiredType && event.messageType != _requiredType) {
+    if (params.requiredType != null) {
+      if (event.type != params.requiredType &&
+          event.messageType != params.requiredType) {
         return false;
       }
     }
 
-    if (_requiredSender != null) {
-      if (event.senderId != _requiredSender) {
+    if (params.requiredSender != null) {
+      if (event.senderId != params.requiredSender) {
         return false;
       }
     }
 
-    if (numMatchingWords < (_words!.length.toDouble() / 2.0)) {
+    if (numMatchingWords < (params.words.length.toDouble() / 2.0)) {
       return false;
     }
 
     return true;
+  }
+
+  @override
+  Stream<List<TimelineEvent<Client>>> continueSearch() {
+    var token = lastPrevBatch!;
+    lastPrevBatch = null;
+    return startSearch(currentSearchTerm!, nextBatch: token);
+  }
+
+  @override
+  bool get canContinueSearch => true;
+}
+
+class MatrixSearchParameters {
+  bool requireUrl;
+
+  bool requireImage;
+
+  bool requireVideo;
+
+  bool requireAttachment;
+
+  List<String> words;
+
+  String? requiredSender;
+
+  String? requiredType;
+
+  MatrixSearchParameters({
+    required this.words,
+    this.requireUrl = false,
+    this.requireImage = false,
+    this.requireVideo = false,
+    this.requireAttachment = false,
+    this.requiredSender,
+    this.requiredType,
+  });
+
+  static const String hasLinkString = 'has:link';
+  static const String hasImageString = 'has:image';
+  static const String hasVideoString = 'has:video';
+  static const String hasFileString = 'has:file';
+
+  static MatrixSearchParameters parse(String query) {
+    var words = query.split(' ');
+
+    var typeMatch = words.where((w) => w.startsWith("type:")).firstOrNull;
+
+    String? requiredType;
+    if (typeMatch != null) {
+      requiredType = typeMatch.split('type:').last;
+      words.remove(typeMatch);
+    }
+
+    String? requiredSender;
+    var userMatch = words.where((w) => w.startsWith("from:")).firstOrNull;
+    if (userMatch != null) {
+      requiredSender = userMatch.split('from:').last;
+      words.remove(userMatch);
+    }
+
+    bool requireUrl = words.contains(hasLinkString);
+    bool requireImage = words.contains(hasImageString);
+    bool requireVideo = words.contains(hasVideoString);
+    bool requireAttachment = words.contains(hasFileString);
+
+    words.remove(hasLinkString);
+    words.remove(hasFileString);
+    words.remove(hasImageString);
+    words.remove(hasVideoString);
+
+    return MatrixSearchParameters(
+      words: words,
+      requireUrl: requireUrl,
+      requireImage: requireImage,
+      requireVideo: requireVideo,
+      requireAttachment: requireAttachment,
+      requiredSender: requiredSender,
+      requiredType: requiredType,
+    );
+  }
+}
+
+class MatrixServerEventSearchSession extends EventSearchSession {
+  MatrixTimeline timeline;
+
+  MatrixServerEventSearchSession(this.timeline);
+
+  NotifyingList<TimelineEvent<Client>> events =
+      NotifyingList.empty(growable: true);
+
+  @override
+  bool currentlySearching = false;
+
+  late String currentSearchTerm;
+
+  String? nextBatchToken;
+
+  @override
+  bool get canContinueSearch => nextBatchToken != null;
+
+  @override
+  Stream<List<TimelineEvent<Client>>> continueSearch() {
+    return startSearch(currentSearchTerm, nextBatch: nextBatchToken!);
+  }
+
+  @override
+  Stream<List<TimelineEvent<Client>>> startSearch(String searchTerm,
+      {String? nextBatch}) {
+    currentSearchTerm = searchTerm;
+    var client = (timeline.client as MatrixClient).matrixClient;
+
+    var parameters = MatrixSearchParameters.parse(searchTerm);
+
+    currentlySearching = true;
+
+    if (nextBatch == null) {
+      events = NotifyingList.empty(growable: true);
+    }
+
+    var criteria = matrix.RoomEventsCriteria(
+      searchTerm: parameters.words.join(" "),
+      orderBy: matrix.SearchOrder.recent,
+      filter: matrix.SearchFilter(
+          rooms: [timeline.room.identifier],
+          limit: 20,
+          senders: parameters.requiredSender != null
+              ? [parameters.requiredSender!]
+              : null,
+          containsUrl: parameters.requireUrl == true ? true : null),
+      includeState: false,
+    );
+
+    Log.i("Criteria: ${criteria.toJson()}");
+
+    client
+        .search(matrix.Categories(roomEvents: criteria), nextBatch: nextBatch)
+        .then((result) {
+      currentlySearching = false;
+
+      var resultEvents = result.searchCategories.roomEvents?.results;
+      nextBatchToken = result.searchCategories.roomEvents?.nextBatch;
+
+      events.clear();
+
+      if (resultEvents != null) {
+        events.addAll(resultEvents
+            .where((i) => i.result != null)
+            .sorted((a, b) =>
+                b.result!.originServerTs.compareTo(a.result!.originServerTs))
+            .map((i) => (timeline.room as MatrixRoom).convertEvent(matrix.Event(
+                content: i.result!.content,
+                type: i.result!.type,
+                eventId: i.result!.eventId,
+                senderId: i.result!.senderId,
+                originServerTs: i.result!.originServerTs,
+                room: timeline.matrixTimeline!.room))));
+      }
+
+      events.update();
+      Log.i("Got events: ${resultEvents}");
+    });
+
+    return events.onListUpdated.map((i) => events);
   }
 }
 
@@ -157,7 +295,27 @@ class MatrixEventSearchComponent implements EventSearchComponent<MatrixClient> {
 
   @override
   Future<EventSearchSession> createSearchSession(Room room) async {
-    var timeline = await room.getTimeline();
-    return MatrixEventSearchSession(timeline as MatrixTimeline);
+    if (room.isE2EE) {
+      var timeline = await room.getTimeline();
+      return MatrixEncryptedRoomEventSearchSession(timeline as MatrixTimeline);
+    } else {
+      var timeline = await room.getTimeline();
+      return MatrixServerEventSearchSession(timeline as MatrixTimeline);
+    }
+  }
+
+  @override
+  List<String> getSupportedSearchFeatures(Room room) {
+    if (room.isE2EE) {
+      return [
+        MatrixSearchParameters.hasLinkString,
+        MatrixSearchParameters.hasFileString,
+        MatrixSearchParameters.hasImageString,
+        MatrixSearchParameters.hasVideoString,
+        "from:@user:example.com"
+      ];
+    } else {
+      return ["from:@user:example.com"];
+    }
   }
 }

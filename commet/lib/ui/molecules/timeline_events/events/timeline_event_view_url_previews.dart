@@ -37,17 +37,14 @@ class _TimelineEventViewUrlPreviewsState
     if (data == UrlPreviewComponent.invalidPreviewData) return Container();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
-      child: (loading || data != null)
-          ? UrlPreviewWidget(
-              key: key,
-              data,
-              onTap: () {
-                LinkUtils.open(data!.uri, context: context);
-              },
-            )
-          : Container(),
-    );
+        padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
+        child: UrlPreviewWidget(
+          key: key,
+          data,
+          onTap: () {
+            LinkUtils.open(data!.uri, context: context);
+          },
+        ));
   }
 
   @override

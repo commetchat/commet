@@ -10,7 +10,7 @@ class RoomTimelineOverlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var padding = Layout.mobile
+    var padding = MediaQuery.of(context).mobile
         ? const EdgeInsets.fromLTRB(18, 12, 18, 12)
         : const EdgeInsets.fromLTRB(12, 4, 12, 4);
     return Padding(

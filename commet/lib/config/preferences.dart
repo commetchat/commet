@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences/bool_preference.dart';
 import 'package:commet/config/preferences/double_preference.dart';
 import 'package:commet/config/preferences/preference.dart';
+import 'package:commet/config/preferences/string_list_preference.dart';
 import 'package:commet/config/preferences/string_preference.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:matrix/matrix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
@@ -241,6 +242,126 @@ class Preferences {
     return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
   }
 
+  String _acceptedCapabilitiesKey(String clientId, String widgetNamespace) =>
+      "accepted_widget_capabilities:${clientId}:${widgetNamespace}";
+
+  String _rejectedCapabilitiesKey(String clientId, String widgetNamespace) =>
+      "rejected_widget_capabilities:${clientId}:${widgetNamespace}";
+
+  String _widgetAllowedKey(String clientId, String widgetNamespace) =>
+      "allowed_widget:${clientId}:${widgetNamespace}";
+
+  Future<void> setWidgetAllowed(
+      String clientId, String widgetNamespace, bool allowed) async {
+    await _preferences?.setBool(
+        _widgetAllowedKey(clientId, widgetNamespace), allowed);
+  }
+
+  bool getWidgetAllowed(String clientId, String widgetNamespace) {
+    return _preferences
+            ?.getBool(_widgetAllowedKey(clientId, widgetNamespace)) ??
+        false;
+  }
+
+  Future<void> allowWidgetCapabilityPermissions(String clientId,
+      String widgetNamespace, List<String> capabilities) async {
+    var currentAccepted = _preferences?.getStringList(
+            _acceptedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    var currentRejected = _preferences?.getStringList(
+            _rejectedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    currentAccepted = List.from(currentAccepted, growable: true);
+
+    currentRejected = List.from(currentRejected, growable: true);
+
+    for (var capability in capabilities) {
+      currentRejected.remove(capability);
+
+      if (currentAccepted.contains(capability) == false) {
+        currentAccepted.add(capability);
+      }
+    }
+
+    _preferences?.setStringList(
+        _acceptedCapabilitiesKey(clientId, widgetNamespace), currentAccepted);
+    _preferences?.setStringList(
+        _rejectedCapabilitiesKey(clientId, widgetNamespace), currentRejected);
+  }
+
+  Future<void> rejectWidgetCapabilityPermissions(String clientId,
+      String widgetNamespace, List<String> capabilities) async {
+    var currentAccepted = _preferences?.getStringList(
+            _acceptedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    var currentRejected = _preferences?.getStringList(
+            _rejectedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+
+    currentAccepted = List.from(currentAccepted, growable: true);
+
+    currentRejected = List.from(currentRejected, growable: true);
+
+    for (var capability in capabilities) {
+      currentAccepted.remove(capability);
+
+      if (currentRejected.contains(capability) == false) {
+        currentRejected.add(capability);
+      }
+    }
+
+    _preferences?.setStringList(
+        _acceptedCapabilitiesKey(clientId, widgetNamespace), currentAccepted);
+    _preferences?.setStringList(
+        _rejectedCapabilitiesKey(clientId, widgetNamespace), currentRejected);
+  }
+
+  Future<List<String>> getAcceptedWidgetCapabilities(
+      String clientId, String widgetNamespace) async {
+    return _preferences?.getStringList(
+            _acceptedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+  }
+
+  Future<List<String>> getRejectedWidgetCapabilities(
+      String clientId, String widgetNamespace) async {
+    return _preferences?.getStringList(
+            _rejectedCapabilitiesKey(clientId, widgetNamespace)) ??
+        [];
+  }
+
+  Future<void> clearWidgetSettings(
+      String clientId, String widgetNamespace) async {
+    await _preferences
+        ?.remove(_acceptedCapabilitiesKey(clientId, widgetNamespace));
+
+    await _preferences
+        ?.remove(_rejectedCapabilitiesKey(clientId, widgetNamespace));
+
+    await _preferences?.remove(_widgetAllowedKey(clientId, widgetNamespace));
+  }
+
+  static const String _roomsListCache = "rooms_list_cache";
+
+  Map<String, List<String>> getRoomsListCache() {
+    var str = _preferences?.getString(_roomsListCache) ?? "{}";
+    var data = jsonDecode(str) as Map<String, dynamic>;
+
+    var result = Map<String, List<String>>.new();
+    for (var entry in data.entries) {
+      result[entry.key] = data.tryGetList<String>(entry.key) ?? [];
+    }
+
+    return result;
+  }
+
+  Future<void> storeRoomsListCache(Map<String, List<String>> rooms) async {
+    await _preferences?.setString(_roomsListCache, jsonEncode(rooms));
+  }
+
   BoolPreference shouldFollowSystemTheme =
       BoolPreference("should_follow_system_theme", defaultValue: false);
 
@@ -252,6 +373,12 @@ class Preferences {
 
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
+
+  BoolPreference showStateEvents =
+      BoolPreference("show_state_events", defaultValue: true);
+
+  BoolPreference collapseStateEvents =
+      BoolPreference("collapse_state_events", defaultValue: true);
 
   BoolPreference debugTranslations =
       BoolPreference("enable_translations_debug", defaultValue: false);
@@ -275,6 +402,9 @@ class Preferences {
   BoolPreference showRoomAvatars =
       BoolPreference("show_room_avatars", defaultValue: true);
 
+  BoolPreference showRoomsInSidebar =
+      BoolPreference("show_rooms_in_sidebar", defaultValue: false);
+
   BoolPreference usePlaceholderRoomAvatars =
       BoolPreference("use_placeholder_room_avatars", defaultValue: false);
 
@@ -295,6 +425,9 @@ class Preferences {
 
   BoolPreference useLegacyNotificationHandler =
       BoolPreference("use_legacy_notification_handler", defaultValue: false);
+
+  BoolPreference openRoomsAtLastReadMessage =
+      BoolPreference("open_rooms_at_last_read_message", defaultValue: false);
 
   BoolPreference askBeforeDeletingMessageEnabled =
       BoolPreference("ask_before_deleting_message_enabled", defaultValue: true);
@@ -317,8 +450,11 @@ class Preferences {
 
   BoolPreference autoFocusMessageTextBox = BoolPreference(
       "auto_focus_message_textbox",
-      defaultGetter: () => Layout.mobile ? false : true,
+      defaultGetter: () => PlatformUtils.isAndroid ? false : true,
       defaultValue: false);
+
+  BoolPreference selectAutoCompleteSuggestion =
+      BoolPreference("select_auto_complete_suggestion", defaultValue: false);
 
   BoolPreference automaticallyOpenSpace =
       BoolPreference("open_space_on_room_navigation", defaultValue: true);
@@ -341,6 +477,17 @@ class Preferences {
   BoolPreference suppressNotificationWhenRoomFocused = BoolPreference(
       "suppress_notification_when_room_focused",
       defaultValue: true);
+
+  BoolPreference experimentEnableE2eeElementCall = BoolPreference(
+      "experiment_enabled_e2ee_element_call",
+      defaultValue: false);
+
+  BoolPreference useSharedIsolateInBackgroundTasks = BoolPreference(
+      "use_shared_isolate_in_background_tasks",
+      defaultValue: false);
+
+  BoolPreference showPerformanceOverlay =
+      BoolPreference("show_performance_overlay", defaultValue: false);
 
   DoublePreference notificationsVolume =
       DoublePreference("notifications_volume", defaultValue: 90.0);
@@ -378,6 +525,9 @@ class Preferences {
 
   StringPreference theme = StringPreference("app_theme", defaultValue: "dark");
 
+  NullableStringPreference lastOpenedVersion =
+      NullableStringPreference("last_run_version", defaultValue: null);
+
   NullableBoolPreference unifiedPushEnabled =
       NullableBoolPreference("unified_push_enabled", defaultValue: null);
 
@@ -407,4 +557,10 @@ class Preferences {
 
   NullableStringPreference lastDownloadLocation =
       NullableStringPreference("last_download_location", defaultValue: null);
+
+  StringListPreference allowedRemoteVideoHosts =
+      StringListPreference("allowed_remote_video_hosts", defaultValue: []);
+
+  StringListPreference expandedSpaceGroups =
+      StringListPreference("expanded_space_groups", defaultValue: []);
 }

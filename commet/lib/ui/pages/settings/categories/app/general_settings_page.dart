@@ -1,6 +1,7 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/string_list_preference_editor.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:flutter/widgets.dart';
@@ -154,10 +155,22 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
                   "Automatically focus on the message input text field when opening a chat",
             ),
             BooleanPreferenceToggle(
+              preference: preferences.selectAutoCompleteSuggestion,
+              title: "Select first auto-complete suggestion",
+              description:
+                  "When typing a message, if there are any auto-complete suggestions, the first one will be highlighted by default",
+            ),
+            BooleanPreferenceToggle(
               preference: preferences.automaticallyOpenSpace,
               title: "Always open space",
               description:
                   "When navigating to a room from outside of a space, also open the space the room is in, if any",
+            ),
+            BooleanPreferenceToggle(
+              preference: preferences.openRoomsAtLastReadMessage,
+              title: "Open at last read message",
+              description:
+                  "When opening a room, jump to the last message you read",
             )
           ]),
         ),
@@ -190,7 +203,7 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: labelMediaPreviewPublicRoomsToggle,
               description: labelMediaPreviewPublicRoomsToggleDescription,
             ),
-            if (Layout.mobile) ...[
+            if (MediaQuery.of(context).mobile) ...[
               Seperator(),
               BooleanPreferenceToggle(
                 preference: preferences.autoRotateImages,
@@ -204,7 +217,14 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 description:
                     "When showing videos in fullscreen, automatically rotate the video to best fill the screen",
               ),
-            ]
+            ],
+            Seperator(),
+            StringListPreferenceEditor(
+              preference: preferences.allowedRemoteVideoHosts,
+              title: "Allowed Video Hosts",
+              description:
+                  "Allowed web hosts for displaying external videos, such as in URL Previews. Your IP address will be revealed to these servers when accessing the video",
+            )
           ]),
         ),
       ],

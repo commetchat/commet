@@ -26,7 +26,8 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
   final double thumbnailImageSize = 100;
 
   @override
-  Future<NotificationContent?> process(NotificationContent content) async {
+  Future<NotificationContent?> process(NotificationContent content,
+      {Function(String reason)? onNotificationRejected}) async {
     if (preferences.formatNotificationBody.value == false) {
       return content;
     }

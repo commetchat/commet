@@ -34,6 +34,8 @@ class ThemeLight {
         primaryContainer: ThemeLightColors.primary,
         onPrimaryContainer: Colors.white,
         outline: Colors.white,
+        tertiary: Color.fromARGB(255, 252, 191, 73),
+        tertiaryContainer: Color.fromARGB(20, 252, 191, 73),
         primary: ThemeLightColors.primary);
 
     return ThemeBase.theme(scheme).copyWith(extensions: [

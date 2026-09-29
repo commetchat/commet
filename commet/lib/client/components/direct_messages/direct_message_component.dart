@@ -1,14 +1,11 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/utils/notifying_list.dart';
 
 abstract class DirectMessagesInterface {
-  List<Room> get directMessageRooms;
+  INotifyingList<Room> get directMessageRooms;
 
-  List<Room> get highlightedRoomsList;
-
-  Stream<void> get onRoomsListUpdated;
-
-  Stream<void> get onHighlightedRoomsListUpdated;
+  INotifyingList<Room> get highlightedRoomsList;
 }
 
 abstract class DirectMessagesComponent<T extends Client>

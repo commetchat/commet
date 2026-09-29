@@ -5,7 +5,7 @@ import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/app/string_preference_options.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
@@ -128,7 +128,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
     super.initState();
     sub = preferences.onSettingChanged.listen((event) => setState(() {}));
 
-    webrtc.navigator.mediaDevices.enumerateDevices().then((v) => setState(() {
+    WebrtcDefaultDevices.getDevices().then((v) => setState(() {
           Log.i(v);
           devices = v;
 

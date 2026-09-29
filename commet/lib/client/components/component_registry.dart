@@ -21,9 +21,12 @@ import 'package:commet/client/matrix/components/message_effects/matrix_message_e
 import 'package:commet/client/matrix/components/polls/matrix_poll_component.dart';
 import 'package:commet/client/matrix/components/profile/matrix_profile_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
+import 'package:commet/client/matrix/components/room_activities/matrix_activities_component.dart';
+import 'package:commet/client/matrix/components/sidebar_entries/matrix_sidebar_entries_component.dart';
 import 'package:commet/client/matrix/components/space_banner/matrix_space_banner_component.dart';
 import 'package:commet/client/matrix/components/space_color_scheme/matrix_space_color_scheme_component.dart';
 import 'package:commet/client/matrix/components/user_color/matrix_user_color_component.dart';
+import 'package:commet/client/matrix/components/petname/matrix_petname_component.dart';
 import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_component.dart';
 import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
@@ -31,6 +34,7 @@ import 'package:commet/client/matrix/components/threads/matrix_threads_component
 import 'package:commet/client/matrix/components/typing_indicators/matrix_typing_indicators_component.dart';
 import 'package:commet/client/matrix/components/url_preview/matrix_url_preview_component.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
+import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
@@ -61,10 +65,13 @@ class ComponentRegistry {
       MatrixRecentEmoticonComponent(client),
       MatrixProfileComponent(client),
       MatrixUserColorComponent(client),
+      MatrixPetNameComponent(client),
       MatrixDonationAwardsComponent(client),
       MatrixKeyVerificationComponent(client),
       MatrixPollComponent(client),
+      MatrixWidgetComponent(client),
       MatrixGifComponent(client),
+      MatrixSidebarEntriesComponent(client),
     ];
   }
 
@@ -82,6 +89,7 @@ class ComponentRegistry {
       if (MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
         MatrixPhotoAlbumRoomComponent(client, room),
       MatrixCalendarRoomComponent(client, room),
+      MatrixActivitiesComponent(client, room),
     ];
   }
 

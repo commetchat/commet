@@ -1,4 +1,6 @@
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request_view.dart';
+import 'package:commet/utils/error_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart';
 
@@ -15,6 +17,7 @@ class MatrixUIARequest extends StatefulWidget {
 class _MatrixUIARequestState extends State<MatrixUIARequest> {
   void Function(UiaRequestState)? originalOnUpdate;
   late UiaRequestState state;
+  late Set<String> steps;
 
   @override
   void initState() {
@@ -22,6 +25,7 @@ class _MatrixUIARequestState extends State<MatrixUIARequest> {
 
     originalOnUpdate = widget.request.onUpdate;
     widget.request.onUpdate = onUpdate;
+    steps = widget.request.nextStages;
 
     super.initState();
   }
@@ -29,6 +33,7 @@ class _MatrixUIARequestState extends State<MatrixUIARequest> {
   void onUpdate(UiaRequestState state) {
     setState(() {
       this.state = state;
+      this.steps = widget.request.nextStages;
     });
 
     originalOnUpdate?.call(state);
@@ -38,15 +43,34 @@ class _MatrixUIARequestState extends State<MatrixUIARequest> {
   Widget build(BuildContext context) {
     return MatrixUIARequestView(
       state,
+      nextSteps: steps,
       onSubmitAuthentication: submitAuthentication,
+      onSubmitSso: submitSso,
       onSuccess: () => Navigator.of(context).pop(),
       onFail: () => Navigator.of(context).pop(),
     );
   }
 
   void submitAuthentication(String password) {
-    widget.request.completeStage(AuthenticationPassword(
-        password: password,
-        identifier: AuthenticationUserIdentifier(user: "alice")));
+    ErrorUtils.tryRun(context, () async {
+      await widget.request.completeStage(AuthenticationPassword(
+          password: password,
+          identifier: AuthenticationUserIdentifier(
+              user: widget.client.matrixClient.userID!)));
+    });
+  }
+
+  submitSso() {
+    // https://spec.matrix.org/v1.15/client-server-api/#client-behaviour-21
+    var hs = widget.client.matrixClient.homeserver!;
+    var url = hs.replace(
+        path: "/_matrix/client/v3/auth/m.login.sso/fallback/web",
+        queryParameters: {"session": widget.request.session});
+
+    LinkUtils.open(url,
+        bypassConfirmation: true,
+        filterTrackingParameters: false,
+        context: context);
+    Navigator.of(context).pop();
   }
 }
