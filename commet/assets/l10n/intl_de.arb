@@ -102,13 +102,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceVisibilityPublic": "Öffentlicher Bereich",
+    "labelSpaceVisibilityPublic": "Öffentlicher Space",
     "@labelSpaceVisibilityPublic": {
         "description": "Label to display that the space is publically available",
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceVisibilityPrivate": "Privater Bereich",
+    "labelSpaceVisibilityPrivate": "Privater Space",
     "@labelSpaceVisibilityPrivate": {
         "description": "Label to display that the space is private",
         "type": "text",
@@ -762,7 +762,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "tooltipSpaceSettings": "Space-Einstellungen",
+    "tooltipSpaceSettings": "Space Einstellungen",
     "@tooltipSpaceSettings": {
         "description": "Tooltip for the button that opens space settings",
         "type": "text",
@@ -1016,7 +1016,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelGifSearchDescription": "Tenor-GIF-Suche aktivieren. Die Anfragen werden über {proxyUrl} weitergeleitet",
+    "labelGifSearchDescription": "Tenor GIF-Suche aktivieren. Die Anfragen werden über {proxyUrl} weitergeleitet",
     "@labelGifSearchDescription": {
         "description": "Explains that gifs will be fetched via proxy",
         "type": "text",
@@ -1126,7 +1126,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "fileDragDropPrompt": "Datei zum Hochladen hier loslassen...",
+    "fileDragDropPrompt": "Datei zum Hochladen hier ablegen...",
     "@fileDragDropPrompt": {
         "description": "Text that is shown when a user is dragging a file",
         "type": "text",
@@ -1518,7 +1518,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSpaceSubspacesList": "Räume",
+    "labelSpaceSubspacesList": "Spaces",
     "@labelSpaceSubspacesList": {
         "description": "Header label for the list of child spaces in a space",
         "type": "text",
@@ -1736,13 +1736,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatDescription": "Dies lässt alle URLs aus verschlüsselten Chats für deinen Homeserver sichtbar werden, damit eine Vorschau geladen werden kann.",
+    "labelUrlPreviewInEncryptedChatDescription": "Dies wird alle URLs in verschlüsselten Chats für deinen Homeserver sichtbar machen, damit eine Vorschau geladen werden kann",
     "@labelUrlPreviewInEncryptedChatDescription": {
         "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
         "placeholders": {}
     },
-    "labelUseRoomAvatarPlaceholdersDescription": "Wenn ein Raum keinen Avatar hat oder die Verwendung von Avataren deaktiviert ist, wird ein generischer Platzhalter mit Farbe und Anfangsbuchstaben für das Bild verwendet.",
+    "labelUseRoomAvatarPlaceholdersDescription": "Wenn ein Raum keinen Avatar hat oder die Verwendung von Avataren deaktiviert ist, wird ein generischer Platzhalter mit Farbe und Anfangsbuchstaben für das Bild verwendet",
     "@labelUseRoomAvatarPlaceholdersDescription": {
         "description": "Description for the enable generic icons setting",
         "type": "text",
@@ -1760,7 +1760,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "placeholderRoomAlias": "#awesome-room",
+    "placeholderRoomAlias": "#cooler-raum",
     "@placeholderRoomAlias": {
         "description": "Placeholder / Example for a room alias.",
         "type": "text",
@@ -1780,7 +1780,7 @@
             "callingUserName": {}
         }
     },
-    "labelCalendarDescription": "Erstelle einen geteilten Kalender um einen Überblick über deine Pläne zu behalten, und importiere Zeitpläne von anderen Kalendern um deinen Freunden zu zeigen, wann du beschäftigt bist.",
+    "labelCalendarDescription": "Erstelle einen geteilten Kalender, um einen Überblick über deine Pläne zu haben und um deinen Freunden zu zeigen, wann du Zeit hast. Du kannst Zeitpläne von anderen Kalendern importieren.",
     "@labelCalendarDescription": {
         "type": "text",
         "placeholders": {}
@@ -1851,7 +1851,7 @@
             "timezone": {}
         }
     },
-    "labelSpaceVisibilityRestricted": "Eingeschränkter Bereich",
+    "labelSpaceVisibilityRestricted": "Eingeschränkter Space",
     "@labelSpaceVisibilityRestricted": {
         "description": "Label to display that the space is restricted",
         "type": "text",
@@ -1883,7 +1883,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearBio": "Biografie leeren",
+    "promptProfileClearBio": "Biografie löschen",
     "@promptProfileClearBio": {
         "type": "text",
         "placeholders": {}
@@ -1894,7 +1894,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearColorOverride": "Farbe wiederherstellen",
+    "promptProfileClearColorOverride": "Farbüberschreibung löschen",
     "@promptProfileClearColorOverride": {
         "description": "Prompt to remove an override of the display color of a user",
         "type": "text",
@@ -1982,13 +1982,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Du hast noch keine Abzeichen. Du kannst Abzeichen erhalten, indem du spendest und die Entwicklung von Commet unterstützt",
+    "labelProfileNoBadges": "Du besitzt keine Abzeichen. Du kannst Abzeichen bekommen, in dem du uns spendest und die Entwicklung von Commet unterstützt",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileShowRawProfile": "Rohprofil anzeigen",
+    "promptProfileShowRawProfile": "Rohe Profildaten anzeigen",
     "@promptProfileShowRawProfile": {
         "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
         "type": "text",
@@ -2011,37 +2011,37 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationInstructions": "Folge den Schritten in deinem Browser. Falls deine Belohnungen nicht sofort erscheinen, hab bitte etwas Geduld, denn die Verarbeitung deiner Spende kann ein bis zwei Minuten dauern.",
+    "labelDonationInstructions": "Folge den Anweisungen in deinem Browser. Es kann wenige Minuten dauern, bis deine Spende eingegangen ist und du deine Belohnung erhälst.",
     "@labelDonationInstructions": {
         "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationSucceeded": "Danke für deine grosszügige Spende!",
+    "labelDonationConfirmationSucceeded": "Vielen Dank für Ihre großzügige Spende!",
     "@labelDonationConfirmationSucceeded": {
         "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Es wurden keine Spenden gefunden :( Bitte erwäge eine Spende, um die Entwicklung von Commet zu unterstützen!",
+    "labelDonationConfirmationFailed": "Wir konnten keine Spenden finden. Bitte erwägen Sie, zu spenden, um die Entwicklung von Commet zu unterstützen!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
         "placeholders": {}
     },
-    "labelNoAccount": "ohne Account",
+    "labelNoAccount": "Kein Account",
     "@labelNoAccount": {
         "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
         "type": "text",
         "placeholders": {}
     },
-    "promptPickDonationAccount": "Wähle ein Konto aus, über das du spenden möchtest",
+    "promptPickDonationAccount": "Wähle ein Konto aus, mit dem du spenden möchtest",
     "@promptPickDonationAccount": {
         "description": "Prompt the user to select an account to link to their donation",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonateAnonymously": "Spenden ohne Verknüpfung mit einem Konto",
+    "labelDonateAnonymously": "Spende, ohne einen Account zu verlinken",
     "@labelDonateAnonymously": {
         "description": "Prompt the user to donate to the project, without linking to their user account",
         "type": "text",
@@ -2053,13 +2053,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelAppBehaviourTitle": "Applikationsverhalten",
+    "labelAppBehaviourTitle": "App-Verhalten",
     "@labelAppBehaviourTitle": {
         "description": "Header for the app behaviour section in settings",
         "type": "text",
         "placeholders": {}
     },
-    "promptDonationsRefreshAwards": "Aktualisiere die Belohnungen",
+    "promptDonationsRefreshAwards": "Belohnungen aktualisieren",
     "@promptDonationsRefreshAwards": {
         "description": "Prompt the user to refresh any awards they may have received for donating to the project",
         "type": "text",
@@ -2068,6 +2068,394 @@
     "labelSettingsCategoryVoiceAndVideo": "Sprach- und Videoanruf",
     "@labelSettingsCategoryVoiceAndVideo": {
         "description": "Label for the settings category related to voice and video calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublic": "Öffentlich",
+    "@labelPublic": {
+        "description": "Label for public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPrivate": "Privat",
+    "@labelPrivate": {
+        "description": "Label for private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnabled": "Aktiviert",
+    "@labelEnabled": {
+        "description": "Label for enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDisabled": "Deaktiviert",
+    "@labelDisabled": {
+        "description": "Label for disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptYes": "Ja",
+    "@promptYes": {
+        "description": "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNo": "Nein",
+    "@promptNo": {
+        "description": "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDecline": "Ablehnen",
+    "@promptDecline": {
+        "description": "Generic prompt to decline something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNext": "Nächste",
+    "@promptNext": {
+        "description": "Generic prompt for going to the next step of an activity or flow, usually on a button",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEndPoll": "Umfrage beenden",
+    "@promptEndPoll": {
+        "description": "Prompt the user to end a poll",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDialogConfirmation": "Bestätigung",
+    "@labelDialogConfirmation": {
+        "description": "label for the dialog which asks the user to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabPrivacy": "Privatsphäre",
+    "@labelSettingsTabPrivacy": {
+        "description": "Label for the Privacy settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppInfo": "Über",
+    "@labelSettingsAppInfo": {
+        "description": "Label for the app info settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsStreamSettings": "Stream Einstellungen",
+    "@headerVoipSettingsStreamSettings": {
+        "description": "Header for settings tile containing stream quality configuration",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcastDescription": "Lädt deinen Stream auf mehreren verschiedenen Qualitätsebenen hoch, dass andere Nutzer aussuchen können, welche sie verwenden möchten. Dies wird mehr Bandbreite und Systemresourcen verwenden.",
+    "@labelVoipUseSimulcastDescription": {
+        "description": "description for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrate": "Maximale Bitrate des Streams",
+    "@labelVoipStreamMaximumBitrate": {
+        "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrateDescription": "Bestimmt die Gesamtqualität deines Streams. Höher ist besser, verwendet aber auch mehr Resourcen",
+    "@labelVoipStreamMaximumBitrateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerateDescription": "Bestimmt die Bildrate der Bildschirmübertragung. Höhere Werte sorgen für ein flüssigeres Video, aber möglicherweise auf Kosten der Bild Qualität.",
+    "@labelVoipStreamFramerateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodec": "Bevorzugte Kodierung des Streams",
+    "@labelVoipStreamPreferredCodec": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodecDescription": "Bestimmt, welche Kodierung für deinen Stream benutzt werden soll. Es ist abhängig von dem Gerät, welche Kodierungen verarbeitet werden können, und wie schell eine Kodierung verarbeitet wird. Die meisten Geräte sollten vp8 und h264 unterstützen.",
+    "@labelVoipStreamPreferredCodecDescription": {
+        "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolution": "Stream Auflösung",
+    "@labelVoipStreamResolution": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolutionDescription": "Die Auflösung deines Streams, Höher ist besser",
+    "@labelVoipStreamResolutionDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmCancelDonationConfirmation": "Bist du sicher, dass du abbrechen willst, ohne eine Belohnung auszuwählen?",
+    "@labelConfirmCancelDonationConfirmation": {
+        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageToggle": "Nachfragen, vor dem löschen von Nachrichten",
+    "@labelAskBeforeDeletingMessageToggle": {
+        "description": "Label for the toggle for enabling and disabling message deletion confirmation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageDescription": "Aktiviert das Popup zum Nachfragen einer Bestätigung, wenn eine Nachricht gelöscht wird.",
+    "@labelAskBeforeDeletingMessageDescription": {
+        "description": "Label describing what 'asking before deleting messages' even means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallback": "Nutze STUN Rückfallebene",
+    "@labelVoipSettingsStunFallback": {
+        "description": "label for the setting to enable STUN callback for connecting calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallbackDescription": "Anrufe können nicht ohne STUN Server verbunden werden. Wenn dein Heimserver keinen STUN Server vorgibt, nutze stattdessen '{stunServer}'. Deine IP Addresse wird diesem Server bei erfolgreichen Anrufen offengelegt",
+    "@labelVoipSettingsStunFallbackDescription": {
+        "type": "text",
+        "placeholders": {
+            "stunServer": {}
+        }
+    },
+    "labelVoipUseSimulcast": "Simulcast verwenden",
+    "@labelVoipUseSimulcast": {
+        "description": "label for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebar": "Nicht beigetretende Räume in Seitenleiste anzeigen",
+    "@labelShowRoomPreviewsInSpaceSidebar": {
+        "description": "Label for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "Wenn es Räume in einem Space welchen du nicht beigetreten bist, sollen diese in der Seitenleiste mit den Restlichen Räumen in dem Space angezeigt werden",
+    "@labelShowRoomPreviewsInSpaceSidebarDescription": {
+        "description": "Description for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationTitleIncomingCall": "Eingehender Anruf! ({roomName})",
+    "@notificationTitleIncomingCall": {
+        "description": "Notification title for when a call is being received",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "notificationContentUserIsCalling": "{user} ruft an!",
+    "@notificationContentUserIsCalling": {
+        "description": "Notification body content for when receiving an incoming call from another user",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserDeactivated": "Dein Konto wurde deaktiviert",
+    "@messageUserDeactivated": {
+        "description": "An error message displayed when the user attempts to log into an account that has been disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "matrixClientVodozemacMissingMessage": "vodozemac ist nicht installiert oder wurde nicht gefunden. Ende-zu-Ende-Verschlüsselung ist nicht verfügbar, bis dieses Problem behoben ist",
+    "@matrixClientVodozemacMissingMessage": {
+        "description": "Text that explains to the user that vodozemac dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserInviteCall": "{user} hat einen Anruf gestartet",
+    "@messageUserInviteCall": {
+        "description": "Message body for when a user starts a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserRejectCall": "{user} hat den Anruf abgelehnt",
+    "@messageUserRejectCall": {
+        "description": "Message body for when a user rejects a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserHangupCall": "{user} hat den Anruf beendet",
+    "@messageUserHangupCall": {
+        "description": "Message body for when a user hangs up a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserAnsweredCall": "{user} hat den Anruf angenommen",
+    "@messageUserAnsweredCall": {
+        "description": "Message body for when a user answers a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserEditedCalendar": "{user} hat den Kalender bearbeitet",
+    "@messagePlaceholderUserEditedCalendar": {
+        "description": "Message body for when a user edits the room calendar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "descriptionUpdateAvailable": "Es ist eine neuere Version von Commet verfügbar: {version}",
+    "@descriptionUpdateAvailable": {
+        "description": "describes the update, showing the version code for the available update",
+        "type": "text",
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "labelUpdateAvailable": "Update Verfügbar",
+    "@labelUpdateAvailable": {
+        "description": "Label for the the info popup when an update is available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameToggleMute": "Stummschaltung umschalten",
+    "@shortcutNameToggleMute": {
+        "description": "name for the system wide shortcut to toggle the microphone mute status",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameUnmute": "Stummschaltung aufheben",
+    "@shortcutNameUnmute": {
+        "description": "name for the system wide shortcut to disable microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameMute": "Stummschalten",
+    "@shortcutNameMute": {
+        "description": "name for the system wide shortcut to activate microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSearch": "Suchen…",
+    "@promptSearch": {
+        "description": "Prompt the user to search for something, usually shown as the hint in a text box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDismiss": "Verwerfen",
+    "@promptDismiss": {
+        "description": "Generic prompt to dismiss something, probably a popup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicTypingIndicatorDescription": "Andere Mitglieder des Raums wissen lassen, wenn du eine Nachricht schreibst.",
+    "@labelPublicTypingIndicatorDescription": {
+        "description": "description for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorsToggle": "Eingabeindikator",
+    "@labelTypingIndicatorsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsDescription": "Andere Mitglieder des Raums wissen lassen, wenn du deren Nachricht gelesen hast.",
+    "@labelPublicReadReceiptsDescription": {
+        "description": "description for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsToggle": "Lesebestätigungen",
+    "@labelPublicReadReceiptsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPrivacyTitle": "Chat-Datenschutz",
+    "@labelChatPrivacyTitle": {
+        "description": "Header for the chat privacy section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsMembers": "Mitglieder",
+    "@labelSpaceSettingsMembers": {
+        "description": "Label for space member settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsSecurity": "Sicherheit",
+    "@labelSpaceSettingsSecurity": {
+        "description": "Label for space security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCalendar": "Kalender",
+    "@labelRoomSettingsCalendar": {
+        "description": "Label for room calendar settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventDescription": "Benutzern das Bearbeiten von Terminen im Kalender erlauben",
+    "@labelMatrixPermissionsAddCalendarEventDescription": {
+        "description": "Description for the permission to allow users to create an event on the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventTitle": "Kalendertermine bearbeiten",
+    "@labelMatrixPermissionsAddCalendarEventTitle": {
+        "description": "Title for the permission to allow users to edit the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallDescription": "Benutzern das Beitreten eines laufenden Anrufs in diesem Raum erlauben",
+    "@labelMatrixPermissionsJoinCallDescription": {
+        "description": "Description for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallTitle": "Anruf beitreten",
+    "@labelMatrixPermissionsJoinCallTitle": {
+        "description": "Title for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorTitle": "Eingabeindikatoren",
+    "@labelTypingIndicatorTitle": {
+        "description": "Label for the toggle for enabling and disabling typing indicators",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelReadReceiptsTitle": "Lesebestätigungen",
+    "@labelReadReceiptsTitle": {
+        "description": "Label for the toggle for enabling and disabling public read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDefaultTypingIndicatorsOption": "Globale Einstellung verwenden ({pref})",
+    "@labelDefaultTypingIndicatorsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelDefaultReadReceiptsOption": "Globale Einstellung verwenden ({pref})",
+    "@labelDefaultReadReceiptsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelVoipStreamFramerate": "Stream-Bildrate",
+    "@labelVoipStreamFramerate": {
+        "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
         "type": "text",
         "placeholders": {}
     }
