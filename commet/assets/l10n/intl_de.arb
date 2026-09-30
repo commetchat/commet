@@ -2011,7 +2011,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationInstructions": "Befolge die Anweisungen in deinem Browser. Bitte hab Geduld, es kann ein bis zwei Minuten dauern bis deine Belohinung angezeigt wird nachdem deine Spende angekommen ist.",
+    "labelDonationInstructions": "Folge den Schritten in deinem Browser. Falls deine Belohnungen nicht sofort erscheinen, hab bitte etwas Geduld, denn die Verarbeitung deiner Spende kann ein bis zwei Minuten dauern.",
     "@labelDonationInstructions": {
         "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
         "type": "text",
@@ -2056,6 +2056,18 @@
     "labelAppBehaviourTitle": "Applikationsverhalten",
     "@labelAppBehaviourTitle": {
         "description": "Header for the app behaviour section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonationsRefreshAwards": "Aktualisiere die Belohnungen",
+    "@promptDonationsRefreshAwards": {
+        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryVoiceAndVideo": "Sprach- und Videoanruf",
+    "@labelSettingsCategoryVoiceAndVideo": {
+        "description": "Label for the settings category related to voice and video calls",
         "type": "text",
         "placeholders": {}
     }
