@@ -2419,7 +2419,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsJoinCallTitle": "Anruf beitreten",
+    "labelMatrixPermissionsJoinCallTitle": "Anruf betreten",
     "@labelMatrixPermissionsJoinCallTitle": {
         "description": "Title for the permission to allow users to join a call in a room",
         "type": "text",
@@ -2456,6 +2456,12 @@
     "labelVoipStreamFramerate": "Stream-Bildrate",
     "@labelVoipStreamFramerate": {
         "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsCallConnection": "Anrufsverbindung",
+    "@headerVoipSettingsCallConnection": {
+        "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
         "type": "text",
         "placeholders": {}
     }
