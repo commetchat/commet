@@ -51,11 +51,15 @@ modules:
   sources:
   - type: git
     url: https://github.com/mpv-player/mpv.git
-    tag: v0.40.0
+    tag: v0.41.0
+    commit: 41f6a645068483470267271e1d09966ca3b9f413
+    
   - type: git
-    url: https://code.videolan.org/videolan/libplacebo.git
-    tag: v7.349.0
+    url: https://github.com/haasn/libplacebo.git
+    commit: cee9b076f2c63104ccfd497fa79c39a867293ec4
+    tag: v7.360.1
     dest: subprojects/libplacebo
+
   modules:
   - name: libass
     cleanup:
