@@ -219,7 +219,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       loadEventState(newIndex);
     });
 
-    for (var key in [reactionsKey]) {
+    for (var key in [reactionsKey, urlPreviewsKey]) {
       if (key.currentState is TimelineEventViewWidget) {
         (key.currentState as TimelineEventViewWidget).update(newIndex);
       }
