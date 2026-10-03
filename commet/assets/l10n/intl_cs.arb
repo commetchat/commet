@@ -5,13 +5,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "fileDragDropPrompt": "Přetáhněte sem soubor určený k nahrání...",
+    "fileDragDropPrompt": "Přesuňte sem soubor určený k nahrání...",
     "@fileDragDropPrompt": {
         "description": "Text that is shown when a user is dragging a file",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeRecentActivity": "Poslední aktivita",
+    "labelHomeRecentActivity": "Nedávná aktivita",
     "@labelHomeRecentActivity": {
         "description": "Short label for header of recent room activity",
         "type": "text",
@@ -993,7 +993,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackup": "Záloha zpráv",
+    "labelMatrixMessageBackup": "Obnova zpráv",
     "@labelMatrixMessageBackup": {
         "description": "TItle label for matrix message backup settings",
         "type": "text",
