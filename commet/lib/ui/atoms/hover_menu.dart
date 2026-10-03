@@ -25,15 +25,6 @@ class HoverMenuState extends State<HoverMenu> {
   Debouncer overlayRemoveDebounder =
       Debouncer(delay: Duration(milliseconds: 20));
 
-// @override
-//   void didUpdateWidget(covariant HoverMenu oldWidget) {
-
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       entry?.markNeedsBuild();
-//     });
-//     super.didUpdateWidget(oldWidget);
-//   }
-
   void addOverlay() {
     if (entry != null) {
       entry?.remove();
