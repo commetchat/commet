@@ -2,9 +2,11 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_per_message_profile.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 enum NotificationPriority { normal, low }
 
@@ -64,14 +66,41 @@ class MessageNotificationContent extends NotificationContent {
     this.room,
   }) : super(title: senderName);
 
+  static String notificationSenderViaProfile(
+          String profileName, String sender) =>
+      Intl.message("$profileName via $sender",
+          name: "notificationSenderViaProfile",
+          desc:
+              "Sender of a notification for a message which was sent with a per message profile",
+          args: [profileName, sender]);
+
   static Future<MessageNotificationContent?> fromEvent(
       TimelineEvent msg, Room room) async {
     var user = await room.fetchMember(msg.senderId);
 
+    var senderName = user.displayName;
+    var senderImage = user.avatar;
+
+    if (msg is TimelineEventFeaturePerMessageProfile) {
+      var profile =
+          (msg as TimelineEventFeaturePerMessageProfile).getPerMessageProfile();
+
+      if (profile != null) {
+        if (profile.avatar != null || profile.clearAvatar) {
+          senderImage = profile.avatar;
+        }
+
+        if (profile.hasDisplayName) {
+          senderName =
+              notificationSenderViaProfile(profile.displayName!, senderName);
+        }
+      }
+    }
+
     if (msg is TimelineEventMessage) {
       return MessageNotificationContent(
-        senderName: user.displayName,
-        senderImage: user.avatar,
+        senderName: senderName,
+        senderImage: senderImage,
         senderId: user.identifier,
         roomName: room.displayName,
         roomId: room.identifier,
@@ -97,8 +126,8 @@ class MessageNotificationContent extends NotificationContent {
 
     if (msg is TimelineEventSticker) {
       return MessageNotificationContent(
-        senderName: user.displayName,
-        senderImage: user.avatar,
+        senderName: senderName,
+        senderImage: senderImage,
         senderId: user.identifier,
         roomName: room.displayName,
         roomId: room.identifier,
