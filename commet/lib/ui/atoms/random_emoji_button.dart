@@ -89,7 +89,7 @@ class _RandomEmojiButtonState extends State<RandomEmojiButton> {
 
   void newRandomEmoji() {
     var options =
-        "😍🥺🥰😊😵‍💫😵🤩😎😘😅🤓😁😆🤣😂🙂😉😊😚😙😋😛😜🤪😝🤑🤠🥳🥸🥶😈"
+        "😍🥺🥰😊😵‍💫😵🤩😎😘😅🤓😁😆🤣😂🙂😉😊😚😙😋😛😜🤪😝🤑🤠🥳🥸🥶😈🫪"
             .characters
             .toList();
     var r = Random();
