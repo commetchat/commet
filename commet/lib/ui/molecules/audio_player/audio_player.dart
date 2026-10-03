@@ -280,6 +280,11 @@ class _AudioPlayerState extends State<AudioPlayer> {
       });
       player.setVolume(volume);
     }
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+
   }
 
   void setVolume(double value) {
