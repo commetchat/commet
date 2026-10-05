@@ -317,10 +317,10 @@ class LODImageCompleter extends ImageStreamCompleter {
         _codec != null &&
         (currentImage == null || _codec!.frameCount > 1)) {
       _decodeNextFrameAndSchedule();
+    }
 
-      if (appFocusStateSub == null) {
-        appFocusStateSub = AppFocus.focusStateChanged.listen(onAppFocusChanged);
-      }
+    if (appFocusStateSub == null) {
+      appFocusStateSub = AppFocus.focusStateChanged.listen(onAppFocusChanged);
     }
     super.addListener(listener);
   }
