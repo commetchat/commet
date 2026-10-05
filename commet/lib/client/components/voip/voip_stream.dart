@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-enum VoipStreamType { audio, video, screenshare }
+enum VoipStreamType { audio, video, screenshare, screenshareAudio }
 
 enum VoipStreamDirection { incoming, outgoing }
 

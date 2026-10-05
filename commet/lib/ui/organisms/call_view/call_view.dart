@@ -246,6 +246,10 @@ class _CallViewState extends State<CallView> {
         child: Center(
           child: BentoLayout(widget.currentSession.streams
               .where((element) => element != mainStream)
+              .where((i) =>
+                  shouldShowAudioStream(i, widget.currentSession.streams))
+              .where(
+                  (element) => element.type != VoipStreamType.screenshareAudio)
               .map((e) => GestureDetector(
                   onTap: () {
                     setState(() {
@@ -272,6 +276,22 @@ class _CallViewState extends State<CallView> {
         ),
       )
     ];
+  }
+
+  bool shouldShowAudioStream(VoipStream element, List<VoipStream> streams) {
+    if (element.type == VoipStreamType.audio) {
+      if (streams.any((i) =>
+          i.streamUserId == element.streamUserId &&
+          i.type == VoipStreamType.screenshare)) {
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    return true;
   }
 
   Widget callEndedView() {

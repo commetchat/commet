@@ -81,6 +81,10 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   VoipStreamType get type {
+    if (publication.track is AudioTrack && publication.name == "screenshare") {
+      return VoipStreamType.screenshareAudio;
+    }
+
     if (publication.track is AudioTrack) {
       return VoipStreamType.audio;
     }
@@ -100,6 +104,7 @@ class MatrixLivekitVoipStream implements VoipStream {
   String get stats => JsonEncoder.withIndent("  ").convert({
         "is encrypted": publication.participant.isEncrypted,
         "encryption type": publication.encryptionType.toString(),
+        "publication": publication.name
       });
 
   @override

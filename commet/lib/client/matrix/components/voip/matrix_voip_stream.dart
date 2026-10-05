@@ -153,8 +153,7 @@ class MatrixVoipStream implements VoipStream {
   bool get isMuted => stream.audioMuted;
 
   @override
-  // TODO: implement stats
-  String get stats => session.stats.toString();
+  String get stats => "";
 
   @override
   Future<void> setVolume(double volume) async {

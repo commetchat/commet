@@ -6,6 +6,7 @@ import 'package:commet/client/member.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/atoms/gradient_background.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -164,6 +165,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
   Widget buildDefault() {
     switch (widget.stream.type) {
+      case VoipStreamType.screenshareAudio:
       case VoipStreamType.audio:
         return tiamat.Tile.low(
           child: Center(
@@ -213,9 +215,25 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
-        return Center(
-          child: widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
-              const CircularProgressIndicator(),
+        return Stack(
+          children: [
+            Center(
+              child:
+                  widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
+                      const CircularProgressIndicator(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Avatar.small(
+                  border: Border.all(
+                      strokeAlign: 0.5,
+                      color: getBorderColor(context),
+                      width: clampDouble(audioLevel.value * 15, 0, 5)),
+                  image: user.avatar,
+                  placeholderColor: user.defaultColor,
+                  placeholderText: user.displayName),
+            ),
+          ],
         );
     }
   }
