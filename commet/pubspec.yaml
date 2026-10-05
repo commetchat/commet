@@ -155,6 +155,13 @@ dependency_overrides:
       ref: main
       path: pkgs/markdown
 
+  ## fixes: https://github.com/commetchat/commet/issues/1068
+  desktop_drop:
+    git:
+      url: https://github.com/commetchat/mixin-flutter-plugins.git
+      ref: drag-drop-linux-fix
+      path: ./packages/desktop_drop
+
   ## Fixes https://github.com/MixinNetwork/flutter-plugins/issues/457
   desktop_webview_window:
     git:
