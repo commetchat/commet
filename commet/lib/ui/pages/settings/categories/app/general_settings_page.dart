@@ -171,6 +171,12 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: "Open at last read message",
               description:
                   "When opening a room, jump to the last message you read",
+            ),
+            BooleanPreferenceToggle(
+              preference: preferences.pauseAnimationsWhenNotFocused,
+              title: "Pause animations when unfocused",
+              description:
+                  "When the app is in the background, pause animations to reduce CPU usage",
             )
           ]),
         ),
