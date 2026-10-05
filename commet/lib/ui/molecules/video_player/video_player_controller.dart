@@ -96,4 +96,12 @@ class VideoPlayerController {
   Future<Size?> getSize() async {
     return await _getSize!.call();
   }
+
+  // close streams to prevent memory leaks
+  void dispose() {
+    _isBuffering.close();
+    _downloadProgress.close();
+    _isCompleted.close();
+    _onProgressed.close();
+  }
 }
