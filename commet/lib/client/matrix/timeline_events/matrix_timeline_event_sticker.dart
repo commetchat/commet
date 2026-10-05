@@ -21,7 +21,7 @@ class MatrixTimelineEventSticker extends MatrixTimelineEvent
       uri = file['url'];
     }
     stickerImage = MatrixMxcImage(Uri.parse(uri!), client.getMatrixClient(),
-        matrixEvent: event);
+        matrixEvent: event, doThumbnail: false);
 
     stickerName = event.body;
   }
