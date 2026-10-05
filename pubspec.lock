@@ -407,7 +407,7 @@ packages:
     description:
       path: "packages/desktop_drop"
       ref: drag-drop-linux-fix
-      resolved-ref: "38dfe33c85da6a5b155e2fe39d9c29f9a432bf06"
+      resolved-ref: aa4542cf34353d74e075bfd7a232abc19436d8af
       url: "https://github.com/commetchat/mixin-flutter-plugins.git"
     source: git
     version: "0.8.4"
