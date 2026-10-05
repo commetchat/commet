@@ -191,7 +191,7 @@ class MatrixVoipSession implements VoipSession {
       stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
           'mandatory': {'frameRate': preferences.streamFramerate.value}
-        }
+        },
       });
     }
 
@@ -202,7 +202,8 @@ class MatrixVoipSession implements VoipSession {
           'height': 1080,
           'deviceId': {'exact': source.source.id},
           'mandatory': {'frameRate': preferences.streamFramerate.value}
-        }
+        },
+        'audio': true,
       });
     }
 

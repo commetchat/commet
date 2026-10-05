@@ -73,6 +73,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.7.0"
+  asn1lib:
+    dependency: transitive
+    description:
+      name: asn1lib
+      sha256: "9a8f69025044eb466b9b60ef3bc3ac99b4dc6c158ae9c56d25eeccf5bc56d024"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.5"
   async:
     dependency: transitive
     description:
@@ -851,14 +859,13 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_webrtc:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "."
-      ref: hkdf
-      resolved-ref: "2d0dce5e11ad9d9a37c397095faa58b676ef8027"
-      url: "https://github.com/commetchat/flutter-webrtc.git"
-    source: git
-    version: "1.4.1"
+      name: flutter_webrtc
+      sha256: c1d3674f61b14cbe98b60f0cce396835b1483163e644b8cd26fd3fdd55360fb9
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.2+hotfix.3"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1193,18 +1200,10 @@ packages:
     dependency: transitive
     description:
       name: json_annotation
-      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
+      sha256: "2a743920d81b7910627f68ee2c9ac1fc0bfee32b9fc3403587d7c6791ca12f80"
       url: "https://pub.dev"
     source: hosted
-    version: "4.9.0"
-  json_serializable:
-    dependency: transitive
-    description:
-      name: json_serializable
-      sha256: c50ef5fc083d5b5e12eef489503ba3bf5ccc899e487d691584699b4bdefeea8c
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.9.5"
+    version: "4.12.0"
   just_the_tooltip:
     dependency: transitive
     description:
@@ -1271,14 +1270,13 @@ packages:
     source: hosted
     version: "2.0.1"
   livekit_client:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "."
-      ref: hkdf
-      resolved-ref: "19f6b86d7a391876aceabf8ef3e117d399c23899"
-      url: "https://github.com/commetchat/livekit-client-sdk-flutter.git"
-    source: git
-    version: "2.7.0"
+      name: livekit_client
+      sha256: a410348effd06f4220c2d6ed9ad3935406e81fffbd1c366eba1c39fe0558f449
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.13.0"
   logger:
     dependency: transitive
     description:
@@ -1976,14 +1974,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  source_helper:
-    dependency: transitive
-    description:
-      name: source_helper
-      sha256: a447acb083d3a5ef17f983dd36201aeea33fedadb3228fa831f2f0c92f0f3aca
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.7"
   source_map_stack_trace:
     dependency: transitive
     description:

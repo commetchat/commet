@@ -37,7 +37,6 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  json_serializable: ^6.9.5
 
 flutter:
   uses-material-design: true
