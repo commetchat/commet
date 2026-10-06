@@ -17,6 +17,8 @@ abstract class VoipStream {
 
   String get label;
 
+  String get participantId;
+
   String get streamId;
 
   String get stats;

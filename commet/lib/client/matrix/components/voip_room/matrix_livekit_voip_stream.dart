@@ -107,14 +107,20 @@ class MatrixLivekitVoipStream implements VoipStream {
         "publication": publication.name
       });
 
+  String get volumeKey =>
+      type == VoipStreamType.screenshareAudio ? "stream:${userId}" : userId;
+
   @override
   Future<void> setVolume(double volume) async {
-    preferences.setVoipUserVolume(userId, volume);
+    preferences.setVoipUserVolume(volumeKey, volume);
     if (publication.track case AudioTrack track) {
       Helper.setVolume(volume, track.mediaStreamTrack);
     }
   }
 
   @override
-  double get volume => preferences.getVoipUserVolume(userId);
+  double get volume => preferences.getVoipUserVolume(volumeKey);
+
+  @override
+  String get participantId => publication.participant.identity;
 }

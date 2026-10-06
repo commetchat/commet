@@ -170,4 +170,7 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   double get volume => preferences.getVoipUserVolume(streamUserId);
+
+  @override
+  String get participantId => streamUserId;
 }
