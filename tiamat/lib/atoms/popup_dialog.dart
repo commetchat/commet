@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tiamat/atoms/button.dart';
-import 'package:tiamat/config/config.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
