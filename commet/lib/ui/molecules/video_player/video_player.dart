@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/hover_menu.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/molecules/video_player/video_player_implementation.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -52,6 +54,11 @@ class VideoPlayerState extends State<VideoPlayer> {
   double videoProgress = 0;
   bool updateSlider = true;
   Timer? uiHideTimer;
+  bool isMuted = false;
+  double volume = 100;
+  double appliedVolume = 100;
+
+  final GlobalKey menuKey = GlobalKey();
 
   late List<StreamSubscription> subscriptions;
 
@@ -60,6 +67,8 @@ class VideoPlayerState extends State<VideoPlayer> {
     showThumbnail = widget.doThumbnail;
 
     controller = widget.controller ?? VideoPlayerController();
+
+    setVolume(preferences.playerVolume.value);
 
     subscriptions = [
       controller.isBuffering.listen((isBuffering) {
@@ -93,7 +102,8 @@ class VideoPlayerState extends State<VideoPlayer> {
                 1);
           });
         }
-      })
+      }),
+      controller.onVolumeChanged.listen(onVolumeChanged)
     ];
 
     super.initState();
@@ -228,27 +238,65 @@ class VideoPlayerState extends State<VideoPlayer> {
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (widget.showProgressBar)
-                            Expanded(
-                              child: tiamat.Slider(
-                                value: videoProgress,
-                                min: 0,
-                                max: 1,
-                                onChangeEnd: (value) {
-                                  updateSlider = true;
-                                  seekPercent(value);
-                                },
-                                onChanged: (value) {
-                                  setState(() {
-                                    videoProgress = value;
-                                  });
-                                },
-                                onChangeStart: (value) {
-                                  updateSlider = false;
-                                },
-                              ),
+                      children: [
+                        if (widget.showProgressBar)
+                          Expanded(
+                            child: tiamat.Slider(
+                              value: videoProgress,
+                              min: 0,
+                              max: 1,
+                              onChangeEnd: (value) {
+                                updateSlider = true;
+                                seekPercent(value);
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  videoProgress = value;
+                                });
+                              },
+                              onChangeStart: (value) {
+                                updateSlider = false;
+                              },
                             ),
+                          ),
+                        if (widget.showProgressBar)
+                          Expanded(
+                            child: HoverMenu(
+                              key: menuKey,
+                              menuAlignment: Alignment.bottomCenter,
+                              parentAlignment: Alignment.topCenter,
+                              child: tiamat.IconButton(
+                                icon: isMuted
+                                ? Icons.volume_mute
+                                : appliedVolume == 0
+                                ? Icons.volume_off
+                                : Icons.volume_up,
+                                onPressed: (() {
+                                  toggleIsMuted();
+                                  preferences.isPlayerMuted.set(isMuted);
+                                }),
+                              ),
+                              builder: (context) {
+                                return RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color:
+                                      ColorScheme.of(context).surfaceContainer,
+                                      borderRadius: BorderRadius.circular(8)),
+                                    child: SizedBox(
+                                      width: 200,
+                                      height: 50,
+                                      child: tiamat.Slider(
+                                        value: appliedVolume / 100,
+                                        onChanged: (value) => setVolume(value * 100),
+                                        onChangeEnd: (value) =>
+                                          preferences.playerVolume.set(volume),
+                                      ),
+                                    ),
+                                  ));
+                              },
+                            )),
                           if (widget.canGoFullscreen)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
@@ -321,6 +369,47 @@ class VideoPlayerState extends State<VideoPlayer> {
     controller.seekTo(await controller.getLength() * percent);
     setState(() {
       videoProgress = percent;
+    });
+  }
+
+  void toggleIsMuted() {
+    if (!isMuted) {
+      setState(() {
+        isMuted = true;
+        appliedVolume = 0;
+      });
+      controller.setVolume(0.0);
+    } else {
+      setState(() {
+        isMuted = false;
+        appliedVolume = volume;
+      });
+      controller.setVolume(appliedVolume);
+    }
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+  }
+
+  void setVolume(double value) {
+    setState(() {
+      volume = value;
+      appliedVolume = value;
+      isMuted = false;
+    });
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+
+    controller.setVolume(value);
+  }
+
+  void onVolumeChanged(double event) {
+    setState(() {
+      volume = event;
+      appliedVolume = isMuted ? 0 : volume;
     });
   }
 

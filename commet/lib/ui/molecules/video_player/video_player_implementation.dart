@@ -47,8 +47,10 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
         replay: replay,
         screenshot: screenshot,
         getSize: getSize,
+        getVolume: getVolume,
         seekTo: seekTo,
-        getLength: getLength);
+        getLength: getLength,
+        setVolume: setVolume);
 
     player.stream.position.listen((event) {
       widget.controller.setProgress(event);
@@ -59,6 +61,8 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
         widget.controller.setCompleted(completed);
       },
     );
+
+    player.stream.volume.listen(widget.controller.handleInternalVolumeChange);
 
     controller = VideoController(player);
 
@@ -152,6 +156,10 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
     await player.seek(duration);
   }
 
+  Future<void> setVolume(double volume) async {
+    await player.setVolume(volume);
+  }
+
   Future<Duration> getLength() async {
     return player.state.duration;
   }
@@ -163,5 +171,9 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
     return Size(
         player.state.width!.toDouble(), player.state.height!.toDouble());
+  }
+
+  Future<double> getVolume() async {
+    return player.state.volume;
   }
 }
