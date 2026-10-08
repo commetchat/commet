@@ -79,7 +79,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
               children: [
                 AdaptiveContextMenu(
                   items: streamContextMenuItems(widget.stream.participantId,
-                          user, widget.session.streams),
+                      user, widget.session.streams),
                   child: Container(
                       clipBehavior: Clip.antiAlias,
                       foregroundDecoration: widget.borderColor != null
@@ -128,16 +128,17 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
   static List<tiamat.ContextMenuItem> streamContextMenuItems(
       String participantId, Member user, List<VoipStream> streams) {
+    var incoming = streams.where((i) =>
+        i.direction == VoipStreamDirection.incoming &&
+        i.participantId == participantId);
 
+    if (incoming.isEmpty) return [];
 
-    var incoming = streams.where((i) => i.direction == VoipStreamDirection.incoming && i.participantId == participantId);
-    
-    if(incoming.isEmpty) return [];
+    var audioStream =
+        incoming.firstWhereOrNull((i) => i.type == VoipStreamType.audio);
 
-    var audioStream = incoming.firstWhereOrNull((i) => i.type == VoipStreamType.audio);
-
-    var screenShareAudioStream = incoming.firstWhereOrNull((i) => 
-        i.type == VoipStreamType.screenshareAudio);
+    var screenShareAudioStream = incoming
+        .firstWhereOrNull((i) => i.type == VoipStreamType.screenshareAudio);
 
     return [
       tiamat.ContextMenuItem(
