@@ -41,7 +41,11 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
     player = Player();
 
-    player.setVolume(preferences.playerVolume.value);
+    if(preferences.isPlayerMuted.value) {
+      player.setVolume(0);
+    } else {
+      player.setVolume(preferences.playerVolume.value);
+    }
 
     widget.controller.attach(
         pause: pause,

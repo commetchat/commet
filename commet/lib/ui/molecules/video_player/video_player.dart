@@ -74,6 +74,8 @@ class VideoPlayerState extends State<VideoPlayer> {
 
     setVolume(preferences.playerVolume.value);
 
+    isMuted = preferences.isPlayerMuted.value;
+
     subscriptions = [
       controller.isBuffering.listen((isBuffering) {
         setState(() {
@@ -394,7 +396,7 @@ class VideoPlayerState extends State<VideoPlayer> {
     } else {
       setState(() {
         isMuted = false;
-        appliedVolume = volume;
+        appliedVolume = preferences.playerVolume.value;
       });
       controller.setVolume(appliedVolume);
     }
