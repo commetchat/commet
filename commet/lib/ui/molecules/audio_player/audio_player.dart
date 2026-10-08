@@ -66,7 +66,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
 
   bool isMuted = false;
   double volume = 100;
-  double preMuteVolume = 100;
+  double appliedVolume = 100;
 
   final GlobalKey menuKey = GlobalKey();
 
@@ -184,7 +184,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
                               value: volume / 100,
                               onChanged: (value) => setVolume(value * 100),
                               onChangeEnd: (value) =>
-                                  preferences.playerVolume.set(preMuteVolume),
+                                  preferences.playerVolume.set(appliedVolume),
                             ),
                           ),
                         ));
@@ -268,16 +268,15 @@ class _AudioPlayerState extends State<AudioPlayer> {
     if (!isMuted) {
       setState(() {
         isMuted = true;
-        preMuteVolume = volume;
-        volume = 0;
+        appliedVolume = 0;
       });
       player.setVolume(0.0);
     } else {
       setState(() {
         isMuted = false;
-        volume = preMuteVolume;
+        appliedVolume = preferences.playerVolume.value;
       });
-      player.setVolume(volume);
+      player.setVolume(appliedVolume);
     }
 
     if (menuKey.currentState case HoverMenuState state) {
@@ -288,7 +287,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
   void setVolume(double value) {
     setState(() {
       volume = value;
-      preMuteVolume = value;
+      appliedVolume = value;
       isMuted = false;
     });
 
@@ -302,6 +301,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
   void onVolumeChanged(double event) {
     setState(() {
       volume = event;
+      appliedVolume = isMuted ? 0 : volume;
     });
   }
 }
