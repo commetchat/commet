@@ -29,7 +29,6 @@ class HoverMenuState extends State<HoverMenu> {
       Debouncer(delay: Duration(milliseconds: 20));
 
   void addOverlay() {
-
     widget.onHoverStateChanged?.call(true);
 
     if (entry != null) {
@@ -65,8 +64,6 @@ class HoverMenuState extends State<HoverMenu> {
   }
 
   void removeOverlay() {
-
-
     widget.onHoverStateChanged?.call(false);
 
     if (entry != null) {

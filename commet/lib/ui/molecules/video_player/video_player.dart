@@ -64,7 +64,8 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   late List<StreamSubscription> subscriptions;
 
-  bool get shouldShowControls => currentlyHovered || isCompleted || showingVolumeSlider;
+  bool get shouldShowControls =>
+      currentlyHovered || isCompleted || showingVolumeSlider;
 
   @override
   void initState() {
@@ -243,74 +244,78 @@ class VideoPlayerState extends State<VideoPlayer> {
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (widget.showProgressBar)
-                          Expanded(
-                            child: tiamat.Slider(
-                              value: videoProgress,
-                              min: 0,
-                              max: 1,
-                              onChangeEnd: (value) {
-                                updateSlider = true;
-                                seekPercent(value);
-                              },
-                              onChanged: (value) {
-                                setState(() {
-                                  videoProgress = value;
-                                });
-                              },
-                              onChangeStart: (value) {
-                                updateSlider = false;
-                              },
-                            ),
-                          ),
-                        if (widget.showProgressBar)
-                          Padding(
-                            padding: EdgeInsetsGeometry.fromLTRB(0, 0, 8, 0),
-                            child: SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: HoverMenu(
-                                key: menuKey,
-                                menuAlignment: Alignment.bottomCenter,
-                                parentAlignment: Alignment.topCenter,
-                                onHoverStateChanged: (hovered) => setState(() {
-                                  showingVolumeSlider = hovered;
-                                }),
-                                child: tiamat.IconButton(
-                                  icon: isMuted
-                                  ? Icons.volume_mute
-                                  : appliedVolume == 0
-                                  ? Icons.volume_off
-                                  : Icons.volume_up,
-                                  onPressed: (() {
-                                    toggleIsMuted();
-                                    preferences.isPlayerMuted.set(isMuted);
-                                  }),
-                                ),
-                                builder: (context) {
-                                  return RotatedBox(
-                                    quarterTurns: 3,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color:
-                                        ColorScheme.of(context).surfaceContainer,
-                                        borderRadius: BorderRadius.circular(8)),
-                                      child: SizedBox(
-                                        width: 200,
-                                        height: 50,
-                                        child: tiamat.Slider(
-                                          value: appliedVolume / 100,
-                                          onChanged: (value) => setVolume(value * 100),
-                                          onChangeEnd: (value) =>
-                                            preferences.playerVolume.set(volume),
-                                        ),
-                                      ),
-                                    ));
+                        children: [
+                          if (widget.showProgressBar)
+                            Expanded(
+                              child: tiamat.Slider(
+                                value: videoProgress,
+                                min: 0,
+                                max: 1,
+                                onChangeEnd: (value) {
+                                  updateSlider = true;
+                                  seekPercent(value);
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    videoProgress = value;
+                                  });
+                                },
+                                onChangeStart: (value) {
+                                  updateSlider = false;
                                 },
                               ),
                             ),
-                          ),
+                          if (widget.showProgressBar)
+                            Padding(
+                              padding: EdgeInsetsGeometry.fromLTRB(0, 0, 8, 0),
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: HoverMenu(
+                                  key: menuKey,
+                                  menuAlignment: Alignment.bottomCenter,
+                                  parentAlignment: Alignment.topCenter,
+                                  onHoverStateChanged: (hovered) =>
+                                      setState(() {
+                                    showingVolumeSlider = hovered;
+                                  }),
+                                  child: tiamat.IconButton(
+                                    icon: isMuted
+                                        ? Icons.volume_mute
+                                        : appliedVolume == 0
+                                            ? Icons.volume_off
+                                            : Icons.volume_up,
+                                    onPressed: (() {
+                                      toggleIsMuted();
+                                      preferences.isPlayerMuted.set(isMuted);
+                                    }),
+                                  ),
+                                  builder: (context) {
+                                    return RotatedBox(
+                                        quarterTurns: 3,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: ColorScheme.of(context)
+                                                  .surfaceContainer,
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: SizedBox(
+                                            width: 200,
+                                            height: 50,
+                                            child: tiamat.Slider(
+                                              value: appliedVolume / 100,
+                                              onChanged: (value) =>
+                                                  setVolume(value * 100),
+                                              onChangeEnd: (value) =>
+                                                  preferences.playerVolume
+                                                      .set(volume),
+                                            ),
+                                          ),
+                                        ));
+                                  },
+                                ),
+                              ),
+                            ),
                           if (widget.canGoFullscreen)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),

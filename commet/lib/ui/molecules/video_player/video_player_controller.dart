@@ -32,14 +32,15 @@ class VideoPlayerController {
 
   final StreamController<Duration> _onProgressed = StreamController.broadcast();
 
-  final StreamController<double> _onVolumeChanged = StreamController.broadcast();
+  final StreamController<double> _onVolumeChanged =
+      StreamController.broadcast();
 
   Stream<bool> get isBuffering => _isBuffering.stream;
 
   Stream<bool> get isCompleted => _isCompleted.stream;
 
   Stream<Duration> get onProgressed => _onProgressed.stream;
-  
+
   Stream<double> get onVolumeChanged => _onVolumeChanged.stream;
 
   Stream<DownloadProgress> get onDownloadProgressed => _downloadProgress.stream;

@@ -10,7 +10,7 @@ import 'package:commet/main.dart';
 
 class AudioPlayer extends StatefulWidget {
   const AudioPlayer(
-    {required this.file, this.fileName, this.fileSize, super.key});
+      {required this.file, this.fileName, this.fileSize, super.key});
 
   final String? fileName;
   final int? fileSize;
@@ -74,8 +74,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(8)),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(8)),
       child: SizedBox(
         width: 500,
         child: Column(
@@ -175,8 +175,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
                         quarterTurns: 3,
                         child: Container(
                           decoration: BoxDecoration(
-                              color:
-                                  ColorScheme.of(context).surfaceContainer,
+                              color: ColorScheme.of(context).surfaceContainer,
                               borderRadius: BorderRadius.circular(8)),
                           child: SizedBox(
                             width: 200,
@@ -284,7 +283,6 @@ class _AudioPlayerState extends State<AudioPlayer> {
     if (menuKey.currentState case HoverMenuState state) {
       state.entry?.markNeedsBuild();
     }
-
   }
 
   void setVolume(double value) {

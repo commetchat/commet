@@ -41,7 +41,7 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
     player = Player();
 
-    if(preferences.isPlayerMuted.value) {
+    if (preferences.isPlayerMuted.value) {
       player.setVolume(0);
     } else {
       player.setVolume(preferences.playerVolume.value);

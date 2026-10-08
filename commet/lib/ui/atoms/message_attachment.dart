@@ -114,7 +114,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
       borderRadius: BorderRadius.circular(10),
       child: SizedBox(
         height: widget.constrainSize ? height + (showInfo ? 30 : 0) : null,
-        width: max(widget.constrainSize ? attachment.aspectRatio * height : 200, 200),
+        width: max(
+            widget.constrainSize ? attachment.aspectRatio * height : 200, 200),
         child: Panel(
             mainAxisSize: MainAxisSize.min,
             header: showInfo
