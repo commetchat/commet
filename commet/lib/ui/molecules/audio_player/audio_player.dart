@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
+import 'package:commet/ui/atoms/hover_menu.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:commet/main.dart';
 
 class AudioPlayer extends StatefulWidget {
   const AudioPlayer(
@@ -32,9 +34,13 @@ class _AudioPlayerState extends State<AudioPlayer> {
   void initState() {
     super.initState();
 
+    setVolume(preferences.playerVolume.value);
+    if (preferences.isPlayerMuted.value) toggleIsMuted();
+
     subs = [
       player.stream.playing.listen(onPlayingChanged),
       player.stream.position.listen(onPositionChanged),
+      player.stream.volume.listen(onVolumeChanged),
       if (widget.file.onProgressChanged != null)
         widget.file.onProgressChanged!.listen(onDownloadProgressChanged),
     ];
@@ -57,6 +63,12 @@ class _AudioPlayerState extends State<AudioPlayer> {
 
   double displayPosition = 0;
   double? downloadProgress;
+
+  bool isMuted = false;
+  double volume = 100;
+  double appliedVolume = 100;
+
+  final GlobalKey menuKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +153,44 @@ class _AudioPlayerState extends State<AudioPlayer> {
                   onChanged: (value) => setState(() {
                     displayPosition = value;
                   }),
-                ))
+                )),
+                const SizedBox(width: 8),
+                HoverMenu(
+                  key: menuKey,
+                  menuAlignment: Alignment.bottomCenter,
+                  parentAlignment: Alignment.topCenter,
+                  child: tiamat.IconButton(
+                    icon: isMuted
+                        ? Icons.volume_mute
+                        : volume == 0
+                            ? Icons.volume_off
+                            : Icons.volume_up,
+                    onPressed: (() {
+                      toggleIsMuted();
+                      preferences.isPlayerMuted.set(isMuted);
+                    }),
+                  ),
+                  builder: (context) {
+                    return RotatedBox(
+                        quarterTurns: 3,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: ColorScheme.of(context).surfaceContainer,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: SizedBox(
+                            width: 200,
+                            height: 50,
+                            child: tiamat.Slider(
+                              value: volume / 100,
+                              onChanged: (value) => setVolume(value * 100),
+                              onChangeEnd: (value) =>
+                                  preferences.playerVolume.set(appliedVolume),
+                            ),
+                          ),
+                        ));
+                  },
+                ),
+                const SizedBox(width: 12),
               ],
             ),
           ],
@@ -170,6 +219,18 @@ class _AudioPlayerState extends State<AudioPlayer> {
     }
   }
 
+  void onPlayingChanged(bool event) {
+    if (event) {
+      setState(() {
+        state = AudioPlayerState.playing;
+      });
+    } else {
+      setState(() {
+        state = AudioPlayerState.paused;
+      });
+    }
+  }
+
   void loadAudio() async {
     var uri = await widget.file.resolve();
 
@@ -183,16 +244,11 @@ class _AudioPlayerState extends State<AudioPlayer> {
     });
   }
 
-  void onPlayingChanged(bool event) {
-    if (event) {
-      setState(() {
-        state = AudioPlayerState.playing;
-      });
-    } else {
-      setState(() {
-        state = AudioPlayerState.paused;
-      });
-    }
+  void onDownloadProgressChanged(DownloadProgress event) {
+    print(event);
+    setState(() {
+      downloadProgress = event.downloaded.toDouble() / event.total.toDouble();
+    });
   }
 
   void onPositionChanged(Duration event) {
@@ -208,10 +264,44 @@ class _AudioPlayerState extends State<AudioPlayer> {
     }
   }
 
-  void onDownloadProgressChanged(DownloadProgress event) {
-    print(event);
+  void toggleIsMuted() {
+    if (!isMuted) {
+      setState(() {
+        isMuted = true;
+        appliedVolume = 0;
+      });
+      player.setVolume(0.0);
+    } else {
+      setState(() {
+        isMuted = false;
+        appliedVolume = preferences.playerVolume.value;
+      });
+      player.setVolume(appliedVolume);
+    }
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+  }
+
+  void setVolume(double value) {
     setState(() {
-      downloadProgress = event.downloaded.toDouble() / event.total.toDouble();
+      volume = value;
+      appliedVolume = value;
+      isMuted = false;
+    });
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+
+    player.setVolume(value);
+  }
+
+  void onVolumeChanged(double event) {
+    setState(() {
+      volume = event;
+      appliedVolume = isMuted ? 0 : volume;
     });
   }
 }

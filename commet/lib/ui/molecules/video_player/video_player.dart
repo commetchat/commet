@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/hover_menu.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/molecules/video_player/video_player_implementation.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -47,19 +49,33 @@ class VideoPlayerState extends State<VideoPlayer> {
   bool buffering = false;
   DownloadProgress? downloadProgress;
   late bool showThumbnail;
-  bool shouldShowControls = true;
+
+  bool currentlyHovered = true;
   bool isCompleted = false;
+  bool showingVolumeSlider = false;
   double videoProgress = 0;
   bool updateSlider = true;
   Timer? uiHideTimer;
+  bool isMuted = false;
+  double volume = 100;
+  double appliedVolume = 100;
+
+  final GlobalKey menuKey = GlobalKey();
 
   late List<StreamSubscription> subscriptions;
+
+  bool get shouldShowControls =>
+      currentlyHovered || isCompleted || showingVolumeSlider;
 
   @override
   void initState() {
     showThumbnail = widget.doThumbnail;
 
     controller = widget.controller ?? VideoPlayerController();
+
+    setVolume(preferences.playerVolume.value);
+
+    isMuted = preferences.isPlayerMuted.value;
 
     subscriptions = [
       controller.isBuffering.listen((isBuffering) {
@@ -74,7 +90,6 @@ class VideoPlayerState extends State<VideoPlayer> {
       controller.isCompleted.listen((event) {
         setState(() {
           isCompleted = event;
-          if (isCompleted) shouldShowControls = true;
         });
       }),
       controller.onDownloadProgressed.listen((event) {
@@ -93,7 +108,8 @@ class VideoPlayerState extends State<VideoPlayer> {
                 1);
           });
         }
-      })
+      }),
+      controller.onVolumeChanged.listen(onVolumeChanged)
     ];
 
     super.initState();
@@ -170,18 +186,18 @@ class VideoPlayerState extends State<VideoPlayer> {
       onTap: () {
         if (BuildConfig.MOBILE) {
           if (shouldShowControls) {
-            hideControls();
+            onUnhovered();
           } else {
-            showControls();
+            onHovered();
           }
         }
       },
       child: MouseRegion(
         onEnter: (_) {
-          showControls();
+          onHovered();
         },
         onExit: (_) {
-          hideControls();
+          onUnhovered();
         },
         child: AnimatedOpacity(
           opacity: shouldShowControls ? 1.0 : 0.0,
@@ -249,6 +265,57 @@ class VideoPlayerState extends State<VideoPlayer> {
                                 },
                               ),
                             ),
+                          if (widget.showProgressBar)
+                            Padding(
+                              padding: EdgeInsetsGeometry.fromLTRB(0, 0, 8, 0),
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: HoverMenu(
+                                  key: menuKey,
+                                  menuAlignment: Alignment.bottomCenter,
+                                  parentAlignment: Alignment.topCenter,
+                                  onHoverStateChanged: (hovered) =>
+                                      setState(() {
+                                    showingVolumeSlider = hovered;
+                                  }),
+                                  child: tiamat.IconButton(
+                                    icon: isMuted
+                                        ? Icons.volume_mute
+                                        : appliedVolume == 0
+                                            ? Icons.volume_off
+                                            : Icons.volume_up,
+                                    onPressed: (() {
+                                      toggleIsMuted();
+                                      preferences.isPlayerMuted.set(isMuted);
+                                    }),
+                                  ),
+                                  builder: (context) {
+                                    return RotatedBox(
+                                        quarterTurns: 3,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: ColorScheme.of(context)
+                                                  .surfaceContainer,
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: SizedBox(
+                                            width: 200,
+                                            height: 50,
+                                            child: tiamat.Slider(
+                                              value: appliedVolume / 100,
+                                              onChanged: (value) =>
+                                                  setVolume(value * 100),
+                                              onChangeEnd: (value) =>
+                                                  preferences.playerVolume
+                                                      .set(volume),
+                                            ),
+                                          ),
+                                        ));
+                                  },
+                                ),
+                              ),
+                            ),
                           if (widget.canGoFullscreen)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
@@ -284,9 +351,9 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       inited = true;
       playing = true;
-      shouldShowControls = false;
+      isCompleted = false;
       controller.play();
-      if (BuildConfig.MOBILE) hideControls();
+      if (BuildConfig.MOBILE) onUnhovered();
     });
   }
 
@@ -294,25 +361,25 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       playing = true;
       controller.replay();
-      shouldShowControls = false;
-      if (BuildConfig.MOBILE) hideControls();
+      isCompleted = false;
+      if (BuildConfig.MOBILE) onUnhovered();
     });
   }
 
-  void showControls() {
+  void onHovered() {
     setState(() {
-      shouldShowControls = true;
+      currentlyHovered = true;
     });
 
     if (BuildConfig.MOBILE) {
       uiHideTimer?.cancel();
-      uiHideTimer = Timer(const Duration(seconds: 3), hideControls);
+      uiHideTimer = Timer(const Duration(seconds: 3), onUnhovered);
     }
   }
 
-  void hideControls() {
+  void onUnhovered() {
     setState(() {
-      shouldShowControls = false;
+      currentlyHovered = false;
     });
     uiHideTimer?.cancel();
   }
@@ -321,6 +388,47 @@ class VideoPlayerState extends State<VideoPlayer> {
     controller.seekTo(await controller.getLength() * percent);
     setState(() {
       videoProgress = percent;
+    });
+  }
+
+  void toggleIsMuted() {
+    if (!isMuted) {
+      setState(() {
+        isMuted = true;
+        appliedVolume = 0;
+      });
+      controller.setVolume(0.0);
+    } else {
+      setState(() {
+        isMuted = false;
+        appliedVolume = preferences.playerVolume.value;
+      });
+      controller.setVolume(appliedVolume);
+    }
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+  }
+
+  void setVolume(double value) {
+    setState(() {
+      volume = value;
+      appliedVolume = value;
+      isMuted = false;
+    });
+
+    if (menuKey.currentState case HoverMenuState state) {
+      state.entry?.markNeedsBuild();
+    }
+
+    controller.setVolume(value);
+  }
+
+  void onVolumeChanged(double event) {
+    setState(() {
+      volume = event;
+      appliedVolume = isMuted ? 0 : volume;
     });
   }
 
