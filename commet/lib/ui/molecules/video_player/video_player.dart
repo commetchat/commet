@@ -264,7 +264,7 @@ class VideoPlayerState extends State<VideoPlayer> {
                           ),
                         if (widget.showProgressBar)
                           Padding(
-                            padding: EdgeInsetsGeometry.fromLTRB(8, 0, 8, 0),
+                            padding: EdgeInsetsGeometry.fromLTRB(0, 0, 8, 0),
                             child: SizedBox(
                               height: 24,
                               width: 24,
@@ -345,7 +345,6 @@ class VideoPlayerState extends State<VideoPlayer> {
       inited = true;
       playing = true;
       isCompleted = false;
-      currentlyHovered = false;
       controller.play();
       if (BuildConfig.MOBILE) onUnhovered();
     });

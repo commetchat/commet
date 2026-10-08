@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
@@ -107,12 +109,12 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     bool showInfo =
         widget.attachment.name != null && attachment.fileSize != null;
 
-    double height = 160;
+    double height = 200;
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: SizedBox(
         height: widget.constrainSize ? height + (showInfo ? 30 : 0) : null,
-        width: widget.constrainSize ? attachment.aspectRatio * height : null,
+        width: max(widget.constrainSize ? attachment.aspectRatio * height : 200, 200),
         child: Panel(
             mainAxisSize: MainAxisSize.min,
             header: showInfo
