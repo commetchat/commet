@@ -6,12 +6,15 @@ class HoverMenu extends StatefulWidget {
       {super.key,
       this.menuAlignment = Alignment.topLeft,
       this.parentAlignment = Alignment.topLeft,
+      this.onHoverStateChanged,
       required this.builder,
       required this.child});
   final Widget child;
   final Widget Function(BuildContext context) builder;
+  final Function(bool hovered)? onHoverStateChanged;
   final Alignment menuAlignment;
   final Alignment parentAlignment;
+
   @override
   State<HoverMenu> createState() => HoverMenuState();
 }
@@ -26,6 +29,9 @@ class HoverMenuState extends State<HoverMenu> {
       Debouncer(delay: Duration(milliseconds: 20));
 
   void addOverlay() {
+
+    widget.onHoverStateChanged?.call(true);
+
     if (entry != null) {
       entry?.remove();
       entry = null;
@@ -59,6 +65,10 @@ class HoverMenuState extends State<HoverMenu> {
   }
 
   void removeOverlay() {
+
+
+    widget.onHoverStateChanged?.call(false);
+
     if (entry != null) {
       entry?.remove();
       entry = null;

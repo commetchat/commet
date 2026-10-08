@@ -49,8 +49,10 @@ class VideoPlayerState extends State<VideoPlayer> {
   bool buffering = false;
   DownloadProgress? downloadProgress;
   late bool showThumbnail;
-  bool shouldShowControls = true;
+
+  bool currentlyHovered = true;
   bool isCompleted = false;
+  bool showingVolumeSlider = false;
   double videoProgress = 0;
   bool updateSlider = true;
   Timer? uiHideTimer;
@@ -61,6 +63,8 @@ class VideoPlayerState extends State<VideoPlayer> {
   final GlobalKey menuKey = GlobalKey();
 
   late List<StreamSubscription> subscriptions;
+
+  bool get shouldShowControls => currentlyHovered || isCompleted || showingVolumeSlider;
 
   @override
   void initState() {
@@ -83,7 +87,6 @@ class VideoPlayerState extends State<VideoPlayer> {
       controller.isCompleted.listen((event) {
         setState(() {
           isCompleted = event;
-          if (isCompleted) shouldShowControls = true;
         });
       }),
       controller.onDownloadProgressed.listen((event) {
@@ -180,18 +183,18 @@ class VideoPlayerState extends State<VideoPlayer> {
       onTap: () {
         if (BuildConfig.MOBILE) {
           if (shouldShowControls) {
-            hideControls();
+            onUnhovered();
           } else {
-            showControls();
+            onHovered();
           }
         }
       },
       child: MouseRegion(
         onEnter: (_) {
-          showControls();
+          onHovered();
         },
         onExit: (_) {
-          hideControls();
+          onUnhovered();
         },
         child: AnimatedOpacity(
           opacity: shouldShowControls ? 1.0 : 0.0,
@@ -260,43 +263,52 @@ class VideoPlayerState extends State<VideoPlayer> {
                             ),
                           ),
                         if (widget.showProgressBar)
-                          Expanded(
-                            child: HoverMenu(
-                              key: menuKey,
-                              menuAlignment: Alignment.bottomCenter,
-                              parentAlignment: Alignment.topCenter,
-                              child: tiamat.IconButton(
-                                icon: isMuted
-                                ? Icons.volume_mute
-                                : appliedVolume == 0
-                                ? Icons.volume_off
-                                : Icons.volume_up,
-                                onPressed: (() {
-                                  toggleIsMuted();
-                                  preferences.isPlayerMuted.set(isMuted);
+                          Padding(
+                            padding: EdgeInsetsGeometry.fromLTRB(8, 0, 8, 0),
+                            child: SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: HoverMenu(
+                                key: menuKey,
+                                menuAlignment: Alignment.bottomCenter,
+                                parentAlignment: Alignment.topCenter,
+                                onHoverStateChanged: (hovered) => setState(() {
+                                  showingVolumeSlider = hovered;
                                 }),
-                              ),
-                              builder: (context) {
-                                return RotatedBox(
-                                  quarterTurns: 3,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color:
-                                      ColorScheme.of(context).surfaceContainer,
-                                      borderRadius: BorderRadius.circular(8)),
-                                    child: SizedBox(
-                                      width: 200,
-                                      height: 50,
-                                      child: tiamat.Slider(
-                                        value: appliedVolume / 100,
-                                        onChanged: (value) => setVolume(value * 100),
-                                        onChangeEnd: (value) =>
-                                          preferences.playerVolume.set(volume),
+                                child: tiamat.IconButton(
+                                  icon: isMuted
+                                  ? Icons.volume_mute
+                                  : appliedVolume == 0
+                                  ? Icons.volume_off
+                                  : Icons.volume_up,
+                                  onPressed: (() {
+                                    toggleIsMuted();
+                                    preferences.isPlayerMuted.set(isMuted);
+                                  }),
+                                ),
+                                builder: (context) {
+                                  return RotatedBox(
+                                    quarterTurns: 3,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color:
+                                        ColorScheme.of(context).surfaceContainer,
+                                        borderRadius: BorderRadius.circular(8)),
+                                      child: SizedBox(
+                                        width: 200,
+                                        height: 50,
+                                        child: tiamat.Slider(
+                                          value: appliedVolume / 100,
+                                          onChanged: (value) => setVolume(value * 100),
+                                          onChangeEnd: (value) =>
+                                            preferences.playerVolume.set(volume),
+                                        ),
                                       ),
-                                    ),
-                                  ));
-                              },
-                            )),
+                                    ));
+                                },
+                              ),
+                            ),
+                          ),
                           if (widget.canGoFullscreen)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
@@ -332,9 +344,10 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       inited = true;
       playing = true;
-      shouldShowControls = false;
+      isCompleted = false;
+      currentlyHovered = false;
       controller.play();
-      if (BuildConfig.MOBILE) hideControls();
+      if (BuildConfig.MOBILE) onUnhovered();
     });
   }
 
@@ -342,25 +355,25 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       playing = true;
       controller.replay();
-      shouldShowControls = false;
-      if (BuildConfig.MOBILE) hideControls();
+      isCompleted = false;
+      if (BuildConfig.MOBILE) onUnhovered();
     });
   }
 
-  void showControls() {
+  void onHovered() {
     setState(() {
-      shouldShowControls = true;
+      currentlyHovered = true;
     });
 
     if (BuildConfig.MOBILE) {
       uiHideTimer?.cancel();
-      uiHideTimer = Timer(const Duration(seconds: 3), hideControls);
+      uiHideTimer = Timer(const Duration(seconds: 3), onUnhovered);
     }
   }
 
-  void hideControls() {
+  void onUnhovered() {
     setState(() {
-      shouldShowControls = false;
+      currentlyHovered = false;
     });
     uiHideTimer?.cancel();
   }
