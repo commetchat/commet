@@ -312,16 +312,6 @@ class MatrixLivekitVoipSession implements VoipSession {
         }
 
         if (track is lk.LocalAudioTrack) {
-          try {
-            // ignore: experimental_member_use
-            await track.setAudioProcessingOptions(
-                lk.AudioProcessingOptions.noProcessing());
-          } catch (e, s) {
-            Log.w(
-                "Failed to set audio processing options on screenshare audio track");
-            Log.onError(e, s);
-          }
-
           await livekitRoom.localParticipant?.publishAudioTrack(track,
               publishOptions: lk.AudioPublishOptions(
                   name: "screenshare",
