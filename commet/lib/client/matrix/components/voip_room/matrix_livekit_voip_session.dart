@@ -45,13 +45,9 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onParticipantConnected);
     listener.on(onParticipantDisconnected);
     listener.on(onLocalAudioSenderStats);
+    listener.on(onActiveSpeakersChanged);
 
     listener.emitter.listen((e) => Log.i("Stream event: $e"));
-    Timer.periodic(Duration(milliseconds: 200), (timer) {
-      if (state == VoipState.ended) timer.cancel();
-      _onVolumeChanged.add(());
-    });
-
     keyProvider?.init(livekitRoom.localParticipant!.identity, livekitRoom);
 
     startHeartbeat();
@@ -159,6 +155,18 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   void onParticipantDisconnected(lk.ParticipantDisconnectedEvent event) {
     clientManager?.callManager.endCallSound();
+  }
+
+  void onActiveSpeakersChanged(lk.ActiveSpeakersChangedEvent event) {
+    for (var track in streams) {
+      if (track.type == VoipStreamType.audio) {
+        final t = track as MatrixLivekitVoipStream;
+        t.markAsSpeaker(event.speakers
+            .any((i) => i.identity == track.publication.participant.identity));
+      }
+    }
+
+    _onVolumeChanged.add(());
   }
 
   void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
