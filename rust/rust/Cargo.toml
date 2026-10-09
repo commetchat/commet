@@ -22,6 +22,7 @@ tao = "0.34.6"
 tokio = { version = "1.50.0", features = ["io-util", "io-std"] }
 uuid = "1.23.0"
 wry = "0.54.4"
+overlay = { path = "../../../overlay" }
 
 [target.'cfg(unix)'.dependencies]
 webrtc = "0.17.1"

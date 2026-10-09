@@ -11,3 +11,11 @@ pub extern "C" fn commet_widget_runner() {
         widget_runner::run();
     }
 }
+
+#[no_mangle]
+pub extern "C" fn commet_overlay() {
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    {
+        overlay::run_overlay();
+    }
+}

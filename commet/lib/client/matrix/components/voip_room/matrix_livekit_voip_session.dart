@@ -163,8 +163,12 @@ class MatrixLivekitVoipSession implements VoipSession {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
-    streams.add(MatrixLivekitVoipStream(event.publication, participant));
-    _stateChanged.add(());
+    var stream = MatrixLivekitVoipStream(event.publication, participant);
+    streams.add(stream);
+
+    stream.onStreamChanged.listen((_) {
+      _stateChanged.add(());
+    });
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {

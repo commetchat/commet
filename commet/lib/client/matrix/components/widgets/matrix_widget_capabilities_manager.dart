@@ -15,6 +15,7 @@ import 'package:commet/client/matrix/components/widgets/capabilities/mx_capabili
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_timeline.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_turn_servers.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/voip_state_capability.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_permission_groups.dart';
@@ -182,6 +183,7 @@ class MatrixWidgetCapabilitiesManager
     MatrixCapabilityTimeline.entry,
     MatrixCapabilityTheme.entry,
     MatrixCapabilityUpdateDelayedEvent.entry,
+    MatrixCapabilityVoipState.entry,
     MatrixCapabilitySendDelayedEvent.entry,
     // MatrixCapabilityAlwaysOnScreen.entry,
     // MatrixCapabilitySendStickyEvent.entry,
