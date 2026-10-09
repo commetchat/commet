@@ -60,8 +60,6 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
   Debouncer debouncer = Debouncer(delay: Duration(milliseconds: 20));
 
   void onSessionStateChanged(VoipSession session) {
-    Log.i("Voip session state changed!!!!");
-
     debouncer.run(sendCurrentState);
   }
 
@@ -101,8 +99,6 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
           }));
 
       lastState = str;
-    } else {
-      Log.i("State was identical, not updating overlay");
     }
   }
 }

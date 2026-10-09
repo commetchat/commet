@@ -20,12 +20,7 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
     if (publication.track case AudioTrack t) {
-      visualizer = createVisualizer(t,
-          options:
-              AudioVisualizerOptions(barCount: 1, smoothTransition: false));
-
-      var volume = preferences.getVoipUserVolume(userId);
-      Helper.setVolume(volume, t.mediaStreamTrack);
+      visualizer = createVisualizer(t, options: AudioVisualizerOptions());
 
       var _listener = visualizer!.createListener();
       _listener.on<AudioVisualizerEvent>((e) {
@@ -33,6 +28,9 @@ class MatrixLivekitVoipStream implements VoipStream {
       });
 
       visualizer!.start();
+
+      var volume = preferences.getVoipUserVolume(userId);
+      Helper.setVolume(volume, t.mediaStreamTrack);
     }
   }
 
@@ -44,6 +42,7 @@ class MatrixLivekitVoipStream implements VoipStream {
   }
 
   void onStreamUpdatedEvent() {
+    print("Stream updated!");
     _onChanged.add(());
   }
 

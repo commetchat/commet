@@ -44,7 +44,9 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onTrackUnmutedEvent);
     listener.on(onParticipantConnected);
     listener.on(onParticipantDisconnected);
+    listener.on(onLocalAudioSenderStats);
 
+    listener.emitter.listen((e) => Log.i("Stream event: $e"));
     Timer.periodic(Duration(milliseconds: 200), (timer) {
       if (state == VoipState.ended) timer.cancel();
       _onVolumeChanged.add(());
@@ -440,5 +442,9 @@ class MatrixLivekitVoipSession implements VoipSession {
     Log.i("Disconnecting livekit room");
     await livekitRoom.disconnect();
     Log.i("Disconnected livekit room");
+  }
+
+  void onLocalAudioSenderStats(lk.AudioSenderStatsEvent stats) {
+    print("Local audio level: ${stats.stats.audioSourceStats?.audioLevel}");
   }
 }
