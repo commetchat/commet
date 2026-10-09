@@ -26,6 +26,7 @@ dependencies:
   timezone: ^0.10.1
   flutter_timezone: ^5.0.1
   url_launcher: ^6.3.2
+  json_serializable: ^6.14.1
 
 dependency_overrides:
   # https://github.com/SimformSolutionsPvtLtd/flutter_calendar_view/pull/496
