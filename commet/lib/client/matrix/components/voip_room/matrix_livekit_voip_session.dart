@@ -68,8 +68,7 @@ class MatrixLivekitVoipSession implements VoipSession {
           continue;
         }
 
-        streams.add(
-            MatrixLivekitVoipStream(entry.value, room.client.self!.identifier));
+        _addStream(entry.value, client.self!.identifier);
       }
     }
 
@@ -82,9 +81,22 @@ class MatrixLivekitVoipSession implements VoipSession {
         String userId = entry.key;
         userId = userId.split(":").getRange(0, 2).join(":");
 
-        streams.add(MatrixLivekitVoipStream(stream.value, userId));
+        _addStream(stream.value, userId);
       }
     }
+  }
+
+  void _addStream(lk.TrackPublication track, String userId) {
+    var stream = MatrixLivekitVoipStream(track, userId);
+
+    stream.onStreamChanged.listen((_) {
+      print("Stream changed!!!");
+      _stateChanged.add(());
+    });
+
+    streams.add(stream);
+
+    _stateChanged.add(());
   }
 
   @override
@@ -137,7 +149,7 @@ class MatrixLivekitVoipSession implements VoipSession {
       return;
     }
 
-    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    _addStream(event.publication, participant);
     _stateChanged.add(());
   }
 
@@ -145,7 +157,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
-    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    _addStream(event.publication, participant);
+
     _stateChanged.add(());
   }
 
@@ -173,12 +186,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
 
-    var stream = MatrixLivekitVoipStream(event.publication, participant);
-    streams.add(stream);
-
-    stream.onStreamChanged.listen((_) {
-      _stateChanged.add(());
-    });
+    _addStream(event.publication, participant);
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {

@@ -54,6 +54,8 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
       session.onUpdateVolumeVisualizers
           .listen((_) => onSessionStateChanged(session))
     ]);
+
+    sendCurrentState();
   }
 
   Debouncer debouncer = Debouncer(delay: Duration(milliseconds: 20));

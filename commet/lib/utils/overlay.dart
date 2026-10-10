@@ -6,13 +6,23 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_component.
 import 'package:commet/client/matrix/components/widgets/runners/subprocess/matrix_widget_desktop_runner.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/image_or_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite.dart';
 
 class VoipOverlay {
+
+  static const String widgetId = "chat.commet.voip_overlay";
+
   static void spawn(Client client, Room room, BuildContext context) async {
+
+
+    if(!(PlatformUtils.isLinux || PlatformUtils.isWindows)) {
+      return;
+    }
+    
     var component = client.getComponent<WidgetComponent>();
 
     var exe = Platform.resolvedExecutable;
@@ -25,13 +35,13 @@ class VoipOverlay {
         process: process,
         room: room as MatrixRoom,
         context: context,
-        widgetId: "chat.commet.voip_overlay",
+        widgetId: widgetId,
         info: MatrixUserWidgetInfo(
-            id: "chat.commet.voip_overlay",
+            id: widgetId,
             name: "Overlay",
             stateKey: "",
             url: "",
-            type: "chat.commet.voip_overlay",
+            type: widgetId,
             icon: ImageOrIcon(icon: Icons.screen_share),
             roomId: room.identifier,
             event: StrippedStateEvent(type: "", content: {}, senderId: "")),

@@ -16,6 +16,6 @@ pub extern "C" fn commet_widget_runner() {
 pub extern "C" fn commet_overlay() {
     #[cfg(any(target_os = "windows", target_os = "linux"))]
     {
-        overlay::run_overlay();
+        overlay::run_overlay(false);
     }
 }

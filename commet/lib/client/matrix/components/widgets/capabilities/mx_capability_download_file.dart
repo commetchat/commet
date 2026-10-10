@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_component.
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/foundation.dart';
@@ -45,7 +46,7 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
     Uint8List? bytes;
 
     if (!kIsWeb) {
-      var cached = await fileCache?.getFile(uri.toString());
+      var cached = await fileCache?.getFile(MatrixMxcImage.getThumbnailIdentifier(uri));
 
       if (cached != null) {
         bytes = await File.fromUri(cached).readAsBytes();
