@@ -36,6 +36,11 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       desc:
           "Header for the settings tile containing configuration relating to the initial connection of a call");
 
+  String get headerVoipSettingsOverlay => Intl.message("Overlay",
+      name: "headerVoipSettingsOverlay",
+      desc:
+          "Header for the settings tile containing configuration for the voip overlay");
+
   String get labelVoipSettingsStunFallback => Intl.message("Use STUN Fallback",
       name: "labelVoipSettingsStunFallback",
       desc:
@@ -157,6 +162,23 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
             title: labelVoipSettingsStunFallback,
             description: labelVoipSettingsStunFallbackDescription(
                 preferences.fallbackTurnServer.value),
+          ),
+        ),
+        tiamat.Panel(
+          mode: tiamat.TileType.surfaceContainerLow,
+          header: headerVoipSettingsOverlay,
+          child: BooleanPreferenceToggle(
+            preference: preferences.useVoipOverlay,
+            title: "Enable Overlay",
+            description:
+                "When in a call, add an overlay on your screen to show the call participants",
+            onChanged: (p0) {
+              if (p0 == false) {
+                clientManager?.callManager.removeOverlay();
+              } else {
+                clientManager?.callManager.enableOverlayForExistingSessions();
+              }
+            },
           ),
         ),
         tiamat.Panel(

@@ -552,20 +552,18 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
               ),
             ),
           if (widget.showStdErr)
-            Expanded(
-              child: tiamat.Panel(
-                header: "stderr",
-                child: SingleChildScrollView(
-                  child: Scrollbar(
+            tiamat.Panel(
+              header: "stderr",
+              child: Scrollbar(
+                controller: stdErrScrollController,
+                child: SizedBox(
+                  height: 500,
+                  child: SingleChildScrollView(
                     controller: stdErrScrollController,
-                    child: SingleChildScrollView(
-                      controller: stdErrScrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: Codeblock(
-                        text: stdError,
-                        clipboardText: stdError,
-                        language: "stderr",
-                      ),
+                    child: Codeblock(
+                      text: stdError,
+                      clipboardText: stdError,
+                      language: "stderr",
                     ),
                   ),
                 ),
