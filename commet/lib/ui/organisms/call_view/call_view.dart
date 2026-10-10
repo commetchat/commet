@@ -283,7 +283,8 @@ class _CallViewState extends State<CallView> {
     if (element.type == VoipStreamType.audio) {
       if (streams.any((i) =>
           i.participantId == element.participantId &&
-          i.type == VoipStreamType.screenshare)) {
+          (i.type == VoipStreamType.screenshare ||
+              i.type == VoipStreamType.video))) {
         {
           return false;
         }
