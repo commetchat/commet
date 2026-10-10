@@ -81,6 +81,10 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   VoipStreamType get type {
+    if (publication.track is AudioTrack && publication.name == "screenshare") {
+      return VoipStreamType.screenshareAudio;
+    }
+
     if (publication.track is AudioTrack) {
       return VoipStreamType.audio;
     }
@@ -100,16 +104,23 @@ class MatrixLivekitVoipStream implements VoipStream {
   String get stats => JsonEncoder.withIndent("  ").convert({
         "is encrypted": publication.participant.isEncrypted,
         "encryption type": publication.encryptionType.toString(),
+        "publication": publication.name
       });
+
+  String get volumeKey =>
+      type == VoipStreamType.screenshareAudio ? "stream:${userId}" : userId;
 
   @override
   Future<void> setVolume(double volume) async {
-    preferences.setVoipUserVolume(userId, volume);
+    preferences.setVoipUserVolume(volumeKey, volume);
     if (publication.track case AudioTrack track) {
       Helper.setVolume(volume, track.mediaStreamTrack);
     }
   }
 
   @override
-  double get volume => preferences.getVoipUserVolume(userId);
+  double get volume => preferences.getVoipUserVolume(volumeKey);
+
+  @override
+  String get participantId => publication.participant.identity;
 }

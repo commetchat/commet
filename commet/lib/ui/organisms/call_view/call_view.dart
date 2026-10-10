@@ -196,7 +196,7 @@ class _CallViewState extends State<CallView> {
           builder: (context, constraints) {
             var ratio = constraints.maxWidth / constraints.maxHeight;
 
-            if (ratio > 1) {
+            if (ratio > 1 && mainStream == null) {
               return Row(children: generateLayout());
             } else {
               return Column(children: generateLayout());
@@ -204,6 +204,10 @@ class _CallViewState extends State<CallView> {
           },
         ));
   }
+
+  Iterable<VoipStream> get visibleStreams => widget.currentSession.streams
+      .where((i) => shouldShowAudioStream(i, widget.currentSession.streams))
+      .where((element) => element.type != VoipStreamType.screenshareAudio);
 
   List<Widget> generateLayout() {
     return [
@@ -240,38 +244,56 @@ class _CallViewState extends State<CallView> {
             ),
           ),
         ),
-      Flexible(
-        fit: FlexFit.tight,
-        flex: 75,
-        child: Center(
-          child: BentoLayout(widget.currentSession.streams
-              .where((element) => element != mainStream)
-              .map((e) => GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      mainStream = e;
-                    });
-                  },
-                  child: VoipStreamView(
-                    key: ValueKey("callView__${e.streamId}"),
-                    e,
-                    fit: e.type == VoipStreamType.screenshare
-                        ? BoxFit.contain
-                        : BoxFit.cover,
-                    widget.currentSession,
-                    onFullscreen: () {
-                      Lightbox.show(context,
-                          aspectRatio: e.aspectRatio,
-                          customWidget: VoipFullscreenStreamView(
-                            session: widget.currentSession,
-                            stream: e,
-                          ));
+      if (visibleStreams.any((i) => i != mainStream))
+        Flexible(
+          fit: FlexFit.tight,
+          flex: mainStream == null ? 75 : 50,
+          child: Center(
+            child: BentoLayout(visibleStreams
+                .where((element) => element != mainStream)
+                .map((e) => GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        mainStream = e;
+                      });
                     },
-                  )))
-              .toList()),
-        ),
-      )
+                    child: VoipStreamView(
+                      key: ValueKey("callView__${e.streamId}"),
+                      e,
+                      fit: e.type == VoipStreamType.screenshare
+                          ? BoxFit.contain
+                          : BoxFit.cover,
+                      widget.currentSession,
+                      onFullscreen: () {
+                        Lightbox.show(context,
+                            aspectRatio: e.aspectRatio,
+                            customWidget: VoipFullscreenStreamView(
+                              session: widget.currentSession,
+                              stream: e,
+                            ));
+                      },
+                    )))
+                .toList()),
+          ),
+        )
     ];
+  }
+
+  bool shouldShowAudioStream(VoipStream element, List<VoipStream> streams) {
+    if (element.type == VoipStreamType.audio) {
+      if (streams.any((i) =>
+          i.participantId == element.participantId &&
+          (i.type == VoipStreamType.screenshare ||
+              i.type == VoipStreamType.video))) {
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    return true;
   }
 
   Widget callEndedView() {

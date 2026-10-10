@@ -280,28 +280,70 @@ class MatrixLivekitVoipSession implements VoipSession {
     Log.i(
         "Starting stream with settings: ${preferences.streamBitrate.value}Mbps, ${framerate}FPS, $codec ${res}");
 
-    var track = await lk.LocalVideoTrack.createScreenShareTrack(
-        lk.ScreenShareCaptureOptions(
-      sourceId: srcid,
-      maxFrameRate: framerate,
-      params: lk.VideoParameters(
-        dimensions: lk.VideoDimensionsPresets.h720_169,
-        encoding: lk.VideoEncoding(
-            maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-      ),
-    ));
-
-    await livekitRoom.localParticipant?.publishVideoTrack(track,
-        publishOptions: lk.VideoPublishOptions(
-          simulcast: preferences.doSimulcast.value,
-          screenShareEncoding: lk.VideoEncoding(
+    if (WebrtcScreencaptureSource.supportsSystemAudio) {
+      var tracks = await lk.LocalVideoTrack.createScreenShareTracksWithAudio(
+          lk.ScreenShareCaptureOptions(
+        sourceId: srcid,
+        maxFrameRate: framerate,
+        captureScreenAudio: true,
+        params: lk.VideoParameters(
+          dimensions: lk.VideoDimensionsPresets.h720_169,
+          encoding: lk.VideoEncoding(
               maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-          videoEncoding: lk.VideoEncoding(
-              maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-          videoCodec: preferences.streamCodec.value,
-        ));
+        ),
+      ));
 
-    track.setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+      print(tracks);
+
+      for (var track in tracks) {
+        if (track is lk.LocalVideoTrack) {
+          await livekitRoom.localParticipant?.publishVideoTrack(track,
+              publishOptions: lk.VideoPublishOptions(
+                simulcast: preferences.doSimulcast.value,
+                screenShareEncoding: lk.VideoEncoding(
+                    maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+                videoEncoding: lk.VideoEncoding(
+                    maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+                videoCodec: preferences.streamCodec.value,
+              ));
+
+          track.setDegradationPreference(
+              lk.DegradationPreference.maintainFramerate);
+        }
+
+        if (track is lk.LocalAudioTrack) {
+          await livekitRoom.localParticipant?.publishAudioTrack(track,
+              publishOptions: lk.AudioPublishOptions(
+                  name: "screenshare",
+                  dtx: false,
+                  red: false,
+                  encoding: lk.AudioEncoding.presetMusicHighQualityStereo));
+        }
+      }
+    } else {
+      var track = await lk.LocalVideoTrack.createScreenShareTrack(
+          lk.ScreenShareCaptureOptions(
+              sourceId: srcid,
+              maxFrameRate: framerate,
+              params: lk.VideoParameters(
+                dimensions: lk.VideoDimensionsPresets.h720_169,
+                encoding: lk.VideoEncoding(
+                    maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+              )));
+
+      await livekitRoom.localParticipant?.publishVideoTrack(track,
+          publishOptions: lk.VideoPublishOptions(
+            simulcast: preferences.doSimulcast.value,
+            screenShareEncoding: lk.VideoEncoding(
+                maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+            videoEncoding: lk.VideoEncoding(
+                maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+            videoCodec: preferences.streamCodec.value,
+          ));
+
+      track
+          .setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+    }
 
     _stateChanged.add(());
   }
