@@ -393,7 +393,6 @@ class Preferences {
   BoolPreference useFallbackTurnServer =
       BoolPreference("use_fallback_turn_server", defaultValue: false);
 
-
   BoolPreference useVoipOverlay =
       BoolPreference("use_voip_overlay", defaultValue: true);
 

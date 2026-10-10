@@ -20,7 +20,6 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
     if (publication.track case AudioTrack t) {
-
       var volume = preferences.getVoipUserVolume(userId);
       Helper.setVolume(volume, t.mediaStreamTrack);
     }

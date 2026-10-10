@@ -46,7 +46,8 @@ class MatrixCapabilityDownloadFile implements MatrixWidgetCapability {
     Uint8List? bytes;
 
     if (!kIsWeb) {
-      var cached = await fileCache?.getFile(MatrixMxcImage.getThumbnailIdentifier(uri));
+      var cached =
+          await fileCache?.getFile(MatrixMxcImage.getThumbnailIdentifier(uri));
 
       if (cached != null) {
         bytes = await File.fromUri(cached).readAsBytes();

@@ -13,16 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite.dart';
 
 class VoipOverlay {
-
   static const String widgetId = "chat.commet.voip_overlay";
 
   static void spawn(Client client, Room room, BuildContext context) async {
-
-
-    if(!(PlatformUtils.isLinux || PlatformUtils.isWindows)) {
+    if (!(PlatformUtils.isLinux || PlatformUtils.isWindows)) {
       return;
     }
-    
+
     var component = client.getComponent<WidgetComponent>();
 
     var exe = Platform.resolvedExecutable;

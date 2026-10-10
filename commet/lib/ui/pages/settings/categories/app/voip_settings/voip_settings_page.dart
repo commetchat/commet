@@ -41,7 +41,6 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       desc:
           "Header for the settings tile containing configuration for the voip overlay");
 
-
   String get labelVoipSettingsStunFallback => Intl.message("Use STUN Fallback",
       name: "labelVoipSettingsStunFallback",
       desc:
@@ -171,9 +170,10 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
           child: BooleanPreferenceToggle(
             preference: preferences.useVoipOverlay,
             title: "Enable Overlay",
-            description: "When in a call, add an overlay on your screen to show the call participants",
+            description:
+                "When in a call, add an overlay on your screen to show the call participants",
             onChanged: (p0) {
-              if(p0 == false) {
+              if (p0 == false) {
                 clientManager?.callManager.removeOverlay();
               } else {
                 clientManager?.callManager.enableOverlayForExistingSessions();
