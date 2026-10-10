@@ -17,7 +17,9 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
 
   MatrixCapabilityVoipState({required this.runner}) {
     for (var session in clientManager!.callManager.currentSessions) {
-      onSessionStarted(session);
+      if(session.client == runner.client) {
+        onSessionStarted(session);
+      }
     }
 
     clientManager!.callManager.currentSessions.onAdd.listen(onSessionStarted);
@@ -49,6 +51,9 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
   void dispose() {}
 
   void onSessionStarted(VoipSession session) {
+    if(session.client != runner.client) return;
+    if(session.roomId != runner.room!.identifier) return;
+
     subs.addAll([
       session.onStateChanged.listen((_) => onSessionStateChanged(session)),
       session.onUpdateVolumeVisualizers
