@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -120,7 +121,9 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
 
-          runner?.logs.add(LogEntry(LogType.info, consoleMessage.message));
+          if (preferences.widgetDeveloperMode.value) {
+            runner?.logs.add(LogEntry(LogType.info, consoleMessage.message));
+          }
         },
         onWebViewCreated: (controller) {
           Log.i("On web view created");

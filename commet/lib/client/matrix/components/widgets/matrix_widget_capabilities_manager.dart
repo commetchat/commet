@@ -46,8 +46,10 @@ class MatrixWidgetCapabilitiesManager
   MatrixWidgetRunner runner;
   final BuildContext context;
 
+  final bool privileged;
+
   MatrixWidgetCapabilitiesManager(
-      {required this.runner, required this.context}) {
+      {required this.runner, required this.context, this.privileged = false}) {
     runner.onClosed.listen((_) {
       dispose();
     });
@@ -109,31 +111,35 @@ class MatrixWidgetCapabilitiesManager
     }
 
     if (needsPermission.isNotEmpty) {
-      var groups =
-          MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
+      if (privileged) {
+        allowed.addAll(needsPermission);
+      } else {
+        var groups =
+            MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
 
-      var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
-        navigator.currentContext!,
-        title: "Widget Permissions",
-        builder: (context) => MatrixWidgetPermissionsView(
-            runner: runner,
-            groupedPermissions: groups.$1,
-            ungrouped: groups.$2),
-      );
+        var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
+          navigator.currentContext!,
+          title: "Widget Permissions",
+          builder: (context) => MatrixWidgetPermissionsView(
+              runner: runner,
+              groupedPermissions: groups.$1,
+              ungrouped: groups.$2),
+        );
 
-      if (picked != null) {
-        Log.i("User allowed permissions: ${picked}");
-        allowed.addAll(picked.value);
-        var rejected = needsPermission
-            .where((i) => picked.value.contains(i) == false)
-            .toList();
+        if (picked != null) {
+          Log.i("User allowed permissions: ${picked}");
+          allowed.addAll(picked.value);
+          var rejected = needsPermission
+              .where((i) => picked.value.contains(i) == false)
+              .toList();
 
-        if (picked.remember) {
-          preferences.allowWidgetCapabilityPermissions(
-              runner.client.identifier, runner.info.namespace, picked.value);
+          if (picked.remember) {
+            preferences.allowWidgetCapabilityPermissions(
+                runner.client.identifier, runner.info.namespace, picked.value);
 
-          preferences.rejectWidgetCapabilityPermissions(
-              runner.client.identifier, runner.info.namespace, rejected);
+            preferences.rejectWidgetCapabilityPermissions(
+                runner.client.identifier, runner.info.namespace, rejected);
+          }
         }
       }
     }

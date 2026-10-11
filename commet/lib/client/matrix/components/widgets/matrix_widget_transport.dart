@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class MatrixWidgetBlob {
@@ -87,7 +88,9 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
           }
         }
 
-        messageLogs.add((WidgetMessageDirection.incoming, decoded));
+        if (preferences.widgetDeveloperMode.value) {
+          messageLogs.add((WidgetMessageDirection.incoming, decoded));
+        }
         return decoded;
       });
 
@@ -104,8 +107,12 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
       _responseCompleters[requstId] = completer;
     }
 
-    messageLogs.add(
-        (WidgetMessageDirection.outgoing, Map<String, dynamic>.from(encoded)));
+    if (preferences.widgetDeveloperMode.value) {
+      messageLogs.add((
+        WidgetMessageDirection.outgoing,
+        Map<String, dynamic>.from(encoded)
+      ));
+    }
 
     transceiver.send(Utf8Encoder().convert(jsonEncode(encoded)));
 

@@ -374,6 +374,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference widgetDeveloperMode =
+      BoolPreference("widget_developer_mode", defaultValue: false);
+
   BoolPreference showStateEvents =
       BoolPreference("show_state_events", defaultValue: true);
 

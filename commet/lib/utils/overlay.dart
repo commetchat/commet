@@ -33,6 +33,8 @@ class VoipOverlay {
         room: room as MatrixRoom,
         context: context,
         widgetId: widgetId,
+        hidden: true,
+        privileged: true,
         info: MatrixUserWidgetInfo(
             id: widgetId,
             name: "Overlay",

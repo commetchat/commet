@@ -76,11 +76,9 @@ class _CurrentSessionPanelState extends State<CurrentSessionPanel> {
           if (WidgetComponent.currentSessions.isNotEmpty)
             Padding(
                 padding: EdgeInsetsGeometry.fromLTRB(4, 4, 4, 0),
-                child: SizedBox(
-                    height: 40,
-                    child: WidgetSessionsPanel(
-                      height: 40,
-                    ))),
+                child: WidgetSessionsPanel(
+                  height: 40,
+                )),
           if (clientManager!.callManager.currentSessions.isNotEmpty)
             Padding(
               padding: EdgeInsetsGeometry.fromLTRB(4, 4, 4, 0),

@@ -11,6 +11,7 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_transport.
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,10 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
 
   late Process process;
 
+  bool hidden;
+
+  bool privileged;
+
   @override
   NotifyingList<LogEntry> logs = NotifyingList.empty(growable: true);
 
@@ -52,6 +57,8 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
       required this.widgetId,
       required BuildContext context,
       required this.info,
+      this.hidden = false,
+      this.privileged = false,
       required this.client}) {
     var tx = MatrixSubprocessWidgetTransceiver(process: process);
     this.process = process;
@@ -59,11 +66,13 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
     messageTransport = MatrixWidgetTransport(tx);
     eventHandler = MatrixWidgetMessageHandler(runner: this);
 
-    capabilities =
-        MatrixWidgetCapabilitiesManager(runner: this, context: context);
+    capabilities = MatrixWidgetCapabilitiesManager(
+        runner: this, context: context, privileged: privileged);
 
-    process.stderr.map((i) => Utf8Decoder().convert(i)).listen((i) =>
-        i.split("\n").forEach((i) => logs.add(LogEntry(LogType.info, i))));
+    if (preferences.widgetDeveloperMode.value) {
+      process.stderr.map((i) => Utf8Decoder().convert(i)).listen((i) =>
+          i.split("\n").forEach((i) => logs.add(LogEntry(LogType.info, i))));
+    }
 
     process.exitCode.then((i) {
       Log.i("Subprocess exited with code: $i");
