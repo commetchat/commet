@@ -26,6 +26,8 @@ class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
   void initState() {
     super.initState();
 
+    thumbnailData = widget.source.thumbnail;
+
     subs = [
       widget.source.onThumbnailChanged.stream.listen((event) {
         setState(() {

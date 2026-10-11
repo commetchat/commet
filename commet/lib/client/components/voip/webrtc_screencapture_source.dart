@@ -11,6 +11,8 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
 
   WebrtcScreencaptureSource(this.source);
 
+  static bool get supportsSystemAudio => PlatformUtils.isWindows;
+
   static Future<ScreenCaptureSource?> showSelectSourcePrompt(
       BuildContext context) async {
     if (PlatformUtils.isAndroid) {

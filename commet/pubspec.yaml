@@ -86,8 +86,8 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  livekit_client: 2.7.0
-  flutter_webrtc: 1.4.0
+  livekit_client: ^2.13.0
+  flutter_webrtc: ^1.6.2+hotfix.3
   file_picker: ^10.2.0
   flutter_web_auth_2: ^4.1.0
   receive_intent:
@@ -169,15 +169,10 @@ dependency_overrides:
       ref: webview-patch
       path: ./packages/desktop_webview_window
 
-  flutter_webrtc:
-    git:
-      url: https://github.com/commetchat/flutter-webrtc.git
-      ref: hkdf
-
-  livekit_client:
-    git:
-      url: https://github.com/commetchat/livekit-client-sdk-flutter.git
-      ref: hkdf
+  # livekit_client:
+  #   git:
+  #     url: https://github.com/commetchat/livekit-client-sdk-flutter.git
+  #     ref: hkdf
 
 dev_dependencies: 
   drift_dev: ^2.28.0
