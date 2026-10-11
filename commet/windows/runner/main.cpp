@@ -33,6 +33,31 @@ int widgetRunnerEntry(std::vector<std::string> args)
   return EXIT_SUCCESS;
 }
 
+int overlayEntry(std::vector<std::string> args)
+{
+  HINSTANCE hGetProcIDDLL = LoadLibrary(L"rust_lib_commet.dll");
+
+  if (!hGetProcIDDLL)
+  {
+    std::cout << "could not load the dynamic library" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // resolve function address here
+  rust_entry funci = (rust_entry)GetProcAddress(hGetProcIDDLL, "commet_overlay");
+  if (!funci)
+  {
+    std::cout << "could not locate the function" << std::endl;
+    return EXIT_FAILURE;
+  }
+  else
+  {
+    funci();
+  }
+
+  return EXIT_SUCCESS;
+}
+
 bool SendAppLinkToInstance(const std::wstring &title)
 {
   // Find our exact window
@@ -92,6 +117,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
     if (result == 0)
     {
       return widgetRunnerEntry(command_line_arguments);
+    }
+
+    result = strcmp(i.c_str(), "--overlay");
+    if (result == 0)
+    {
+      return overlayEntry(command_line_arguments);
     }
   }
 

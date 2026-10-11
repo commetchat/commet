@@ -15,6 +15,7 @@ import 'package:commet/client/matrix/components/widgets/capabilities/mx_capabili
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_timeline.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_turn_servers.dart';
 import 'package:commet/client/matrix/components/widgets/capabilities/mx_capability_upload_file.dart';
+import 'package:commet/client/matrix/components/widgets/capabilities/voip_state_capability.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_component.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_message_handler.dart';
 import 'package:commet/client/matrix/components/widgets/matrix_widget_permission_groups.dart';
@@ -45,8 +46,10 @@ class MatrixWidgetCapabilitiesManager
   MatrixWidgetRunner runner;
   final BuildContext context;
 
+  final bool privileged;
+
   MatrixWidgetCapabilitiesManager(
-      {required this.runner, required this.context}) {
+      {required this.runner, required this.context, this.privileged = false}) {
     runner.onClosed.listen((_) {
       dispose();
     });
@@ -108,31 +111,35 @@ class MatrixWidgetCapabilitiesManager
     }
 
     if (needsPermission.isNotEmpty) {
-      var groups =
-          MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
+      if (privileged) {
+        allowed.addAll(needsPermission);
+      } else {
+        var groups =
+            MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
 
-      var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
-        navigator.currentContext!,
-        title: "Widget Permissions",
-        builder: (context) => MatrixWidgetPermissionsView(
-            runner: runner,
-            groupedPermissions: groups.$1,
-            ungrouped: groups.$2),
-      );
+        var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
+          navigator.currentContext!,
+          title: "Widget Permissions",
+          builder: (context) => MatrixWidgetPermissionsView(
+              runner: runner,
+              groupedPermissions: groups.$1,
+              ungrouped: groups.$2),
+        );
 
-      if (picked != null) {
-        Log.i("User allowed permissions: ${picked}");
-        allowed.addAll(picked.value);
-        var rejected = needsPermission
-            .where((i) => picked.value.contains(i) == false)
-            .toList();
+        if (picked != null) {
+          Log.i("User allowed permissions: ${picked}");
+          allowed.addAll(picked.value);
+          var rejected = needsPermission
+              .where((i) => picked.value.contains(i) == false)
+              .toList();
 
-        if (picked.remember) {
-          preferences.allowWidgetCapabilityPermissions(
-              runner.client.identifier, runner.info.namespace, picked.value);
+          if (picked.remember) {
+            preferences.allowWidgetCapabilityPermissions(
+                runner.client.identifier, runner.info.namespace, picked.value);
 
-          preferences.rejectWidgetCapabilityPermissions(
-              runner.client.identifier, runner.info.namespace, rejected);
+            preferences.rejectWidgetCapabilityPermissions(
+                runner.client.identifier, runner.info.namespace, rejected);
+          }
         }
       }
     }
@@ -182,6 +189,7 @@ class MatrixWidgetCapabilitiesManager
     MatrixCapabilityTimeline.entry,
     MatrixCapabilityTheme.entry,
     MatrixCapabilityUpdateDelayedEvent.entry,
+    MatrixCapabilityVoipState.entry,
     MatrixCapabilitySendDelayedEvent.entry,
     // MatrixCapabilityAlwaysOnScreen.entry,
     // MatrixCapabilitySendStickyEvent.entry,

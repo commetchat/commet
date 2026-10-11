@@ -7,6 +7,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/image_or_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/overlay.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class UserWidgetInfo {
@@ -102,6 +103,10 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
     var widgetComponent = room.client.getComponent<WidgetComponent>();
 
     for (var session in WidgetComponent.currentSessions) {
+      if (session.info.type == VoipOverlay.widgetId) {
+        continue;
+      }
+
       await session.dispose();
     }
 

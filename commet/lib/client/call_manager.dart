@@ -7,10 +7,12 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/overlay.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -98,6 +100,31 @@ class CallManager {
     }
 
     event.onConnectionStateChanged.listen((_) => onCallStateChanged(event));
+
+    if (preferences.useVoipOverlay.value) {
+      showOverlay(event, room);
+    }
+  }
+
+  void showOverlay(VoipSession event, Room? room) {
+    removeOverlay();
+
+    VoipOverlay.spawn(event.client, room!, navigator.currentContext!);
+  }
+
+  void enableOverlayForExistingSessions() {
+    var session = currentSessions.firstOrNull;
+
+    if (session != null) {
+      showOverlay(session, session.client.getRoom(session.roomId));
+    }
+  }
+
+  void removeOverlay() {
+    for (var existing in WidgetComponent.currentSessions
+        .where((i) => i.info.type == VoipOverlay.widgetId)) {
+      existing.dispose();
+    }
   }
 
   void onSessionEnded(VoipSession event) {
@@ -106,6 +133,11 @@ class CallManager {
 
     if (currentSessions.where((e) => e.state == VoipState.incoming).isEmpty) {
       stopRingtone();
+    }
+
+    for (var existing in WidgetComponent.currentSessions
+        .where((i) => i.info.type == VoipOverlay.widgetId)) {
+      existing.dispose();
     }
 
     endCallSound();

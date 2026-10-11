@@ -20,30 +20,20 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
     if (publication.track case AudioTrack t) {
-      visualizer = createVisualizer(t,
-          options:
-              AudioVisualizerOptions(barCount: 1, smoothTransition: false));
-
       var volume = preferences.getVoipUserVolume(userId);
       Helper.setVolume(volume, t.mediaStreamTrack);
-
-      var _listener = visualizer!.createListener();
-      _listener.on<AudioVisualizerEvent>((e) {
-        setAudioLevel(e);
-      });
-
-      visualizer!.start();
     }
   }
 
   @override
   double audiolevel = 0.0;
 
-  void setAudioLevel(AudioVisualizerEvent e) {
-    audiolevel = (e.event[0] as double) > 0.5 ? 1 : 0;
+  void markAsSpeaker(bool isSpeaker) {
+    audiolevel = isSpeaker ? 1.0 : 0.0;
   }
 
   void onStreamUpdatedEvent() {
+    print("Stream updated!");
     _onChanged.add(());
   }
 

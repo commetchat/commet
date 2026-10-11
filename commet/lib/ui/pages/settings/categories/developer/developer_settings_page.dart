@@ -19,6 +19,7 @@ import 'package:commet/ui/pages/settings/categories/app/double_preference_slider
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
+import 'package:commet/utils/overlay.dart';
 import 'package:commet/utils/system_processes_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,12 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
             BooleanPreferenceToggle(
                 preference: preferences.debugTranslations,
                 title: "Debug Translations"),
+            BooleanPreferenceToggle(
+              preference: preferences.widgetDeveloperMode,
+              title: "Enable widget developer mode",
+              description:
+                  "Provides a debug view to log and inspect messages sent by widgets",
+            ),
             DoublePreferenceSlider(
               preference: preferences.customOnscreenKeyboardViewOffset,
               title: "Keyboard Offset",
@@ -407,6 +414,12 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 }
               }),
           tiamat.Button(
+              text: "Launch Overlay",
+              onTap: () async {
+                var client = clientManager!.clients.first;
+                VoipOverlay.spawn(client, client.rooms.first, context);
+              }),
+          tiamat.Button(
             text: "Get Process List",
             onTap: () async {
               var list = await SystemProcessesUtils.getProcessList();
@@ -552,20 +565,18 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
               ),
             ),
           if (widget.showStdErr)
-            Expanded(
-              child: tiamat.Panel(
-                header: "stderr",
-                child: SingleChildScrollView(
-                  child: Scrollbar(
+            tiamat.Panel(
+              header: "stderr",
+              child: Scrollbar(
+                controller: stdErrScrollController,
+                child: SizedBox(
+                  height: 500,
+                  child: SingleChildScrollView(
                     controller: stdErrScrollController,
-                    child: SingleChildScrollView(
-                      controller: stdErrScrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: Codeblock(
-                        text: stdError,
-                        clipboardText: stdError,
-                        language: "stderr",
-                      ),
+                    child: Codeblock(
+                      text: stdError,
+                      clipboardText: stdError,
+                      language: "stderr",
                     ),
                   ),
                 ),

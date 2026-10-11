@@ -374,6 +374,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference widgetDeveloperMode =
+      BoolPreference("widget_developer_mode", defaultValue: false);
+
   BoolPreference showStateEvents =
       BoolPreference("show_state_events", defaultValue: true);
 
@@ -392,6 +395,9 @@ class Preferences {
 
   BoolPreference useFallbackTurnServer =
       BoolPreference("use_fallback_turn_server", defaultValue: false);
+
+  BoolPreference useVoipOverlay =
+      BoolPreference("use_voip_overlay", defaultValue: true);
 
   BoolPreference urlPreviewInE2EEChat =
       BoolPreference("use_url_preview_in_e2ee_chat", defaultValue: false);
