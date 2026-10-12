@@ -1432,6 +1432,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "embed-file"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee3f30eec840a3d5da1c6821cf4f5b5a96a619b2fd0f022fc688c8793b369168"
+
+[[package]]
 name = "env_filter"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3389,9 +3395,10 @@ dependencies = [
 [[package]]
 name = "overlay"
 version = "0.1.0"
-source = "git+https://github.com/commetchat/overlay.git?rev=38c46061a526d2eeede2c886c1b7ff0f2afdf7f8#38c46061a526d2eeede2c886c1b7ff0f2afdf7f8"
+source = "git+https://github.com/commetchat/overlay.git?rev=5e110888725bc2e21831b923896f2f89dea5963f#5e110888725bc2e21831b923896f2f89dea5963f"
 dependencies = [
  "base64 0.23.1",
+ "embed-file",
  "image 0.25.10",
  "log",
  "piet",
