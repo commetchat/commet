@@ -8,6 +8,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_panel_view.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
@@ -353,20 +354,26 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 150, 0, 0),
               child: ScaledSafeArea(
-                child: Avatar.extraLarge(
-                  border: BoxBorder.all(
-                      color: Theme.of(context).colorScheme.surface,
-                      width: 10,
-                      style: BorderStyle.solid,
-                      strokeAlign: 0.5),
-                  image: widget.avatar,
-                  placeholderText: widget.displayName,
-                  placeholderColor: widget.spaceColor,
-                ),
+                child: GestureDetector(
+                    onTap: fullscreenAvatar,
+                    child: Avatar.extraLarge(
+                      border: BoxBorder.all(
+                          color: Theme.of(context).colorScheme.surface,
+                          width: 10,
+                          style: BorderStyle.solid,
+                          strokeAlign: 0.5),
+                      image: widget.avatar,
+                      placeholderText: widget.displayName,
+                      placeholderColor: widget.spaceColor,
+                    )),
               )),
         ),
       ],
     );
+  }
+
+  void fullscreenAvatar() {
+    Lightbox.show(context, image: widget.avatar);
   }
 
   Widget buildPreviewList() {
