@@ -48,6 +48,7 @@ dependencies:
   url_launcher: ^6.1.11
   win_toast: ^0.4.0
   window_manager: ^0.5.1
+  tray_manager: ^0.5.2
   flutter: 
     sdk: flutter
   flutter_highlighter: 
