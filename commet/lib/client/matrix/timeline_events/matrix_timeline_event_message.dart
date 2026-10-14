@@ -230,7 +230,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
       text = text.replaceRange(start, end, "");
     }
 
-    var foundLinks = TextUtils.findUrls(text);
+    var foundLinks = TextUtils.findUrls(text)?.toSet().toList();
 
     foundLinks?.removeWhere((element) => element.authority == "matrix.to");
     if (foundLinks?.isEmpty == true) {
