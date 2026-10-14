@@ -89,6 +89,7 @@ class Mime {
     var resolver = mime.MimeTypeResolver();
     resolver.addMagicNumber([0x42, 0x4d], "image/bmp");
     resolver.addMagicNumber([0x3c, 0x73, 0x76, 0x67], "image/svg+xml"); // '<svg
+    resolver.addMagicNumber([0x4F, 0x67, 0x67, 0x53], "audio/ogg"); // '<OggS
     var type = resolver.lookup(filepath);
     type ??= resolver.lookup(filepath, headerBytes: data);
     return type;
