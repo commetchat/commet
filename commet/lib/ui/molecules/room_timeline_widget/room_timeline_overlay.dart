@@ -67,13 +67,14 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                   child: MouseRegion(
                       child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: buildTooltipMenu(child: Listener(
-                                          onPointerSignal: (event) {
-                    if (event is PointerScrollEvent) {
-                      widget.onScrolled?.call(event);
-                    }
-                  },
-                      child: buildPrimaryMenu(context))),
+                    child: buildTooltipMenu(
+                        child: Listener(
+                            onPointerSignal: (event) {
+                              if (event is PointerScrollEvent) {
+                                widget.onScrolled?.call(event);
+                              }
+                            },
+                            child: buildPrimaryMenu(context))),
                   )))),
         Align(
           alignment: Alignment.bottomCenter,
