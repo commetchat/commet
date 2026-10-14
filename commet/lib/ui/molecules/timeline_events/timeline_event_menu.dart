@@ -424,7 +424,11 @@ class TimelineEventMenu {
                       icon: Icons.link,
                       onTap: () {
                         callback();
-                        Navigator.of(context).pop();
+
+                        if (MediaQuery.of(context).layout ==
+                            LayoutType.mobile) {
+                          Navigator.of(context).pop();
+                        }
                       },
                     ),
                   ),
@@ -432,7 +436,7 @@ class TimelineEventMenu {
 
                 if (selected != null) {
                   Clipboard.setData(ClipboardData(
-                    text: links.first.toString(),
+                    text: selected.toString(),
                   ));
                 }
               } else {
