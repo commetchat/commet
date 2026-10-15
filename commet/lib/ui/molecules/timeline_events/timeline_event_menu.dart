@@ -31,6 +31,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventMenu {
   final Timeline timeline;
@@ -138,6 +139,8 @@ class TimelineEventMenu {
     var polls = timeline.client.getComponent<PollComponent>();
     var gifs = timeline.client.getComponent<GifComponent>();
 
+    List<Uri>? links;
+
     if (event.status == TimelineEventStatus.synced) {
       canEditEvent = event is TimelineEventMessage &&
           timeline.room.permissions.canUserEditMessages &&
@@ -164,6 +167,8 @@ class TimelineEventMenu {
       if (event is TimelineEventMessage) {
         canSaveAttachment =
             (event as TimelineEventMessage).attachments?.isNotEmpty == true;
+
+        links = (event as TimelineEventMessage).getLinks(timeline: timeline);
       }
 
       canAddReaction =
@@ -402,6 +407,43 @@ class TimelineEventMenu {
               Clipboard.setData(ClipboardData(
                 text: (event as TimelineEventMessage).plainTextBody,
               ));
+            }),
+      if (links?.isNotEmpty == true)
+        TimelineEventMenuEntry(
+            name: "Copy Link",
+            icon: Icons.link,
+            action: (context) async {
+              if (links!.length > 1) {
+                var selected = await AdaptiveDialog.pickOne(
+                  context,
+                  items: links,
+                  itemBuilder: (context, item, callback) => SizedBox(
+                    height: 50,
+                    child: tiamat.TextButton(
+                      item.toString(),
+                      icon: Icons.link,
+                      onTap: () {
+                        callback();
+
+                        if (MediaQuery.of(context).layout ==
+                            LayoutType.mobile) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                  ),
+                );
+
+                if (selected != null) {
+                  Clipboard.setData(ClipboardData(
+                    text: selected.toString(),
+                  ));
+                }
+              } else {
+                Clipboard.setData(ClipboardData(
+                  text: links.first.toString(),
+                ));
+              }
             }),
       TimelineEventMenuEntry(
         name: promptShowSource,
