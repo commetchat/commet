@@ -17,10 +17,14 @@ import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/organisms/add_widget_dialog/add_widget_dialog.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/debounce.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:exif/exif.dart';
@@ -73,6 +77,7 @@ class ChatState extends State<Chat> {
   StreamController<void> onFocusMessageInput = StreamController();
   StreamController<String> setMessageInputText = StreamController();
 
+  StreamSubscription? onLinkedSubscription;
   StreamSubscription? onFileDroppedSubscription;
 
   GifComponent? gifs;
@@ -104,6 +109,8 @@ class ChatState extends State<Chat> {
     receipts = room.getComponent<ReadReceiptComponent>();
     typingIndicators = room.getComponent<TypingIndicatorComponent>();
 
+    onLinkedSubscription = CustomURI.onLinked.listen(onLinked);
+
     if (widget.threadId != null && threadsComponent != null) {
       loadThreadTimeline();
     } else {
@@ -117,22 +124,29 @@ class ChatState extends State<Chat> {
     super.initState();
   }
 
+  String? get initialEventId =>
+      preferences.openRoomsAtLastReadMessage.value ? room.lastRead : null;
+
   Future<void> loadTimeline() async {
-    var t = await room.getTimeline();
-    setState(() {
-      _timeline = t;
-    });
+    ErrorUtils.tryRun(context, () async {
+      var t = await room.getTimeline(contextEventId: initialEventId);
+      setState(() {
+        _timeline = t;
+      });
+    }, title: "Error loading timeline");
   }
 
   Future<void> loadThreadTimeline() async {
-    Timeline? timeline = room.timeline;
-    timeline ??= await room.getTimeline();
+    ErrorUtils.tryRun(context, () async {
+      Timeline? timeline = room.timeline;
+      timeline ??= await room.getTimeline(contextEventId: initialEventId);
 
-    var threadTimeline = await threadsComponent!.getThreadTimeline(
-        roomTimeline: timeline, threadRootEventId: widget.threadId!);
-    setState(() {
-      _timeline = threadTimeline;
-    });
+      var threadTimeline = await threadsComponent!.getThreadTimeline(
+          roomTimeline: timeline, threadRootEventId: widget.threadId!);
+      setState(() {
+        _timeline = threadTimeline;
+      });
+    }, title: "Error loading thread timeline");
   }
 
   @override
@@ -140,6 +154,7 @@ class ChatState extends State<Chat> {
     Log.i(
         "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
+    onLinkedSubscription?.cancel();
     onFileDroppedSubscription?.cancel();
     super.dispose();
   }
@@ -322,6 +337,10 @@ class ChatState extends State<Chat> {
         interactionType == EventInteractionType.reply
             ? interactingEvent
             : null);
+
+    if (interactionType == EventInteractionType.reply) {
+      setInteractingEvent(null);
+    }
   }
 
   Future<void> sendGif(GifSearchResult gif) async {
@@ -331,6 +350,10 @@ class ChatState extends State<Chat> {
         interactionType == EventInteractionType.reply
             ? interactingEvent
             : null);
+
+    if (interactionType == EventInteractionType.reply) {
+      setInteractingEvent(null);
+    }
   }
 
   void editLastMessage() {
@@ -382,6 +405,19 @@ class ChatState extends State<Chat> {
   }
 
   void onFileDropped(DropDoneDetails event) async {
+    var path = event.rawText;
+
+    print(path);
+    if (path != null) {
+      var custom = CustomURI.parse(path);
+
+      if (custom case AddWidgetURI widgetUri) {
+        AdaptiveDialog.show(context, builder: (dialogContext) {
+          return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
+        }, title: 'Add "${widgetUri.widgetName ?? "Custom"}"?');
+      }
+    }
+
     for (var file in event.files) {
       var size = await file.length();
       Uint8List? data;
@@ -416,5 +452,15 @@ class ChatState extends State<Chat> {
         interactionType == EventInteractionType.reply
             ? interactingEvent
             : null);
+  }
+
+  void onLinked(Uri event) {
+    var custom = CustomURI.parse(event.toString());
+
+    if (custom case AddWidgetURI widgetUri) {
+      AdaptiveDialog.show(context, builder: (dialogContext) {
+        return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
+      }, title: 'Add "${widgetUri.widgetName ?? "Custom"}"?');
+    }
   }
 }

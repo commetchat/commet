@@ -1,6 +1,7 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/subplatforms/subplatforms.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -44,7 +45,7 @@ class SettingsCategoryAbout implements SettingsCategory {
             icon: m.Icons.text_snippet,
             makeScrollable: false,
             pageBuilder: (context) {
-              return const LogPage();
+              return LogPage(Log.log);
             },
           )
       ]);

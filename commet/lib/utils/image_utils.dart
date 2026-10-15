@@ -7,13 +7,25 @@ class ImageUtils {
   static Future<ui.Image> imageProviderToImage(ImageProvider provider) async {
     Completer<ui.Image> completer = Completer<ui.Image>();
 
-    provider
-        .resolve(const ImageConfiguration())
-        .addListener(ImageStreamListener((info, synchronousCall) {
+    var listener = (ImageStreamListener((info, synchronousCall) {
       if (!completer.isCompleted) {
         completer.complete(info.image);
       }
     }));
-    return completer.future;
+
+    var stream = provider.resolve(const ImageConfiguration());
+
+    stream.addListener(listener);
+
+    try {
+      var result = await completer.future;
+      stream.removeListener(listener);
+
+      return result;
+    } catch (_) {
+      stream.removeListener(listener);
+    }
+
+    throw UnimplementedError();
   }
 }

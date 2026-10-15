@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:commet/main.dart';
+import 'package:commet/utils/app_focus_util.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/foundation.dart';
@@ -118,6 +120,7 @@ class LODImageCompleter extends ImageStreamCompleter {
   Timer? _timer;
   Future? fullResLoading = null;
   Future? thumbnailLoading = null;
+  StreamSubscription? appFocusStateSub;
 
   LODImageCompleter(
       {this.blurhash,
@@ -265,6 +268,7 @@ class LODImageCompleter extends ImageStreamCompleter {
       return;
     }
     _frameCallbackScheduled = true;
+
     SchedulerBinding.instance.scheduleFrameCallback(_handleAppFrame);
   }
 
@@ -291,10 +295,20 @@ class LODImageCompleter extends ImageStreamCompleter {
       }
       return;
     }
+
     final Duration delay = _frameDuration! - (timestamp - _shownTimestamp);
-    _timer = Timer(delay * timeDilation, () {
-      _scheduleAppFrame();
-    });
+
+    if (AppFocus.focused ||
+        preferences.pauseAnimationsWhenNotFocused.value == false) {
+      _timer?.cancel();
+
+      _timer = Timer(delay * timeDilation, () {
+        _scheduleAppFrame();
+      });
+    } else {
+      _timer?.cancel();
+      _timer = null;
+    }
   }
 
   @override
@@ -304,13 +318,33 @@ class LODImageCompleter extends ImageStreamCompleter {
         (currentImage == null || _codec!.frameCount > 1)) {
       _decodeNextFrameAndSchedule();
     }
+
+    if (appFocusStateSub == null) {
+      appFocusStateSub = AppFocus.focusStateChanged.listen(onAppFocusChanged);
+    }
     super.addListener(listener);
+  }
+
+  void onAppFocusChanged(void event) {
+    if (AppFocus.focused) {
+      if (preferences.pauseAnimationsWhenNotFocused.value == true) {
+        if (_codec?.frameCount != null && _codec!.frameCount > 1) {
+          _timer?.cancel();
+          _timer = Timer(_frameDuration ?? Duration(milliseconds: 100), () {
+            _decodeNextFrameAndSchedule();
+          });
+        }
+      }
+    }
   }
 
   @override
   void removeListener(ImageStreamListener listener) {
     super.removeListener(listener);
     if (!hasListeners) {
+      appFocusStateSub?.cancel();
+      appFocusStateSub = null;
+
       _timer?.cancel();
       _timer = null;
     }

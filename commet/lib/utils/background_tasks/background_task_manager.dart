@@ -6,9 +6,9 @@ import 'package:commet/utils/notifying_list.dart';
 class BackgroundTaskManager {
   NotifyingList<BackgroundTask> tasks = NotifyingList.empty(growable: true);
 
-  Stream<int> get onTaskAdded => tasks.onAdd;
+  Stream<BackgroundTask> get onTaskAdded => tasks.onAdd;
 
-  Stream<int> get onTaskRemoved => tasks.onRemove;
+  Stream<BackgroundTask> get onTaskRemoved => tasks.onRemove;
 
   Stream get onListUpdate => tasks.onListUpdated;
 

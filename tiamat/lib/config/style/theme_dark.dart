@@ -33,6 +33,8 @@ class ThemeDark {
         surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
         surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
         primaryContainer: ThemeDarkColors.primary,
+        tertiary: Color.fromARGB(255, 252, 191, 73),
+        tertiaryContainer: Color.fromARGB(20, 252, 191, 73),
         brightness: Brightness.dark,
         outline: ThemeDarkColors.surfaceContainerHigh);
 

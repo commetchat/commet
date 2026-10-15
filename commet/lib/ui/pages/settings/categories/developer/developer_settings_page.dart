@@ -1,22 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
+import 'package:commet/utils/overlay.dart';
 import 'package:commet/utils/system_processes_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -61,8 +64,17 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                     "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that",
               ),
             BooleanPreferenceToggle(
+                preference: preferences.useSharedIsolateInBackgroundTasks,
+                title: "Use shared database isolate in background"),
+            BooleanPreferenceToggle(
                 preference: preferences.debugTranslations,
                 title: "Debug Translations"),
+            BooleanPreferenceToggle(
+              preference: preferences.widgetDeveloperMode,
+              title: "Enable widget developer mode",
+              description:
+                  "Provides a debug view to log and inspect messages sent by widgets",
+            ),
             DoublePreferenceSlider(
               preference: preferences.customOnscreenKeyboardViewOffset,
               title: "Keyboard Offset",
@@ -119,6 +131,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                     },
                   ),
                 ],
+              ),
+              BooleanPreferenceToggle(
+                preference: preferences.showPerformanceOverlay,
+                title: "Show performance overlay",
+                description: "Requires restart",
               )
             ]),
           )
@@ -141,7 +158,21 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 text: "Timeline Viewer",
                 onTap: () => NavigationUtils.navigateTo(
                     context, const BenchmarkTimelineViewer()),
-              )
+              ),
+              tiamat.Button(
+                  text: "Notification Badges Stress Test",
+                  onTap: () async {
+                    for (int i = 0; i < 10000; i++) {
+                      int v = i % 9;
+                      (NotificationManager.notifier as LinuxNotifier?)
+                          ?.service
+                          .update(count: v, countVisible: v != 0);
+
+                      await Future.delayed(Duration(milliseconds: 100));
+
+                      print("Notification Badge Stress Test: $i");
+                    }
+                  })
             ],
           ),
         ]);
@@ -333,6 +364,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 String? empty;
                 empty!.split(" ");
               }),
+          tiamat.Button(
+              text: "Print Something",
+              onTap: () {
+                print("Hello, world!");
+              }),
         ])
       ],
     );
@@ -346,6 +382,43 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
           Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Launch Widget Runner",
+              onTap: () async {
+                var exe = Platform.resolvedExecutable;
+
+                var process = await Process.start(exe, [
+                  '--widget_runner',
+                  '--title="commet | Widget Runner"',
+                  '--url=${"https://commet.chat"}'
+                ]);
+
+                process.exitCode.then((i) {
+                  Log.i("Subprocess exited: $i");
+                });
+
+                AdaptiveDialog.show(context,
+                    builder: (context) => ProcessOutputViewer(
+                          process,
+                          showStdErr: true,
+                        )).then((_) {
+                  process.kill(ProcessSignal.sigkill);
+                });
+
+                for (int i = 0; i < 10; i++) {
+                  Log.i("Sending data to subprocess");
+                  process.stdin.writeln("Sending some data to stdin!!!");
+                  process.stdin.flush();
+
+                  await Future.delayed(Duration(seconds: 5));
+                }
+              }),
+          tiamat.Button(
+              text: "Launch Overlay",
+              onTap: () async {
+                var client = clientManager!.clients.first;
+                VoipOverlay.spawn(client, client.rooms.first, context);
+              }),
           tiamat.Button(
             text: "Get Process List",
             onTap: () async {
@@ -422,8 +495,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 }
 
 class ProcessOutputViewer extends StatefulWidget {
-  const ProcessOutputViewer(this.process, {super.key});
+  const ProcessOutputViewer(this.process,
+      {super.key, this.showStdErr = false, this.showStdOut = true});
   final Process process;
+  final bool showStdErr;
+  final bool showStdOut;
 
   @override
   State<ProcessOutputViewer> createState() => _ProcessOutputViewerState();
@@ -440,8 +516,10 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
     super.initState();
 
     subs = [
-      widget.process.stdout.transform(utf8.decoder).listen(onStdout),
-      widget.process.stderr.transform(utf8.decoder).listen(onStderr),
+      if (widget.showStdOut)
+        widget.process.stdout.transform(utf8.decoder).listen(onStdout),
+      if (widget.showStdErr)
+        widget.process.stderr.transform(utf8.decoder).listen(onStderr),
     ];
   }
 
@@ -455,16 +533,56 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
     super.dispose();
   }
 
+  ScrollController stdoutScrollController = ScrollController();
+  ScrollController stdErrScrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 1000,
-      child: SingleChildScrollView(
-        child: Codeblock(
-          text: stdOut,
-          clipboardText: stdOut,
-          language: "stdout",
-        ),
+      child: Column(
+        spacing: 4,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.showStdOut)
+            Expanded(
+              child: tiamat.Panel(
+                header: "stdout",
+                child: SingleChildScrollView(
+                  child: Scrollbar(
+                    controller: stdoutScrollController,
+                    child: SingleChildScrollView(
+                      controller: stdoutScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Codeblock(
+                        text: stdOut,
+                        clipboardText: stdOut,
+                        language: "stdout",
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (widget.showStdErr)
+            tiamat.Panel(
+              header: "stderr",
+              child: Scrollbar(
+                controller: stdErrScrollController,
+                child: SizedBox(
+                  height: 500,
+                  child: SingleChildScrollView(
+                    controller: stdErrScrollController,
+                    child: Codeblock(
+                      text: stdError,
+                      clipboardText: stdError,
+                      language: "stderr",
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

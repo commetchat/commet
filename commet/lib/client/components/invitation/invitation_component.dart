@@ -15,4 +15,8 @@ abstract class InvitationComponent<T extends Client> implements Component<T> {
       {required String userId, required String roomId});
 
   Future<List<Profile>> searchUsers(String term);
+
+  bool get allowInvitations;
+
+  Future<void> setInvitationsAllowed(bool allowed);
 }

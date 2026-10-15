@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
@@ -14,10 +16,14 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,
-      {super.key, this.ignorePointer = false, this.previewMedia = false});
+      {super.key,
+      this.ignorePointer = false,
+      this.constrainSize = true,
+      this.previewMedia = false});
   final Attachment attachment;
   final bool ignorePointer;
   final bool previewMedia;
+  final bool constrainSize;
   @override
   State<MessageAttachment> createState() => _MessageAttachmentState();
 }
@@ -100,20 +106,25 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Widget buildVideo() {
     var attachment = widget.attachment as VideoAttachment;
+    bool showInfo =
+        widget.attachment.name != null && attachment.fileSize != null;
 
+    double height = 200;
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: SizedBox(
-        height: 200 + 30,
-        width: attachment.aspectRatio * 200,
+        height: widget.constrainSize ? height + (showInfo ? 30 : 0) : null,
+        width: max(
+            widget.constrainSize ? attachment.aspectRatio * height : 200, 200),
         child: Panel(
             mainAxisSize: MainAxisSize.min,
-            header:
-                "${attachment.name} ${attachment.fileSize != null ? "- ${TextUtils.readableFileSize(attachment.fileSize!)}" : ""}",
+            header: showInfo
+                ? "${attachment.name} ${attachment.fileSize != null ? "- ${TextUtils.readableFileSize(attachment.fileSize!)}" : ""}"
+                : null,
             mode: TileType.surfaceContainerLow,
             padding: 0,
             child: SizedBox(
-                height: 200,
+                height: height,
                 width: 500,
                 child: AspectRatio(
                     aspectRatio: attachment.aspectRatio,
@@ -121,6 +132,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                         ? null
                         : VideoPlayer(
                             attachment.file,
+                            streamUrl: attachment.streamUrl,
                             thumbnail: attachment.thumbnail,
                             fileName: attachment.name,
                             doThumbnail: true,
@@ -162,7 +174,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     });
   }
 
-  Widget buildFile(IconData icon, String fileName, int? fileSize) {
+  Widget buildFile(IconData icon, String? fileName, int? fileSize) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -187,7 +199,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         tiamat.Text.labelEmphasised(
-                          fileName,
+                          fileName ?? "unnamed",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),

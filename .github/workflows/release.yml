@@ -22,7 +22,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Configure Flutter
@@ -99,7 +99,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Setup Java
@@ -184,7 +184,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Setup Java
@@ -275,7 +275,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Setup Tools
@@ -361,7 +361,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Setup Tools
@@ -382,7 +382,7 @@ jobs:
       - name: Create Flatpak
         run: | 
           sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          sudo flatpak install -y flathub org.gnome.Platform//48 org.gnome.Sdk//48
+          sudo flatpak install -y flathub org.gnome.Platform//51 org.gnome.Sdk//51
           mkdir -p commet/linux/flatpak/commet
           cp -r $PROJECT_PATH/build/linux/x64/release/bundle $PROJECT_PATH/linux/flatpak/commet/bundle
           version=$(echo ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} | grep -oP '[0-9]+([.][0-9]+)+')
@@ -450,7 +450,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Setup Tools
@@ -503,7 +503,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.41.9'
           channel: 'stable'
 
       - name: Setup Tools

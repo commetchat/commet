@@ -10,6 +10,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 
@@ -23,6 +24,8 @@ dynamic DefaultFirebaseOptions;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
+  EventBus.onReceivedPushNotificationData.add("${message.data}");
+
   return AndroidNotifier.onForegroundMessage(message.data);
 }
 
@@ -31,6 +34,8 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   Log.prefix = "fcm-background";
   Log.i("Got background message: ${message.data}");
   isHeadless = true;
+
+  EventBus.onReceivedPushNotificationData.add("${message.data}");
 
   final data = message.data;
 
@@ -46,7 +51,7 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
     if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
       if (preferences.developerMode.value) {
         // ignore {"prio": "high"} notifications
-        if (data.length == 1 && data.containsKey("prio")) {
+        if (data.length == 2 && data.containsKey("prio")) {
           return;
         }
 

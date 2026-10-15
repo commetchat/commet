@@ -23,6 +23,11 @@ class AppConfig {
     return join(dir.path, "socket");
   }
 
+  static Future<String> getWidgetSocketPath() async {
+    final dir = await getApplicationSupportDirectory();
+    return join(dir.path, "widget_rx");
+  }
+
   static Future<String> getDriftDatabasePath() async {
     if (BuildConfig.WEB) {
       return "commet";

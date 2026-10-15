@@ -1,5 +1,6 @@
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_per_message_profile.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +70,16 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
       senderColor = sender.defaultColor;
       body = event.plainTextBody;
       loading = false;
+
+      if (event is TimelineEventFeaturePerMessageProfile) {
+        var profile = (event as TimelineEventFeaturePerMessageProfile)
+            .getPerMessageProfile(timeline: widget.timeline);
+
+        if (profile?.hasDisplayName == true) {
+          senderName = profile!.displayName;
+          senderColor = profile.color;
+        }
+      }
     });
   }
 
@@ -111,7 +122,7 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
                           text: body ?? "Unknown",
                           style: Theme.of(context)
                               .textTheme
-                              .bodyMedium
+                              .bodySmall
                               ?.copyWith(
                                   color: material.Theme.of(context)
                                       .colorScheme

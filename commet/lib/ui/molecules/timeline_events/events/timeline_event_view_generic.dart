@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_per_message_profile.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
@@ -157,6 +158,16 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
     var sender = room!.getMemberOrFallback(event.senderId);
     if (event.showSenderAvatar) {
       senderAvatar = sender.avatar;
+
+      if (event is TimelineEventFeaturePerMessageProfile) {
+        var profile = (event as TimelineEventFeaturePerMessageProfile)
+            .getPerMessageProfile(timeline: widget.timeline);
+
+        if (profile != null &&
+            (profile.avatar != null || profile.clearAvatar)) {
+          senderAvatar = profile.avatar;
+        }
+      }
     }
   }
 }

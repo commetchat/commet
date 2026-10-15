@@ -1,3 +1,5 @@
+import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -19,7 +21,7 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
       children: [
         const Padding(
           padding: EdgeInsets.all(8.0),
-          child: tiamat.Text.label(
+          child: tiamat.Text.error(
             "These features are still under development, and may contain bugs or security issues. Enable at your own risk",
           ),
         ),
@@ -27,7 +29,14 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
           header: "Experiments",
           mode: TileType.surfaceContainerLow,
           child: Column(
-            children: [],
+            children: [
+              BooleanPreferenceToggle(
+                preference: preferences.experimentEnableE2eeElementCall,
+                title: "Encrypted Element Call",
+                description:
+                    "Allow use of the experimental support for end to end encryption in element call",
+              )
+            ],
           ),
         ),
         const Padding(

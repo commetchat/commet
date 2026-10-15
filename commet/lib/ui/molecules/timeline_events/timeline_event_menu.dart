@@ -21,6 +21,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
+import 'package:commet/ui/molecules/notification_debugger.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -30,6 +31,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventMenu {
   final Timeline timeline;
@@ -110,6 +112,7 @@ class TimelineEventMenu {
     this.setReplyingEvent,
     this.onActionFinished,
     this.isThreadTimeline = false,
+    required BuildContext context,
   }) {
     bool canEditEvent = false;
     bool canSaveAttachment = false;
@@ -135,6 +138,8 @@ class TimelineEventMenu {
     var photos = timeline.room.getComponent<PhotoAlbumRoom>();
     var polls = timeline.client.getComponent<PollComponent>();
     var gifs = timeline.client.getComponent<GifComponent>();
+
+    List<Uri>? links;
 
     if (event.status == TimelineEventStatus.synced) {
       canEditEvent = event is TimelineEventMessage &&
@@ -162,6 +167,8 @@ class TimelineEventMenu {
       if (event is TimelineEventMessage) {
         canSaveAttachment =
             (event as TimelineEventMessage).attachments?.isNotEmpty == true;
+
+        links = (event as TimelineEventMessage).getLinks(timeline: timeline);
       }
 
       canAddReaction =
@@ -236,7 +243,7 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
-      if (Layout.mobile) ...[
+      if (MediaQuery.of(context).mobile) ...[
         if (canFavoriteGif)
           TimelineEventMenuEntry(
             name: promptFavoriteGif,
@@ -401,6 +408,43 @@ class TimelineEventMenu {
                 text: (event as TimelineEventMessage).plainTextBody,
               ));
             }),
+      if (links?.isNotEmpty == true)
+        TimelineEventMenuEntry(
+            name: "Copy Link",
+            icon: Icons.link,
+            action: (context) async {
+              if (links!.length > 1) {
+                var selected = await AdaptiveDialog.pickOne(
+                  context,
+                  items: links,
+                  itemBuilder: (context, item, callback) => SizedBox(
+                    height: 50,
+                    child: tiamat.TextButton(
+                      item.toString(),
+                      icon: Icons.link,
+                      onTap: () {
+                        callback();
+
+                        if (MediaQuery.of(context).layout ==
+                            LayoutType.mobile) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                  ),
+                );
+
+                if (selected != null) {
+                  Clipboard.setData(ClipboardData(
+                    text: selected.toString(),
+                  ));
+                }
+              } else {
+                Clipboard.setData(ClipboardData(
+                  text: links.first.toString(),
+                ));
+              }
+            }),
       TimelineEventMenuEntry(
         name: promptShowSource,
         icon: Icons.code,
@@ -439,6 +483,19 @@ class TimelineEventMenu {
             }
 
             onActionFinished?.call();
+          },
+        ),
+      if (preferences.developerMode.value)
+        TimelineEventMenuEntry(
+          name: "Diagnose Notification",
+          icon: Icons.notification_important,
+          action: (BuildContext context) async {
+            AdaptiveDialog.show(context,
+                builder: (context) => NotificationDebugger(
+                      event: event,
+                      client: timeline.client,
+                      room: timeline.room,
+                    ));
           },
         ),
     ];

@@ -8,11 +8,12 @@ import '../../../../../../matrix/verification/matrix_verification_page.dart';
 
 class MatrixSession extends StatefulWidget {
   const MatrixSession(this.device, this.matrixClient,
-      {super.key, this.onUpdated});
+      {super.key, this.onUpdated, this.inactive = false, this.removeSession});
   final Device device;
   final Client matrixClient;
   final Function? onUpdated;
-
+  final Function? removeSession;
+  final bool inactive;
   @override
   State<MatrixSession> createState() => _MatrixSessionState();
 }
@@ -29,8 +30,9 @@ class _MatrixSessionState extends State<MatrixSession> {
       lastSeenTimestamp: widget.device.lastSeenTs,
       verified: isVerified(),
       isThisDevice: isCurrentDevice(),
+      inactive: widget.inactive,
       beginVerification: beginVerification,
-      removeSession: removeSession,
+      removeSession: widget.removeSession,
     );
   }
 
@@ -60,13 +62,5 @@ class _MatrixSessionState extends State<MatrixSession> {
   void onRequestUpdate() {
     previousOnUpdate?.call();
     setState(() {});
-  }
-
-  void removeSession() async {
-    await widget.matrixClient.uiaRequestBackground((auth) async {
-      await widget.matrixClient
-          .deleteDevice(widget.device.deviceId, auth: auth);
-      widget.onUpdated?.call();
-    });
   }
 }

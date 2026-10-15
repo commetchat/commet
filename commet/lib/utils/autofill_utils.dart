@@ -3,6 +3,7 @@ import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
 
@@ -40,6 +41,12 @@ class AutofillUtils {
     var fuzzy = Fuzzy<AutofillSearchResult>(results,
         options: FuzzyOptions(keys: [
           WeightedKey(
+              name: "alternate",
+              getter: (obj) {
+                return obj.alternateSearchTerm ?? "";
+              },
+              weight: 1),
+          WeightedKey(
               name: "result",
               getter: (result) {
                 return result.result;
@@ -63,12 +70,45 @@ class AutofillUtils {
   }
 
   static List<AutofillSearchResult> searchUsers(String string, Room room) {
-    var result =
-        room.memberIds.map((e) => room.getMemberOrFallback(e)).toList();
-    return result
-        .map((e) => AutofillSearchResultAvatar(
-            e.displayName, e.identifier, e.avatar, e.defaultColor))
+    List<AutofillSearchResult> results = List.empty(growable: true);
+
+    Set<String> recentUsers = {};
+    if (string.isEmpty) {
+      var tl = room.timeline;
+      if (tl != null) {
+        recentUsers = tl.events
+            .where((i) => i is TimelineEventMessage)
+            .map((i) => i.senderId)
+            .toSet();
+
+        results = recentUsers.map((i) {
+          var member = room.getMemberOrFallback(i);
+          return AutofillSearchResultAvatar(
+              member.displayName,
+              member.identifier,
+              member.avatar,
+              member.defaultColor) as AutofillSearchResult;
+        }).toList(growable: true);
+      }
+    }
+
+    var result = room.memberIds
+        .where((i) => !recentUsers.contains(i))
+        .map((e) => room.getMemberOrFallback(e))
         .toList();
+
+    results.addAll(result
+        .map((e) => AutofillSearchResultAvatar(
+                e.displayName, e.identifier, e.avatar, e.defaultColor)
+            as AutofillSearchResult)
+        .toList(growable: true));
+
+    if (room.permissions.canMentionRoom) {
+      results.add(AutofillSearchResult("@room", "@room",
+          alternateSearchTerm: "@everyone"));
+    }
+
+    return results;
   }
 
   static List<AutofillSearchResult> searchRooms(String string, Room room) {
@@ -148,7 +188,8 @@ class AutofillUtils {
 class AutofillSearchResult {
   String result;
   String slug;
-  AutofillSearchResult(this.result, this.slug);
+  String? alternateSearchTerm;
+  AutofillSearchResult(this.result, this.slug, {this.alternateSearchTerm});
 }
 
 class AutofillSearchResultAvatar extends AutofillSearchResult {

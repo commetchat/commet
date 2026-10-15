@@ -8,6 +8,7 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 
@@ -21,6 +22,12 @@ class ClientManager {
   final AlertManager alertManager = AlertManager();
   late CallManager callManager;
 
+  final StreamController<(Client, Room, TimelineEvent)> _onEventReceived =
+      StreamController.broadcast();
+
+  Stream<(Client, Room, TimelineEvent)> get onEventReceived =>
+      _onEventReceived.stream;
+
   late final DirectMessagesAggregator directMessages;
 
   ClientManager() {
@@ -28,7 +35,7 @@ class ClientManager {
     callManager = CallManager(this);
   }
 
-  List<Room> get rooms => _rooms;
+  NotifyingList<Room> get rooms => _rooms;
 
   List<Room> singleRooms({Client? filterClient}) {
     var result = List<Room>.empty(growable: true);
@@ -59,20 +66,21 @@ class ClientManager {
 
   List<Space> get spaces => _spaces;
 
-  final List<Client> _clientsList = List.empty(growable: true);
+  final NotifyingList<Client> _clientsList =
+      NotifyingList.empty(growable: true);
   final Map<Client, List<StreamSubscription>> _clientSubscriptions = {};
 
-  List<Client> get clients => _clientsList;
+  NotifyingList<Client> get clients => _clientsList;
 
   late StreamController<void> onSync = StreamController.broadcast();
 
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd;
 
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove;
 
-  Stream<int> get onSpaceAdded => _spaces.onAdd;
+  Stream<Space> get onSpaceAdded => _spaces.onAdd;
 
-  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+  Stream<Space> get onSpaceRemoved => _spaces.onRemove;
 
   late StreamController<int> onClientAdded = StreamController.broadcast();
 
@@ -82,6 +90,8 @@ class ClientManager {
   late StreamController<Space> onSpaceUpdated = StreamController.broadcast();
   late StreamController<Space> onSpaceChildUpdated =
       StreamController.broadcast();
+
+  late StreamController<Room> onRoomUpdated = StreamController.broadcast();
 
   late StreamController<Room> onDirectMessageRoomUpdated =
       StreamController.broadcast();
@@ -108,22 +118,24 @@ class ClientManager {
 
       _clientsList.add(client);
 
-      for (int i = 0; i < client.rooms.length; i++) {
-        _onClientAddedRoom(client, i);
+      for (final e in client.rooms) {
+        _onClientAddedRoom(client, e);
       }
 
-      for (int i = 0; i < client.spaces.length; i++) {
-        _addSpace(client, i);
+      for (final e in client.spaces) {
+        _addSpace(client, e);
       }
 
       _clientSubscriptions[client] = [
         client.onSync.listen((_) => _synced()),
-        client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),
+        client.onTimelineEvent
+            .listen((i) => _onEventReceived.add((client, i.$1, i.$2))),
+        client.onRoomAdded.listen((room) => _onClientAddedRoom(client, room)),
         client.onRoomRemoved
-            .listen((index) => _onClientRemovedRoom(client, index)),
-        client.onSpaceAdded.listen((index) => _addSpace(client, index)),
+            .listen((room) => _onClientRemovedRoom(client, room)),
+        client.onSpaceAdded.listen((space) => _addSpace(client, space)),
         client.onSpaceRemoved
-            .listen((index) => _onClientRemovedSpace(client, index)),
+            .listen((space) => _onClientRemovedSpace(client, space)),
         client.connectionStatusChanged.stream
             .listen((event) => _onClientConnectionStatusChanged(client, event)),
       ];
@@ -146,25 +158,23 @@ class ClientManager {
     }
   }
 
-  void _onClientAddedRoom(Client client, int index) {
-    rooms.add(client.rooms[index]);
+  void _onClientAddedRoom(Client client, Room room) {
+    rooms.add(room);
+    room.onUpdate.listen((_) => roomUpdated(room));
   }
 
-  void _onClientRemovedRoom(Client client, int index) {
-    var room = client.rooms[index];
+  void _onClientRemovedRoom(Client client, Room room) {
     _rooms.remove(room);
   }
 
-  void _onClientRemovedSpace(Client client, int index) {
-    var space = client.spaces[index];
+  void _onClientRemovedSpace(Client client, Space space) {
     _spaces.remove(space);
   }
 
-  void _addSpace(Client client, int index) {
-    var space = client.spaces[index];
+  void _addSpace(Client client, Space space) {
     space.onUpdate.listen((_) => spaceUpdated(space));
     space.onChildRoomUpdated.listen((_) => spaceChildUpdated(space));
-    spaces.add(client.spaces[index]);
+    spaces.add(space);
   }
 
   void spaceUpdated(Space space) {
@@ -173,6 +183,10 @@ class ClientManager {
 
   void spaceChildUpdated(Space space) {
     onSpaceChildUpdated.add(space);
+  }
+
+  void roomUpdated(Room room) {
+    onRoomUpdated.add(room);
   }
 
   void directMessageRoomUpdated(Room room) {

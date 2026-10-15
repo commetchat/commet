@@ -36,6 +36,9 @@ class UserProfileView extends StatefulWidget {
       this.hasColorOverride = false,
       this.setPreviewBrightness,
       this.setColorOverride,
+      this.setPetName,
+      this.currentPetName,
+      this.hasPetName = false,
       this.shareCurrentTimezone,
       this.removeTimezone,
       this.onSetAvatar,
@@ -84,6 +87,9 @@ class UserProfileView extends StatefulWidget {
   final void Function(Color)? setPreviewColor;
   final Widget? bio;
   final Future<void> Function(Brightness)? setPreviewBrightness;
+  final Future<void> Function(String?)? setPetName;
+  final String? currentPetName;
+  final bool hasPetName;
   final Future<void> Function()? onMessageButtonClicked;
   final Future<void> Function()? savePreviewTheme;
   final Future<void> Function(Color?)? setColorOverride;
@@ -333,7 +339,9 @@ class UserProfileViewState extends State<UserProfileView> {
                                                           CrossAxisAlignment
                                                               .end,
                                                       children: [
-                                                        if (localTime != null)
+                                                        if (localTime != null &&
+                                                            widget.timezone !=
+                                                                null)
                                                           userLocalTime(),
                                                         badges(),
                                                       ],
@@ -487,54 +495,49 @@ class UserProfileViewState extends State<UserProfileView> {
   List<tiamat.ContextMenuItem> contextMenuItems(BuildContext context) {
     return [
       if (widget.isSelf)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileChangeBanner,
             onPressed: () => widget.onSetBanner?.call(),
             icon: Icons.image),
       if (widget.isSelf)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileSetStatus,
             onPressed: () => widget.onSetStatus?.call(),
+            onClearPressed: widget.presence?.message != null
+                ? () => widget.clearStatus?.call()
+                : null,
             icon: Icons.short_text),
-      if (widget.isSelf && widget.presence?.message != null)
-        tiamat.ContextMenuItem(
-            text: promptProfileClearStatus,
-            onPressed: () => widget.clearStatus?.call(),
-            icon: Icons.delete),
       if (widget.isSelf)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileSetBadges,
             onPressed: () => widget.editBadges?.call(),
             icon: Icons.star),
       if (widget.isSelf)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileSetBio,
             onPressed: () => widget.setBio?.call(),
-            icon: Icons.text_snippet),
-      if (widget.isSelf && widget.bio != null)
-        tiamat.ContextMenuItem(
-            text: promptProfileClearBio,
-            onPressed: () => widget.clearBio?.call(),
-            icon: Icons.delete),
+            icon: Icons.text_snippet,
+            onClearPressed: () => widget.clearBio?.call()),
       if (widget.isSelf)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileShareTimezone,
             onPressed: () => widget.shareCurrentTimezone?.call(),
-            icon: Icons.share_arrival_time),
-      if (widget.isSelf && widget.timezone != null)
-        tiamat.ContextMenuItem(
-            text: promptProfileClearTimezone,
-            onPressed: () => widget.removeTimezone?.call(),
-            icon: Icons.timer_off),
+            icon: Icons.share_arrival_time,
+            onClearPressed: widget.timezone != null
+                ? () => widget.removeTimezone?.call()
+                : null),
       if (widget.isSelf)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileEditColorScheme,
             onPressed: () => setState(() {
                   editingColorScheme = true;
                 }),
             icon: Icons.color_lens),
-      tiamat.ContextMenuItem(
+      profileMenuItem(
           text: promptProfileSetColorOverride,
+          onClearPressed: widget.hasColorOverride
+              ? () => widget.setColorOverride?.call(null)
+              : null,
           onPressed: () async {
             var color = await AdaptiveDialog.show<Color>(
               title: promptProfileSetColorOverride,
@@ -557,7 +560,8 @@ class UserProfileViewState extends State<UserProfileView> {
                               SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisSpacing: 3,
                                   mainAxisSpacing: 3,
-                                  crossAxisCount: Layout.mobile ? 5 : 10),
+                                  crossAxisCount:
+                                      MediaQuery.of(context).mobile ? 5 : 10),
                           children: [
                             for (int i = 0; i < 20; i++)
                               buildColorSchemeItem(
@@ -580,19 +584,92 @@ class UserProfileViewState extends State<UserProfileView> {
             }
           },
           icon: Icons.colorize),
-      if (widget.hasColorOverride)
-        tiamat.ContextMenuItem(
-            text: promptProfileClearColorOverride,
-            icon: Icons.remove,
-            onPressed: () async {
-              widget.setColorOverride?.call(null);
-            }),
+      profileMenuItem(
+        text: "Set Nickame",
+        icon: Icons.badge,
+        onClearPressed:
+            widget.hasPetName ? () => widget.setPetName?.call(null) : null,
+        onPressed: () async {
+          final text = await AdaptiveDialog.textPrompt(
+            context,
+            initialText: widget.currentPetName ?? '',
+            title: "Nickname",
+          );
+          if (text != null) {
+            await widget.setPetName
+                ?.call(text.trim().isEmpty ? null : text.trim());
+          }
+        },
+      ),
       if (preferences.developerMode.value)
-        tiamat.ContextMenuItem(
+        profileMenuItem(
             text: promptProfileShowRawProfile,
             onPressed: () => widget.showSource?.call(),
             icon: Icons.code),
     ];
+  }
+
+  tiamat.ContextMenuItem profileMenuItem(
+      {required String text,
+      required IconData icon,
+      required Function onPressed,
+      Function? onClearPressed}) {
+    return tiamat.ContextMenuItem(
+      text: text,
+      icon: icon,
+      onPressed: onPressed,
+      customBuilder: (context, onClicked, {closeMenu}) {
+        var c = Theme.of(context).colorScheme.onSurface;
+
+        return Material(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: InkWell(
+                      onTap: onClicked,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                          padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            spacing: 8,
+                            children: [
+                              Icon(
+                                icon,
+                                color: c,
+                                size: 20,
+                              ),
+                              tiamat.Text(text,
+                                  type: tiamat.TextType.body,
+                                  maxLines: 1,
+                                  color: c),
+                            ],
+                          ))),
+                ),
+                if (onClearPressed != null)
+                  tiamat.IconButton(
+                    icon: Icons.close,
+                    size: 18,
+                    iconColor: Colors.red,
+                    onPressed: () {
+                      onClearPressed.call();
+                      closeMenu?.call();
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget buildColorSchemeEditor() {

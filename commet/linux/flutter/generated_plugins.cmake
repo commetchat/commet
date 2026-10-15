@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
   flutter_timezone
   flutter_webrtc
+  gtk
   hotkey_manager_linux
   livekit_client
   media_kit_libs_linux
@@ -23,6 +24,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   flutter_vodozemac
+  jni
+  rust_lib_commet
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

@@ -106,9 +106,10 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
 
     var view = WidgetsBinding.instance.platformDispatcher.views.first;
     var size = view.physicalSize;
+    var position = widget.globalOffset * view.devicePixelRatio;
 
-    leftAlign = widget.globalOffset.dx > size.width / 2;
-    topAlign = widget.globalOffset.dy > size.height / 2;
+    leftAlign = position.dx > size.width / 2;
+    topAlign = position.dy > size.height / 2;
 
     super.initState();
   }
@@ -124,7 +125,7 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
     var view = WidgetsBinding.instance.platformDispatcher.views.first;
     var viewSize = view.physicalSize;
 
-    var scale = tiamat.getAppScale?.call() ?? 1.0;
+    var scale = (tiamat.getAppScale?.call() ?? 1.0)  * view.devicePixelRatio;
 
     if (calculatedOffset == null) {
       return Container(
@@ -166,12 +167,22 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: widget.items
-            .map((e) => e.build(context, () {
+            .map(
+              (e) => e.build(
+                context,
+                () {
                   e.onPressed?.call();
                   _controller
                       .animateTo(0)
                       .then((value) => widget.close?.call());
-                }))
+                },
+                closeMenu: () {
+                  _controller
+                      .animateTo(0)
+                      .then((value) => widget.close?.call());
+                },
+              ),
+            )
             .toList(),
       ),
     );
@@ -256,7 +267,6 @@ class _ContextMenuState extends State<ContextMenu> {
   Widget build(BuildContext context) {
     return Listener(
       onPointerDown: (event) {
-        print("got pointer down");
         mousePosition = event.position;
       },
       child: widget.modal
@@ -289,22 +299,23 @@ class ContextMenuItem {
   final Function? onPressed;
   final IconData? icon;
   final Color? color;
-  final Widget Function(BuildContext context, Function() onClicked)?
-      customBuilder;
+  final Widget Function(BuildContext context, Function() onClicked,
+      {Function()? closeMenu})? customBuilder;
 
-  Widget build(BuildContext context, Function() onClicked) {
+  Widget build(BuildContext context, Function() onClicked,
+      {Function()? closeMenu}) {
     var c = color ?? Theme.of(context).colorScheme.onSurface;
 
     if (customBuilder != null) {
       return Material(
           color: Colors.transparent,
-          child: customBuilder!.call(context, onClicked));
+          child: customBuilder!.call(context, onClicked, closeMenu: closeMenu));
     }
 
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.all(3.0),
+        padding: const EdgeInsets.all(4.0),
         child: InkWell(
             onTap: onClicked,
             borderRadius: BorderRadius.circular(8),

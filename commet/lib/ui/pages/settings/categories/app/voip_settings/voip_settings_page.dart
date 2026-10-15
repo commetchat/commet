@@ -5,7 +5,7 @@ import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_preference_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/app/string_preference_options.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
@@ -35,6 +35,11 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       name: "headerVoipSettingsCallConnection",
       desc:
           "Header for the settings tile containing configuration relating to the initial connection of a call");
+
+  String get headerVoipSettingsOverlay => Intl.message("Overlay",
+      name: "headerVoipSettingsOverlay",
+      desc:
+          "Header for the settings tile containing configuration for the voip overlay");
 
   String get labelVoipSettingsStunFallback => Intl.message("Use STUN Fallback",
       name: "labelVoipSettingsStunFallback",
@@ -128,7 +133,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
     super.initState();
     sub = preferences.onSettingChanged.listen((event) => setState(() {}));
 
-    webrtc.navigator.mediaDevices.enumerateDevices().then((v) => setState(() {
+    WebrtcDefaultDevices.getDevices().then((v) => setState(() {
           Log.i(v);
           devices = v;
 
@@ -157,6 +162,23 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
             title: labelVoipSettingsStunFallback,
             description: labelVoipSettingsStunFallbackDescription(
                 preferences.fallbackTurnServer.value),
+          ),
+        ),
+        tiamat.Panel(
+          mode: tiamat.TileType.surfaceContainerLow,
+          header: headerVoipSettingsOverlay,
+          child: BooleanPreferenceToggle(
+            preference: preferences.useVoipOverlay,
+            title: "Enable Overlay",
+            description:
+                "When in a call, add an overlay on your screen to show the call participants",
+            onChanged: (p0) {
+              if (p0 == false) {
+                clientManager?.callManager.removeOverlay();
+              } else {
+                clientManager?.callManager.enableOverlayForExistingSessions();
+              }
+            },
           ),
         ),
         tiamat.Panel(

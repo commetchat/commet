@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/foundation.dart';
@@ -75,7 +77,8 @@ class _VoipStreamViewState extends State<VoipStreamView>
               alignment: Alignment.topRight,
               children: [
                 AdaptiveContextMenu(
-                  items: streamContextMenuItems(widget.stream, user),
+                  items: streamContextMenuItems(widget.stream.participantId,
+                      user, widget.session.streams),
                   child: Container(
                       clipBehavior: Clip.antiAlias,
                       foregroundDecoration: widget.borderColor != null
@@ -90,7 +93,23 @@ class _VoipStreamViewState extends State<VoipStreamView>
                           BoxDecoration(borderRadius: BorderRadius.circular(8)),
                       child: buildDefault()),
                 ),
-                if (widget.stream.type == VoipStreamType.video ||
+
+                if (preferences.developerMode.value)
+                  Align(
+                    alignment: AlignmentGeometry.topLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: ColorScheme.of(context).surfaceContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: tiamat.Text.labelLow(widget.stream.stats),
+                      ),
+                    ),
+                  ),
+                if (widget.canFullscreen &&
+                        widget.stream.type == VoipStreamType.video ||
                     widget.stream.type == VoipStreamType.screenshare)
                   SizedBox(
                     width: 40,
@@ -108,46 +127,106 @@ class _VoipStreamViewState extends State<VoipStreamView>
   }
 
   static List<tiamat.ContextMenuItem> streamContextMenuItems(
-      VoipStream stream, Member user) {
+      String participantId, Member user, List<VoipStream> streams) {
+    var incoming = streams.where((i) =>
+        i.direction == VoipStreamDirection.incoming &&
+        i.participantId == participantId);
+
+    if (incoming.isEmpty) return [];
+
+    var audioStream =
+        incoming.firstWhereOrNull((i) => i.type == VoipStreamType.audio);
+
+    var screenShareAudioStream = incoming
+        .firstWhereOrNull((i) => i.type == VoipStreamType.screenshareAudio);
+
     return [
-      if (stream.direction == VoipStreamDirection.incoming) ...[
+      tiamat.ContextMenuItem(
+        text: "User",
+        customBuilder: (context, onClicked, {closeMenu}) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+            child: Row(
+              spacing: 12,
+              children: [
+                tiamat.Avatar(
+                    radius: 15,
+                    image: user.avatar,
+                    placeholderColor: user.defaultColor,
+                    placeholderText: user.displayName),
+                tiamat.Text.name(
+                  user.displayName,
+                  color: user.defaultColor,
+                )
+              ],
+            ),
+          );
+        },
+      ),
+      if (audioStream != null)
         tiamat.ContextMenuItem(
-          text: "User",
-          customBuilder: (context, onClicked) {
+          text: "Volume",
+          customBuilder: (context, onClicked, {closeMenu}) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
               child: Row(
-                spacing: 12,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  tiamat.Avatar(
-                      radius: 15,
-                      image: user.avatar,
-                      placeholderColor: user.defaultColor,
-                      placeholderText: user.displayName),
-                  tiamat.Text.name(
-                    user.displayName,
-                    color: user.defaultColor,
-                  )
+                  SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: Center(
+                        child: Icon(
+                          Icons.mic,
+                          size: 16,
+                        ),
+                      )),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: StreamVolumeSlider(audioStream),
+                    ),
+                  ),
                 ],
               ),
             );
           },
         ),
+      if (screenShareAudioStream != null)
         tiamat.ContextMenuItem(
           text: "Volume",
-          customBuilder: (context, onClicked) {
+          customBuilder: (context, onClicked, {closeMenu}) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: StreamVolumeSlider(stream),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: Center(
+                        child: Icon(
+                          Icons.screen_share,
+                          size: 16,
+                        ),
+                      )),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: StreamVolumeSlider(screenShareAudioStream),
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         )
-      ]
     ];
   }
 
   Widget buildDefault() {
     switch (widget.stream.type) {
+      case VoipStreamType.screenshareAudio:
       case VoipStreamType.audio:
         return tiamat.Tile.low(
           child: Center(
@@ -197,9 +276,25 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
-        return Center(
-          child: widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
-              const CircularProgressIndicator(),
+        return Stack(
+          children: [
+            Center(
+              child:
+                  widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
+                      const CircularProgressIndicator(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Avatar.small(
+                  border: Border.all(
+                      strokeAlign: 0.5,
+                      color: getBorderColor(context),
+                      width: clampDouble(audioLevel.value * 15, 0, 5)),
+                  image: user.avatar,
+                  placeholderColor: user.defaultColor,
+                  placeholderText: user.displayName),
+            ),
+          ],
         );
     }
   }
@@ -229,7 +324,6 @@ class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        tiamat.Text.labelLow("${(widget.stream.volume * 100).toInt()}%"),
         Expanded(
           child: tiamat.Slider(
             min: 0.0,
@@ -243,6 +337,10 @@ class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
             },
           ),
         ),
+        SizedBox(
+            width: 40,
+            child: tiamat.Text.labelLow(
+                "${(widget.stream.volume * 100).toInt()}%")),
       ],
     );
   }

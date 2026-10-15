@@ -1,5 +1,6 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,12 @@ class _EmojiPickerState extends State<EmojiPicker> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (MediaQuery.of(context).desktop) {
+        widget.focus?.requestFocus();
+      }
+    });
+
     super.initState();
   }
 
@@ -224,6 +231,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: TextField(
                               focusNode: widget.focus,
+                              autofocus: MediaQuery.of(context).desktop,
                               controller: textController,
                               onChanged: onSearchTextChanged,
                               decoration: InputDecoration(

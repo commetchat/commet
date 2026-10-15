@@ -1,9 +1,9 @@
 import 'package:commet/client/components/photo_album_room/photo.dart';
 
 abstract class PhotoAlbumTimeline {
-  Stream<int> get onAdded;
-  Stream<int> get onChanged;
-  Stream<int> get onRemoved;
+  Stream<Photo> get onAdded;
+  Stream<Photo> get onChanged;
+  Stream<Photo> get onRemoved;
 
   List<Photo> get photos;
 

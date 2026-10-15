@@ -29,6 +29,10 @@ class MessageEffectConfetti implements MessageEffectParticles {
   void reset() {
     init();
   }
+
+  void stop() {
+    system = null;
+  }
 }
 
 class ParticleSystemConfetti extends ParticleSystemExplosion {

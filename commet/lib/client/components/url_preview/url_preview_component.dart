@@ -1,3 +1,4 @@
+import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -23,18 +24,28 @@ abstract class UrlPreviewComponent<T extends Client> implements Component<T> {
       UrlPreviewData(Uri.new(), title: "Unable to get url preview ");
 }
 
+enum UrlDestinationType {
+  page,
+  video,
+  image,
+}
+
 class UrlPreviewData {
   final Uri uri;
   final String? siteName;
   final String? title;
   final String? description;
   final ImageProvider? image;
+  final VideoAttachment? video;
+  final UrlDestinationType? type;
 
   const UrlPreviewData(
     this.uri, {
     this.siteName,
     this.title,
     this.description,
+    this.type,
     this.image,
+    this.video,
   });
 }

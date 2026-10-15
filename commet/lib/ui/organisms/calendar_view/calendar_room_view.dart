@@ -42,7 +42,7 @@ class _CalendarRoomViewState extends State<CalendarRoomView> {
               child: CalendarWidgetView(
                 calendar: widget.calendar.calendar!,
                 autoDisposeCalendar: false,
-                useMobileLayout: Layout.mobile,
+                useMobileLayout: MediaQuery.of(context).mobile,
                 watermark: false,
               ),
             ),
@@ -51,7 +51,7 @@ class _CalendarRoomViewState extends State<CalendarRoomView> {
       },
     );
 
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       result = tiamat.Tile.lowest(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),

@@ -46,3 +46,32 @@ class SystemFileProvider implements FileProvider {
     return file.readAsBytes();
   }
 }
+
+class WebFileProvider implements FileProvider {
+  Uri url;
+
+  @override
+  String get fileIdentifier => url.toString();
+
+  @override
+  Future<Uri?> resolve() async {
+    throw UnimplementedError();
+    //   return file.uri;
+  }
+
+  @override
+  Future<void> save(String filepath) {
+    throw UnimplementedError();
+  }
+
+  WebFileProvider(this.url);
+
+  @override
+  Stream<DownloadProgress>? get onProgressChanged => null;
+
+  @override
+  Future<Uint8List?> getFileData() {
+    throw UnimplementedError();
+    // return file.readAsBytes();
+  }
+}

@@ -16,6 +16,7 @@ import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_native_implementations.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
@@ -23,6 +24,7 @@ import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
@@ -62,6 +64,13 @@ class MatrixClient extends Client {
 
   final StreamController _onSync = StreamController.broadcast();
 
+  final StreamController<(Room, TimelineEvent)> onTimelineEventController =
+      StreamController.broadcast();
+
+  @override
+  Stream<(Room, TimelineEvent<Client>)> get onTimelineEvent =>
+      onTimelineEventController.stream;
+
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
       ? const matrix.NativeImplementationsDummy()
       : NativeImplementationsCustom(compute);
@@ -80,6 +89,20 @@ class MatrixClient extends Client {
     _matrixClient = _createMatrixClient(identifier, database);
 
     self = ErrorProfile();
+
+    favoriteRooms = NotifyingListFilter(
+      _rooms,
+      where: (item) {
+        return (item as MatrixRoom).matrixRoom.isFavourite;
+      },
+      onFilterParamsChanged: [
+        _matrixClient.onSync.stream.where((sync) {
+          return sync.rooms?.join?.values.any((i) =>
+                  i.accountData?.any((i) => i.type == "m.tag") == true) ==
+              true;
+        })
+      ],
+    );
 
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
     componentsInternal = ComponentRegistry.getMatrixComponents(this);
@@ -106,19 +129,19 @@ class MatrixClient extends Client {
   String get identifier => _id;
 
   @override
-  Stream<int> get onPeerAdded => _peers.onAdd;
+  Stream<Peer> get onPeerAdded => _peers.onAdd;
 
   @override
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd;
 
   @override
-  Stream<int> get onSpaceAdded => _spaces.onAdd;
+  Stream<Space> get onSpaceAdded => _spaces.onAdd;
 
   @override
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove;
 
   @override
-  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+  Stream<Space> get onSpaceRemoved => _spaces.onRemove;
 
   @override
   Stream<void> get onSync => _onSync.stream;
@@ -127,13 +150,16 @@ class MatrixClient extends Client {
   List<Peer> get peers => _peers;
 
   @override
-  List<Room> get rooms => _rooms;
+  NotifyingList<Room> get rooms => _rooms;
 
   @override
   List<Room> get singleRooms => throw UnimplementedError();
 
   @override
   List<Space> get spaces => _spaces;
+
+  @override
+  late NotifyingListFilter<Room> favoriteRooms;
 
   @override
   StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =
@@ -163,12 +189,12 @@ class MatrixClient extends Client {
     ClientManager manager, {
     bool isBackgroundService = false,
   }) async {
+    await _checkSystem(manager);
+
     await Diagnostics.general.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
       List<Future> futures = List.empty(growable: true);
-
-      futures.add(_checkSystem(manager));
 
       if (clients != null) {
         for (var clientName in clients) {
@@ -878,6 +904,23 @@ class MatrixClient extends Client {
 
       return false;
     });
+  }
+
+  @override
+  Future<bool> hasServerDisabledEncryption() async {
+    var data = await matrixClient.getWellknown();
+    Log.i(data);
+
+    var prop =
+        data.additionalProperties.tryGetMap<String, dynamic>("io.element.e2ee");
+
+    var value = prop?.tryGet<bool>("force_disable");
+
+    if (value == true) {
+      return true;
+    }
+
+    return false;
   }
 
   @override

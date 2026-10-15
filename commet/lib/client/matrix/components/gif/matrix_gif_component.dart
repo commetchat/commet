@@ -33,7 +33,8 @@ class MatrixFavoriteGif implements FavoriteGif {
   @override
   ImageProvider<Object> get image {
     var url = data.tryGet<String>("url");
-    return MatrixMxcImage(Uri.parse(url!), client.matrixClient);
+    return MatrixMxcImage(Uri.parse(url!), client.matrixClient,
+        doThumbnail: false, doFullres: true);
   }
 
   @override

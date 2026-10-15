@@ -10,6 +10,7 @@ class MentionWidget extends StatelessWidget {
       this.fallbackIcon,
       this.vias,
       this.onTap,
+      this.showAvatar = true,
       super.key});
   final String displayName;
   final ImageProvider? avatar;
@@ -17,6 +18,7 @@ class MentionWidget extends StatelessWidget {
   final IconData? fallbackIcon;
   final TextStyle? style;
   final List<String>? vias;
+  final bool showAvatar;
   final Color placeholderColor;
 
   @override
@@ -32,7 +34,7 @@ class MentionWidget extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (fallbackIcon != null && avatar == null)
+                if (fallbackIcon != null && avatar == null && showAvatar)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 1, 0),
                     child: Icon(
@@ -41,7 +43,7 @@ class MentionWidget extends StatelessWidget {
                       color: tiamat.Text.adjustColor(context, placeholderColor),
                     ),
                   ),
-                if (avatar != null || fallbackIcon == null)
+                if (avatar != null || fallbackIcon == null && showAvatar)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 3, 0),
                     child: tiamat.Avatar(

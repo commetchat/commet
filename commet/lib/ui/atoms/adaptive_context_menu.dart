@@ -19,7 +19,7 @@ class AdaptiveContextMenu extends StatelessWidget {
       return child;
     }
 
-    if (Layout.desktop) {
+    if (MediaQuery.of(context).desktop) {
       return tiamat.ContextMenu(
         child: child,
         items: items,
@@ -39,10 +39,16 @@ class AdaptiveContextMenu extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: items.map((item) {
                         if (item.customBuilder != null) {
-                          return item.customBuilder!.call(context, () {
-                            Navigator.of(modalContext).pop();
-                            item.onPressed?.call();
-                          });
+                          return item.customBuilder!.call(
+                            context,
+                            () {
+                              Navigator.of(modalContext).pop();
+                              item.onPressed?.call();
+                            },
+                            closeMenu: () {
+                              Navigator.of(modalContext).pop();
+                            },
+                          );
                         }
 
                         return SizedBox(

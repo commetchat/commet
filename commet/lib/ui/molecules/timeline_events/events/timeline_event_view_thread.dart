@@ -1,5 +1,6 @@
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_per_message_profile.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/ui/atoms/thread_reply_footer.dart';
@@ -56,6 +57,22 @@ class _TimelineEventViewThreadState extends State<TimelineEventViewThread> {
     senderName = sender.displayName;
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
+
+    if (threadEvent is TimelineEventFeaturePerMessageProfile) {
+      var profile = (threadEvent as TimelineEventFeaturePerMessageProfile)
+          .getPerMessageProfile(timeline: widget.timeline);
+
+      if (profile != null) {
+        if (profile.avatar != null || profile.clearAvatar) {
+          senderAvatar = profile.avatar;
+        }
+
+        if (profile.hasDisplayName) {
+          senderName = profile.displayName!;
+          senderColor = profile.color;
+        }
+      }
+    }
   }
 
   @override

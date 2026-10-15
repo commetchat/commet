@@ -71,7 +71,14 @@ class TextUtils {
     if (matches.isEmpty) return null;
 
     return matches
-        .map((e) => Uri.parse(text.substring(e.start, e.end)))
+        .map((e) {
+          try {
+            return Uri.parse(text.substring(e.start, e.end));
+          } catch (_) {
+            return null;
+          }
+        })
+        .nonNulls
         .toList();
   }
 

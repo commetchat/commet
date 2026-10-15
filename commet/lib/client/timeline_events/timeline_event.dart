@@ -9,6 +9,8 @@ abstract class TimelineEvent<T extends Client> {
   String get senderId;
   DateTime get originServerTs;
   String get source;
+  bool get mentionsRoom;
+  List<String> get mentions;
 
   bool get editable;
 

@@ -5,10 +5,34 @@ import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
+class RoomOpenArgs {
+  String roomId;
+  String? clientId;
+  String? threadId;
+  bool bypassSpecialRoomTypes;
+  bool openInSpace;
+
+  RoomOpenArgs(this.roomId, this.clientId,
+      {this.bypassSpecialRoomTypes = false,
+      this.threadId,
+      this.openInSpace = true});
+}
+
 class EventBus {
   /// First string is room id, Second string is client id
-  static StreamController<(String, String?)> openRoom =
-      StreamController<(String, String?)>.broadcast();
+  static StreamController<RoomOpenArgs> openRoom =
+      StreamController<RoomOpenArgs>.broadcast();
+
+  static void doOpenRoom(String roomId,
+      {String? clientId,
+      bool bypassSpecialRoomType = false,
+      String? threadId,
+      bool openInSpace = true}) {
+    openRoom.add(RoomOpenArgs(roomId, clientId,
+        threadId: threadId,
+        bypassSpecialRoomTypes: bypassSpecialRoomType,
+        openInSpace: openInSpace));
+  }
 
   /// First string is user id, Second string is client id, third string is context room
   static StreamController<(String, String, String?)> openUserProfile =
@@ -19,6 +43,8 @@ class EventBus {
   /// 2] Thread Root Event Id
   static StreamController<(String, String, String)> openThread =
       StreamController<(String, String, String)>.broadcast();
+
+  static StreamController<void> openHomeScreen = StreamController.broadcast();
 
   static StreamController<void> closeThread = StreamController.broadcast();
 
@@ -47,6 +73,11 @@ class EventBus {
       StreamController.broadcast();
 
   static StreamController<void> openCalendar = StreamController.broadcast();
+
+  static StreamController<void> openWidgets = StreamController.broadcast();
+
+  static StreamController<String> onReceivedPushNotificationData =
+      StreamController.broadcast();
 
   static StreamController<void> toggleRoomSidePanel =
       StreamController.broadcast();

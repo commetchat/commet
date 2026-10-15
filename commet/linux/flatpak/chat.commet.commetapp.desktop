@@ -5,12 +5,13 @@ Name=Commet
 Comment=Your space to connect!
 Categories=Utility;Amusement;
 Icon=chat.commet.commetapp
-Exec=commet
+Exec=commet %u
 Terminal=false
 StartupWMClass=chat.commet.commetapp
 Actions=ToggleMute;Mute;Unmute
 X-KDE-StartupNotify=false
 StartupNotify=false
+MimeType=x-scheme-handler/commetchat;
 
 [Desktop Action ToggleMute]
 Name=Toggle Mute

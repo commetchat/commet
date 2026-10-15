@@ -92,7 +92,6 @@ class MatrixVoipStream implements VoipStream {
     });
 
     if (stat == null) return 0;
-    print(stat.values["audioLevel"]);
     return stat.values["audioLevel"] > 0.2 ? 1.0 : 0;
   }
 
@@ -153,6 +152,9 @@ class MatrixVoipStream implements VoipStream {
   bool get isMuted => stream.audioMuted;
 
   @override
+  String get stats => "";
+
+  @override
   Future<void> setVolume(double volume) async {
     preferences.setVoipUserVolume(streamUserId, volume);
 
@@ -167,4 +169,7 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   double get volume => preferences.getVoipUserVolume(streamUserId);
+
+  @override
+  String get participantId => streamUserId;
 }

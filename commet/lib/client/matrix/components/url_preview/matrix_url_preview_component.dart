@@ -1,3 +1,5 @@
+import 'package:commet/cache/file_provider.dart';
+import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
@@ -175,6 +177,20 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
     var siteName = response['og:site_name'] as String?;
     var imageUrl = response['og:image'] as String?;
     var description = response['og:description'] as String?;
+    var video =
+        (response['og:video:secure_url'] ?? response["og:video"]) as String?;
+    var videoType = response['og:video:type'] as String?;
+
+    int? videoWidth = null;
+    int? videoHeight = null;
+
+    var videoWidthStr = response['og:video:width'] as String?;
+    var videoHeightStr = response['og:video:height'] as String?;
+
+    if (videoHeightStr != null && videoWidthStr != null) {
+      videoWidth = int.tryParse(videoWidthStr);
+      videoHeight = int.tryParse(videoHeightStr);
+    }
 
     var type = response["og:image:type"] as String?;
     if (type != null) {
@@ -196,6 +212,29 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
       }
     }
 
+    var destinationType = UrlDestinationType.page;
+    VideoAttachment? videoAttachment;
+
+    if (video != null) {
+      destinationType = UrlDestinationType.video;
+    }
+
+    if (video is String &&
+        videoType != null &&
+        (Mime.videoTypes.contains(videoType) ||
+            Mime.videoStreamTypes.contains(videoType))) {
+      var uri = Uri.parse(video);
+
+      if (uri.scheme == "https") {
+        videoAttachment = VideoAttachment(WebFileProvider(uri),
+            width: videoWidth?.toDouble(),
+            height: videoHeight?.toDouble(),
+            streamUrl: uri,
+            thumbnail: image,
+            mimeType: videoType);
+      }
+    }
+
     if (description != null) {
       description = description.replaceAll("\n", "    ");
     }
@@ -204,6 +243,8 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
         siteName: siteName,
         title: title,
         image: image,
+        video: videoAttachment,
+        type: destinationType,
         description: description);
   }
 }

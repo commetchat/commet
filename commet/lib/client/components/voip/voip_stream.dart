@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-enum VoipStreamType { audio, video, screenshare }
+enum VoipStreamType { audio, video, screenshare, screenshareAudio }
 
 enum VoipStreamDirection { incoming, outgoing }
 
@@ -17,7 +17,11 @@ abstract class VoipStream {
 
   String get label;
 
+  String get participantId;
+
   String get streamId;
+
+  String get stats;
 
   double get audiolevel;
 

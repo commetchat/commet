@@ -1,0 +1,8 @@
+New Features:
+- Mark GIFs as favorite
+- Improved handling of end to end encryption
+- Added Polls
+- Add more settings for voice chats
+
+Changes:
+- Updated Matrix SDK

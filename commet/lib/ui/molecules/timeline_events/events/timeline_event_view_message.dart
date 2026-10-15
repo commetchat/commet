@@ -6,6 +6,7 @@ import 'package:commet/client/components/url_preview/url_preview_component.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_per_message_profile.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
@@ -41,6 +42,7 @@ class TimelineEventViewMessage extends StatefulWidget {
       this.jumpToEvent,
       this.readReceipts = const [],
       this.onReadReceiptsTapped,
+      this.onDoubleTapMessage,
       this.detailed = false,
       this.previewMedia = false,
       required this.initialIndex});
@@ -57,6 +59,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   final bool isThreadTimeline;
   final bool previewMedia;
   final Function()? onReadReceiptsTapped;
+  final Function()? onDoubleTapMessage;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -68,6 +71,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   late String senderName;
   late String senderId;
   late Color senderColor;
+  String? viaSenderName;
+
+  late bool mentionsRoom;
+  late List<String> mentions;
 
   String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
       desc: "Placeholde text for when a message fails to decrypt",
@@ -78,6 +85,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   Widget? formattedContent;
   String? body;
+  String? displayId;
   ImageProvider? senderAvatar;
   List<Attachment>? attachments;
   ImageProvider? sticker;
@@ -130,11 +138,15 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     return TimelineEventLayoutMessage(
       senderName: senderName,
       senderColor: senderColor,
+      viaSenderName: viaSenderName,
       senderAvatar: senderAvatar,
       showSender: showSender,
       formattedContent: formattedContent,
       timestamp: timestampToString(sentTime),
       edited: edited,
+      isMentioningSelf:
+          mentionsRoom || mentions.contains(room!.client.self!.identifier),
+      onDoubleTapMessage: widget.onDoubleTapMessage,
       avatarBuilder: (child) {
         var room = widget.room ?? widget.timeline?.room;
 
@@ -226,8 +238,20 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   void loadStateFromEvent(TimelineEvent event) {
+    mentionsRoom = event.mentionsRoom;
+    mentions = event.mentions;
     showSender = shouldShowSender(index);
     var room = widget.room ?? widget.timeline?.room;
+
+    bool didContentChange = true;
+
+    if (widget.timeline != null) {
+      var did = widget.timeline!.getDisplayId(event);
+      if (did == displayId) {
+        didContentChange = false;
+      }
+      displayId = did;
+    }
 
     var sender = room!.getMemberOrFallback(event.senderId);
     eventId = event.eventId;
@@ -236,6 +260,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     senderName = sender.displayName;
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
+
+    applyPerMessageProfile(event);
 
     sentTime = event.originServerTs;
 
@@ -282,11 +308,14 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       return;
     }
 
-    var content = event.buildFormattedContent(timeline: widget.timeline);
-    if (content == null) {
-      formattedContent = null;
-    } else {
-      formattedContent = Container(key: GlobalKey(), child: content);
+    if (didContentChange) {
+      var content = event.buildFormattedContent(timeline: widget.timeline);
+
+      if (content == null) {
+        formattedContent = null;
+      } else {
+        formattedContent = Container(key: GlobalKey(), child: content);
+      }
     }
 
     attachments = event.attachments;
@@ -296,6 +325,46 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
                 widget.timeline!, event) ==
             true &&
         event.getLinks(timeline: widget.timeline!)?.isEmpty == false;
+  }
+
+  void applyPerMessageProfile(TimelineEvent event) {
+    viaSenderName = null;
+
+    if (event is! TimelineEventFeaturePerMessageProfile) {
+      return;
+    }
+
+    var profile = (event as TimelineEventFeaturePerMessageProfile)
+        .getPerMessageProfile(timeline: widget.timeline);
+
+    if (profile == null) {
+      return;
+    }
+
+    if (profile.avatar != null || profile.clearAvatar) {
+      senderAvatar = profile.avatar;
+    }
+
+    if (profile.hasDisplayName) {
+      viaSenderName = senderName;
+      senderName = profile.displayName!;
+      senderColor = profile.color;
+    }
+  }
+
+  String? perMessageProfileGroupingKey(TimelineEvent event) {
+    if (event is! TimelineEventFeaturePerMessageProfile) {
+      return null;
+    }
+
+    var profile = (event as TimelineEventFeaturePerMessageProfile)
+        .getPerMessageProfile(timeline: widget.timeline);
+
+    if (profile == null) {
+      return null;
+    }
+
+    return "${profile.id} ${profile.displayName ?? ""}";
   }
 
   String timestampToString(DateTime time) {
@@ -390,7 +459,12 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
             .inMinutes >
         1) return true;
 
-    return thisEvent.senderId != prevEvent.senderId;
+    if (thisEvent.senderId != prevEvent.senderId) {
+      return true;
+    }
+
+    return perMessageProfileGroupingKey(thisEvent) !=
+        perMessageProfileGroupingKey(prevEvent);
   }
 
   markGifAsFavorite(bool favorite) async {

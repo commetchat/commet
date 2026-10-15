@@ -35,4 +35,6 @@ abstract class Permissions {
   bool get canEditChildren => true;
 
   bool get canInviteUser => true;
+
+  bool get canMentionRoom => false;
 }

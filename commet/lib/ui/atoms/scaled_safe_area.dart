@@ -16,6 +16,7 @@ class ScaledSafeArea extends SafeArea {
   Widget build(BuildContext context) {
     assert(debugCheckHasMediaQuery(context));
     EdgeInsets padding = MediaQuery.of(context).scale().viewPadding;
+
     if (maintainBottomViewPadding) {
       padding = padding.copyWith(
           bottom: MediaQuery.of(context).scale().viewPadding.bottom);

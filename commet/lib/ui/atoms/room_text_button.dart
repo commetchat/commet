@@ -1,13 +1,20 @@
 import 'dart:async';
 
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
+import 'package:commet/client/components/widgets/widget_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/pages/settings/room_settings_page.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:flutter/material.dart';
@@ -27,47 +34,105 @@ class RoomTextButton extends StatefulWidget {
 
   @override
   State<RoomTextButton> createState() => _RoomTextButtonState();
+
+  static List<ContextMenuItem> createRoomContextMenuItems(
+      BuildContext context, Room room) {
+    var voipRoom = room.getComponent<VoipRoomComponent>();
+    return [
+      ContextMenuItem(
+          text: "Mark as Read",
+          icon: Icons.visibility,
+          onPressed: () => room.markAsRead()),
+      if (!room.isFavorite)
+        ContextMenuItem(
+            text: "Set as Favorite",
+            icon: Icons.favorite,
+            onPressed: () => room.setAsFavorite(true)),
+      if (room.isFavorite)
+        ContextMenuItem(
+            text: "Unfavorite",
+            icon: Icons.heart_broken_outlined,
+            onPressed: () => room.setAsFavorite(false)),
+      if (room.isSpecialRoomType)
+        ContextMenuItem(
+            text: "Open as Text Chat",
+            icon: Icons.tag,
+            onPressed: () => EventBus.doOpenRoom(room.identifier,
+                clientId: room.client.identifier, bypassSpecialRoomType: true)),
+      if (voipRoom != null && preferences.developerMode.value)
+        ContextMenuItem(
+          text: "Clear Membership Status",
+          icon: Icons.call_end,
+          onPressed: () => voipRoom.clearAllCallMembershipStatus(),
+        ),
+      ContextMenuItem(
+          text: "Settings",
+          icon: Icons.settings,
+          onPressed: () {
+            NavigationUtils.navigateTo(
+                context,
+                RoomSettingsPage(
+                  room: room,
+                ));
+          }),
+    ];
+  }
 }
 
 class _RoomTextButtonState extends State<RoomTextButton> {
   late List<StreamSubscription> subs;
-  VoipRoomComponent? voipRoom;
   CalendarRoom? calendarRoom;
-  List<String>? voipRoomParticipants;
+  ActivitiesComponent? activities;
+  List<RoomActivitySession>? activitySessions;
   List<MatrixCalendarEventState>? calendarEvents;
 
   @override
   void initState() {
-    voipRoom = widget.room.getComponent<VoipRoomComponent>();
     calendarRoom = widget.room.getComponent<CalendarRoom>();
+    activities = widget.room.getComponent<ActivitiesComponent>();
 
     subs = [
       widget.room.onUpdate.listen(onRoomUpdate),
-      if (voipRoom != null)
-        voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
       if (calendarRoom != null)
         calendarRoom!.onEventsChanged.listen(onCalendarEventsChanged),
+      if (activities != null)
+        activities!.onSessionsChanged.listen(onSessionsChanged),
     ];
 
-    if (voipRoom != null) {
-      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+    if (activities != null) {
+      activitySessions = activities?.getSessions();
+      sortActivities();
     }
 
     if (calendarRoom?.calendar != null) {
       onCalendarEventsChanged(());
     }
 
-    if (voipRoomParticipants?.isNotEmpty == true) {
-      for (var participant in voipRoomParticipants!) {
-        widget.room.fetchMember(participant).then((_) {
-          if (mounted) {
-            setState(() {});
-          }
-        });
+    if (activitySessions?.isNotEmpty == true) {
+      for (var activity in activitySessions!) {
+        for (var participant in activity.participants) {
+          widget.room.fetchMember(participant).then((_) {
+            if (mounted) {
+              setState(() {});
+            }
+          });
+        }
       }
     }
 
     super.initState();
+  }
+
+  void onSessionsChanged(void event) {
+    setState(() {
+      activitySessions = activities?.getSessions();
+      sortActivities();
+    });
+  }
+
+  void sortActivities() {
+    activitySessions?.sort(
+        (a, b) => (a.thirdparty ? 1 : 0).compareTo(b.thirdparty ? 1 : 0));
   }
 
   @override
@@ -137,12 +202,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     }
     var customBuilder = null;
 
-    if (voipRoomParticipants?.isNotEmpty == true) {
-      customBuilder = buildCallParticipants;
-    }
-
     if (calendarEvents?.isNotEmpty == true) {
       customBuilder = buildEvents;
+    }
+
+    if (activitySessions?.isNotEmpty == true) {
+      customBuilder = buildActivities;
     }
 
     Widget result = SizedBox(
@@ -171,34 +236,21 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       ),
     );
 
-    var items = [
-      ContextMenuItem(
-          text: "Mark as Read",
-          icon: Icons.visibility,
-          onPressed: () => widget.room.markAsRead()),
-      if (widget.room.isSpecialRoomType)
-        ContextMenuItem(
-            text: "Open as Text Chat",
-            icon: Icons.tag,
-            onPressed: () =>
-                widget.onTap?.call(widget.room, bypassSpecialRoomType: true)),
-      if (voipRoom != null && preferences.developerMode.value)
-        ContextMenuItem(
-          text: "Clear Membership Status",
-          icon: Icons.call_end,
-          onPressed: () => voipRoom?.clearAllCallMembershipStatus(),
-        ),
-    ];
-
     result = AdaptiveContextMenu(
-      items: items,
+      items: RoomTextButton.createRoomContextMenuItems(context, widget.room),
       child: result,
     );
 
     return result;
   }
 
-  Widget buildCallParticipants(Widget child, BuildContext context) {
+  Widget buildActivities(Widget child, BuildContext context) {
+    Iterable<RoomActivitySession> sessions = activitySessions!;
+
+    if (activitySessions!.any((i) => i.thirdparty == false)) {
+      sessions = activitySessions!.where((i) => i.thirdparty == false);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,13 +258,70 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 0, 0, 4),
           child: Column(
+            spacing: 8,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (var participant in voipRoomParticipants!)
-                buildCallMember(participant),
+              for (var activity in sessions)
+                buildActivity(
+                  activity,
+                ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildActivity(RoomActivitySession activity) {
+    return AdaptiveContextMenu(
+      items: [
+        tiamat.ContextMenuItem(
+          text: "Clear Memberships",
+          onPressed: () {
+            activities!.clearMemberships(activity);
+          },
+        ),
+      ],
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+            color: ColorScheme.of(context).surfaceTint.withAlpha(10),
+            borderRadius: BorderRadius.circular(8)),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: activity.associatedWidget == null
+                ? null
+                : () => onWidgetTapped(activity),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (activity.thirdparty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 4, 0, 4),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: activity.icon.build(context)),
+                        tiamat.Text.labelLow(activity.name),
+                      ],
+                    ),
+                  ),
+                if (activity.thirdparty)
+                  tiamat.Seperator(
+                    padding: 2,
+                  ),
+                for (var participant in activity.participants)
+                  buildCallMember(participant,
+                      showActivityIcons: activity.thirdparty == false),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -245,13 +354,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  Widget buildCallMember(String identifier) {
+  Widget buildCallMember(String identifier, {bool showActivityIcons = true}) {
     var color = Theme.of(context).colorScheme.secondary;
 
-    final member = voipRoom?.room.getMemberOrFallback(identifier);
-    if (member == null) {
-      return Placeholder();
-    }
+    final member = widget.room.getMemberOrFallback(identifier);
+
+    bool canShowActivityIcons = activitySessions != null && showActivityIcons;
 
     return SizedBox(
       height: height,
@@ -261,6 +369,36 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         avatar: member.avatar,
         avatarPlaceholderColor: member.defaultColor,
         avatarPlaceholderText: member.displayName,
+        footer: canShowActivityIcons
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: Row(
+                  children: [
+                    for (var i in activitySessions!.where((i) =>
+                        i.thirdparty == true &&
+                        i.participants.contains(identifier)))
+                      ClipRRect(
+                        borderRadius: BorderRadiusGeometry.circular(4),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: i.associatedWidget == null
+                                ? null
+                                : () => onWidgetTapped(i),
+                            child: SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: i.icon.build(context),
+                                )),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -282,9 +420,22 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  void onVoipParticipantsChanged(void event) {
-    setState(() {
-      voipRoomParticipants = voipRoom?.getCurrentParticipants();
-    });
+  Future<void> onWidgetTapped(RoomActivitySession activity) async {
+    bool isInActivity = WidgetComponent.currentSessions.any(
+      (element) =>
+          element.info.type == activity.application &&
+          widget.room == element.room,
+    );
+
+    if (isInActivity == false) {
+      var confirm = await AdaptiveDialog.confirmation(context,
+          prompt: "Open **${activity.associatedWidget!.name}**?");
+      if (confirm == true) {
+        WidgetComponent.runWidget(
+            widget.room, context, activity.associatedWidget!);
+      }
+    } else {
+      Log.i("Already has a widget in for this session");
+    }
   }
 }

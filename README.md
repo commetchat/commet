@@ -66,7 +66,7 @@ Help translate to your language on [Weblate](https://hosted.weblate.org/projects
 </a>
 
 # Development
-To build, you require [Flutter](https://flutter.dev), currently v3.41.1 
+To build, you require [Flutter](https://flutter.dev), currently v3.41.9 
 
 This repo currently has a monorepo structure, containing two flutter projects: Commet and Tiamat. Commet is the main client, and Tiamat is a sort of wrapper around Material with some extra goodies, which is used to maintain a consistent style across the app. Tiamat may eventually be moved to its own repo, but for now it is maintained here for ease of development.
 ## Building
@@ -76,7 +76,7 @@ This repo currently has a monorepo structure, containing two flutter projects: C
 ### 2. Install Libraries
 Commet requires some additional libraries to be built 
 ```bash
-sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev
+sudo apt-get install -y cmake clang ninja-build rustup libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev libwebkit2gtk-4.1-dev keybinder-3.0
 ```
 
 ### 3. Fetch Dependencies

@@ -92,9 +92,11 @@ class NotificationManager {
   }
 
   static Future<void> notify(NotificationContent notification,
-      {bool forceShow = false}) async {
+      {bool forceShow = false,
+      Function(String reason)? onNotificationRejected}) async {
     if (_notifier == null) {
       Log.e("Failed to show notification, notifier has not been initialzied");
+      onNotificationRejected?.call("Notifier has not been initialized");
       return;
     }
 
@@ -111,9 +113,13 @@ class NotificationManager {
         if (modifier is NotificationModifierSuppressOtherActiveDevice) continue;
       }
 
-      content = await modifier.process(content!);
+      content = await modifier.process(content!,
+          onNotificationRejected: onNotificationRejected);
       if (content == null) {
         Log.d("Modifier returned null notification, returning");
+
+        onNotificationRejected?.call(
+            "Notification modifier '${modifier}' rejected the notification");
         return;
       }
     }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/main.dart';
@@ -19,30 +20,20 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
     if (publication.track case AudioTrack t) {
-      visualizer = createVisualizer(t,
-          options:
-              AudioVisualizerOptions(barCount: 1, smoothTransition: false));
-
       var volume = preferences.getVoipUserVolume(userId);
       Helper.setVolume(volume, t.mediaStreamTrack);
-
-      var _listener = visualizer!.createListener();
-      _listener.on<AudioVisualizerEvent>((e) {
-        setAudioLevel(e);
-      });
-
-      visualizer!.start();
     }
   }
 
   @override
   double audiolevel = 0.0;
 
-  void setAudioLevel(AudioVisualizerEvent e) {
-    audiolevel = (e.event[0] as double) > 0.5 ? 1 : 0;
+  void markAsSpeaker(bool isSpeaker) {
+    audiolevel = isSpeaker ? 1.0 : 0.0;
   }
 
   void onStreamUpdatedEvent() {
+    print("Stream updated!");
     _onChanged.add(());
   }
 
@@ -80,6 +71,10 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   VoipStreamType get type {
+    if (publication.track is AudioTrack && publication.name == "screenshare") {
+      return VoipStreamType.screenshareAudio;
+    }
+
     if (publication.track is AudioTrack) {
       return VoipStreamType.audio;
     }
@@ -95,13 +90,27 @@ class MatrixLivekitVoipStream implements VoipStream {
   bool get isMuted => publication.track?.muted ?? false;
 
   @override
+  // TODO: implement stats
+  String get stats => JsonEncoder.withIndent("  ").convert({
+        "is encrypted": publication.participant.isEncrypted,
+        "encryption type": publication.encryptionType.toString(),
+        "publication": publication.name
+      });
+
+  String get volumeKey =>
+      type == VoipStreamType.screenshareAudio ? "stream:${userId}" : userId;
+
+  @override
   Future<void> setVolume(double volume) async {
-    preferences.setVoipUserVolume(userId, volume);
+    preferences.setVoipUserVolume(volumeKey, volume);
     if (publication.track case AudioTrack track) {
       Helper.setVolume(volume, track.mediaStreamTrack);
     }
   }
 
   @override
-  double get volume => preferences.getVoipUserVolume(userId);
+  double get volume => preferences.getVoipUserVolume(volumeKey);
+
+  @override
+  String get participantId => publication.participant.identity;
 }

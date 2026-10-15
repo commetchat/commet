@@ -93,6 +93,10 @@ abstract class Room {
 
   bool get isSpecialRoomType;
 
+  Future<void> setAsFavorite(bool favorite);
+
+  bool get isFavorite;
+
   IconData get icon {
     var dm = client.getComponent<DirectMessagesComponent>();
     if (dm?.isRoomDirectMessage(this) == true) {
@@ -203,7 +207,7 @@ abstract class Room {
   Color getColorOfUser(String userId);
 
   /// Gets the timeline of a room, loading it if not yet loaded
-  Future<Timeline> getTimeline({String contextEventId});
+  Future<Timeline> getTimeline({String? contextEventId});
 
   /// Enables end to end encryption in a room
   Future<void> enableE2EE();
@@ -215,6 +219,9 @@ abstract class Room {
 
   /// The last known event in the room timeline
   TimelineEvent? get lastEvent;
+
+  /// The last message in the room timeline (filters out non-message events)
+  TimelineEvent? get lastMessage;
 
   T? getComponent<T extends RoomComponent>();
 
@@ -241,6 +248,8 @@ abstract class Room {
   Future<void> setTopic(String topic);
 
   Future<void> markAsRead();
+
+  String? get lastRead;
 
   @override
   bool operator ==(Object other) {

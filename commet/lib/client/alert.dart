@@ -24,9 +24,9 @@ class Alert {
 class AlertManager {
   final NotifyingList<Alert> _alerts = NotifyingList.empty(growable: true);
 
-  Stream<int> get onAlertAdded => _alerts.onAdd;
+  Stream<Alert> get onAlertAdded => _alerts.onAdd;
 
-  Stream<int> get onAlertRemoved => _alerts.onRemove;
+  Stream<Alert> get onAlertRemoved => _alerts.onRemove;
 
   List<Alert> get alerts => _alerts;
 

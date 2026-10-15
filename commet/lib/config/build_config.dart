@@ -53,7 +53,7 @@ class BuildConfig {
 
   static const String app = "Commet";
 
-  static const String appSchema = "chat.commet";
+  static const String appSchema = "commetchat";
 
   static Uri donationRewardsApiHost = Uri.https("stripe-rewards.commet.chat");
 

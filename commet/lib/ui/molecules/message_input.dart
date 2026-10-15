@@ -264,7 +264,14 @@ class MessageInputState extends State<MessageInput> {
 
     setState(() {
       autoFillResults = result;
-      autoFillSelection = null;
+
+      if (MediaQuery.of(context).desktop &&
+          result?.isNotEmpty == true &&
+          preferences.selectAutoCompleteSuggestion.value) {
+        autoFillSelection = 0;
+      } else {
+        autoFillSelection = null;
+      }
       updateAutofillScroll();
     });
   }
@@ -344,7 +351,7 @@ class MessageInputState extends State<MessageInput> {
     print("Keyboard open: $keyboardOpen");
 
     setState(() {
-      if (Layout.mobile) {
+      if (MediaQuery.of(context).mobile) {
         if (showEmotePicker && !keyboardOpen) {
           // STUPID: since we use android api to dismiss keyboard,
           // requesting focus normally doesnt work, but if we do this
@@ -366,7 +373,7 @@ class MessageInputState extends State<MessageInput> {
         }
       }
 
-      if (Layout.desktop) {
+      if (MediaQuery.of(context).desktop) {
         showEmotePicker = !showEmotePicker;
         emotePickerActive = showEmotePicker;
         emojiTooltipController.showTooltip(autoClose: false);
@@ -669,7 +676,7 @@ class MessageInputState extends State<MessageInput> {
             opacity: widget.isProcessing ? 0.5 : 1,
             child: KeyboardAdaptor(
               enabled: widget.enableKeyboardAdapter,
-              paddingContent: (Layout.mobile && showEmotePicker)
+              paddingContent: (MediaQuery.of(context).mobile && showEmotePicker)
                   ? buildEmojiPicker()
                   : Container(),
               shouldPushContent: () {
@@ -832,7 +839,7 @@ class MessageInputState extends State<MessageInput> {
             height: 30,
             child: Listener(
               onPointerSignal: (event) {
-                if (!Layout.desktop) return;
+                if (!MediaQuery.of(context).desktop) return;
                 if (event is PointerScrollEvent) {
                   final offset = event.scrollDelta.dy;
 
@@ -973,12 +980,12 @@ class MessageInputState extends State<MessageInput> {
         child: RandomEmojiButton(
             size: widget.size,
             onTap: toggleEmojiOverlay,
-            toggled: Layout.mobile
+            toggled: MediaQuery.of(context).mobile
                 ? (emojiTooltipController.value == TooltipStatus.isShowing ||
                     (emotePickerActive == true))
                 : false));
 
-    if (Layout.mobile) return button;
+    if (MediaQuery.of(context).mobile) return button;
 
     return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
@@ -987,6 +994,11 @@ class MessageInputState extends State<MessageInput> {
           preferredDirection: AxisDirection.up,
           controller: emojiTooltipController,
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+          onDismiss: () {
+            if (MediaQuery.of(context).desktop) {
+              textFocus.requestFocus();
+            }
+          },
           content: ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(8),
             child: Material(

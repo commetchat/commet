@@ -192,6 +192,18 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   }
 
   void submit() async {
+    // always try to get metadata when sending a video, regardless of process checkbox
+    if (Mime.videoTypes.contains(widget.attachment.mimeType)) {
+      setState(() {
+        processing = true;
+      });
+
+      var videoWithThumbnail = await getVideoMetadata();
+
+      Navigator.of(context).pop(videoWithThumbnail);
+      return;
+    }
+
     if (canProcessData == false || sendOriginalFile) {
       Navigator.of(context).pop(widget.attachment);
     } else {
@@ -210,8 +222,6 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
 
     if (Mime.imageTypes.contains(widget.attachment.mimeType)) {
       processedFile = await processImage();
-    } else if (Mime.videoTypes.contains(widget.attachment.mimeType)) {
-      processedFile = await processVideo();
     }
 
     return processedFile;
@@ -249,7 +259,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     }, widget.attachment);
   }
 
-  Future<PendingFileAttachment> processVideo() async {
+  Future<PendingFileAttachment> getVideoMetadata() async {
     var file = widget.attachment;
 
     if (videoController != null) {

@@ -174,7 +174,7 @@ class _LightboxState extends State<Lightbox> with TickerProviderStateMixin {
   double counterRotation = 0.25;
 
   void shouldRotate() {
-    if (!Layout.mobile) {
+    if (!MediaQuery.of(context).mobile) {
       return;
     }
 
