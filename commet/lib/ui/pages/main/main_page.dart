@@ -129,6 +129,19 @@ class MainPageState extends State<MainPage> {
       }
     }
 
+    // Restore the last room the user was viewing when opening the app fresh
+    // (no explicit deep-link target), once the room list has loaded on a
+    // logged-in client. Mirrors the deep-link restore path above.
+    if (widget.initialRoom == null && client != null && client.isLoggedIn()) {
+      var rememberedRoomId = preferences.getRememberedRoom(client.identifier);
+      var rememberedRoom = rememberedRoomId == null
+          ? null
+          : client.getRoom(rememberedRoomId);
+      if (currentRoom == null && rememberedRoom != null) {
+        selectRoom(rememberedRoom);
+      }
+    }
+
     var allFavoriteRooms = NotifyingListCombiner(
         clientManager.clients.map((i) => i.favoriteRooms).toList());
 
@@ -306,6 +319,9 @@ class MainPageState extends State<MainPage> {
 
   void selectRoom(Room room, {bool bypassSpecialRoomType = false}) {
     if (room == currentRoom && bypassSpecialRoomType == showAsTextRoom) return;
+
+    // Remember this room so it can be restored on the next app launch.
+    preferences.setRememberedRoom(room.client.identifier, room.identifier);
 
     onRoomUpdateSubscription?.cancel();
 
