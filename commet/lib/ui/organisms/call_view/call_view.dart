@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/layout/bento.dart';
+import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
@@ -279,26 +280,14 @@ class _CallViewState extends State<CallView> {
                           : BoxFit.cover,
                       widget.currentSession,
                       onFullscreen: () {
-                        Navigator.push(
+                        NavigationUtils.navigateTo(
                           context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    Scaffold(
-                              backgroundColor: Colors.black,
-                              body: VoipFullscreenStreamView(
-                                session: widget.currentSession,
-                                stream: e,
-                              ),
+                          Scaffold(
+                            backgroundColor: Colors.black,
+                            body: VoipFullscreenStreamView(
+                              session: widget.currentSession,
+                              stream: e,
                             ),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                            fullscreenDialog: true,
                           ),
                         );
                       },

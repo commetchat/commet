@@ -40,7 +40,9 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
                 widget.stream,
                 widget.session,
                 canFullscreen: false,
-                onFullscreen: () {Navigator.of(context).pop();},
+                onFullscreen: () {
+                  Navigator.of(context).pop();
+                },
               ),
               onHover: (event) {
                 final width = constraints.maxWidth;

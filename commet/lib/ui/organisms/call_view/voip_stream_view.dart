@@ -93,7 +93,6 @@ class _VoipStreamViewState extends State<VoipStreamView>
                           BoxDecoration(borderRadius: BorderRadius.circular(8)),
                       child: buildDefault()),
                 ),
-
                 if (preferences.developerMode.value)
                   Align(
                     alignment: AlignmentGeometry.topLeft,
