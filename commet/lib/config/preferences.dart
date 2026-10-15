@@ -558,6 +558,36 @@ class Preferences {
   NullableStringPreference filterClient =
       NullableStringPreference("filter_client_id", defaultValue: null);
 
+  static const String _rememberedRooms = "remembered_rooms";
+
+  String? getRememberedRoom(String clientId) {
+    try {
+      var str = _preferences?.getString(_rememberedRooms) ?? "{}";
+      var data = jsonDecode(str) as Map<String, dynamic>;
+      var v = data[clientId] as String?;
+      return (v == null || v.isEmpty) ? null : v;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Remember [roomId] for [clientId]. An empty [roomId] clears the entry
+  /// (used on client logout so the old room is never resurrected).
+  Future<void> setRememberedRoom(String clientId, String roomId) async {
+    try {
+      var str = _preferences?.getString(_rememberedRooms) ?? "{}";
+      var data = jsonDecode(str) as Map<String, dynamic>;
+      if (roomId.isEmpty) {
+        data.remove(clientId);
+      } else {
+        data[clientId] = roomId;
+      }
+      await _preferences?.setString(_rememberedRooms, jsonEncode(data));
+    } catch (e) {
+      // best-effort persistence
+    }
+  }
+
   NullableStringPreference fcmKey =
       NullableStringPreference("fcm_key", defaultValue: null);
 
