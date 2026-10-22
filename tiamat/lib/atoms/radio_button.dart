@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import './text.dart' as t;
 
