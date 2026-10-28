@@ -113,13 +113,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsAppNotifications": "Notifikationer",
+    "labelSettingsAppNotifications": "Aviseringar",
     "@labelSettingsAppNotifications": {
         "description": "Label for the App notifications settings page",
         "type": "text",
         "placeholders": {}
     },
-    "labelThemeAmoled": "Amoled",
+    "labelThemeAmoled": "AMOLED",
     "@labelThemeAmoled": {
         "description": "Label for the light theme",
         "type": "text",
@@ -200,6 +200,2094 @@
     "labelRoomSettingsPermissions": "Tillstånd",
     "@labelRoomSettingsPermissions": {
         "description": "Label for room permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "Släpp filen här för att ladda upp...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Senaste händelser",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Det finns inga fästa meddelanden!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "{user}s inbjudningar",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "promptProfileChangeBanner": "Byt omslagsbild",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Lägg till status",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "Ta bort status",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "Välj märken",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "Ändra bio",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "Ta bort bio",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Dela din tidszon",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Ta bort tidszon",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Ändra färgschema",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "Ange färgöverskridning",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "Ta bort färgöverskridning",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "Är du säker på att du vill dela din tidszon '{timezone}' offentligt?",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "Berätta om dig själv",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "Dina märken",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "Du har inga märken. Du kan få märken genom att donera till och stödja Commets utveckling",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Filen är för stor och kan inte laddas upp!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Maximal filstorlek har överskridits",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "Skicka ett krypterat meddelande",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "Skicka ett meddelande",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Du har inte behörighet att skicka meddelanden i detta rum",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipSpaceSettings": "Utrymmesinställningar",
+    "@tooltipSpaceSettings": {
+        "description": "Tooltip for the button that opens space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "Lägg till rum",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "Tillgängliga rum",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "Allmäna utrymmen",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "Privata utrymmen",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Begränsat utrymme",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceGettingText": "Välkommen till\n\n # {spaceName}",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptAddSpace": "Lägg till utrymme",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Samtal från {callingUserName}!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "promptAttachmentProcessingSendOriginal": "Skicka original",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Varning: Denna bild har platsdata",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTextChatDescription": "Enkel textchatt med alla funktioner du kan tänka dig! Skicka meddelanden, media, dekaler, GIF:ar och mycket mer!",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoiceChatDescription": "Ett särskilt rum för röstsamtal, för två eller fler personer",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "Skapa en gemensam kalender för att planera tillsammans, och importera scheman från andra kalendrar så att dina vänner ser när du är upptagen.",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Skapa rum",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Befintligt rum",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Anslut till rummet",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Textchatt",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Röstchatt",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Fotoalbum",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Kalender",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Utrymme",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "Rumsaddress",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomName": "Rumsnamn",
+    "@promptRoomName": {
+        "description": "Prompt to enter a room name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptTopic": "Ämne (frivilligt)",
+    "@promptTopic": {
+        "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "Aktivera kryptering",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "Om du aktiverar kryptering kan du inte stänga av den senare",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPrivateExplanation": "Detta rum kommer endast att vara tillgängligt via inbjudan",
+    "@roomVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' room visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPublicExplanation": "Detta rum kommer att vara tillgängligt för vem som helst på nätet",
+    "@roomVisibilityPublicExplanation": {
+        "description": "Explains what 'public' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "Detta rum kommer att vara tillgängligt för alla som är medlem i överordnade utrymmen",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityRestricted": "Begränsat",
+    "@labelVisibilityRestricted": {
+        "description": "Short label for room visibility restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Skapa rum!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "Skicka bilder och filmklipp till dina kompisar eller din gemenskap!",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Direktmeddelanden",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Direktmeddelanden",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "Väntar på att den andra enheten ska godkänna förfrågan",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** har begärt att få verifiera din session",
+    "@messageMatrixSessionVerificationRequest": {
+        "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        "type": "text",
+        "placeholders": {
+            "username": {}
+        }
+    },
+    "messageSasEmojiVerificationPrompt": "Se till att emojierna matchar och kommer i exakt samma ordning som på den andra enheten",
+    "@messageSasEmojiVerificationPrompt": {
+        "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmEmojiMatches": "De matchar!",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "De matchar inte",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageVerificationComplete": "Verifiering lyckades!",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "# Unified Push\nDenna version av Commet är byggd utan Google Play-tjänster. För att kunna ta emot pushnotiser behöver du använda [Unified Push](https://unifiedpush.org/).\n\nOm du redan har en app installerad som fungerar som en Unified Push-distributör kan du konfigurera den nedan\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Aktivera Unified Push",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "Ingen ändpunkt hittades, något gick fel :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginFailed": "Inloggning misslyckades...",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageAlreadyLoggedIn": "Du har redan loggat in till detta konto",
+    "@messageAlreadyLoggedIn": {
+        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageInvalidUsernameOrPassword": "Felaktigt användarnamn eller lösenord",
+    "@messageInvalidUsernameOrPassword": {
+        "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+        "type": "text",
+        "placeholders": {}
+    },
+    "titleConfirmingDonation": "Bekräftar donation",
+    "@titleConfirmingDonation": {
+        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationInstructions": "Gör som det står i din webbläsare. Var snäll och vänta en stund, då det kan ta någon minut innan dina belöningar dyker upp efter mottagen donation.",
+    "@labelDonationInstructions": {
+        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationSucceeded": "Tack för ditt generösa bidrag!",
+    "@labelDonationConfirmationSucceeded": {
+        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationFailed": "Inga donationer hittades :( Överväg att ge ett bidrag för att stötta utvecklingen av Commet!",
+    "@labelDonationConfirmationFailed": {
+        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmCancelDonationConfirmation": "Är du säker på att du vill avbryta utan att ta emot någon belöning?",
+    "@labelConfirmCancelDonationConfirmation": {
+        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelNoAccount": "Inget konto",
+    "@labelNoAccount": {
+        "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPickDonationAccount": "Välj ett konto att donera med",
+    "@promptPickDonationAccount": {
+        "description": "Prompt the user to select an account to link to their donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonateAnonymously": "Donera utan att koppla till ett konto",
+    "@labelDonateAnonymously": {
+        "description": "Prompt the user to donate to the project, without linking to their user account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonate": "Donera",
+    "@promptDonate": {
+        "description": "Prompt the user to donate to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonationsRefreshAwards": "Uppdatera belöningar",
+    "@promptDonationsRefreshAwards": {
+        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpace": "Lämna utrymme",
+    "@promptLeaveSpace": {
+        "description": "Text on a button to leave a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpaceConfirmation": "Är du säker på att du vill lämna {spaceName}?",
+    "@promptLeaveSpaceConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave a space",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptLeaveRoom": "Lämna rum",
+    "@promptLeaveRoom": {
+        "description": "Text on a button to leave a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveRoomConfirmation": "Är du säker på att du vill lämna {roomName}?",
+    "@promptLeaveRoomConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "notificationSettingsNotSupported": "Pushnotiser stöds inte på det här systemet",
+    "@notificationSettingsNotSupported": {
+        "description": "Message to display when push notifications are not supported",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperMode": "Utvecklarläge",
+    "@labelSettingsDeveloperMode": {
+        "description": "Header for the settings to enable developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperModeExplanation": "Visar extrainformation, användbart för utvecklare",
+    "@labelSettingsDeveloperModeExplanation": {
+        "description": "Explains what developer mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelStickerCompatibility": "Dekalkompatibilitet",
+    "@labelStickerCompatibility": {
+        "description": "Header for the settings to enable sticker compatibility mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsStickerCompatibilityExplanation": "I vissa Matrix-klienter laddas inte dekaler korrekt om de skickas som 'm.sticker'. Genom att aktivera den här inställningen skickas dekaler som 'm.image' istället, vilket gör att de visas som de ska",
+    "@labelSettingsStickerCompatibilityExplanation": {
+        "description": "Explains what sticker compatibility mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviour": "Fönsterhantering",
+    "@labelSettingsWindowBehaviour": {
+        "description": "Label for the Window Behaviour settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppExperiments": "Experiment",
+    "@labelSettingsAppExperiments": {
+        "description": "Label for the App Experiments settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsShortcuts": "Kortkommandon",
+    "@labelSettingsShortcuts": {
+        "description": "Label for the Keyboard shortcuts settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppDeveloperUtils": "Utvecklarverktyg",
+    "@labelSettingsAppDeveloperUtils": {
+        "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryApp": "Appinställningar",
+    "@labelSettingsCategoryApp": {
+        "description": "Label for the settings category of the overall App settings/",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryVoiceAndVideo": "Röst och video",
+    "@labelSettingsCategoryVoiceAndVideo": {
+        "description": "Label for the settings category related to voice and video calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSystemKeyboardShortcutsOutsourceDescription": "Kortkommandon behöver ställas in i systeminställningarna för din nuvarande miljö.",
+    "@labelSystemKeyboardShortcutsOutsourceDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSystemKeyboardShortcutsMoreInfo": "Mer information",
+    "@promptSystemKeyboardShortcutsMoreInfo": {
+        "description": "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfigureKeyboardShortcuts": "Konfigurera kortkommandon",
+    "@labelConfigureKeyboardShortcuts": {
+        "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsPressAKeyCombination": "Slå in en tangentkombination",
+    "@promptShortcutsPressAKeyCombination": {
+        "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsClearKeyboardShortcut": "Ta bort kortkommando",
+    "@promptShortcutsClearKeyboardShortcut": {
+        "description": "Prompt the user to clear a key combination shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviourTitle": "Fönsterhantering",
+    "@labelSettingsWindowBehaviourTitle": {
+        "description": "Header for the window behaviour section of settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseToggle": "Minimera vid stängning",
+    "@labelSettingsMinimizeOnCloseToggle": {
+        "description": "Label for the toggle to turn on and off minimize on close",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseExplanation": "Minimerar fönstret istället för att stänga appen när du stänger fönstret",
+    "@labelSettingsMinimizeOnCloseExplanation": {
+        "description": "Explains what the 'minimize on close' setting does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThirdPartyServicesTitle": "Tredjepartstjänster",
+    "@labelThirdPartyServicesTitle": {
+        "description": "Header for the third party services section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchDescription": "Aktivera Tenor-gifsökning. Anropen kommer att gå via {proxyUrl}",
+    "@labelGifSearchDescription": {
+        "description": "Explains that gifs will be fetched via proxy",
+        "type": "text",
+        "placeholders": {
+            "proxyUrl": {}
+        }
+    },
+    "labelUrlPreviewInEncryptedChatTitle": "Förhandsvisning av länkar i krypterade chattar",
+    "@labelUrlPreviewInEncryptedChatTitle": {
+        "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUrlPreviewInEncryptedChatDescription": "Detta innebär att webbadresser i dina krypterade chattar delas med din hemserver för att förhandsvisningar ska kunna hämtas",
+    "@labelUrlPreviewInEncryptedChatDescription": {
+        "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppBehaviourTitle": "Appbeteende",
+    "@labelAppBehaviourTitle": {
+        "description": "Header for the app behaviour section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageToggle": "Fråga innan meddelanden raderas",
+    "@labelAskBeforeDeletingMessageToggle": {
+        "description": "Label for the toggle for enabling and disabling message deletion confirmation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageDescription": "Aktiverar popup-fönstret som ber om bekräftelse när ett meddelande tas bort.",
+    "@labelAskBeforeDeletingMessageDescription": {
+        "description": "Label describing what 'asking before deleting messages' even means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsTitle": "Visuella effekter",
+    "@labelMessageEffectsTitle": {
+        "description": "Header for the settings tile for message effects, such as confetti",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsDescription": "Meddelanden kan skickas med specialeffekter, som till exempel konfetti",
+    "@labelMessageEffectsDescription": {
+        "description": "Label describing what message effects are",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewSettingsTitle": "Förhandsgranskning av media",
+    "@labelMediaPreviewSettingsTitle": {
+        "description": "Header for the settings tile for for media preview toggles",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaSettings": "Media",
+    "@labelMediaSettings": {
+        "description": "Header for the settings tile for for media",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggle": "Privata rum",
+    "@labelMediaPreviewPrivateRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Förhandsgranska bilder, videor, dekaler och länkar i privata chattar",
+    "@labelMediaPreviewPrivateRoomsToggleDescription": {
+        "description": "Label describing toggle of media previews for private rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPublicRoomsToggle": "Allmäna rum",
+    "@labelMediaPreviewPublicRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPublicRoomsToggleDescription": "Förhandsgranska bilder, videor, dekaler och länkar i allmäna rum",
+    "@labelMediaPreviewPublicRoomsToggleDescription": {
+        "description": "Label describing toggle of media previews for public rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeDark": "Mörkt tema",
+    "@labelThemeDark": {
+        "description": "Label for the dark theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeLight": "Ljust tema",
+    "@labelThemeLight": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsCallConnection": "Samtalsanslutning",
+    "@headerVoipSettingsCallConnection": {
+        "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallback": "Använd STUN-fallback",
+    "@labelVoipSettingsStunFallback": {
+        "description": "label for the setting to enable STUN callback for connecting calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallbackDescription": "Samtal kan inte kopplas upp utan en STUN-server. Om din hemserver inte tillhandahåller en STUN-server, använd '{stunServer}' istället. Din IP-adress kommer att visas för denna server när samtal etableras",
+    "@labelVoipSettingsStunFallbackDescription": {
+        "type": "text",
+        "placeholders": {
+            "stunServer": {}
+        }
+    },
+    "headerVoipSettingsDevices": "Enheter",
+    "@headerVoipSettingsDevices": {
+        "description": "Header for settings tile containing device configuration, for default audio / video inputs",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsStreamSettings": "Streaminställningar",
+    "@headerVoipSettingsStreamSettings": {
+        "description": "Header for settings tile containing stream quality configuration",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcast": "Använd Simulcast",
+    "@labelVoipUseSimulcast": {
+        "description": "label for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcastDescription": "Dina strömmar laddas upp i flera olika kvaliteter, vilket låter tittare välja den som passar dem bäst. Detta kräver mer bandbredd och systemresurser.",
+    "@labelVoipUseSimulcastDescription": {
+        "description": "description for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrate": "Maximal bitrate för strömmen",
+    "@labelVoipStreamMaximumBitrate": {
+        "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrateDescription": "Bestämmer strömmens kvalitet. Högre värde ger bättre bild men kräver mer resurser",
+    "@labelVoipStreamMaximumBitrateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerate": "Bildhastighet för streaming",
+    "@labelVoipStreamFramerate": {
+        "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerateDescription": "Målbildhastighet vid skärmdelning. Högre värden ger jämnare rörelser men kan gå ut över detaljrikedomen.",
+    "@labelVoipStreamFramerateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodec": "Föredragen strömcodec",
+    "@labelVoipStreamPreferredCodec": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodecDescription": "Välj kodningsformat för din ström. Vissa kodekar är snabbare på specifika enheter men kan sakna stöd på andra. Vp8 och h264 stöds av de flesta enheter.",
+    "@labelVoipStreamPreferredCodecDescription": {
+        "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolution": "Strömupplösning",
+    "@labelVoipStreamResolution": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolutionDescription": "Upplösningen på din ström, högre är bättre",
+    "@labelVoipStreamResolutionDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppScale": "Appskalning",
+    "@labelAppScale": {
+        "description": "Label for the setting which controls the UI scale of the overall app",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatars": "Använd profilbilder för rum",
+    "@labelUseRoomAvatars": {
+        "description": "Label for enabling using room avatars instead of icons",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableRoomIconsDescription": "Visar rummets profilbild istället för ikoner",
+    "@labelEnableRoomIconsDescription": {
+        "description": "Description for the enable room icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholders": "Använd platshållare",
+    "@labelUseRoomAvatarPlaceholders": {
+        "description": "Label for enabling generic icons in the appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholdersDescription": "Om ett rum saknar avatar eller om de har inaktiverats, används en generisk färg och begynnelsebokstav som platshållare",
+    "@labelUseRoomAvatarPlaceholdersDescription": {
+        "description": "Description for the enable generic icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebar": "Visa ej anslutna rum i sidofältet",
+    "@labelShowRoomPreviewsInSpaceSidebar": {
+        "description": "Label for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "När det finns rum du inte har anslutet till i ett utrymme, visa dessa i sidofältet tillsammans med övriga rum i samma utrymme",
+    "@labelShowRoomPreviewsInSpaceSidebarDescription": {
+        "description": "Description for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppInfo": "Om Commet",
+    "@labelSettingsAppInfo": {
+        "description": "Label for the app info settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNotifyAll": "Alla meddelanden",
+    "@labelPushRuleNotifyAll": {
+        "description": "Label for the push rule which notifies for all received messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleMentionsAndKeywords": "Taggar och nyckelord",
+    "@labelPushRuleMentionsAndKeywords": {
+        "description": "Label for the push rule which notifies only for keywords and mentions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDefaultReadReceiptsOption": "Följ global inställning ({pref})",
+    "@labelDefaultReadReceiptsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelDefaultTypingIndicatorsOption": "Följ global inställning ({pref})",
+    "@labelDefaultTypingIndicatorsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelReadReceiptsTitle": "Läskvitton",
+    "@labelReadReceiptsTitle": {
+        "description": "Label for the toggle for enabling and disabling public read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorTitle": "Skrivindikatorer",
+    "@labelTypingIndicatorTitle": {
+        "description": "Label for the toggle for enabling and disabling typing indicators",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptImportPack": "Importera paket",
+    "@promptImportPack": {
+        "description": "Prompt to import a set of emoticons from an existing pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "createEmoticonDialogTitle": "Skapa emotikon",
+    "@createEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "editEmoticonDialogTitle": "Redigera emotikon",
+    "@editEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoticonPackName": "Paketnamn",
+    "@promptEmoticonPackName": {
+        "description": "Prompt for the input of the name of an emoticon pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoteName": "Ikonnamn",
+    "@promptEmoteName": {
+        "description": "Prompt for the input of the name of an emoji",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryptionRoomSettings": "Aktivera kryptering",
+    "@promptEnableEncryptionRoomSettings": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanationRoomSettings": "Om kryptering aktiveras kan den inte avaktiveras senare",
+    "@encryptionCannotBeDisabledExplanationRoomSettings": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleMember": "Rumsmedlem",
+    "@labelMatrixPermissionsRoleMember": {
+        "description": "Label for the room member role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenTitle": "Hantera underliggande",
+    "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+        "description": "Title for permission to manage children",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenDescription": "Låter användaren hantera vilka rum som ingår i detta utrymme",
+    "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+        "description": "Describes the permission to manage child rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesTitle": "Radera meddelanden",
+    "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+        "description": "Title for permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Låter användaren radera meddelanden skickade av andra användare",
+    "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+        "description": "Describes the permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomSendMessagesTitle": "Skicka meddelanden",
+    "@labelMatrixPermissionsRoomSendMessagesTitle": {
+        "description": "Title for the permission to send messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomSendMessagesDescription": "Låter en användare skicka meddelanden i det här rummet",
+    "@labelMatrixPermissionsRoomSendMessagesDescription": {
+        "description": "Describes the permission to send messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsTitle": "Lägg till reaktioner",
+    "@labelMatrixPermissionsRoomAddReactionsTitle": {
+        "description": "Title for the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsDescription": "Lägg till reaktioner på meddelanden",
+    "@labelMatrixPermissionsRoomAddReactionsDescription": {
+        "description": "describes the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Synlighet för historik",
+    "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+        "description": "Title for the permission to add change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Låter användaren ändra synligheten för chatthistorik i det här rummet",
+    "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+        "description": "describes the permission to change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarTitle": "Sätt profilbild",
+    "@labelMatrixPermissionsRoomAvatarTitle": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarDescription": "Ändra rummets profilbild",
+    "@labelMatrixPermissionsRoomAvatarDescription": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameTitle": "Ändra namn",
+    "@labelMatrixPermissionsChangeRoomNameTitle": {
+        "description": "Title for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameDescription": "Låter användaren ändra namn på rummet",
+    "@labelMatrixPermissionsChangeRoomNameDescription": {
+        "description": "Description for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomTopicTitle": "Ändra ämne",
+    "@labelMatrixPermissionsChangeRoomTopicTitle": {
+        "description": "Title for the permission to add change the rooms topic",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomTopicDescription": "Låter användaren ändra ämnet i rummet",
+    "@labelMatrixPermissionsChangeRoomTopicDescription": {
+        "description": "Description for the permission to add change the rooms topic",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsTitle": "Ändra behörigheter",
+    "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+        "description": "Title for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Låter användaren ändra behörighetsinställningar",
+    "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+        "description": "Description for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsKickUserTitle": "Sparka användare",
+    "@labelMatrixPermissionsKickUserTitle": {
+        "description": "Title for the permission to kick other users out of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsKickUserDescription": "Låter användaren sparka andra användare från rummet",
+    "@labelMatrixPermissionsKickUserDescription": {
+        "description": "Description for the permission to kick other users out of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsBanUserTitle": "Spärra användare",
+    "@labelMatrixPermissionsBanUserTitle": {
+        "description": "Title for the permission to ban other users from the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsBanUserDescription": "Låter användaren spärra användare från rummet",
+    "@labelMatrixPermissionsBanUserDescription": {
+        "description": "Description for the permission to ban other users from the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallTitle": "Gå med i samtal",
+    "@labelMatrixPermissionsJoinCallTitle": {
+        "description": "Title for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallDescription": "Låter användaren gå med i pågående samtal",
+    "@labelMatrixPermissionsJoinCallDescription": {
+        "description": "Description for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventTitle": "Redigera evenemang",
+    "@labelMatrixPermissionsAddCalendarEventTitle": {
+        "description": "Title for the permission to allow users to edit the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventDescription": "Låter användare redigera evenemang i kalendern",
+    "@labelMatrixPermissionsAddCalendarEventDescription": {
+        "description": "Description for the permission to allow users to create an event on the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCategory": "Rumsinställningar",
+    "@labelRoomSettingsCategory": {
+        "description": "Label for the overall settings category of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCalendar": "Kalender",
+    "@labelRoomSettingsCalendar": {
+        "description": "Label for room calendar settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsGeneral": "Allmänt",
+    "@labelSpaceSettingsGeneral": {
+        "description": "Label for general space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAppearanceSettings": "Utseende",
+    "@labelSpaceAppearanceSettings": {
+        "description": "Label for space appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceEmoticonSettings": "Emotikoner",
+    "@labelSpaceEmoticonSettings": {
+        "description": "Label for space emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpacePermissionSettings": "Tillstånd",
+    "@labelSpacePermissionSettings": {
+        "description": "Label for space permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceDeveloperSettings": "Utvecklare",
+    "@labelSpaceDeveloperSettings": {
+        "description": "Label for space developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategorySpace": "Inställningar för utrymmen",
+    "@labelSettingsCategorySpace": {
+        "description": "Label for the overall space settings category",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsSecurity": "Säkerhet",
+    "@labelSpaceSettingsSecurity": {
+        "description": "Label for space security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsMembers": "Medlemmar",
+    "@labelSpaceSettingsMembers": {
+        "description": "Label for space member settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptMatrixVerifySession": "Verifiera",
+    "@promptMatrixVerifySession": {
+        "description": "Text on the button to verify a session",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigning": "Korssignering",
+    "@labelMatrixCrossSigning": {
+        "description": "Title label for matrix cross signing",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigningAndBackup": "Korssignering och backup",
+    "@labelMatrixCrossSigningAndBackup": {
+        "description": "Header label for matrix cross signing and message backup section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAccountSessions": "Sessioner",
+    "@labelMatrixAccountSessions": {
+        "description": "Title label for account sessions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigningExplanation": "Konfigurera för att bekräfta och ha koll på dina sessioner",
+    "@labelMatrixCrossSigningExplanation": {
+        "description": "Explains what matrix cross signing does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixResetCrossSigningTitle": "Återställ korssignering",
+    "@labelMatrixResetCrossSigningTitle": {
+        "description": "Title for the popup dialog when resetting cross signing",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixMessageBackup": "Meddelandebackup",
+    "@labelMatrixMessageBackup": {
+        "description": "TItle label for matrix message backup settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixMessageBackupExplanation": "Behåller en säkerhetskopia av din meddelandehistorik, utifall att du förlorar alla dina sessioner. Dina meddelanden kommer att krypteras före uppladdning",
+    "@labelMatrixMessageBackupExplanation": {
+        "description": "Explains what matrix message backup does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSetupMatrixMessageBackup": "Konfigurera säkerhetskopiering",
+    "@promptSetupMatrixMessageBackup": {
+        "description": "Text on the button to begin the setup process for message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRestoreMatrixBackupTitle": "Återställ säkerhetskopia",
+    "@labelRestoreMatrixBackupTitle": {
+        "description": "Title of the popup dialog for restoring message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptWipeMatrixKeys": "Radera nycklar",
+    "@promptWipeMatrixKeys": {
+        "description": "Text on the button to wipe matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAbortWipingMatrixKeys": "Nej, vänta!",
+    "@promptAbortWipingMatrixKeys": {
+        "description": "Text on the button which aborts wiping matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptGenerateMatrixRecoveryKey": "Skapa nyckel",
+    "@promptGenerateMatrixRecoveryKey": {
+        "description": "Button text to generate a recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixRecoveryKeyCreateExplanation": "För att komma åt din historik behöver du en säkerhetsnyckel. Välj mellan att få en nyckel skapad automatiskt eller att ange en egen fras",
+    "@labelMatrixRecoveryKeyCreateExplanation": {
+        "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSetMatrixPassphrase": "Ställ in fras",
+    "@promptSetMatrixPassphrase": {
+        "description": "Button text to set a passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingMatrixKeys": "Använd existerande nyckel",
+    "@promptUseExistingMatrixKeys": {
+        "description": "Button text to opt to use existing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewMatrixKeys": "Nej, skapa nya nycklar",
+    "@promptCreateNewMatrixKeys": {
+        "description": "Button text to opt to create new keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptWipeMatrixBackup": "Radera säkerhetskopia",
+    "@promptWipeMatrixBackup": {
+        "description": "Button text to wipe the matrix message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableMatrixBackup": "Aktivera säkerhetskopiering",
+    "@promptEnableMatrixBackup": {
+        "description": "Button text to enable to encrypted message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelExistingMatrixKeysFound": "Hittade befintliga signeringsnycklar!",
+    "@labelExistingMatrixKeysFound": {
+        "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskUseExistingMatrixKeys": "Vill du använda de befintliga nycklarna?",
+    "@labelAskUseExistingMatrixKeys": {
+        "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixRecoveryKeyExplanation": "Detta är din reservnyckel. Du kan använda den för att verifiera din session om du förlorar åtkomst till alla andra sessioner. Förvara den på ett säkert ställe!",
+    "@labelMatrixRecoveryKeyExplanation": {
+        "description": "Gives a brief description about the function on the recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixRecoveryKeyPromptExplanation": "För att låsa upp dina gamla meddelanden behöver du skriva in din återställningsnyckel som skapades tidigare. Kom ihåg att din återställningsnyckel INTE är samma sak som ditt lösenord.",
+    "@labelMatrixRecoveryKeyPromptExplanation": {
+        "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptMatrixRecoveryKeyInput": "Återställningsnyckel",
+    "@promptMatrixRecoveryKeyInput": {
+        "description": "Placeholder text for the recovery key input box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmWipingCrossSigningKeys": "Är du säker på att du vill radera dina korssigneringsnycklar?",
+    "@promptConfirmWipingCrossSigningKeys": {
+        "description": "Asks the user if they are sure they want to wipe the keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixSecurityPhraseShouldNotBePassword": "Du borde inte ha samma säkerhetsfras som lösenord till kontot",
+    "@labelMatrixSecurityPhraseShouldNotBePassword": {
+        "description": "Tells the user to not use their password as their security phrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphraseMustContainUpperAndLowercase": "Frasen måste innehålla minst en stor och en liten bokstav",
+    "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphraseMustContainNumber": "Frasen måste innehålla minst en siffra",
+    "@errorMatrixPassphraseMustContainNumber": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphraseMustContainSymbol": "Frasen måste innehålla minst ett specialtecken",
+    "@errorMatrixPassphraseMustContainSymbol": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "erroMatrixPassphraseMustBeLonger": "Frasen måste vara minst tio bokstäver lång",
+    "@erroMatrixPassphraseMustBeLonger": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixConfirmSecurityPhrase": "Bekräfta din säkerhetsfras:",
+    "@labelMatrixConfirmSecurityPhrase": {
+        "description": "Prompts the user to input their passphrase again",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderMatrixConfirmSecurityPhrase": "Bekräfta din säkerhetsfras",
+    "@placeholderMatrixConfirmSecurityPhrase": {
+        "description": "Placeholder text for the confirm passphrase text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphrasesDontMatch": "Säkerhetsfraserna överrensstämmer inte",
+    "@errorMatrixPassphrasesDontMatch": {
+        "description": "Error when the user enters passphrase twice and the two dont match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPromptPassphrase": "Säkerhetsfras:",
+    "@labelMatrixPromptPassphrase": {
+        "description": "Prompt the user to enter passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderMatrixEnterSecutiyPhrase": "Säkerhetsfras",
+    "@placeholderMatrixEnterSecutiyPhrase": {
+        "description": "Placeholder text for the passphrase text box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixExistingMessageBackupFound": "Befintlig säkerhetskopia hittades!",
+    "@labelMatrixExistingMessageBackupFound": {
+        "description": "Message to explain that existing backup has been found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAskWipeBackupToContinue": "Om du byter dina korssigneringsnycklar så måste du radera din befintliga säkerhetskopia... Vill du fortsätta?",
+    "@labelMatrixAskWipeBackupToContinue": {
+        "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixWarnResetKeysIsPermanent": "Om du återställer dina nycklar går det inte att ångra, och din säkerhetskopia av chatthistoriken försvinner. Det här är nästan garanterat inget du vill göra!",
+    "@labelMatrixWarnResetKeysIsPermanent": {
+        "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAskEnableMessageBackup": "Vill du aktivera säkerhetskopiering av nycklar online?",
+    "@labelMatrixAskEnableMessageBackup": {
+        "description": "Asks the user if they want to enable online backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixExplainOnlineKeyBackup": "Säkerhetskopiering av nycklar online gör att du kan få tillbaka din meddelandehistorik om du skulle råka förlora åtkomsten till alla dina sessioner",
+    "@labelMatrixExplainOnlineKeyBackup": {
+        "description": "Explains what the message backup does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabManageAccounts": "Hantera konton",
+    "@labelSettingsTabManageAccounts": {
+        "description": "Label for the Manage Accounts settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabProfile": "Profil",
+    "@labelSettingsTabProfile": {
+        "description": "Label for the Profile settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabPrivacy": "Integritet",
+    "@labelSettingsTabPrivacy": {
+        "description": "Label for the Privacy settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabSecurity": "Säkerhet",
+    "@labelSettingsTabSecurity": {
+        "description": "Label for the Security settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabEmoticons": "Emotikoner",
+    "@labelSettingsTabEmoticons": {
+        "description": "Label for the Emoticons settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabDeveloper": "Utvecklare",
+    "@labelSettingsTabDeveloper": {
+        "description": "Label for the Developer settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryAccount": "Konto",
+    "@labelSettingsCategoryAccount": {
+        "description": "Label for the settings category Account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPrivacyTitle": "Chattintegritet",
+    "@labelChatPrivacyTitle": {
+        "description": "Header for the chat privacy section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsToggle": "Läskvitton",
+    "@labelPublicReadReceiptsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsDescription": "Tillåter andra medlemmar i ett rum att se när du har läst deras meddelanden.",
+    "@labelPublicReadReceiptsDescription": {
+        "description": "description for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorsToggle": "Skrivindikator",
+    "@labelTypingIndicatorsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicTypingIndicatorDescription": "Tillåter andra medlemmar i ett rum att se när du skriver ett meddelande.",
+    "@labelPublicTypingIndicatorDescription": {
+        "description": "description for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddAccount": "Lägg till konto",
+    "@promptAddAccount": {
+        "description": "Label for button in settings to add another account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLogoutSingleAccount": "Logga ut",
+    "@promptLogoutSingleAccount": {
+        "description": "Label for button in settings to log out of an account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCurrentAccountsHeader": "Konton",
+    "@labelCurrentAccountsHeader": {
+        "description": "Label for header of accounts list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDialogConfirmation": "Bekräfta",
+    "@labelDialogConfirmation": {
+        "description": "label for the dialog which asks the user to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageEditedMarker": "(Redigerat)",
+    "@messageEditedMarker": {
+        "description": "Short text to mark that a message has been edited",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerEmojiTab": "Emoji",
+    "@labelEmojiPickerEmojiTab": {
+        "description": "Label for the emoji tab in emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerStickerTab": "Dekaler",
+    "@labelEmojiPickerStickerTab": {
+        "description": "Label for the sticker tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerGifTab": "GIF",
+    "@labelEmojiPickerGifTab": {
+        "description": "Label for the gif search tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPinMessage": "Fäst meddelande",
+    "@promptPinMessage": {
+        "description": "Label for the menu option to pin a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUnpinMessage": "Avfäst meddelande",
+    "@promptUnpinMessage": {
+        "description": "Label for the menu option to unpin a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReplyInThread": "Svara i tråd",
+    "@promptReplyInThread": {
+        "description": "Label for the menu option to reply to a message inside a thread",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShowSource": "Visa källa",
+    "@promptShowSource": {
+        "description": "Label for the menu option to view the JSON source of an event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReplayMessageEffect": "Spela upp effekten igen",
+    "@promptReplayMessageEffect": {
+        "description": "If a message was sent with an effect, this prompts to replay the effect",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCancelEventSend": "Avbryt",
+    "@promptCancelEventSend": {
+        "description": "When a message failed to send, this prompts to cancel sending the event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRetryEventSend": "Försök igen",
+    "@promptRetryEventSend": {
+        "description": "When a message failed to send, this prompts to retry sending the event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEndPoll": "Avsluta omröstning",
+    "@promptEndPoll": {
+        "description": "Prompt the user to end a poll",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShowSticker": "Visa dekal",
+    "@promptShowSticker": {
+        "description": "Prompt to display a sticker, shown when media previews are disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageFailedToDecrypt": "Händelsen kunde inte avkrypteras",
+    "@messageFailedToDecrypt": {
+        "description": "Placeholde text for when a message fails to decrypt",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderSticker": "{user} skickade en dekal",
+    "@messagePlaceholderSticker": {
+        "description": "Message body for when a user sends a sticker",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserCreatedRoom": "{user} skapade rummet!",
+    "@messagePlaceholderUserCreatedRoom": {
+        "description": "Message body for when a user creates the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "errorMessageFailedToSend": "Sändningen misslyckades",
+    "@errorMessageFailedToSend": {
+        "description": "Text that is placed below a message when the message fails to send",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJumpToLatest": "Visa senaste",
+    "@labelJumpToLatest": {
+        "description": "Label for the button which jumps the room timeline view to the latest message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationBodyWithSender": "{user} bjöd in dig till ett rum",
+    "@labelInvitationBodyWithSender": {
+        "description": "Message body for when an invitation was received, and we have a name for the sender",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "typingUsers": "{howMany,plural, =1{{user1} skriver...}=2{{user1} och {user2} skriver...}few{{user1}, {user2}, och {user3} skriver...}other{Flera personer skriver...}}",
+    "@typingUsers": {
+        "description": "Text to display which users are currently typing",
+        "type": "text",
+        "placeholders": {
+            "howMany": {},
+            "user1": {},
+            "user2": {},
+            "user3": {}
+        }
+    },
+    "promptReply": "Svara",
+    "@promptReply": {
+        "description": "Generic prompt to reply to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddReaction": "Reagera",
+    "@promptAddReaction": {
+        "description": "Generic prompt to add reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEdit": "Redigera",
+    "@promptEdit": {
+        "description": "Generic prompt to edit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOptions": "Alternativ",
+    "@promptOptions": {
+        "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSettings": "Inställningar",
+    "@promptSettings": {
+        "description": "Generic prompt for settings, usually will open a settings menu or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNext": "Nästa",
+    "@promptNext": {
+        "description": "Generic prompt for going to the next step of an activity or flow, usually on a button",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHome": "Hem",
+    "@promptHome": {
+        "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAccept": "Acceptera",
+    "@promptAccept": {
+        "description": "Generic prompt to accept something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDismiss": "Avfärda",
+    "@promptDismiss": {
+        "description": "Generic prompt to dismiss something, probably a popup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDecline": "Neka",
+    "@promptDecline": {
+        "description": "Generic prompt to decline something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReject": "Avvisa",
+    "@promptReject": {
+        "description": "Generic prompt to reject something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptApply": "Verkställ",
+    "@promptApply": {
+        "description": "Generic prompt to apply something, probably a setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDelete": "Radera",
+    "@promptDelete": {
+        "description": "Generic prompt to delete something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDownload": "Ladda ned",
+    "@promptDownload": {
+        "description": "Generic prompt to download something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoin": "Gå med",
+    "@promptJoin": {
+        "description": "Generic prompt to join a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmit": "Skicka",
+    "@promptSubmit": {
+        "description": "Generic prompt to submit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptContinue": "Fortsätt",
+    "@promptContinue": {
+        "description": "Generic prompt to continue with some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirm": "Bekräfta",
+    "@promptConfirm": {
+        "description": "Generic prompt to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDone": "Klar",
+    "@promptDone": {
+        "description": "Generic prompt to confirm that you are done",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReset": "Återställ",
+    "@promptReset": {
+        "description": "Generic prompt to reset something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnable": "Aktivera",
+    "@promptEnable": {
+        "description": "Generic prompt to enable something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptYes": "Ja",
+    "@promptYes": {
+        "description": "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNo": "Nej",
+    "@promptNo": {
+        "description": "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRestore": "Återställ",
+    "@promptRestore": {
+        "description": "Generic prompt to restore something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPoliteNo": "Nej tack",
+    "@promptPoliteNo": {
+        "description": "Generic message to decline something, using nice manners :)",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptBack": "Tillbaka",
+    "@promptBack": {
+        "description": "Prompt text to go backwards, probably for navigation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSearch": "Sök",
+    "@promptSearch": {
+        "description": "Prompt the user to search for something, usually shown as the hint in a text box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopy": "Kopiera",
+    "@promptCopy": {
+        "description": "Prompt to copy text",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublic": "Allmänt",
+    "@labelPublic": {
+        "description": "Label for public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPrivate": "Privat",
+    "@labelPrivate": {
+        "description": "Label for private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnabled": "Aktiverat",
+    "@labelEnabled": {
+        "description": "Label for enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDisabled": "Inaktiverat",
+    "@labelDisabled": {
+        "description": "Label for disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopyComplete": "Kopierat!",
+    "@promptCopyComplete": {
+        "description": "Prompt text for after a copy has been completed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelOr": "Eller",
+    "@labelOr": {
+        "description": "Text that is placed between two or more options: [button1] or [button2]",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameMute": "Stäng av mikrofon",
+    "@shortcutNameMute": {
+        "description": "name for the system wide shortcut to activate microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameUnmute": "Slå på mikrofon",
+    "@shortcutNameUnmute": {
+        "description": "name for the system wide shortcut to disable microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameToggleMute": "Växla mikrofon",
+    "@shortcutNameToggleMute": {
+        "description": "name for the system wide shortcut to toggle the microphone mute status",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUpdateAvailable": "Det finns en uppdatering",
+    "@labelUpdateAvailable": {
+        "description": "Label for the the info popup when an update is available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "descriptionUpdateAvailable": "Det finns en nyare version av Commet tillgänglig: {version}",
+    "@descriptionUpdateAvailable": {
+        "description": "describes the update, showing the version code for the available update",
+        "type": "text",
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "messageUserEmote": "*{user} {emote}",
+    "@messageUserEmote": {
+        "description": "Message to display when a user does a custom emote (/me)",
+        "type": "text",
+        "placeholders": {
+            "user": {},
+            "emote": {}
+        }
+    },
+    "messagePlaceholderUserEditedCalendar": "{user} ändrade i kalendern",
+    "@messagePlaceholderUserEditedCalendar": {
+        "description": "Message body for when a user edits the room calendar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserJoinedRoom": "{user} gick med i rummet!",
+    "@messagePlaceholderUserJoinedRoom": {
+        "description": "Message body for when a user joins the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserLeftRoom": "{user} lämnade rummet",
+    "@messagePlaceholderUserLeftRoom": {
+        "description": "Message body for when a user leaves the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedAvatar": "{user} ändrade sin profilbild",
+    "@messagePlaceholderUserUpdatedAvatar": {
+        "description": "Message body for when a user updates their avatar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedName": "{user} ändrade sitt visningsnamn",
+    "@messagePlaceholderUserUpdatedName": {
+        "description": "Message body for when a user updates their display name",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedNameDetailed": "{user} ändrade sitt visningsnamn till \"{newName}\"",
+    "@messagePlaceholderUserUpdatedNameDetailed": {
+        "description": "Message body for when a user updates their display name",
+        "type": "text",
+        "placeholders": {
+            "user": {},
+            "newName": {}
+        }
+    },
+    "messagePlaceholderUserInvited": "{sender} skickade en inbjudan till {invitedUser}",
+    "@messagePlaceholderUserInvited": {
+        "description": "Message body for when a user invites another user to the room",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "invitedUser": {}
+        }
+    },
+    "messagePlaceholderUserRejectedInvite": "{user} nekade inbjudan",
+    "@messagePlaceholderUserRejectedInvite": {
+        "description": "Message body for when a user rejected an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserRetractedInvite": "{sender} tog bort inbjudan till {user}",
+    "@messageUserRetractedInvite": {
+        "description": "Message body for when a user's invitation to a room was withdrawn",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "user": {}
+        }
+    },
+    "messageUserAcceptedInvite": "{user} tackade ja till inbjudan",
+    "@messageUserAcceptedInvite": {
+        "description": "Message body for when a user accepted an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserBanned": "{sender} spärrade {user}",
+    "@messageUserBanned": {
+        "description": "Message body for when a user bans another user from the room",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "user": {}
+        }
+    },
+    "messageUserUnbanned": "{sender} tog bort spärren från {user}",
+    "@messageUserUnbanned": {
+        "description": "Message body for when a user reverts a ban of another user",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "user": {}
+        }
+    },
+    "messageUserAnsweredCall": "{user} svarade på samtalet",
+    "@messageUserAnsweredCall": {
+        "description": "Message body for when a user answers a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserHangupCall": "{user} avslutade samtalet",
+    "@messageUserHangupCall": {
+        "description": "Message body for when a user hangs up a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserRejectCall": "{user} nekade samtalet",
+    "@messageUserRejectCall": {
+        "description": "Message body for when a user rejects a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserInviteCall": "{user} startade ett samtal",
+    "@messageUserInviteCall": {
+        "description": "Message body for when a user starts a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserPinnedEvent": "{user} fäste ett meddelande!",
+    "@messageUserPinnedEvent": {
+        "description": "Message body for when a user adds an event to the room's pinned messages",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserUnpinnedEvent": "{user} avfäste ett meddelande",
+    "@messageUserUnpinnedEvent": {
+        "description": "Message body for when a user removes an event from the room's pinned messages",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "matrixClientOlmMissingMessage": "libolm saknas eller kunde inte hittas. Du kan inte använda totalsträckskryptering förrän du har löst det här",
+    "@matrixClientOlmMissingMessage": {
+        "description": "Text that explains to the user that libolm dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "matrixClientVodozemacMissingMessage": "vodozemac saknas eller kunde inte hittas. Du kan inte använda totalsträckskryptering förrän du har löst det här",
+    "@matrixClientVodozemacMissingMessage": {
+        "description": "Text that explains to the user that vodozemac dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "matrixClientEncryptionWarningTitle": "Krypteringsvarning",
+    "@matrixClientEncryptionWarningTitle": {
+        "description": "Title of a warning about encryption",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserDeactivated": "Ditt konto har avaktiverats",
+    "@messageUserDeactivated": {
+        "description": "An error message displayed when the user attempts to log into an account that has been disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationModifiersPrivacyEnhanced": "Skickade ett meddelande",
+    "@notificationModifiersPrivacyEnhanced": {
+        "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationContentUserIsCalling": "{user} ringer!",
+    "@notificationContentUserIsCalling": {
+        "description": "Notification body content for when receiving an incoming call from another user",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "notificationTitleIncomingCall": "Det ringer! ({roomName})",
+    "@notificationTitleIncomingCall": {
+        "description": "Notification title for when a call is being received",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "promptProfileShowRawProfile": "Visa råprofil",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "Anslut!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchToggle": "Gifsökning",
+    "@labelGifSearchToggle": {
+        "description": "Label for the toggle for enabling and disabling gif search",
         "type": "text",
         "placeholders": {}
     }
