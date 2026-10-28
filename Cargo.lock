@@ -3395,7 +3395,7 @@ dependencies = [
 [[package]]
 name = "overlay"
 version = "0.1.0"
-source = "git+https://github.com/commetchat/overlay.git?rev=5e110888725bc2e21831b923896f2f89dea5963f#5e110888725bc2e21831b923896f2f89dea5963f"
+source = "git+https://github.com/commetchat/overlay.git?rev=e0b4d4402ddcffb66829b78f900ccd7bf43a8d9d#e0b4d4402ddcffb66829b78f900ccd7bf43a8d9d"
 dependencies = [
  "base64 0.23.1",
  "embed-file",
