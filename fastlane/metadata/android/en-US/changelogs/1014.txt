@@ -1,0 +1,6 @@
+What's Changed:
+- Added support for rendering per-message profiles
+- Updated to support latest Unicode Emoji
+- Improved video and audio players
+- Added an on-screen overlay when in voice calls
+- Improved performance when in background
