@@ -163,7 +163,10 @@ jobs:
           flutter build apk --debug --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, ubuntu-26.04, ubuntu-26.04-arm]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -174,7 +177,7 @@ jobs:
         uses: subosito/flutter-action@v2.8.0
         with:
           flutter-version: '3.41.9'
-          channel: 'stable'
+          channel: 'master'
 
       - name: Setup Tools
         run: |
