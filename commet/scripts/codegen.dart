@@ -1,36 +1,40 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
 import 'dart:io';
 
-Future<ProcessResult> getDependencies() async {
-  var process = Process.runSync(
+
+Future<int> run(String command, List<String> args) async {
+  var process = await Process.start(command, args, runInShell: true);
+
+  process.stdout.transform(utf8.decoder).listen((i) => print(i));
+  process.stderr.transform(utf8.decoder).listen((i) => print(i));
+
+  return await process.exitCode;
+}
+
+Future<int> getDependencies() async {
+
+  return await run(
     "flutter",
     [
       "pub",
       "get",
-    ],
-    runInShell: true,
+    ]
   );
 
-  print(process.stdout);
-  print(process.stderr);
-  return process;
 }
 
-Future<ProcessResult> intlUtilsGenerate() async {
-  var process = await Process.run(
+Future<int> intlUtilsGenerate() async {
+  return await run(
     "flutter",
     [
       "pub",
       "run",
       "intl_utils:generate",
     ],
-    runInShell: true,
   );
 
-  print(process.stdout);
-  print(process.stderr);
-  return process;
 }
 
 Future<List<File>> generateFileLists() async {
@@ -86,8 +90,8 @@ Future<List<File>> generateFileLists() async {
   return [sourcesFile, arbFile];
 }
 
-Future<ProcessResult> generateFromArb(List<File> files) async {
-  var process = await Process.run(
+Future<int> generateFromArb(List<File> files) async {
+  return await run(
     "flutter",
     [
       "pub",
@@ -98,17 +102,12 @@ Future<ProcessResult> generateFromArb(List<File> files) async {
       "--translations-list-file",
       files[1].absolute.path,
       "--output-dir=lib/generated/l10n"
-    ],
-    runInShell: true,
+    ]
   );
-
-  print(process.stdout);
-  print(process.stderr);
-  return process;
 }
 
-Future<ProcessResult> buildRunner() async {
-  var process = await Process.run(
+Future<int> buildRunner() async {
+  return await run(
     "flutter",
     [
       "pub",
@@ -116,34 +115,44 @@ Future<ProcessResult> buildRunner() async {
       "build_runner",
       "build",
       "--delete-conflicting-outputs",
-    ],
-    runInShell: true,
+    ]
   );
-
-  print(process.stdout);
-  print(process.stderr);
-  return process;
 }
 
 void main() async {
+ 
+  print("---- Getting Dependencies ----");
   var result = await getDependencies();
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
+  if (result != 0) {
+    exit(result);
   }
 
+
+  print("---- Finished Getting Dependencies! ----");
+
+  print("---- Generating Translation Code ----");
   result = await intlUtilsGenerate();
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
+  if (result != 0) {
+    exit(result);
   }
 
+  print("---- Finished Generating Translation Code! ----");
+
+
+
+  print("---- Generating File Lists ----");
   var files = await generateFileLists();
   result = await generateFromArb(files);
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
+  if (result != 0) {
+    exit(result);
   }
 
+  print("---- Finished Generating File Lists! ----");
+
+  print("---- Running Build Runner ----");
+
   result = await buildRunner();
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
+  if (result != 0) {
+    exit(result);
   }
 }
