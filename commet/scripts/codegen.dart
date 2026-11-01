@@ -107,35 +107,40 @@ Future<int> buildRunner() async {
 }
 
 void main() async {
-  print("---- Getting Dependencies ----");
-  var result = await getDependencies();
-  if (result != 0) {
-    exit(result);
-  }
+  try {
+    print("---- Getting Dependencies ----");
+    var result = await getDependencies();
+    if (result != 0) {
+      exit(result);
+    }
 
-  print("---- Finished Getting Dependencies! ----");
+    print("---- Finished Getting Dependencies! ----");
 
-  print("---- Generating Translation Code ----");
-  result = await intlUtilsGenerate();
-  if (result != 0) {
-    exit(result);
-  }
+    print("---- Generating Translation Code ----");
+    result = await intlUtilsGenerate();
+    if (result != 0) {
+      exit(result);
+    }
 
-  print("---- Finished Generating Translation Code! ----");
+    print("---- Finished Generating Translation Code! ----");
 
-  print("---- Generating File Lists ----");
-  var files = await generateFileLists();
-  result = await generateFromArb(files);
-  if (result != 0) {
-    exit(result);
-  }
+    print("---- Generating File Lists ----");
+    var files = await generateFileLists();
+    result = await generateFromArb(files);
+    if (result != 0) {
+      exit(result);
+    }
 
-  print("---- Finished Generating File Lists! ----");
+    print("---- Finished Generating File Lists! ----");
 
-  print("---- Running Build Runner ----");
+    print("---- Running Build Runner ----");
 
-  result = await buildRunner();
-  if (result != 0) {
-    exit(result);
+    result = await buildRunner();
+    if (result != 0) {
+      exit(result);
+    }
+  } catch (e) {
+    print("Script failed: ${e}");
+    exit(1);
   }
 }
