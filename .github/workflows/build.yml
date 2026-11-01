@@ -163,8 +163,8 @@ jobs:
           flutter build apk --debug --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
+    continue-on-error: true
     strategy:
-      continue-on-error: true
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, ubuntu-26.04, ubuntu-26.04-arm]
     runs-on: ${{ matrix.os }}
