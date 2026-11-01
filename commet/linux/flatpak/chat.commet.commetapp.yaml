@@ -120,8 +120,6 @@ modules:
 
 - name: commetapp
   buildsystem: simple
-  only-arches:
-  - x86_64
   post-install:
   - install -Dm755 commet-wrapper ${FLATPAK_DEST}/bin/commet
   build-commands:
