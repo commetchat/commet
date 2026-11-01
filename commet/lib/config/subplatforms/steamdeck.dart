@@ -30,7 +30,11 @@ class SteamdeckSubplatform implements Subplatform {
   }
 
   @override
-  String get name => _isSteamFrame ? "steamframe" : _isGameMode ? "steamdeck_gamemode" : "steamdeck_desktop";
+  String get name => _isSteamFrame
+      ? "steamframe"
+      : _isGameMode
+          ? "steamdeck_gamemode"
+          : "steamdeck_desktop";
 
   static bool _isSteamDeck = false;
 
