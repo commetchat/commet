@@ -185,7 +185,7 @@ jobs:
           git clone --depth 1 --branch 3.41.9 https://github.com/flutter/flutter.git $env:RUNNER_TEMP\flutter
 
           # Add Flutter to PATH
-          Add-Content $env:GITHUB_PATH "$env:RUNNER_TEMP\flutter\bin"
+          echo "$RUNNER_TEMP/flutter/bin" >> $GITHUB_PATH
       
       - name: Install Flutter
         run: flutter doctor
