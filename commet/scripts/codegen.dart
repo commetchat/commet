@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 Future<int> run(String command, List<String> args) async {
   var process = await Process.start(command, args, runInShell: true);
 
@@ -14,15 +13,10 @@ Future<int> run(String command, List<String> args) async {
 }
 
 Future<int> getDependencies() async {
-
-  return await run(
-    "flutter",
-    [
-      "pub",
-      "get",
-    ]
-  );
-
+  return await run("flutter", [
+    "pub",
+    "get",
+  ]);
 }
 
 Future<int> intlUtilsGenerate() async {
@@ -34,7 +28,6 @@ Future<int> intlUtilsGenerate() async {
       "intl_utils:generate",
     ],
   );
-
 }
 
 Future<List<File>> generateFileLists() async {
@@ -91,42 +84,34 @@ Future<List<File>> generateFileLists() async {
 }
 
 Future<int> generateFromArb(List<File> files) async {
-  return await run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "intl_translation:generate_from_arb",
-      "--sources-list-file",
-      files[0].absolute.path,
-      "--translations-list-file",
-      files[1].absolute.path,
-      "--output-dir=lib/generated/l10n"
-    ]
-  );
+  return await run("flutter", [
+    "pub",
+    "run",
+    "intl_translation:generate_from_arb",
+    "--sources-list-file",
+    files[0].absolute.path,
+    "--translations-list-file",
+    files[1].absolute.path,
+    "--output-dir=lib/generated/l10n"
+  ]);
 }
 
 Future<int> buildRunner() async {
-  return await run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "build_runner",
-      "build",
-      "--delete-conflicting-outputs",
-    ]
-  );
+  return await run("flutter", [
+    "pub",
+    "run",
+    "build_runner",
+    "build",
+    "--delete-conflicting-outputs",
+  ]);
 }
 
 void main() async {
- 
   print("---- Getting Dependencies ----");
   var result = await getDependencies();
   if (result != 0) {
     exit(result);
   }
-
 
   print("---- Finished Getting Dependencies! ----");
 
@@ -137,8 +122,6 @@ void main() async {
   }
 
   print("---- Finished Generating Translation Code! ----");
-
-
 
   print("---- Generating File Lists ----");
   var files = await generateFileLists();
