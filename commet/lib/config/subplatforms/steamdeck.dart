@@ -10,9 +10,11 @@ class SteamdeckSubplatform implements Subplatform {
     Log.i(
         "Initializing steamdeck subplatform: ${_isSteamDeck} is gamemode: ${_isGameMode}");
 
-    if (_isGameMode) {
-      await windowManager.setFullScreen(true);
-      ensureFullscreen();
+    if (!_isSteamFrame) {
+      if (_isGameMode) {
+        await windowManager.setFullScreen(true);
+        ensureFullscreen();
+      }
     }
   }
 
