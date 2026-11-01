@@ -30,9 +30,11 @@ class SteamdeckSubplatform implements Subplatform {
   }
 
   @override
-  String get name => _isGameMode ? "steamdeck_gamemode" : "steamdeck_desktop";
+  String get name => _isSteamFrame ? "steamframe" : _isGameMode ? "steamdeck_gamemode" : "steamdeck_desktop";
 
   static bool _isSteamDeck = false;
+
+  static bool _isSteamFrame = false;
 
   static bool _isGameMode = false;
 
@@ -45,6 +47,8 @@ class SteamdeckSubplatform implements Subplatform {
 
     var steamProceses = processes.where((i) => i.command.endsWith("/steam"));
 
+    _isSteamFrame = steamProceses.any((i) => i.args.contains("-deckard"));
+
     _isSteamDeck = steamProceses.any((i) => i.args.contains("-steamdeck"));
 
     _isGameMode =
@@ -53,6 +57,6 @@ class SteamdeckSubplatform implements Subplatform {
     Log.i(
         "Is running on steamdeck: ${_isSteamDeck} is gamemode: ${_isGameMode}");
 
-    return _isSteamDeck;
+    return _isSteamDeck || _isSteamFrame;
   }
 }
