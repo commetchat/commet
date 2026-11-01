@@ -182,7 +182,7 @@ jobs:
       - name: Clone Flutter
         run: |
           # Shallow-clone Flutter to reduce download size
-          git clone --depth 1 --branch 3.41.9 https://github.com/flutter/flutter.git $env:RUNNER_TEMP\flutter
+          git clone --depth 1 --branch 3.27.3 https://github.com/flutter/flutter.git $RUNNER_TEMP/flutter
 
           # Add Flutter to PATH
           echo "$RUNNER_TEMP/flutter/bin" >> $GITHUB_PATH
