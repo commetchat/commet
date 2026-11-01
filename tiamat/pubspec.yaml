@@ -21,6 +21,8 @@ dependencies:
     git: 
       url: https://github.com/Airyzz/material-flutter-packages.git
       path: ./packages/dynamic_color
+  json_annotation: ^4.9.0
+  json_serializable: ^6.9.5
 
 dev_dependencies:
   build_runner:
@@ -31,6 +33,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/placeholder/generic/
+    - assets/images/nine-patch/
   shaders:
     - assets/shader/texture_coordinate.frag
   fonts:
