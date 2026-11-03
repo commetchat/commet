@@ -323,7 +323,15 @@ jobs:
           path: commet-pkg/commet-linux-x64.deb
 
   release-linux-flatpak:
-    runs-on: ubuntu-latest
+    
+    continue-on-error: true
+    
+    strategy:
+      matrix:
+        os: [ubuntu-24.04-arm, ubuntu-24.04]
+    
+    runs-on: ${{ matrix.os }}
+
     steps:
       # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
@@ -357,18 +365,24 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: 'true'
-        
-      - name: Setup Flutter 
-        uses: subosito/flutter-action@v2.8.0
-        with:
-          flutter-version: '3.41.9'
-          channel: 'stable'
 
       - name: Setup Tools
         run: |
           sudo apt-get update -y
           sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev flatpak-builder flatpak webkit2gtk-4.1 keybinder-3.0
-        
+      
+      # https://github.com/subosito/flutter-action/issues/345#issuecomment-2638225681
+      - name: Clone Flutter
+        run: |
+          # Shallow-clone Flutter to reduce download size
+          git clone --depth 1 --branch 3.41.9 https://github.com/flutter/flutter.git $RUNNER_TEMP/flutter
+
+          # Add Flutter to PATH
+          echo "$RUNNER_TEMP/flutter/bin" >> $GITHUB_PATH
+      
+      - name: Install Flutter
+        run: flutter doctor
+
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
@@ -376,6 +390,8 @@ jobs:
           
       - name: Build Linux
         run: |
+          export CXXFLAGS="-Wno-error=uninitialized"
+          export CFLAGS="-Wno-error=uninitialized"
           cd $PROJECT_PATH
           dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail flatpak
 
@@ -384,7 +400,7 @@ jobs:
           sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           sudo flatpak install -y flathub org.gnome.Platform//51 org.gnome.Sdk//51
           mkdir -p commet/linux/flatpak/commet
-          cp -r $PROJECT_PATH/build/linux/x64/release/bundle $PROJECT_PATH/linux/flatpak/commet/bundle
+          cp -r $PROJECT_PATH/build/linux/${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}/release/bundle $PROJECT_PATH/linux/flatpak/commet/bundle
           version=$(echo ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} | grep -oP '[0-9]+([.][0-9]+)+')
           echo $version
           cd $PROJECT_PATH/linux/flatpak
@@ -401,14 +417,14 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: commet/linux/flatpak/chat.commet.commetapp.flatpak
-          asset_name: chat.commet.commetapp.flatpak
+          asset_name: chat.commet.commetapp.${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}.flatpak
           asset_content_type: application/octet-stream
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: chat.commet.commetapp.flatpak
+          name: chat.commet.commetapp.${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}.flatpak
           path: commet/linux/flatpak/chat.commet.commetapp.flatpak
 
   release-linux-portable:

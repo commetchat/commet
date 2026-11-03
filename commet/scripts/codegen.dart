@@ -1,36 +1,33 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
 import 'dart:io';
 
-Future<ProcessResult> getDependencies() async {
-  var process = Process.runSync(
-    "flutter",
-    [
-      "pub",
-      "get",
-    ],
-    runInShell: true,
-  );
+Future<int> run(String command, List<String> args) async {
+  var process = await Process.start(command, args, runInShell: true);
 
-  print(process.stdout);
-  print(process.stderr);
-  return process;
+  process.stdout.transform(utf8.decoder).listen((i) => print(i));
+  process.stderr.transform(utf8.decoder).listen((i) => print(i));
+
+  return await process.exitCode;
 }
 
-Future<ProcessResult> intlUtilsGenerate() async {
-  var process = await Process.run(
+Future<int> getDependencies() async {
+  return await run("flutter", [
+    "pub",
+    "get",
+  ]);
+}
+
+Future<int> intlUtilsGenerate() async {
+  return await run(
     "flutter",
     [
       "pub",
       "run",
       "intl_utils:generate",
     ],
-    runInShell: true,
   );
-
-  print(process.stdout);
-  print(process.stderr);
-  return process;
 }
 
 Future<List<File>> generateFileLists() async {
@@ -86,64 +83,64 @@ Future<List<File>> generateFileLists() async {
   return [sourcesFile, arbFile];
 }
 
-Future<ProcessResult> generateFromArb(List<File> files) async {
-  var process = await Process.run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "intl_translation:generate_from_arb",
-      "--sources-list-file",
-      files[0].absolute.path,
-      "--translations-list-file",
-      files[1].absolute.path,
-      "--output-dir=lib/generated/l10n"
-    ],
-    runInShell: true,
-  );
-
-  print(process.stdout);
-  print(process.stderr);
-  return process;
+Future<int> generateFromArb(List<File> files) async {
+  return await run("flutter", [
+    "pub",
+    "run",
+    "intl_translation:generate_from_arb",
+    "--sources-list-file",
+    files[0].absolute.path,
+    "--translations-list-file",
+    files[1].absolute.path,
+    "--output-dir=lib/generated/l10n"
+  ]);
 }
 
-Future<ProcessResult> buildRunner() async {
-  var process = await Process.run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "build_runner",
-      "build",
-      "--delete-conflicting-outputs",
-    ],
-    runInShell: true,
-  );
-
-  print(process.stdout);
-  print(process.stderr);
-  return process;
+Future<int> buildRunner() async {
+  return await run("flutter", [
+    "pub",
+    "run",
+    "build_runner",
+    "build",
+    "--delete-conflicting-outputs",
+  ]);
 }
 
 void main() async {
-  var result = await getDependencies();
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
-  }
+  try {
+    print("---- Getting Dependencies ----");
+    var result = await getDependencies();
+    if (result != 0) {
+      exit(result);
+    }
 
-  result = await intlUtilsGenerate();
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
-  }
+    print("---- Finished Getting Dependencies! ----");
 
-  var files = await generateFileLists();
-  result = await generateFromArb(files);
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
-  }
+    print("---- Generating Translation Code ----");
+    result = await intlUtilsGenerate();
+    if (result != 0) {
+      exit(result);
+    }
 
-  result = await buildRunner();
-  if (result.exitCode != 0) {
-    exit(result.exitCode);
+    print("---- Finished Generating Translation Code! ----");
+
+    print("---- Generating File Lists ----");
+    var files = await generateFileLists();
+    result = await generateFromArb(files);
+    if (result != 0) {
+      exit(result);
+    }
+
+    print("---- Finished Generating File Lists! ----");
+
+    print("---- Running Build Runner ----");
+
+    result = await buildRunner();
+    if (result != 0) {
+      exit(result);
+    }
+  } catch (e) {
+    print("Script failed: ${e}");
+    exit(1);
   }
 }

@@ -1,6 +1,16 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
+import 'dart:convert';
+
+Future<int> run(String command, List<String> args) async {
+  var process = await Process.start(command, args, runInShell: true);
+
+  process.stdout.transform(utf8.decoder).listen((i) => print(i));
+  process.stderr.transform(utf8.decoder).listen((i) => print(i));
+
+  return await process.exitCode;
+}
 
 String? getArg(List<String> args, String name) {
   int index = args.indexOf(name);
@@ -62,7 +72,7 @@ Future<void> main(List<String> args) async {
     print("Detail:\t\t'$buildDetail'");
   }
 
-  var process = Process.runSync(
+  var result = await run(
     "flutter",
     [
       "build",
@@ -87,10 +97,7 @@ Future<void> main(List<String> args) async {
       if (platform == "web") "FLUTTER_WEB_CANVASKIT_URL=canvaskit/",
       if (platform == "web") "--source-maps",
     ],
-    runInShell: true,
   );
 
-  print(process.stdout);
-  print(process.stderr);
-  exit(process.exitCode);
+  exit(result);
 }

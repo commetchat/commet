@@ -26,7 +26,7 @@ finish-args:
 - "--talk-name=org.freedesktop.Flatpak"
 - "--talk-name=org.freedesktop.portal.Documents"
 - "--system-talk-name=org.freedesktop.NetworkManager"
-- "--env=LD_LIBRARY_PATH=/app/lib"
+- "--env=LD_LIBRARY_PATH=/app/lib:/app/lib64"
 modules:
 - name: keybinder3
   buildsystem: autotools
@@ -120,8 +120,6 @@ modules:
 
 - name: commetapp
   buildsystem: simple
-  only-arches:
-  - x86_64
   post-install:
   - install -Dm755 commet-wrapper ${FLATPAK_DEST}/bin/commet
   build-commands:
@@ -133,8 +131,8 @@ modules:
   - install -Dm644 icon.png /app/share/icons/hicolor/512x512/apps/chat.commet.commetapp.png
   - install -Dm644 chat.commet.commetapp.desktop /app/share/applications/chat.commet.commetapp.desktop
   - mkdir -p /app/bin
-  - ls /app/lib64
-  - cp -a /app/lib64/. /app/lib/
+  - ls /app/
+
   sources:
   - type: dir
     path: commet
