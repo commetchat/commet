@@ -1,5 +1,5 @@
 import 'package:commet/client/matrix/components/widgets/matrix_widget_permission_groups.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() async {
   test("org.matrix.msc4039.download_file", () async {

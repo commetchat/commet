@@ -3,7 +3,7 @@ version: 0.5.1+1014
 publish_to: none
 description: Your space to connect
 environment: 
-  sdk: '>=3.6.0 <4.0.0'
+  sdk: '>=3.13.0 <4.0.0'
 resolution: workspace
 
 dependencies: 
@@ -42,7 +42,6 @@ dependencies:
   shared_preferences: ^2.5.2
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+4
-  test: ^1.24.3
   unifiedpush: ^5.0.1
   universal_html: ^2.2.4
   url_launcher: ^6.1.11
@@ -65,14 +64,16 @@ dependencies:
 
   tiamat: 
     path: ../tiamat/
+
   matrix:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk.git
-      ref: upstream-v6.1.1
+      ref: upstream-15.0.0
+
   matrix_dart_sdk_drift_db:
-    git: 
+    git:
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
-      ref: upstream-v6.1.1+patch.3
+      ref: sdk-update-15.0.0
 
   signal_sticker_api: 
     git: 
@@ -82,7 +83,7 @@ dependencies:
     git: https://github.com/lagmachine-com/starfield.git
   sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
-  drift: ^2.28.1
+  drift: ^2.34.0
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
@@ -95,9 +96,8 @@ dependencies:
       url: https://github.com/daadu/receive_intent
       ref: master
   flutter_shortcuts_new: ^2.0.0
-  flutter_vodozemac: ^0.5.0
-  vodozemac: ^0.5.0
-  intl_translation: ^0.20.1
+  flutter_vodozemac: ^0.9.0
+  vodozemac: ^0.9.0
 
 
   ## ---- Putting some extra lines in here to help git with the diff
@@ -126,7 +126,7 @@ dependencies:
   hotkey_manager: ^0.2.3
   rust_lib_commet:
     path: ../rust/rust_builder
-  flutter_rust_bridge: 2.11.1
+  flutter_rust_bridge: 2.13.0
   flutter_inappwebview: ^6.1.5
   network_info_plus: ^7.0.0
   pretty_qr_code: ^3.6.0
@@ -139,9 +139,8 @@ dependencies:
 
 
 dependency_overrides:
-  analyzer: ^7.3.0
   pointycastle: ^4.0.0
-
+  package_config: ^3.0.0
   ## For inline-reply 
   flutter_local_notifications_linux: 
     git: 
@@ -175,11 +174,12 @@ dependency_overrides:
   #     ref: hkdf
 
 dev_dependencies: 
-  drift_dev: ^2.28.0
-  build_runner: ^2.4.11
+  drift_dev: ^2.34.0
+  build_runner: ^2.17.1
   flutter_launcher_icons: ^0.13.1
   msix: ^3.7.0
   pubspec_dependency_sorter: ^1.0.4
+  intl_translation: 0.22.0
   flutter_test: 
     sdk: flutter
   integration_test: 

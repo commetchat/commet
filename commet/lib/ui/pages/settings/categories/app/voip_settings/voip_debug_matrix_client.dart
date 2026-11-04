@@ -112,7 +112,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
         tiamat.Text.labelLow("username: ${credentials!.username}"),
         tiamat.Text.labelLow("password: ${"•" * credentials!.password.length}"),
         const tiamat.Seperator(),
-        for (var item in credentials!.uris) tiamat.Text.labelLow(item)
+        for (var item in credentials!.uris) tiamat.Text.labelLow(item.toString())
       ],
     );
   }

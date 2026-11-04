@@ -229,7 +229,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     }
   }
 
-  void loadEventState(var eventIndex) {
+  void loadEventState(int eventIndex) {
     index = eventIndex;
     if (widget.timeline != null) {
       var event = widget.timeline!.events[eventIndex];

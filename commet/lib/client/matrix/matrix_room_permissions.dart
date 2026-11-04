@@ -62,7 +62,7 @@ class MatrixRoomPermissions extends Permissions {
       if (level != null) powerLevel = level;
     }
 
-    return room.getPowerLevelByUserId(user) >= powerLevel;
+    return room.getPowerLevelByUserId(user).level >= powerLevel;
   }
 
   @override
