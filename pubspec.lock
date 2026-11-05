@@ -1691,11 +1691,10 @@ packages:
   receive_intent:
     dependency: transitive
     description:
-      path: "."
-      ref: master
-      resolved-ref: "6316821b66b0e45ec8ba5a9f447b30f156731c71"
-      url: "https://github.com/daadu/receive_intent"
-    source: git
+      name: receive_intent
+      sha256: "0fdb0bf57e6759f586803c4a42e35fbe9e49ee948298c6d2ae75bf99c06be005"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.2.8"
   record_use:
     dependency: transitive

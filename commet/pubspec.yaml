@@ -91,10 +91,7 @@ dependencies:
   flutter_webrtc: ^1.6.2+hotfix.3
   file_picker: ^10.2.0
   flutter_web_auth_2: ^4.1.0
-  receive_intent:
-    git:
-      url: https://github.com/daadu/receive_intent
-      ref: master
+  receive_intent: ^0.2.8
   flutter_shortcuts_new: ^2.0.0
   flutter_vodozemac: ^0.9.0
   vodozemac: ^0.9.0
