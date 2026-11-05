@@ -190,6 +190,8 @@ jobs:
           
       - name: Build Linux
         run: |
+          export CXXFLAGS="-Wno-error=uninitialized"
+          export CFLAGS="-Wno-error=uninitialized"
           cd $PROJECT_PATH
           flutter build linux --release --dart-define PLATFORM=linux
 
