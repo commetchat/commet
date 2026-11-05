@@ -56,7 +56,7 @@ class UnifiedPushNotifier implements Notifier {
     await notifier.init();
 
     Log.i("Initializing unified push");
-    UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
+    // UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
 
     isInit = true;
   }
