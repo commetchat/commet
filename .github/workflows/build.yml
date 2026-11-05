@@ -25,7 +25,9 @@ jobs:
 
       - name: Configure Flutter
         run: flutter config --enable-windows-desktop
-        
+      
+      - uses: ilammy/setup-nasm@v1
+      
       - name: Code Generation
         run: |
           cd .\commet
