@@ -36,6 +36,7 @@ dependencies:
   pasteboard: ^0.2.0
   path: ^1.8.2
   path_provider: ^2.0.13
+  path_provider_linux: 2.2.1 # Pinned to 2.2.1 because 2.2.2 changes the location where data is stored
   permission_handler: ^11.0.1
   provider: ^6.0.0
   scrollable_positioned_list: ^0.3.8
