@@ -81,8 +81,8 @@ dependencies:
       ref: 2d864d0f907d698f260e63f44b3aacc400f089ac
   starfield: 
     git: https://github.com/lagmachine-com/starfield.git
-  sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
+  sqlite3: ^3.0.0
   drift: ^2.34.0
   archive: ^3.6.1
   exif: ^3.3.0

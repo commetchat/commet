@@ -20,7 +20,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   pasteboard
   permission_handler_windows
   screen_retriever_windows
-  sqlite3_flutter_libs
   url_launcher_windows
   webcrypto
   win_toast
