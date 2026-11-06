@@ -87,8 +87,8 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  livekit_client: ^2.13.0
-  flutter_webrtc: ^1.6.2+hotfix.3
+  livekit_client: ^2.13.2
+  flutter_webrtc: ^1.6.3
   file_picker: ^10.2.0
   flutter_web_auth_2: ^4.1.0
   receive_intent: ^0.2.8
