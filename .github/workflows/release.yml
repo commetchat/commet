@@ -27,7 +27,9 @@ jobs:
 
       - name: Configure Flutter
         run: flutter config --enable-windows-desktop
-        
+      
+      - uses: ilammy/setup-nasm@v1
+
       - name: Code Generation
         run: |
           cd .\commet
@@ -290,6 +292,8 @@ jobs:
           
       - name: Build Linux
         run: |
+          export CXXFLAGS="-Wno-error=uninitialized"
+          export CFLAGS="-Wno-error=uninitialized"
           cd $PROJECT_PATH
           dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail debian
 
@@ -376,6 +380,8 @@ jobs:
           
       - name: Build Linux
         run: |
+          export CXXFLAGS="-Wno-error=uninitialized"
+          export CFLAGS="-Wno-error=uninitialized"
           cd $PROJECT_PATH
           dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail flatpak
 
@@ -465,6 +471,8 @@ jobs:
           
       - name: Build Linux
         run: |
+          export CXXFLAGS="-Wno-error=uninitialized"
+          export CFLAGS="-Wno-error=uninitialized"
           cd $PROJECT_PATH
           dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail linux-x64
 
