@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
@@ -56,7 +55,7 @@ class UnifiedPushNotifier implements Notifier {
     await notifier.init();
 
     Log.i("Initializing unified push");
-    // UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
+    UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
 
     isInit = true;
   }
@@ -80,11 +79,11 @@ class UnifiedPushNotifier implements Notifier {
     return notifier.requestPermission();
   }
 
-  void onNewEndpoint(String endpoint, String instance) async {
+  void onNewEndpoint(PushEndpoint endpoint, String instance) async {
     print("Got new endpoint: $instance");
-    await preferences.unifiedPushEndpoint.set(endpoint);
+    await preferences.unifiedPushEndpoint.set(endpoint.url);
     await PushNotificationComponent.updateAllPushers();
-    onEndpointChanged.add(endpoint);
+    onEndpointChanged.add(endpoint.url);
   }
 
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
@@ -120,9 +119,9 @@ class UnifiedPushNotifier implements Notifier {
     }
   }
 
-  void onMessage(Uint8List message, String instance) async {
+  void onMessage(PushMessage message, String instance) async {
     Log.i("Received unified push message! $instance");
-    var data = utf8.decode(message);
+    var data = utf8.decode(message.content);
 
     EventBus.onReceivedPushNotificationData.add(data);
 
@@ -186,4 +185,6 @@ class UnifiedPushNotifier implements Notifier {
     // TODO: implement enableBadges
     throw UnimplementedError();
   }
+
+
 }

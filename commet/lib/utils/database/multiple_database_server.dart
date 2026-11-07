@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:commet/client/matrix/database/matrix_database_io.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 
@@ -37,15 +38,13 @@ final class MultiDatabaseServer {
         return;
       }
 
-      final isolate = _activeIsolates.putIfAbsent(
-        name,
-        () {
-          return DriftIsolate.inCurrent(
-              serialize: true,
-              // obviously you can pass a path instead of a name and use that to open the right NativeDatabase
-              () => setupNativeDatabase(File(name), readOnly: readOnly));
-        },
-      );
+      final isolate = _activeIsolates.putIfAbsent(name, () {
+        return DriftIsolate.inCurrent(
+          serialize: true,
+          // obviously you can pass a path instead of a name and use that to open the right NativeDatabase
+          () => setupNativeDatabase(File(name), readOnly: readOnly),
+        );
+      });
 
       port.send(isolate.connectPort);
     });
@@ -55,9 +54,13 @@ final class MultiDatabaseServer {
 class DatabaseIsolate {
   static final receiveConnectPort = ReceivePort();
   static SendPort? connectToServer;
-  static const isolateName = "chat.commet.commetapp.database_isolate";
+  static String get isolateName => isHeadless
+      ? "chat.commet.commetapp.database_isolate.background_worker"
+      : "chat.commet.commetapp.database_isolate";
 
   static Future<void> start() async {
+    Log.i("Starting database server: $isolateName");
+    
     connectToServer = IsolateNameServer.lookupPortByName(isolateName);
     if (connectToServer == null) {
       Isolate.spawn(
@@ -74,8 +77,10 @@ class DatabaseIsolate {
     }
   }
 
-  static Future<DatabaseConnection> connect(String databaseName,
-      {bool readOnly = false}) async {
+  static Future<DatabaseConnection> connect(
+    String databaseName, {
+    bool readOnly = false,
+  }) async {
     if (connectToServer == null) {
       await start();
     }

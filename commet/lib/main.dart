@@ -135,6 +135,11 @@ void main(List<String> args) async {
   commandLineArgs = args;
   print(args);
 
+  if(args.contains("--unifiedpush-bg")) {
+    unifiedPushEntry();
+    return;
+  }
+
   if (runWebViewTitleBarWidget(args)) {
     return;
   }
