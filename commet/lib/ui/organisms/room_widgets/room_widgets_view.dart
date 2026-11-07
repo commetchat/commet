@@ -91,7 +91,8 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: tiamat.Text.labelLow(
-                    "No widgets have been added to this room"),
+                  "No widgets have been added to this room",
+                ),
               ),
             Flexible(
               child: ListView.builder(
@@ -113,8 +114,11 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                                 icon: hostTypeToIcon(i),
                                 onPressed: () {
                                   WidgetComponent.runWidget(
-                                      widget.room, context, data,
-                                      type: i);
+                                    widget.room,
+                                    context,
+                                    data,
+                                    type: i,
+                                  );
                                 },
                               ),
                             tiamat.ContextMenuItem(
@@ -123,8 +127,9 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                               color: ColorScheme.of(context).error,
                               onPressed: () {
                                 preferences.clearWidgetSettings(
-                                    widget.room.client.identifier,
-                                    data.namespace);
+                                  widget.room.client.identifier,
+                                  data.namespace,
+                                );
                               },
                             ),
                             tiamat.ContextMenuItem(
@@ -132,17 +137,21 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                               icon: Icons.delete_forever,
                               color: ColorScheme.of(context).error,
                               onPressed: () async {
-                                if (await AdaptiveDialog.confirmation(context,
-                                        prompt:
-                                            "Are you sure you want to remove the widget '${data.name}' from '${widget.room.displayName}'?") ==
+                                if (await AdaptiveDialog.confirmation(
+                                      context,
+                                      prompt:
+                                          "Are you sure you want to remove the widget '${data.name}' from '${widget.room.displayName}'?",
+                                    ) ==
                                     true) {
                                   var comp = widget.room.client
                                       .getComponent<WidgetComponent>();
                                   comp?.removeWidget(
-                                      widget: data, room: widget.room);
+                                    widget: data,
+                                    room: widget.room,
+                                  );
                                 }
                               },
-                            )
+                            ),
                           ],
                           child: tiamat.TextButton(
                             data.name,
@@ -150,7 +159,10 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
                             avatar: data.icon.image,
                             onTap: () async {
                               WidgetComponent.runWidget(
-                                  widget.room, context, data);
+                                widget.room,
+                                context,
+                                data,
+                              );
                             },
                           ),
                         ),
@@ -163,17 +175,18 @@ class _RoomWidgetsViewState extends State<RoomWidgetsView> {
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: SizedBox(
-                  height: 50,
-                  child: tiamat.TextButton(
-                    "Browse Widgets",
-                    icon: Icons.open_in_browser,
-                    onTap: () {
-                      LinkUtils.open(
-                        Uri.parse("https://commet.chat/widgets"),
-                        context: context,
-                      );
-                    },
-                  )),
+                height: 50,
+                child: tiamat.TextButton(
+                  "Browse Widgets",
+                  icon: Icons.open_in_browser,
+                  onTap: () {
+                    LinkUtils.open(
+                      Uri.parse("https://commet.chat/widgets"),
+                      context: context,
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ),

@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SettingsEntryBool extends StatelessWidget {
-  const SettingsEntryBool(this.state,
-      {required this.title, this.description, this.onChanged, super.key});
+  const SettingsEntryBool(
+    this.state, {
+    required this.title,
+    this.description,
+    this.onChanged,
+    super.key,
+  });
   final bool state;
   final String title;
   final String? description;
@@ -20,11 +25,11 @@ class SettingsEntryBool extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.labelEmphasised(title),
-              if (description != null) tiamat.Text.labelLow(description!)
+              if (description != null) tiamat.Text.labelLow(description!),
             ],
           ),
         ),
-        tiamat.Switch(state: state, onChanged: onChanged)
+        tiamat.Switch(state: state, onChanged: onChanged),
       ],
     );
   }

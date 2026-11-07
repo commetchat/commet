@@ -10,10 +10,7 @@ class CertificateData {
   final Uint8List certBytes;
   final Uint8List privateKeyBytes;
 
-  CertificateData({
-    required this.certBytes,
-    required this.privateKeyBytes,
-  });
+  CertificateData({required this.certBytes, required this.privateKeyBytes});
 }
 
 Future<HttpServer> spawnSelfSignedHttpsServer(String hostname) async {
@@ -41,8 +38,11 @@ Future<HttpServer> spawnServerWithOpenPort({SecurityContext? context}) async {
         var server = await HttpServer.bind(InternetAddress.anyIPv4, port);
         return server;
       } else {
-        var server =
-            await HttpServer.bindSecure(InternetAddress.anyIPv4, port, context);
+        var server = await HttpServer.bindSecure(
+          InternetAddress.anyIPv4,
+          port,
+          context,
+        );
         return server;
       }
     } catch (_) {
@@ -59,13 +59,7 @@ Future<CertificateData> generateSelfSignedCertificate(String host) async {
   final privateKey = pair.privateKey as RSAPrivateKey;
   final publicKey = pair.publicKey as RSAPublicKey;
 
-  final csr = X509Utils.generateRsaCsrPem(
-    {
-      'CN': host,
-    },
-    privateKey,
-    publicKey,
-  );
+  final csr = X509Utils.generateRsaCsrPem({'CN': host}, privateKey, publicKey);
 
   final certPem = X509Utils.generateSelfSignedCertificate(
     privateKey,
@@ -76,11 +70,7 @@ Future<CertificateData> generateSelfSignedCertificate(String host) async {
   final privateKeyPem = CryptoUtils.encodeRSAPrivateKeyToPem(privateKey);
 
   return CertificateData(
-    certBytes: Uint8List.fromList(
-      utf8.encode(certPem),
-    ),
-    privateKeyBytes: Uint8List.fromList(
-      utf8.encode(privateKeyPem),
-    ),
+    certBytes: Uint8List.fromList(utf8.encode(certPem)),
+    privateKeyBytes: Uint8List.fromList(utf8.encode(privateKeyPem)),
   );
 }

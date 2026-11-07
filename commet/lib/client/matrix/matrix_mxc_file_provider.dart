@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -57,8 +58,9 @@ class MxcFileProvider implements FileProvider {
       var file = await event!.downloadAndDecryptAttachment(
         downloadCallback: (url) async {
           var request = http.Request("GET", url);
-          request.headers
-              .addAll({'authorization': 'Bearer ${client.accessToken}'});
+          request.headers.addAll({
+            'authorization': 'Bearer ${client.accessToken}',
+          });
           final response = await http.Client().send(request);
 
           List<int> downloadedBytes = response.contentLength != null
@@ -72,25 +74,23 @@ class MxcFileProvider implements FileProvider {
 
           var lastUpdatedProgress = DateTime.now();
 
-          var data = response.stream.listen(
-            (event) {
-              if (response.contentLength != null) {
-                downloadedBytes.setAll(downloaded, event);
-              } else {
-                downloadedBytes.addAll(event);
-              }
-              downloaded += event.length;
+          var data = response.stream.listen((event) {
+            if (response.contentLength != null) {
+              downloadedBytes.setAll(downloaded, event);
+            } else {
+              downloadedBytes.addAll(event);
+            }
+            downloaded += event.length;
 
-              var now = DateTime.now();
-              if (now.difference(lastUpdatedProgress).inMilliseconds > 16) {
-                lastUpdatedProgress = now;
+            var now = DateTime.now();
+            if (now.difference(lastUpdatedProgress).inMilliseconds > 16) {
+              lastUpdatedProgress = now;
 
-                fileDownloadProgress.add(
-                    DownloadProgress(downloaded, response.contentLength ?? -1));
-              }
-            },
-            cancelOnError: true,
-          ).asFuture();
+              fileDownloadProgress.add(
+                DownloadProgress(downloaded, response.contentLength ?? -1),
+              );
+            }
+          }, cancelOnError: true).asFuture();
 
           await data;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
 import '../../client/room.dart';
 
 class RoomCreated extends StatelessWidget {
@@ -27,16 +28,14 @@ class RoomCreated extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  tiamat.Text.largeTitle(
-                    "Welcome to ${room.displayName}!",
-                  ),
+                  tiamat.Text.largeTitle("Welcome to ${room.displayName}!"),
                   const tiamat.Text.labelEmphasised(
                     "This is the beginning of the end...",
                   ),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

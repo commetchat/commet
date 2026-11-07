@@ -9,22 +9,27 @@ class PhotoAlbumCreatorDescription extends StatelessWidget {
   final images = const [
     AssetImage("assets/images/placeholders/photos/pexels-fr3nks-287229.jpg"),
     AssetImage(
-        "assets/images/placeholders/photos/pexels-stijn-dijkstra-1306815-16747816.jpg"),
+      "assets/images/placeholders/photos/pexels-stijn-dijkstra-1306815-16747816.jpg",
+    ),
     AssetImage("assets/images/placeholders/photos/pexels-rdne-8474967.jpg"),
     AssetImage(
-        "assets/images/placeholders/photos/pexels-james-lee-932763-2017111.jpg"),
+      "assets/images/placeholders/photos/pexels-james-lee-932763-2017111.jpg",
+    ),
     AssetImage(
-        "assets/images/placeholders/photos/pexels-kostiantyn-35582290.jpg"),
+      "assets/images/placeholders/photos/pexels-kostiantyn-35582290.jpg",
+    ),
     AssetImage(
-        "assets/images/placeholders/photos/pexels-mikhail-nilov-8221589.jpg"),
+      "assets/images/placeholders/photos/pexels-mikhail-nilov-8221589.jpg",
+    ),
     AssetImage("assets/images/placeholders/photos/pexels-nivdex-796206.jpg"),
     AssetImage("assets/images/placeholders/photos/pexels-krisof-1252873.jpg"),
     AssetImage("assets/images/placeholders/photos/pexels-byrahul-2162909.jpg"),
   ];
 
-  String get labelPhotoAlbumDescription =>
-      Intl.message("Share photos and videos with your friends or community!",
-          name: "labelPhotoAlbumDescription");
+  String get labelPhotoAlbumDescription => Intl.message(
+    "Share photos and videos with your friends or community!",
+    name: "labelPhotoAlbumDescription",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +38,7 @@ class PhotoAlbumCreatorDescription extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         tiamat.Text.labelLow(labelPhotoAlbumDescription),
-        SizedBox(
-          height: 30,
-        ),
+        SizedBox(height: 30),
         MasonryGridView.extent(
           shrinkWrap: true,
           maxCrossAxisExtent: 170,
@@ -44,10 +47,11 @@ class PhotoAlbumCreatorDescription extends StatelessWidget {
           itemCount: images.length,
           itemBuilder: (context, index) {
             return ClipRRect(
-                borderRadius: BorderRadiusGeometry.circular(8),
-                child: Image(image: images[index]));
+              borderRadius: BorderRadiusGeometry.circular(8),
+              child: Image(image: images[index]),
+            );
           },
-        )
+        ),
       ],
     );
   }

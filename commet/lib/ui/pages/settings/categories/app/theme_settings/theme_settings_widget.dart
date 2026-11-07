@@ -32,8 +32,11 @@ class _ThemeEntry {
     return child;
   }
 
-  _ThemeEntry(this.name, this.setter,
-      {Widget Function(BuildContext context, Widget child)? builder}) {
+  _ThemeEntry(
+    this.name,
+    this.setter, {
+    Widget Function(BuildContext context, Widget child)? builder,
+  }) {
     this.builder = builder ?? defaultBuilder;
   }
 }
@@ -42,36 +45,48 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
   late List<_ThemeEntry> entries;
   StreamSubscription? customThemesDirSub;
 
-  String get labelThemeDark => Intl.message("Dark Theme",
-      name: "labelThemeDark", desc: "Label for the dark theme");
+  String get labelThemeDark => Intl.message(
+    "Dark Theme",
+    name: "labelThemeDark",
+    desc: "Label for the dark theme",
+  );
 
-  String get labelThemeLight => Intl.message("Light Theme",
-      name: "labelThemeLight", desc: "Label for the light theme");
+  String get labelThemeLight => Intl.message(
+    "Light Theme",
+    name: "labelThemeLight",
+    desc: "Label for the light theme",
+  );
 
-  String get labelThemeAmoled => Intl.message("Amoled",
-      name: "labelThemeAmoled", desc: "Label for the light theme");
+  String get labelThemeAmoled => Intl.message(
+    "Amoled",
+    name: "labelThemeAmoled",
+    desc: "Label for the light theme",
+  );
 
   List<_ThemeEntry> get defaultThemes => [
-        _ThemeEntry(labelThemeLight, (BuildContext context) async {
-          preferences.theme.set("light");
-          var theme = await preferences.resolveTheme(
-              overrideBrightness: Brightness.light);
-          if (context.mounted) ThemeChanger.setTheme(context, theme);
-        }),
-        _ThemeEntry(labelThemeDark, (BuildContext context) async {
-          preferences.theme.set("dark");
-          var theme = await preferences.resolveTheme(
-              overrideBrightness: Brightness.dark);
-          if (context.mounted) ThemeChanger.setTheme(context, theme);
-        }),
-        _ThemeEntry(labelThemeAmoled, (BuildContext context) async {
-          preferences.theme.set("amoled");
-          var theme = await preferences.resolveTheme(
-              overrideBrightness: Brightness.dark);
+    _ThemeEntry(labelThemeLight, (BuildContext context) async {
+      preferences.theme.set("light");
+      var theme = await preferences.resolveTheme(
+        overrideBrightness: Brightness.light,
+      );
+      if (context.mounted) ThemeChanger.setTheme(context, theme);
+    }),
+    _ThemeEntry(labelThemeDark, (BuildContext context) async {
+      preferences.theme.set("dark");
+      var theme = await preferences.resolveTheme(
+        overrideBrightness: Brightness.dark,
+      );
+      if (context.mounted) ThemeChanger.setTheme(context, theme);
+    }),
+    _ThemeEntry(labelThemeAmoled, (BuildContext context) async {
+      preferences.theme.set("amoled");
+      var theme = await preferences.resolveTheme(
+        overrideBrightness: Brightness.dark,
+      );
 
-          if (context.mounted) ThemeChanger.setTheme(context, theme);
-        }),
-      ];
+      if (context.mounted) ThemeChanger.setTheme(context, theme);
+    }),
+  ];
 
   @override
   void initState() {
@@ -89,8 +104,9 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
   void initCustomThemes() async {
     loadCustomThemes();
     var dir = await ThemeConfig.getCustomThemesDir();
-    customThemesDirSub =
-        dir.watch(recursive: true).listen(onCustomThemesDirUpdated);
+    customThemesDirSub = dir
+        .watch(recursive: true)
+        .listen(onCustomThemesDirUpdated);
   }
 
   void loadCustomThemes() async {
@@ -135,8 +151,9 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
           return tiamat.ContextMenu(
             items: [
               ContextMenuItem(
-                  text: CommonStrings.promptDelete,
-                  onPressed: () => ThemeConfig.removeTheme(e)),
+                text: CommonStrings.promptDelete,
+                onPressed: () => ThemeConfig.removeTheme(e),
+              ),
             ],
             child: child,
           );
@@ -163,9 +180,9 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
       children: [
         for (var entry in entries)
           entry.builder(
-              context,
-              tiamat.TextButton(entry.name,
-                  onTap: () => entry.setter(context))),
+            context,
+            tiamat.TextButton(entry.name, onTap: () => entry.setter(context)),
+          ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -175,9 +192,10 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
                 icon: Icons.add,
                 onPressed: () async {
                   var result = await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ["zip"],
-                      dialogTitle: "Pick theme archive file");
+                    type: FileType.custom,
+                    allowedExtensions: ["zip"],
+                    dialogTitle: "Pick theme archive file",
+                  );
 
                   var file = result?.files.firstOrNull;
                   if (file?.path == null) {
@@ -190,7 +208,7 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

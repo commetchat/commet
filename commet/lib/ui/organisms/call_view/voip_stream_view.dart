@@ -14,12 +14,15 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class VoipStreamView extends StatefulWidget {
-  const VoipStreamView(this.stream, this.session,
-      {super.key,
-      this.fit = BoxFit.cover,
-      this.borderColor,
-      this.canFullscreen = true,
-      this.onFullscreen});
+  const VoipStreamView(
+    this.stream,
+    this.session, {
+    super.key,
+    this.fit = BoxFit.cover,
+    this.borderColor,
+    this.canFullscreen = true,
+    this.onFullscreen,
+  });
   final VoipStream stream;
   final VoipSession session;
   final BoxFit fit;
@@ -51,7 +54,9 @@ class _VoipStreamViewState extends State<VoipStreamView>
     user = room.getMemberOrFallback(widget.stream.streamUserId);
 
     audioLevel = AnimationController(
-        vsync: this, duration: CallView.volumeAnimationDuration);
+      vsync: this,
+      duration: CallView.volumeAnimationDuration,
+    );
     super.initState();
   }
 
@@ -69,75 +74,90 @@ class _VoipStreamViewState extends State<VoipStreamView>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: audioLevel,
-        builder: (context, child) {
-          return Material(
-            color: Colors.transparent,
-            child: Stack(
-              alignment: Alignment.topRight,
-              children: [
-                AdaptiveContextMenu(
-                  items: streamContextMenuItems(widget.stream.participantId,
-                      user, widget.session.streams),
-                  child: Container(
-                      clipBehavior: Clip.antiAlias,
-                      foregroundDecoration: widget.borderColor != null
-                          ? BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: widget.borderColor!,
-                                  width: 2,
-                                  strokeAlign: BorderSide.strokeAlignCenter))
-                          : null,
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                      child: buildDefault()),
+      animation: audioLevel,
+      builder: (context, child) {
+        return Material(
+          color: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              AdaptiveContextMenu(
+                items: streamContextMenuItems(
+                  widget.stream.participantId,
+                  user,
+                  widget.session.streams,
                 ),
-                if (preferences.developerMode.value)
-                  Align(
-                    alignment: AlignmentGeometry.topLeft,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ColorScheme.of(context).surfaceContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: tiamat.Text.labelLow(widget.stream.stats),
-                      ),
+                child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  foregroundDecoration: widget.borderColor != null
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: widget.borderColor!,
+                            width: 2,
+                            strokeAlign: BorderSide.strokeAlignCenter,
+                          ),
+                        )
+                      : null,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: buildDefault(),
+                ),
+              ),
+              if (preferences.developerMode.value)
+                Align(
+                  alignment: AlignmentGeometry.topLeft,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ColorScheme.of(context).surfaceContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: tiamat.Text.labelLow(widget.stream.stats),
                     ),
                   ),
-                if (widget.canFullscreen &&
-                        widget.stream.type == VoipStreamType.video ||
-                    widget.stream.type == VoipStreamType.screenshare)
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: tiamat.IconButton(
-                      icon: Icons.fullscreen,
-                      size: 20,
-                      onPressed: widget.onFullscreen,
-                    ),
-                  )
-              ],
-            ),
-          );
-        });
+                ),
+              if (widget.canFullscreen &&
+                      widget.stream.type == VoipStreamType.video ||
+                  widget.stream.type == VoipStreamType.screenshare)
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: tiamat.IconButton(
+                    icon: Icons.fullscreen,
+                    size: 20,
+                    onPressed: widget.onFullscreen,
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   static List<tiamat.ContextMenuItem> streamContextMenuItems(
-      String participantId, Member user, List<VoipStream> streams) {
-    var incoming = streams.where((i) =>
-        i.direction == VoipStreamDirection.incoming &&
-        i.participantId == participantId);
+    String participantId,
+    Member user,
+    List<VoipStream> streams,
+  ) {
+    var incoming = streams.where(
+      (i) =>
+          i.direction == VoipStreamDirection.incoming &&
+          i.participantId == participantId,
+    );
 
     if (incoming.isEmpty) return [];
 
-    var audioStream =
-        incoming.firstWhereOrNull((i) => i.type == VoipStreamType.audio);
+    var audioStream = incoming.firstWhereOrNull(
+      (i) => i.type == VoipStreamType.audio,
+    );
 
-    var screenShareAudioStream = incoming
-        .firstWhereOrNull((i) => i.type == VoipStreamType.screenshareAudio);
+    var screenShareAudioStream = incoming.firstWhereOrNull(
+      (i) => i.type == VoipStreamType.screenshareAudio,
+    );
 
     return [
       tiamat.ContextMenuItem(
@@ -149,14 +169,12 @@ class _VoipStreamViewState extends State<VoipStreamView>
               spacing: 12,
               children: [
                 tiamat.Avatar(
-                    radius: 15,
-                    image: user.avatar,
-                    placeholderColor: user.defaultColor,
-                    placeholderText: user.displayName),
-                tiamat.Text.name(
-                  user.displayName,
-                  color: user.defaultColor,
-                )
+                  radius: 15,
+                  image: user.avatar,
+                  placeholderColor: user.defaultColor,
+                  placeholderText: user.displayName,
+                ),
+                tiamat.Text.name(user.displayName, color: user.defaultColor),
               ],
             ),
           );
@@ -172,14 +190,10 @@ class _VoipStreamViewState extends State<VoipStreamView>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: Center(
-                        child: Icon(
-                          Icons.mic,
-                          size: 16,
-                        ),
-                      )),
+                    height: 24,
+                    width: 24,
+                    child: Center(child: Icon(Icons.mic, size: 16)),
+                  ),
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -201,14 +215,10 @@ class _VoipStreamViewState extends State<VoipStreamView>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: Center(
-                        child: Icon(
-                          Icons.screen_share,
-                          size: 16,
-                        ),
-                      )),
+                    height: 24,
+                    width: 24,
+                    child: Center(child: Icon(Icons.screen_share, size: 16)),
+                  ),
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -219,7 +229,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
               ),
             );
           },
-        )
+        ),
     ];
   }
 
@@ -229,48 +239,53 @@ class _VoipStreamViewState extends State<VoipStreamView>
       case VoipStreamType.audio:
         return tiamat.Tile.low(
           child: Center(
-              child: Stack(
-            alignment: AlignmentGeometry.bottomRight,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AnimatedOpacity(
-                  opacity: widget.stream.isMuted ? 0.5 : 1.0,
-                  duration: Duration(milliseconds: 200),
-                  child: tiamat.Avatar(
+            child: Stack(
+              alignment: AlignmentGeometry.bottomRight,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: AnimatedOpacity(
+                    opacity: widget.stream.isMuted ? 0.5 : 1.0,
+                    duration: Duration(milliseconds: 200),
+                    child: tiamat.Avatar(
                       border: Border.all(
-                          strokeAlign: 0.5,
-                          color: getBorderColor(context),
-                          width: clampDouble(audioLevel.value * 15, 0, 5)),
+                        strokeAlign: 0.5,
+                        color: getBorderColor(context),
+                        width: clampDouble(audioLevel.value * 15, 0, 5),
+                      ),
                       radius: 50,
                       image: user.avatar,
                       placeholderColor: user.defaultColor,
-                      placeholderText: user.displayName),
-                ),
-              ),
-              AnimatedScale(
-                scale: widget.stream.isMuted ? 1.0 : 0.0,
-                curve: widget.stream.isMuted
-                    ? Curves.bounceOut
-                    : Curves.easeInExpo,
-                duration:
-                    Duration(milliseconds: widget.stream.isMuted ? 500 : 200),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: ColorScheme.of(context).primary,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.mic_off_rounded,
-                      size: 18,
-                      color: ColorScheme.of(context).onPrimary,
+                      placeholderText: user.displayName,
                     ),
                   ),
                 ),
-              )
-            ],
-          )),
+                AnimatedScale(
+                  scale: widget.stream.isMuted ? 1.0 : 0.0,
+                  curve: widget.stream.isMuted
+                      ? Curves.bounceOut
+                      : Curves.easeInExpo,
+                  duration: Duration(
+                    milliseconds: widget.stream.isMuted ? 500 : 200,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ColorScheme.of(context).primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.mic_off_rounded,
+                        size: 18,
+                        color: ColorScheme.of(context).onPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
 
       case VoipStreamType.video:
@@ -280,18 +295,20 @@ class _VoipStreamViewState extends State<VoipStreamView>
             Center(
               child:
                   widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
-                      const CircularProgressIndicator(),
+                  const CircularProgressIndicator(),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: tiamat.Avatar.small(
-                  border: Border.all(
-                      strokeAlign: 0.5,
-                      color: getBorderColor(context),
-                      width: clampDouble(audioLevel.value * 15, 0, 5)),
-                  image: user.avatar,
-                  placeholderColor: user.defaultColor,
-                  placeholderText: user.displayName),
+                border: Border.all(
+                  strokeAlign: 0.5,
+                  color: getBorderColor(context),
+                  width: clampDouble(audioLevel.value * 15, 0, 5),
+                ),
+                image: user.avatar,
+                placeholderColor: user.defaultColor,
+                placeholderText: user.displayName,
+              ),
             ),
           ],
         );
@@ -299,8 +316,11 @@ class _VoipStreamViewState extends State<VoipStreamView>
   }
 
   Color getBorderColor(BuildContext context) {
-    return Color.lerp(Theme.of(context).primaryColor,
-        Theme.of(context).colorScheme.primary, audioLevel.value)!;
+    return Color.lerp(
+      Theme.of(context).primaryColor,
+      Theme.of(context).colorScheme.primary,
+      audioLevel.value,
+    )!;
   }
 
   void onStreamChanged(void event) {
@@ -337,9 +357,11 @@ class _StreamVolumeSliderState extends State<StreamVolumeSlider> {
           ),
         ),
         SizedBox(
-            width: 40,
-            child: tiamat.Text.labelLow(
-                "${(widget.stream.volume * 100).toInt()}%")),
+          width: 40,
+          child: tiamat.Text.labelLow(
+            "${(widget.stream.volume * 100).toInt()}%",
+          ),
+        ),
       ],
     );
   }

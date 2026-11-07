@@ -3,12 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class BlurredImageBackground extends StatelessWidget {
-  const BlurredImageBackground(this.image,
-      {super.key,
-      this.child,
-      this.sigma = 5,
-      this.height = 90,
-      this.backgroundColor = Colors.transparent});
+  const BlurredImageBackground(
+    this.image, {
+    super.key,
+    this.child,
+    this.sigma = 5,
+    this.height = 90,
+    this.backgroundColor = Colors.transparent,
+  });
   final ImageProvider image;
   final Color backgroundColor;
   final Widget? child;
@@ -22,26 +24,37 @@ class BlurredImageBackground extends StatelessWidget {
         ClipRect(
           child: ImageFiltered(
             imageFilter: ImageFilter.blur(
-                sigmaX: sigma, sigmaY: sigma, tileMode: TileMode.clamp),
+              sigmaX: sigma,
+              sigmaY: sigma,
+              tileMode: TileMode.clamp,
+            ),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                  image: DecorationImage(image: image, fit: BoxFit.cover)),
+                image: DecorationImage(image: image, fit: BoxFit.cover),
+              ),
               child: Container(),
             ),
           ),
         ),
         ClipRect(
-            child: DecoratedBox(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [Colors.transparent, backgroundColor],
-                        begin: Alignment.topCenter,
-                        stops: const [0, 0.8],
-                        end: Alignment.bottomCenter)),
-                child: Container())),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.transparent, backgroundColor],
+                begin: Alignment.topCenter,
+                stops: const [0, 0.8],
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Container(),
+          ),
+        ),
         SafeArea(
-            child: SizedBox(
-                height: height, child: child != null ? child! : Container()))
+          child: SizedBox(
+            height: height,
+            child: child != null ? child! : Container(),
+          ),
+        ),
       ],
     );
   }

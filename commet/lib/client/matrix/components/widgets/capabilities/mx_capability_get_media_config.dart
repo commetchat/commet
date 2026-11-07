@@ -20,7 +20,9 @@ class MatrixCapabilityGetMediaConfig implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc4039.get_media_config";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name, (runner, type, key) => MatrixCapabilityGetMediaConfig(runner));
+    name,
+    (runner, type, key) => MatrixCapabilityGetMediaConfig(runner),
+  );
 
   @override
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
@@ -35,11 +37,15 @@ class MatrixCapabilityGetMediaConfig implements MatrixWidgetCapability {
 
   @override
   bool canHandleRequest(MatrixWidgetMessage message) {
-    if (!capabilities.grantedCapabilities
-        .containsKey(MatrixCapabilityDownloadFile.name)) return false;
+    if (!capabilities.grantedCapabilities.containsKey(
+      MatrixCapabilityDownloadFile.name,
+    ))
+      return false;
 
-    if (!capabilities.grantedCapabilities
-        .containsKey(MatrixCapabilityUploadFile.name)) return false;
+    if (!capabilities.grantedCapabilities.containsKey(
+      MatrixCapabilityUploadFile.name,
+    ))
+      return false;
 
     return message.action == name;
   }

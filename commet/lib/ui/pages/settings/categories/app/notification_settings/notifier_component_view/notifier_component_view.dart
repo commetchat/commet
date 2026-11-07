@@ -4,8 +4,10 @@ import 'package:commet/ui/pages/settings/categories/app/notification_settings/no
 import 'package:flutter/material.dart';
 
 class PushNotificationComponentDebugView extends StatefulWidget {
-  const PushNotificationComponentDebugView(this.pushNotificationComponent,
-      {super.key});
+  const PushNotificationComponentDebugView(
+    this.pushNotificationComponent, {
+    super.key,
+  });
   final PushNotificationComponent pushNotificationComponent;
   @override
   State<PushNotificationComponentDebugView> createState() =>
@@ -18,11 +20,10 @@ class _PushNotificationComponentDebugViewState
   Widget build(BuildContext context) {
     if (widget.pushNotificationComponent is MatrixPushNotificationComponent) {
       return MatrixNotifierComponentView(
-          widget.pushNotificationComponent as MatrixPushNotificationComponent);
+        widget.pushNotificationComponent as MatrixPushNotificationComponent,
+      );
     }
 
-    return const Placeholder(
-      color: Colors.red,
-    );
+    return const Placeholder(color: Colors.red);
   }
 }

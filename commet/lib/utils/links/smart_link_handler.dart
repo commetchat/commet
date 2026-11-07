@@ -25,14 +25,12 @@ class SmartLinkHandler {
   String appName;
   List<LinkExecutor> executors;
 
-  SmartLinkHandler({
-    required this.appName,
-    required this.executors,
-  });
+  SmartLinkHandler({required this.appName, required this.executors});
 
   static SmartLinkHandler? fromJson(Map<String, dynamic> data) {
-    Map<String, dynamic>? appNameLocalizations =
-        data.tryGetMap("appDisplayName");
+    Map<String, dynamic>? appNameLocalizations = data.tryGetMap(
+      "appDisplayName",
+    );
 
     String? appName = appNameLocalizations?.tryGet("en");
     if (appName == null) return null;

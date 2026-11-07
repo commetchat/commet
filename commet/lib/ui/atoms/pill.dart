@@ -27,13 +27,12 @@ class Pill extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withAlpha(200)),
+            color: Theme.of(context).colorScheme.primary.withAlpha(200),
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(displayText),
-            ],
+            children: <Widget>[Text(displayText)],
           ),
         ),
         onTap: () {},

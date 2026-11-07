@@ -26,12 +26,10 @@ class BentoLayout extends StatelessWidget {
 
         gridSize = gridSize.clamp(1, children.length);
 
-        var across = ({required List<Widget> children}) => Column(
-              children: children,
-            ) as Widget;
-        var down = ({required List<Widget> children}) => Row(
-              children: children,
-            ) as Widget;
+        var across = ({required List<Widget> children}) =>
+            Column(children: children) as Widget;
+        var down = ({required List<Widget> children}) =>
+            Row(children: children) as Widget;
 
         if (aspect < 1.3) {
           var temp = across;
@@ -49,13 +47,14 @@ class BentoLayout extends StatelessWidget {
                       for (var j = 0; j < gridSize; j++)
                         if (j + (i * gridSize) < children.length)
                           Flexible(
-                              child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: children[j + (i * gridSize)],
-                          ))
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: children[j + (i * gridSize)],
+                            ),
+                          ),
                     ],
                   ),
-                )
+                ),
           ],
         ));
       },

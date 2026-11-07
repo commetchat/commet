@@ -56,23 +56,27 @@ class MatrixInvitationComponent
       var state = room.states[matrix.EventTypes.RoomMember]?[mx.userID];
       var sender = state?.senderId;
 
-      var avatar =
-          room.avatar != null ? MatrixMxcImage(room.avatar!, mx) : null;
+      var avatar = room.avatar != null
+          ? MatrixMxcImage(room.avatar!, mx)
+          : null;
 
       var entry = Invitation(
-          roomId: room.id,
-          avatar: avatar,
-          senderId: sender,
-          color: MatrixPeer.hashColor(room.id),
-          displayName: room.getLocalizedDisplayname());
+        roomId: room.id,
+        avatar: avatar,
+        senderId: sender,
+        color: MatrixPeer.hashColor(room.id),
+        displayName: room.getLocalizedDisplayname(),
+      );
 
       invitations.add(entry);
     }
   }
 
   @override
-  Future<void> inviteUserToRoom(
-      {required String userId, required String roomId}) {
+  Future<void> inviteUserToRoom({
+    required String userId,
+    required String roomId,
+  }) {
     var mx = client.getMatrixClient();
     return mx.inviteUser(roomId, userId);
   }
@@ -82,13 +86,16 @@ class MatrixInvitationComponent
     var mx = client.getMatrixClient();
     var result = await mx.searchUserDirectory(term);
 
-    var finalResult =
-        result.results.map((e) => MatrixProfile(client, e)).toList();
+    var finalResult = result.results
+        .map((e) => MatrixProfile(client, e))
+        .toList();
     if (term.isValidMatrixId && !finalResult.any((i) => i.identifier == term)) {
       finalResult = [
         MatrixProfile(
-            client, matrix.Profile(userId: term, displayName: term.localpart)),
-        ...finalResult
+          client,
+          matrix.Profile(userId: term, displayName: term.localpart),
+        ),
+        ...finalResult,
       ];
     }
 
@@ -107,15 +114,13 @@ class MatrixInvitationComponent
   Future<void> setInvitationsAllowed(bool allowed) async {
     var mx = client.getMatrixClient();
 
-    Map<String, Object?> content = allowed
-        ? {}
-        : {
-            "default_action": "block",
-          };
+    Map<String, Object?> content = allowed ? {} : {"default_action": "block"};
 
     await mx.setAccountData(mx.userID!, "m.invite_permission_config", content);
 
-    mx.accountData["m.invite_permission_config"] =
-        matrix.BasicEvent(type: "m.invite_permission_config", content: content);
+    mx.accountData["m.invite_permission_config"] = matrix.BasicEvent(
+      type: "m.invite_permission_config",
+      content: content,
+    );
   }
 }

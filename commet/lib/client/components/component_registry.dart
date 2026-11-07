@@ -94,11 +94,11 @@ class ComponentRegistry {
   }
 
   static List<SpaceComponent<MatrixClient, MatrixSpace>>
-      getMatrixSpaceComponents(MatrixClient client, MatrixSpace space) {
+  getMatrixSpaceComponents(MatrixClient client, MatrixSpace space) {
     return [
       MatrixSpaceEmoticonComponent(client, space),
       MatrixSpaceColorSchemeComponent(client, space),
-      MatrixSpaceBannerComponent(client, space)
+      MatrixSpaceBannerComponent(client, space),
     ];
   }
 }

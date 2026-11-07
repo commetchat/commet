@@ -11,12 +11,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FilePreview extends StatefulWidget {
-  const FilePreview(
-      {required this.mimeType,
-      this.path,
-      this.data,
-      this.videoController,
-      super.key});
+  const FilePreview({
+    required this.mimeType,
+    this.path,
+    this.data,
+    this.videoController,
+    super.key,
+  });
   final String? mimeType;
   final String? path;
   final Uint8List? data;
@@ -76,8 +77,6 @@ class _FilePreviewState extends State<FilePreview> {
         controller: widget.videoController,
       );
     }
-    return const SizedBox(
-      height: 0,
-    );
+    return const SizedBox(height: 0);
   }
 }

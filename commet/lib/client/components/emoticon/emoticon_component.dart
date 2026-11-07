@@ -18,15 +18,22 @@ abstract class EmoticonComponent<T extends Client> implements Component<T> {
   Stream<void> get onStateChanged;
 
   Future<void> createEmoticonPack(String name, Uint8List? avatarData);
-  Future<void> importEmoticonPack(String name, int avatarIndex,
-      List<String> names, List<Uint8List> imageDatas);
+  Future<void> importEmoticonPack(
+    String name,
+    int avatarIndex,
+    List<String> names,
+    List<Uint8List> imageDatas,
+  );
   Future<void> deleteEmoticonPack(EmoticonPack pack);
 }
 
 abstract class RoomEmoticonComponent<R extends Client, T extends Room>
-    extends EmoticonComponent<R> implements RoomComponent<R, T> {
+    extends EmoticonComponent<R>
+    implements RoomComponent<R, T> {
   Future<TimelineEvent?> sendSticker(
-      Emoticon sticker, TimelineEvent? inReplyTo);
+    Emoticon sticker,
+    TimelineEvent? inReplyTo,
+  );
 
   List<EmoticonPack> get availablePacks;
   List<EmoticonPack> get availableEmoji;
@@ -34,4 +41,5 @@ abstract class RoomEmoticonComponent<R extends Client, T extends Room>
 }
 
 abstract class SpaceEmoticonComponent<R extends Client, T extends Space>
-    extends EmoticonComponent<R> implements SpaceComponent<R, T> {}
+    extends EmoticonComponent<R>
+    implements SpaceComponent<R, T> {}

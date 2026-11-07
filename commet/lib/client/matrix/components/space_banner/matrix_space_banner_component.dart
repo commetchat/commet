@@ -34,8 +34,10 @@ class MatrixSpaceBannerComponent
 
   @override
   Future<void> setBanner(Uint8List data, {String? mimeType}) async {
-    var uploadResponse =
-        await client.matrixClient.uploadContent(data, contentType: mimeType);
+    var uploadResponse = await client.matrixClient.uploadContent(
+      data,
+      contentType: mimeType,
+    );
 
     await client.matrixClient.setRoomStateWithKey(
       space.matrixRoom.id,

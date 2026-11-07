@@ -7,11 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomPreviewTextButton extends StatefulWidget {
-  const RoomPreviewTextButton(
-    this.room, {
-    this.onTap,
-    super.key,
-  });
+  const RoomPreviewTextButton(this.room, {this.onTap, super.key});
   final RoomPreview room;
   final Function(RoomPreview roomPreview)? onTap;
 
@@ -38,18 +34,19 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
 
     Color? avatarPlaceholderColor =
         (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                (!showRoomIcons && useGenericIcons)
-            ? widget.room.color
-            : null;
+            (!showRoomIcons && useGenericIcons)
+        ? widget.room.color
+        : null;
 
     String? avatarPlaceholderText =
         (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                (!showRoomIcons && useGenericIcons)
-            ? widget.room.displayName
-            : null;
+            (!showRoomIcons && useGenericIcons)
+        ? widget.room.displayName
+        : null;
 
-    bool startsWithEmoji =
-        TextUtils.isEmoji(widget.room.displayName.characters.first);
+    bool startsWithEmoji = TextUtils.isEmoji(
+      widget.room.displayName.characters.first,
+    );
 
     if (startsWithEmoji && widget.room.avatar == null) {
       var emoji = displayName.characters.first;
@@ -62,24 +59,27 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
     IconData? icon = widget.room.type?.icon;
 
     Widget result = SizedBox(
-        height: customBuilder == null ? height : null,
-        child: tiamat.TextButton(
-          displayName,
-          customBuilder: customBuilder,
-          icon: icon,
-          avatar: showRoomIcons && widget.room.avatar != null
-              ? widget.room.avatar
-              : null,
-          avatarRadius: 12,
-          avatarPlaceholderColor: avatarPlaceholderColor,
-          avatarPlaceholderText: avatarPlaceholderText,
-          iconColor: color,
-          textColor: color,
-          softwrap: false,
-          onTap: () => widget.onTap?.call(widget.room),
-          footer: tiamat.Text.labelLow(CommonStrings.promptJoin,
-              color: Theme.of(context).colorScheme.primary),
-        ));
+      height: customBuilder == null ? height : null,
+      child: tiamat.TextButton(
+        displayName,
+        customBuilder: customBuilder,
+        icon: icon,
+        avatar: showRoomIcons && widget.room.avatar != null
+            ? widget.room.avatar
+            : null,
+        avatarRadius: 12,
+        avatarPlaceholderColor: avatarPlaceholderColor,
+        avatarPlaceholderText: avatarPlaceholderText,
+        iconColor: color,
+        textColor: color,
+        softwrap: false,
+        onTap: () => widget.onTap?.call(widget.room),
+        footer: tiamat.Text.labelLow(
+          CommonStrings.promptJoin,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
 
     return result;
   }

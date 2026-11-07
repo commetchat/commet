@@ -100,8 +100,10 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   @override
-  Future<void> acceptCall(
-      {bool withMicrophone = false, bool withCamera = false}) {
+  Future<void> acceptCall({
+    bool withMicrophone = false,
+    bool withCamera = false,
+  }) {
     throw UnimplementedError();
   }
 
@@ -117,9 +119,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   void onTrackMutedEvent(lk.TrackMutedEvent event) {
     if (event.publication.track?.mediaType ==
         RTCRtpMediaType.RTCRtpMediaTypeVideo) {
-      streams.removeWhere((e) =>
-          (e as MatrixLivekitVoipStream).publication.sid ==
-          event.publication.sid);
+      streams.removeWhere(
+        (e) =>
+            (e as MatrixLivekitVoipStream).publication.sid ==
+            event.publication.sid,
+      );
     }
 
     for (var track in streams) {
@@ -135,8 +139,10 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
-    final participant =
-        event.participant.identity.split(":").getRange(0, 2).join(":");
+    final participant = event.participant.identity
+        .split(":")
+        .getRange(0, 2)
+        .join(":");
 
     for (var track in streams) {
       final t = track as MatrixLivekitVoipStream;
@@ -154,8 +160,10 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
-    final participant =
-        event.participant.identity.split(":").getRange(0, 2).join(":");
+    final participant = event.participant.identity
+        .split(":")
+        .getRange(0, 2)
+        .join(":");
 
     _addStream(event.publication, participant);
 
@@ -174,8 +182,11 @@ class MatrixLivekitVoipSession implements VoipSession {
     for (var track in streams) {
       if (track.type == VoipStreamType.audio) {
         final t = track as MatrixLivekitVoipStream;
-        t.markAsSpeaker(event.speakers
-            .any((i) => i.identity == track.publication.participant.identity));
+        t.markAsSpeaker(
+          event.speakers.any(
+            (i) => i.identity == track.publication.participant.identity,
+          ),
+        );
       }
     }
 
@@ -183,24 +194,30 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
-    final participant =
-        event.participant.identity.split(":").getRange(0, 2).join(":");
+    final participant = event.participant.identity
+        .split(":")
+        .getRange(0, 2)
+        .join(":");
 
     _addStream(event.publication, participant);
   }
 
   void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
-    streams.removeWhere((e) =>
-        (e as MatrixLivekitVoipStream).publication.sid ==
-        event.publication.sid);
+    streams.removeWhere(
+      (e) =>
+          (e as MatrixLivekitVoipStream).publication.sid ==
+          event.publication.sid,
+    );
 
     _stateChanged.add(());
   }
 
   void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
-    streams.removeWhere((e) =>
-        (e as MatrixLivekitVoipStream).publication.sid ==
-        event.publication.sid);
+    streams.removeWhere(
+      (e) =>
+          (e as MatrixLivekitVoipStream).publication.sid ==
+          event.publication.sid,
+    );
 
     _stateChanged.add(());
   }
@@ -300,71 +317,96 @@ class MatrixLivekitVoipSession implements VoipSession {
     }
 
     Log.i(
-        "Starting stream with settings: ${preferences.streamBitrate.value}Mbps, ${framerate}FPS, $codec ${res}");
+      "Starting stream with settings: ${preferences.streamBitrate.value}Mbps, ${framerate}FPS, $codec ${res}",
+    );
 
     if (WebrtcScreencaptureSource.supportsSystemAudio) {
       var tracks = await lk.LocalVideoTrack.createScreenShareTracksWithAudio(
-          lk.ScreenShareCaptureOptions(
-        sourceId: srcid,
-        maxFrameRate: framerate,
-        captureScreenAudio: true,
-        params: lk.VideoParameters(
-          dimensions: lk.VideoDimensionsPresets.h720_169,
-          encoding: lk.VideoEncoding(
-              maxFramerate: framerate.toInt(), maxBitrate: bitrate),
+        lk.ScreenShareCaptureOptions(
+          sourceId: srcid,
+          maxFrameRate: framerate,
+          captureScreenAudio: true,
+          params: lk.VideoParameters(
+            dimensions: lk.VideoDimensionsPresets.h720_169,
+            encoding: lk.VideoEncoding(
+              maxFramerate: framerate.toInt(),
+              maxBitrate: bitrate,
+            ),
+          ),
         ),
-      ));
+      );
 
       print(tracks);
 
       for (var track in tracks) {
         if (track is lk.LocalVideoTrack) {
-          await livekitRoom.localParticipant?.publishVideoTrack(track,
-              publishOptions: lk.VideoPublishOptions(
-                simulcast: preferences.doSimulcast.value,
-                screenShareEncoding: lk.VideoEncoding(
-                    maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-                videoEncoding: lk.VideoEncoding(
-                    maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-                videoCodec: preferences.streamCodec.value,
-              ));
+          await livekitRoom.localParticipant?.publishVideoTrack(
+            track,
+            publishOptions: lk.VideoPublishOptions(
+              simulcast: preferences.doSimulcast.value,
+              screenShareEncoding: lk.VideoEncoding(
+                maxFramerate: framerate.toInt(),
+                maxBitrate: bitrate,
+              ),
+              videoEncoding: lk.VideoEncoding(
+                maxFramerate: framerate.toInt(),
+                maxBitrate: bitrate,
+              ),
+              videoCodec: preferences.streamCodec.value,
+            ),
+          );
 
           track.setDegradationPreference(
-              lk.DegradationPreference.maintainFramerate);
+            lk.DegradationPreference.maintainFramerate,
+          );
         }
 
         if (track is lk.LocalAudioTrack) {
-          await livekitRoom.localParticipant?.publishAudioTrack(track,
-              publishOptions: lk.AudioPublishOptions(
-                  name: "screenshare",
-                  dtx: false,
-                  red: false,
-                  encoding: lk.AudioEncoding.presetMusicHighQualityStereo));
+          await livekitRoom.localParticipant?.publishAudioTrack(
+            track,
+            publishOptions: lk.AudioPublishOptions(
+              name: "screenshare",
+              dtx: false,
+              red: false,
+              encoding: lk.AudioEncoding.presetMusicHighQualityStereo,
+            ),
+          );
         }
       }
     } else {
       var track = await lk.LocalVideoTrack.createScreenShareTrack(
-          lk.ScreenShareCaptureOptions(
-              sourceId: srcid,
-              maxFrameRate: framerate,
-              params: lk.VideoParameters(
-                dimensions: lk.VideoDimensionsPresets.h720_169,
-                encoding: lk.VideoEncoding(
-                    maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-              )));
+        lk.ScreenShareCaptureOptions(
+          sourceId: srcid,
+          maxFrameRate: framerate,
+          params: lk.VideoParameters(
+            dimensions: lk.VideoDimensionsPresets.h720_169,
+            encoding: lk.VideoEncoding(
+              maxFramerate: framerate.toInt(),
+              maxBitrate: bitrate,
+            ),
+          ),
+        ),
+      );
 
-      await livekitRoom.localParticipant?.publishVideoTrack(track,
-          publishOptions: lk.VideoPublishOptions(
-            simulcast: preferences.doSimulcast.value,
-            screenShareEncoding: lk.VideoEncoding(
-                maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-            videoEncoding: lk.VideoEncoding(
-                maxFramerate: framerate.toInt(), maxBitrate: bitrate),
-            videoCodec: preferences.streamCodec.value,
-          ));
+      await livekitRoom.localParticipant?.publishVideoTrack(
+        track,
+        publishOptions: lk.VideoPublishOptions(
+          simulcast: preferences.doSimulcast.value,
+          screenShareEncoding: lk.VideoEncoding(
+            maxFramerate: framerate.toInt(),
+            maxBitrate: bitrate,
+          ),
+          videoEncoding: lk.VideoEncoding(
+            maxFramerate: framerate.toInt(),
+            maxBitrate: bitrate,
+          ),
+          videoCodec: preferences.streamCodec.value,
+        ),
+      );
 
-      track
-          .setDegradationPreference(lk.DegradationPreference.maintainFramerate);
+      track.setDegradationPreference(
+        lk.DegradationPreference.maintainFramerate,
+      );
     }
 
     _stateChanged.add(());
@@ -428,8 +470,12 @@ class MatrixLivekitVoipSession implements VoipSession {
     final stateKey =
         "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 
-    await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
-        MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {});
+    await room.matrixRoom.client.setRoomStateWithKey(
+      room.matrixRoom.id,
+      MatrixVoipRoomComponent.callMemberStateEvent,
+      stateKey,
+      {},
+    );
 
     Log.i("Cleared call state");
   }
@@ -442,10 +488,12 @@ class MatrixLivekitVoipSession implements VoipSession {
       return;
     }
 
-    await room.matrixRoom.client.request(RequestType.POST,
-        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(heartbeatDelayId!)}",
-        contentType: "application/json",
-        data: jsonEncode({"action": "cancel"}));
+    await room.matrixRoom.client.request(
+      RequestType.POST,
+      "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(heartbeatDelayId!)}",
+      contentType: "application/json",
+      data: jsonEncode({"action": "cancel"}),
+    );
 
     heartbeatDelayId = null;
     Log.i("Stopped heartbeat");
@@ -464,32 +512,39 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     final timerLength = Duration(seconds: 30);
 
-    final result = await room.matrixRoom.client.request(RequestType.PUT,
-        "/client/v3/rooms/${Uri.encodeComponent(room.matrixRoom.id)}/state/${Uri.encodeComponent(MatrixVoipRoomComponent.callMemberStateEvent)}/${Uri.encodeComponent(stateKey)}",
-        contentType: "application/json",
-        data: "{}",
-        query: {
-          "org.matrix.msc4140.delay": timerLength.inMilliseconds.toString()
-        });
+    final result = await room.matrixRoom.client.request(
+      RequestType.PUT,
+      "/client/v3/rooms/${Uri.encodeComponent(room.matrixRoom.id)}/state/${Uri.encodeComponent(MatrixVoipRoomComponent.callMemberStateEvent)}/${Uri.encodeComponent(stateKey)}",
+      contentType: "application/json",
+      data: "{}",
+      query: {
+        "org.matrix.msc4140.delay": timerLength.inMilliseconds.toString(),
+      },
+    );
 
     final delayId = result["delay_id"] as String;
     heartbeatDelayId = delayId;
 
-    heartbeatTimer =
-        Timer.periodic(timerLength - Duration(seconds: 5), (timer) async {
+    heartbeatTimer = Timer.periodic(timerLength - Duration(seconds: 5), (
+      timer,
+    ) async {
       print("Sending heartbeat");
-      final result = await room.matrixRoom.client.request(RequestType.POST,
-          "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
-          contentType: "application/json",
-          data: jsonEncode({"action": "restart"}));
+      final result = await room.matrixRoom.client.request(
+        RequestType.POST,
+        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
+        contentType: "application/json",
+        data: jsonEncode({"action": "restart"}),
+      );
       print(result);
     });
   }
 
   @override
   double get generalAudioLevel {
-    double result =
-        streams.fold(0.0, (value, stream) => max(value, stream.audiolevel));
+    double result = streams.fold(
+      0.0,
+      (value, stream) => max(value, stream.audiolevel),
+    );
     return result;
   }
 

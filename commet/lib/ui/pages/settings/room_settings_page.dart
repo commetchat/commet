@@ -7,8 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RoomSettingsPage extends StatefulWidget {
-  const RoomSettingsPage(
-      {super.key, this.contextSpace, required this.room, this.onLeaveRoom});
+  const RoomSettingsPage({
+    super.key,
+    this.contextSpace,
+    required this.room,
+    this.onLeaveRoom,
+  });
   final Room room;
   final Space? contextSpace;
   final Function()? onLeaveRoom;
@@ -18,39 +22,41 @@ class RoomSettingsPage extends StatefulWidget {
 }
 
 class _RoomSettingsPageState extends State<RoomSettingsPage> {
-  String get promptLeaveRoom => Intl.message("Leave Room",
-      desc: "Text on a button to leave a room", name: "promptLeaveRoom");
+  String get promptLeaveRoom => Intl.message(
+    "Leave Room",
+    desc: "Text on a button to leave a room",
+    name: "promptLeaveRoom",
+  );
 
-  String promptLeaveRoomConfirmation(String roomName) =>
-      Intl.message("Are you sure you want to leave $roomName?",
-          desc: "Text for the popup dialog confirming the intent to leave",
-          args: [roomName],
-          name: "promptLeaveRoomConfirmation");
+  String promptLeaveRoomConfirmation(String roomName) => Intl.message(
+    "Are you sure you want to leave $roomName?",
+    desc: "Text for the popup dialog confirming the intent to leave",
+    args: [roomName],
+    name: "promptLeaveRoomConfirmation",
+  );
 
   @override
   Widget build(BuildContext context) {
     return SettingsPage(
-      settings: [
-        SettingsCategoryRoom(
-          widget.room,
-          widget.contextSpace,
-        ),
-      ],
+      settings: [SettingsCategoryRoom(widget.room, widget.contextSpace)],
       buttons: [
         SettingsButton(
-            label: promptLeaveRoom,
-            icon: Icons.subdirectory_arrow_left_rounded,
-            color: Theme.of(context).colorScheme.error,
-            onPress: () => leaveRoom(context)),
+          label: promptLeaveRoom,
+          icon: Icons.subdirectory_arrow_left_rounded,
+          color: Theme.of(context).colorScheme.error,
+          onPress: () => leaveRoom(context),
+        ),
       ],
     );
   }
 
   Future<void> leaveRoom(BuildContext context) async {
-    if (await AdaptiveDialog.confirmation(context,
-            title: promptLeaveRoom,
-            prompt: promptLeaveRoomConfirmation(widget.room.displayName),
-            dangerous: true) ==
+    if (await AdaptiveDialog.confirmation(
+          context,
+          title: promptLeaveRoom,
+          prompt: promptLeaveRoomConfirmation(widget.room.displayName),
+          dangerous: true,
+        ) ==
         true) {
       if (context.mounted) Navigator.pop(context);
       widget.room.client.leaveRoom(widget.room);

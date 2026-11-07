@@ -53,10 +53,14 @@ class _MatrixUIARequestState extends State<MatrixUIARequest> {
 
   void submitAuthentication(String password) {
     ErrorUtils.tryRun(context, () async {
-      await widget.request.completeStage(AuthenticationPassword(
+      await widget.request.completeStage(
+        AuthenticationPassword(
           password: password,
           identifier: AuthenticationUserIdentifier(
-              user: widget.client.matrixClient.userID!)));
+            user: widget.client.matrixClient.userID!,
+          ),
+        ),
+      );
     });
   }
 
@@ -64,13 +68,16 @@ class _MatrixUIARequestState extends State<MatrixUIARequest> {
     // https://spec.matrix.org/v1.15/client-server-api/#client-behaviour-21
     var hs = widget.client.matrixClient.homeserver!;
     var url = hs.replace(
-        path: "/_matrix/client/v3/auth/m.login.sso/fallback/web",
-        queryParameters: {"session": widget.request.session});
+      path: "/_matrix/client/v3/auth/m.login.sso/fallback/web",
+      queryParameters: {"session": widget.request.session},
+    );
 
-    LinkUtils.open(url,
-        bypassConfirmation: true,
-        filterTrackingParameters: false,
-        context: context);
+    LinkUtils.open(
+      url,
+      bypassConfirmation: true,
+      filterTrackingParameters: false,
+      context: context,
+    );
     Navigator.of(context).pop();
   }
 }

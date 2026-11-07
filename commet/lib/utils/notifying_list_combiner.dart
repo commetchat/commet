@@ -10,8 +10,9 @@ class NotifyingListCombiner<T> implements INotifyingList<T> {
   List<StreamSubscription> subs = List.empty(growable: true);
 
   NotifyingListCombiner(List<INotifyingList<T>> baseLists) {
-    this._internalList =
-        NotifyingList.from([for (var i in baseLists) ...i], growable: true);
+    this._internalList = NotifyingList.from([
+      for (var i in baseLists) ...i,
+    ], growable: true);
 
     for (var item in baseLists) {
       subs.addAll([

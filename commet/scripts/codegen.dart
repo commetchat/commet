@@ -3,14 +3,7 @@
 import 'dart:io';
 
 Future<ProcessResult> getDependencies() async {
-  var process = Process.runSync(
-    "flutter",
-    [
-      "pub",
-      "get",
-    ],
-    runInShell: true,
-  );
+  var process = Process.runSync("flutter", ["pub", "get"], runInShell: true);
 
   print(process.stdout);
   print(process.stderr);
@@ -18,15 +11,11 @@ Future<ProcessResult> getDependencies() async {
 }
 
 Future<ProcessResult> intlUtilsGenerate() async {
-  var process = await Process.run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "intl_utils:generate",
-    ],
-    runInShell: true,
-  );
+  var process = await Process.run("flutter", [
+    "pub",
+    "run",
+    "intl_utils:generate",
+  ], runInShell: true);
 
   print(process.stdout);
   print(process.stderr);
@@ -87,20 +76,16 @@ Future<List<File>> generateFileLists() async {
 }
 
 Future<ProcessResult> generateFromArb(List<File> files) async {
-  var process = await Process.run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "intl_translation:generate_from_arb",
-      "--sources-list-file",
-      files[0].absolute.path,
-      "--translations-list-file",
-      files[1].absolute.path,
-      "--output-dir=lib/generated/l10n"
-    ],
-    runInShell: true,
-  );
+  var process = await Process.run("flutter", [
+    "pub",
+    "run",
+    "intl_translation:generate_from_arb",
+    "--sources-list-file",
+    files[0].absolute.path,
+    "--translations-list-file",
+    files[1].absolute.path,
+    "--output-dir=lib/generated/l10n",
+  ], runInShell: true);
 
   print(process.stdout);
   print(process.stderr);
@@ -108,17 +93,13 @@ Future<ProcessResult> generateFromArb(List<File> files) async {
 }
 
 Future<ProcessResult> buildRunner() async {
-  var process = await Process.run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "build_runner",
-      "build",
-      "--delete-conflicting-outputs",
-    ],
-    runInShell: true,
-  );
+  var process = await Process.run("flutter", [
+    "pub",
+    "run",
+    "build_runner",
+    "build",
+    "--delete-conflicting-outputs",
+  ], runInShell: true);
 
   print(process.stdout);
   print(process.stderr);

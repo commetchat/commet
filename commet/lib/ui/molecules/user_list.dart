@@ -15,6 +15,7 @@ import 'package:commet/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
+
 import '../../client/room.dart';
 
 class RoomMemberList extends StatefulWidget {
@@ -24,77 +25,86 @@ class RoomMemberList extends StatefulWidget {
   @override
   State<RoomMemberList> createState() => _RoomMemberListState();
 
-  static AdaptiveContextMenu userContextMenu(BuildContext context,
-      {required String userId,
-      required String userDisplayName,
-      required Room room,
-      required Widget child,
-      required bool isSelf,
-      Function? onUserKicked,
-      Function? onUserBanned,
-      Function? onUserRoleChanged}) {
+  static AdaptiveContextMenu userContextMenu(
+    BuildContext context, {
+    required String userId,
+    required String userDisplayName,
+    required Room room,
+    required Widget child,
+    required bool isSelf,
+    Function? onUserKicked,
+    Function? onUserBanned,
+    Function? onUserRoleChanged,
+  }) {
     return AdaptiveContextMenu(
       items: [
         if (room.permissions.canChangeRoles)
           tiamat.ContextMenuItem(
-              text: "Set Role",
-              icon: Icons.shield,
-              onPressed: () async {
-                ErrorUtils.tryRun(context, () async {
-                  var role = await AdaptiveDialog.pickOne(
-                    context,
-                    title: "Pick Role for $userDisplayName",
-                    items: room.availableRoles,
-                    itemBuilder: (context, item, callback) {
-                      return SizedBox(
-                        height: 50,
-                        child: tiamat.TextButton(
-                          item.name,
-                          icon: item.icon,
-                          onTap: callback,
-                        ),
-                      );
-                    },
-                  );
+            text: "Set Role",
+            icon: Icons.shield,
+            onPressed: () async {
+              ErrorUtils.tryRun(context, () async {
+                var role = await AdaptiveDialog.pickOne(
+                  context,
+                  title: "Pick Role for $userDisplayName",
+                  items: room.availableRoles,
+                  itemBuilder: (context, item, callback) {
+                    return SizedBox(
+                      height: 50,
+                      child: tiamat.TextButton(
+                        item.name,
+                        icon: item.icon,
+                        onTap: callback,
+                      ),
+                    );
+                  },
+                );
 
-                  if (role != null) {
-                    await room.setMemberRole(userId, role);
-                    onUserRoleChanged?.call();
-                  }
-                });
-              }),
+                if (role != null) {
+                  await room.setMemberRole(userId, role);
+                  onUserRoleChanged?.call();
+                }
+              });
+            },
+          ),
         if (room.permissions.canKick && !isSelf)
           tiamat.ContextMenuItem(
-              text: "Kick",
-              icon: Icons.subdirectory_arrow_left_rounded,
-              color: ColorScheme.of(context).error,
-              onPressed: () async {
-                if (await AdaptiveDialog.confirmation(context,
-                        prompt:
-                            "Are you sure you want to kick $userDisplayName from the room?") ==
-                    true) {
-                  ErrorUtils.tryRun(context, () async {
-                    await room.kickUser(userId);
-                    onUserKicked?.call();
-                  });
-                }
-              }),
+            text: "Kick",
+            icon: Icons.subdirectory_arrow_left_rounded,
+            color: ColorScheme.of(context).error,
+            onPressed: () async {
+              if (await AdaptiveDialog.confirmation(
+                    context,
+                    prompt:
+                        "Are you sure you want to kick $userDisplayName from the room?",
+                  ) ==
+                  true) {
+                ErrorUtils.tryRun(context, () async {
+                  await room.kickUser(userId);
+                  onUserKicked?.call();
+                });
+              }
+            },
+          ),
         if (room.permissions.canBan && !isSelf)
           tiamat.ContextMenuItem(
-              text: "Ban",
-              icon: Icons.shield,
-              color: ColorScheme.of(context).error,
-              onPressed: () async {
-                if (await AdaptiveDialog.confirmation(context,
-                        prompt:
-                            "Are you sure you want to ban $userDisplayName from the room?") ==
-                    true) {
-                  ErrorUtils.tryRun(context, () async {
-                    await room.banUser(userId);
-                    onUserBanned?.call();
-                  });
-                }
-              }),
+            text: "Ban",
+            icon: Icons.shield,
+            color: ColorScheme.of(context).error,
+            onPressed: () async {
+              if (await AdaptiveDialog.confirmation(
+                    context,
+                    prompt:
+                        "Are you sure you want to ban $userDisplayName from the room?",
+                  ) ==
+                  true) {
+                ErrorUtils.tryRun(context, () async {
+                  await room.banUser(userId);
+                  onUserBanned?.call();
+                });
+              }
+            },
+          ),
       ],
       child: child,
     );
@@ -114,7 +124,8 @@ class _RoomMemberListState extends State<RoomMemberList> {
   @override
   void initState() {
     getInitialUsers();
-    isDirectMessageRoom = widget.room.client
+    isDirectMessageRoom =
+        widget.room.client
             .getComponent<DirectMessagesComponent>()
             ?.isRoomDirectMessage(widget.room) ??
         false;
@@ -130,8 +141,9 @@ class _RoomMemberListState extends State<RoomMemberList> {
     var users = widget.room.membersList();
     var important = widget.room.importantMembers();
 
-    users.removeWhere((element) =>
-        important.any((i) => i.$1.identifier == element.identifier));
+    users.removeWhere(
+      (element) => important.any((i) => i.$1.identifier == element.identifier),
+    );
 
     roomMembers = users;
     importantMembers = important;
@@ -237,9 +249,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
 
           if (isDirectMessageRoom) {
             if (member.identifier == widget.room.client.self?.identifier)
-              return SizedBox(
-                height: 0,
-              );
+              return SizedBox(height: 0);
             result = Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: UserProfile(
@@ -254,23 +264,30 @@ class _RoomMemberListState extends State<RoomMemberList> {
             );
           }
 
-          result = RoomMemberList.userContextMenu(context,
-              userId: member.identifier,
-              room: widget.room,
-              userDisplayName: member.displayName,
-              isSelf: member.identifier == widget.room.client.self!.identifier,
-              child: result,
-              onUserBanned: () => roomMembers
-                  .removeWhere((i) => i.identifier == member.identifier),
-              onUserKicked: () => roomMembers
-                  .removeWhere((i) => i.identifier == member.identifier),
-              onUserRoleChanged: () => loadAllUsers());
+          result = RoomMemberList.userContextMenu(
+            context,
+            userId: member.identifier,
+            room: widget.room,
+            userDisplayName: member.displayName,
+            isSelf: member.identifier == widget.room.client.self!.identifier,
+            child: result,
+            onUserBanned: () => roomMembers.removeWhere(
+              (i) => i.identifier == member.identifier,
+            ),
+            onUserKicked: () => roomMembers.removeWhere(
+              (i) => i.identifier == member.identifier,
+            ),
+            onUserRoleChanged: () => loadAllUsers(),
+          );
 
           var role = getDisplayRole(index);
           if (role != null) {
             result = Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [RoleView(name: role.name, icon: role.icon), result],
+              children: [
+                RoleView(name: role.name, icon: role.icon),
+                result,
+              ],
             );
           }
 
@@ -314,7 +331,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
                 shimmer: true,
                 random: Random(i).nextDouble(),
               ),
-            )
+            ),
         ],
       ),
     );

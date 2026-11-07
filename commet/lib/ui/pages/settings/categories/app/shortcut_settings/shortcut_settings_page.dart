@@ -17,7 +17,7 @@ class ShortcutSettingsPage extends StatelessWidget {
 
     bool showOutsourceMenu =
         PlatformUtils.isDisplayServer(DisplayServer.Wayland) &&
-            PlatformUtils.isDesktopEnvironment(DesktopEnvironment.KDEPlasma);
+        PlatformUtils.isDesktopEnvironment(DesktopEnvironment.KDEPlasma);
 
     bool showHooksMenu = !showOutsourceMenu;
 
@@ -33,7 +33,7 @@ class ShortcutSettingsPage extends StatelessWidget {
       spacing: 8,
       children: [
         if (showOutsourceMenu) OutsourceShortcutSettingsPage(),
-        if (showHooksMenu) KeyboardHookShortcutsSettingsPage()
+        if (showHooksMenu) KeyboardHookShortcutsSettingsPage(),
       ],
     );
   }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 class InheritedOffstage extends InheritedWidget {
-  const InheritedOffstage(
-      {required this.offstage, super.key, required super.child});
+  const InheritedOffstage({
+    required this.offstage,
+    super.key,
+    required super.child,
+  });
 
   final bool offstage;
 

@@ -25,7 +25,9 @@ class PollCreateArgs {
 
 abstract class PollComponent<R extends Client> implements Component<R> {
   Map<String, Set<String>> getPollResponses(
-      Timeline timeline, TimelineEvent event);
+    Timeline timeline,
+    TimelineEvent event,
+  );
 
   bool isPollEvent(TimelineEvent event);
 
@@ -46,5 +48,8 @@ abstract class PollComponent<R extends Client> implements Component<R> {
   bool canEndPoll(Room room, TimelineEvent event, Timeline timeline);
 
   Future<void> setAnswer(
-      TimelineEvent event, Room room, List<PollAnswer> answer);
+    TimelineEvent event,
+    Room room,
+    List<PollAnswer> answer,
+  );
 }

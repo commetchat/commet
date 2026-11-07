@@ -38,9 +38,9 @@ class _SetupPageState extends State<SetupPage> {
               children: [
                 Flexible(
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Tile.low(
-                          child: Column(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Tile.low(
+                      child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -48,7 +48,8 @@ class _SetupPageState extends State<SetupPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(8),
                               child: SingleChildScrollView(
-                                  child: currentMenu.builder(context)),
+                                child: currentMenu.builder(context),
+                              ),
                             ),
                           ),
                           Column(
@@ -64,22 +65,23 @@ class _SetupPageState extends State<SetupPage> {
                                 ),
                               ),
                               TweenAnimationBuilder(
-                                  tween: Tween<double>(
-                                      begin: 0,
-                                      end: currentMenuIndex /
-                                          widget.menus.length),
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeOutCubic,
-                                  builder: (context, value, _) {
-                                    return LinearProgressIndicator(
-                                      value: value,
-                                    );
-                                  })
+                                tween: Tween<double>(
+                                  begin: 0,
+                                  end: currentMenuIndex / widget.menus.length,
+                                ),
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeOutCubic,
+                                builder: (context, value, _) {
+                                  return LinearProgressIndicator(value: value);
+                                },
+                              ),
                             ],
                           ),
                         ],
-                      ))),
-                )
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

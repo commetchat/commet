@@ -9,11 +9,12 @@ import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventMenuDialog extends StatelessWidget {
-  const TimelineEventMenuDialog(
-      {required this.event,
-      required this.timeline,
-      required this.menu,
-      super.key});
+  const TimelineEventMenuDialog({
+    required this.event,
+    required this.timeline,
+    required this.menu,
+    super.key,
+  });
 
   final TimelineEvent event;
   final Timeline timeline;
@@ -49,10 +50,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
                     return const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white,
-                        Colors.transparent,
-                      ],
+                      colors: [Colors.white, Colors.transparent],
                       stops: [0.80, 1.0],
                     ).createShader(bounds);
                   },
@@ -74,9 +72,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
             if (menu.addReactionAction != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -95,10 +91,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: EmojiWidget(
-                              emote,
-                              height: emojiSize,
-                            ),
+                            child: EmojiWidget(emote, height: emojiSize),
                           ),
                         ),
                       ),
@@ -113,21 +106,27 @@ class TimelineEventMenuDialog extends StatelessWidget {
                         doAction(menu.addReactionAction!, context);
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             for (var action in menu.primaryActions)
               SizedBox(
                 height: 50,
-                child: tiamat.TextButton(action.name,
-                    icon: action.icon, onTap: () => doAction(action, context)),
+                child: tiamat.TextButton(
+                  action.name,
+                  icon: action.icon,
+                  onTap: () => doAction(action, context),
+                ),
               ),
             const Seperator(),
             for (var action in menu.secondaryActions)
               SizedBox(
                 height: 50,
-                child: tiamat.TextButton(action.name,
-                    icon: action.icon, onTap: () => doAction(action, context)),
+                child: tiamat.TextButton(
+                  action.name,
+                  icon: action.icon,
+                  onTap: () => doAction(action, context),
+                ),
               ),
           ],
         ),

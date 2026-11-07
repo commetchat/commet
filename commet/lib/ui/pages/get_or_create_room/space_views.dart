@@ -24,32 +24,25 @@ class SpaceCreatorDescription extends StatelessWidget {
 
   final voiceChannelNames = ["Gaming", "Movie Night"];
 
-  final photoAlbumNames = [
-    "Random Photo Dump",
-    "Clips",
-    "Art",
-  ];
+  final photoAlbumNames = ["Random Photo Dump", "Clips", "Art"];
 
-  final calendarNames = [
-    "Calendar",
-    "Work Schedule",
-  ];
+  final calendarNames = ["Calendar", "Work Schedule"];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         tiamat.Text.labelLow(
-            "Spaces are a collection of rooms, they can contain text chats, voice chats and more! They are the perfect way to organize your community or group!"),
-        SizedBox(
-          height: 30,
+          "Spaces are a collection of rooms, they can contain text chats, voice chats and more! They are the perfect way to organize your community or group!",
         ),
+        SizedBox(height: 30),
         Wrap(
-            clipBehavior: Clip.hardEdge,
-            alignment: WrapAlignment.spaceEvenly,
-            runSpacing: 24,
-            spacing: 24,
-            children: buildItems(context))
+          clipBehavior: Clip.hardEdge,
+          alignment: WrapAlignment.spaceEvenly,
+          runSpacing: 24,
+          spacing: 24,
+          children: buildItems(context),
+        ),
       ],
     );
   }
@@ -72,37 +65,35 @@ class SpaceCreatorDescription extends StatelessWidget {
   }
 
   Widget buildSpaceChild(
-      BuildContext context, String name, IconData icon, int seed) {
+    BuildContext context,
+    String name,
+    IconData icon,
+    int seed,
+  ) {
     var random = Random(seed);
     var color = MatrixMember.hashColor(seed.toString());
     color = tiamat.Text.adjustColor(context, color);
     return Transform.rotate(
       angle: (random.nextDouble() - 0.5) * 0.2,
       child: Material(
-          color: ColorScheme.of(context).surfaceContainerLow,
-          borderRadius: BorderRadius.circular(8),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  Icon(
-                    icon,
-                    color: color,
-                  ),
-                  tiamat.Text(
-                    name,
-                    color: color,
-                    autoAdjustBrightness: false,
-                  )
-                ],
-              ),
+        color: ColorScheme.of(context).surfaceContainerLow,
+        borderRadius: BorderRadius.circular(8),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Icon(icon, color: color),
+                tiamat.Text(name, color: color, autoAdjustBrightness: false),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

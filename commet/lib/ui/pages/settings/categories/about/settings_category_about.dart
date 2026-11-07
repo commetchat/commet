@@ -21,34 +21,38 @@ import 'package:vodozemac/vodozemac.dart' as vod;
 import 'package:intl/intl.dart' as intl;
 
 class SettingsCategoryAbout implements SettingsCategory {
-  String get labelSettingsAppLogs => Intl.message("Logs",
-      name: "labelSettingsAppLogs",
-      desc:
-          "Label for the logs settings page, usually hidden unless developer mode is turned on");
+  String get labelSettingsAppLogs => Intl.message(
+    "Logs",
+    name: "labelSettingsAppLogs",
+    desc: "Label for the logs settings page, usually hidden unless developer mode is turned on",
+  );
 
-  String get labelSettingsAppInfo => Intl.message("About",
-      name: "labelSettingsAppInfo",
-      desc: "Label for the app info settings page");
+  String get labelSettingsAppInfo => Intl.message(
+    "About",
+    name: "labelSettingsAppInfo",
+    desc: "Label for the app info settings page",
+  );
 
   @override
   List<SettingsTab> get tabs => List.from([
-        SettingsTab(
-            label: labelSettingsAppInfo,
-            icon: Icons.info_outline,
-            makeScrollable: false,
-            pageBuilder: (context) {
-              return const _AppInfo();
-            }),
-        if (preferences.developerMode.value)
-          SettingsTab(
-            label: labelSettingsAppLogs,
-            icon: m.Icons.text_snippet,
-            makeScrollable: false,
-            pageBuilder: (context) {
-              return LogPage(Log.log);
-            },
-          )
-      ]);
+    SettingsTab(
+      label: labelSettingsAppInfo,
+      icon: Icons.info_outline,
+      makeScrollable: false,
+      pageBuilder: (context) {
+        return const _AppInfo();
+      },
+    ),
+    if (preferences.developerMode.value)
+      SettingsTab(
+        label: labelSettingsAppLogs,
+        icon: m.Icons.text_snippet,
+        makeScrollable: false,
+        pageBuilder: (context) {
+          return LogPage(Log.log);
+        },
+      ),
+  ]);
 
   static Widget info(BuildContext context) {
     return SizedBox(
@@ -61,33 +65,39 @@ class SettingsCategoryAbout implements SettingsCategory {
           const tiamat.Text.label(" · "),
           Text.rich(
             TextSpan(
-                style: const TextStyle(decoration: TextDecoration.underline),
-                text: "Source Code",
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => LinkUtils.open(
-                      Uri.parse("https://github.com/commetchat/commet"),
-                      context: context)),
+              style: const TextStyle(decoration: TextDecoration.underline),
+              text: "Source Code",
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => LinkUtils.open(
+                  Uri.parse("https://github.com/commetchat/commet"),
+                  context: context,
+                ),
+            ),
           ),
           const tiamat.Text.label(" · "),
           Text.rich(
             TextSpan(
-                style: const TextStyle(decoration: TextDecoration.underline),
-                text: "License",
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => LinkUtils.open(
-                      Uri.parse(
-                          "https://github.com/commetchat/commet/blob/main/LICENSE"),
-                      context: context)),
+              style: const TextStyle(decoration: TextDecoration.underline),
+              text: "License",
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => LinkUtils.open(
+                  Uri.parse(
+                    "https://github.com/commetchat/commet/blob/main/LICENSE",
+                  ),
+                  context: context,
+                ),
+            ),
           ),
           const tiamat.Text.label(" · "),
           Text.rich(
             TextSpan(
-                style: const TextStyle(decoration: TextDecoration.underline),
-                text: "Open Source Licenses",
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    showLicensePage(context: context);
-                  }),
+              style: const TextStyle(decoration: TextDecoration.underline),
+              text: "Open Source Licenses",
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  showLicensePage(context: context);
+                },
+            ),
           ),
         ],
       ),
@@ -136,7 +146,8 @@ class _AppInfoState extends State<_AppInfo> {
                 child: SvgPicture.asset(
                   "assets/images/app_icon/icon.svg",
                   theme: SvgTheme(
-                      currentColor: Theme.of(context).colorScheme.onSurface),
+                    currentColor: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
@@ -149,27 +160,34 @@ class _AppInfoState extends State<_AppInfo> {
                     children: [
                       const tiamat.Text.largeTitle(BuildConfig.appName),
                       const tiamat.Text.labelEmphasised(
-                          BuildConfig.VERSION_TAG),
+                        BuildConfig.VERSION_TAG,
+                      ),
                       tiamat.Text.labelLow(
-                          "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}"),
-                      tiamat.Text.labelLow("Built: " +
-                          intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
-                              .format(BuildConfig.BUILD_DATE)),
+                        "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}",
+                      ),
+                      tiamat.Text.labelLow(
+                        "Built: " +
+                            intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
+                                .format(BuildConfig.BUILD_DATE),
+                      ),
                       if (deviceInfo != null)
                         Row(
                           spacing: 10,
                           children: [
                             if (deviceInfo!.data["name"] is String)
                               tiamat.Text.labelLow(
-                                  deviceInfo!.data["name"]!.toString()),
+                                deviceInfo!.data["name"]!.toString(),
+                              ),
                             if (deviceInfo!.data["version"] is String)
                               tiamat.Text.labelLow(
-                                  deviceInfo!.data["version"]!.toString()),
+                                deviceInfo!.data["version"]!.toString(),
+                              ),
                             if (PlatformUtils.isLinux)
                               tiamat.Text.labelLow(PlatformUtils.displayServer),
                             if (PlatformUtils.desktopEnvironment != null)
                               tiamat.Text.labelLow(
-                                  PlatformUtils.desktopEnvironment!)
+                                PlatformUtils.desktopEnvironment!,
+                              ),
                           ],
                         ),
                       if (Subplatforms.subplatform != null)
@@ -177,7 +195,7 @@ class _AppInfoState extends State<_AppInfo> {
                       if (preferences.developerMode.value)
                         tiamat.Text.labelLow(getEncryptionInfo()),
                       if (preferences.developerMode.value)
-                        tiamat.Text.labelLow(commandLineArgs.join(" "))
+                        tiamat.Text.labelLow(commandLineArgs.join(" ")),
                     ],
                   ),
                   Padding(
@@ -192,7 +210,7 @@ class _AppInfoState extends State<_AppInfo> {
             ),
           ],
         ),
-        SettingsCategoryAbout.info(context)
+        SettingsCategoryAbout.info(context),
       ],
     );
   }
@@ -217,7 +235,8 @@ class _AppInfoState extends State<_AppInfo> {
   }
 
   void copySystemInfo() {
-    var data = """
+    var data =
+        """
 <details open>
 <summary>Device Information</summary>
 <br>

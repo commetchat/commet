@@ -1,12 +1,8 @@
 import 'dart:core';
+
 import 'package:flutter/material.dart';
 
-enum EmoticonUsage {
-  sticker,
-  emoji,
-  all,
-  inherit,
-}
+enum EmoticonUsage { sticker, emoji, all, inherit }
 
 abstract class Emoticon {
   ImageProvider? get image;

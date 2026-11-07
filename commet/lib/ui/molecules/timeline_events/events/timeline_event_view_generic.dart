@@ -14,14 +14,15 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/atoms/avatar.dart';
 
 class TimelineEventViewGeneric extends StatefulWidget {
-  const TimelineEventViewGeneric(
-      {this.timeline,
-      this.initialEvent,
-      required this.initialIndex,
-      this.room,
-      this.onReadReceiptsTapped,
-      this.readReceipts = const [],
-      super.key});
+  const TimelineEventViewGeneric({
+    this.timeline,
+    this.initialEvent,
+    required this.initialIndex,
+    this.room,
+    this.onReadReceiptsTapped,
+    this.readReceipts = const [],
+    super.key,
+  });
   final Timeline? timeline;
   final int initialIndex;
   final Room? room;
@@ -39,22 +40,25 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
   IconData? icon;
   ImageProvider? senderAvatar;
 
-  String messagePlaceholderSticker(String user) =>
-      Intl.message("$user sent a sticker",
-          desc: "Message body for when a user sends a sticker",
-          args: [user],
-          name: "messagePlaceholderSticker");
+  String messagePlaceholderSticker(String user) => Intl.message(
+    "$user sent a sticker",
+    desc: "Message body for when a user sends a sticker",
+    args: [user],
+    name: "messagePlaceholderSticker",
+  );
 
-  String messagePlaceholderUserCreatedRoom(String user) =>
-      Intl.message("$user created the room!",
-          desc: "Message body for when a user created the room",
-          args: [user],
-          name: "messagePlaceholderUserCreatedRoom");
+  String messagePlaceholderUserCreatedRoom(String user) => Intl.message(
+    "$user created the room!",
+    desc: "Message body for when a user created the room",
+    args: [user],
+    name: "messagePlaceholderUserCreatedRoom",
+  );
 
-  String get errorMessageFailedToSend => Intl.message("Failed to send",
-      desc:
-          "Text that is placed below a message when the message fails to send",
-      name: "errorMessageFailedToSend");
+  String get errorMessageFailedToSend => Intl.message(
+    "Failed to send",
+    desc: "Text that is placed below a message when the message fails to send",
+    name: "errorMessageFailedToSend",
+  );
 
   @override
   void initState() {
@@ -99,10 +103,7 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
                       if (senderAvatar != null)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
-                          child: Avatar(
-                            image: senderAvatar,
-                            radius: 10,
-                          ),
+                          child: Avatar(image: senderAvatar, radius: 10),
                         ),
                       Flexible(
                         child: Row(
@@ -110,7 +111,7 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
                             Flexible(child: tiamat.Text.labelLow(text!)),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -128,7 +129,7 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
                   onTap: widget.onReadReceiptsTapped,
                 ),
               ),
-            )
+            ),
         ],
       ),
     );

@@ -33,9 +33,8 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
               BooleanPreferenceToggle(
                 preference: preferences.experimentEnableE2eeElementCall,
                 title: "Encrypted Element Call",
-                description:
-                    "Allow use of the experimental support for end to end encryption in element call",
-              )
+                description: "Allow use of the experimental support for end to end encryption in element call",
+              ),
             ],
           ),
         ),

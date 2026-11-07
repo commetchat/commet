@@ -23,15 +23,16 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
 
   Function()? onClientConnected;
 
-  MatrixRemoteHttpWidgetTransceiver(
-      {required this.server,
-      required this.hostIp,
-      required this.secret,
-      required this.widgetUrl,
-      required this.info,
-      this.onClientConnected,
-      required this.allowRemoteConnection,
-      required this.useHttps}) {
+  MatrixRemoteHttpWidgetTransceiver({
+    required this.server,
+    required this.hostIp,
+    required this.secret,
+    required this.widgetUrl,
+    required this.info,
+    this.onClientConnected,
+    required this.allowRemoteConnection,
+    required this.useHttps,
+  }) {
     server.listen(onRequest);
   }
 
@@ -76,11 +77,13 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
   void handlePageRequest(HttpRequest request) async {
     var editedUrl = Uri.parse(widgetUrl);
 
-    editedUrl = editedUrl.replace(queryParameters: {
-      ...editedUrl.queryParameters,
-      "parentUrl":
-          (useHttps ? "https://" : "http://") + hostIp + ":${server.port}",
-    });
+    editedUrl = editedUrl.replace(
+      queryParameters: {
+        ...editedUrl.queryParameters,
+        "parentUrl":
+            (useHttps ? "https://" : "http://") + hostIp + ":${server.port}",
+      },
+    );
 
     Log.i("Handling favicon");
     var bytes = (await rootBundle.load("assets/data/widget_runner_remote.html"))
@@ -93,8 +96,10 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
         .asUint8List();
     var scriptText = Utf8Decoder().convert(scriptBytes);
 
-    text =
-        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+    text = text.replaceAll(
+      "\$RUNNER_PAGE_TITLE",
+      "Commet Widget | ${info.name}",
+    );
 
     text = text.replaceAll("\$IFRAME_URL", editedUrl.toString());
 
@@ -115,10 +120,9 @@ class MatrixRemoteHttpWidgetTransceiver implements WidgetTransceiver {
   }
 
   void handleIconRequest(HttpRequest request) async {
-    var bytes =
-        (await rootBundle.load("assets/images/app_icon/app_icon_rounded.png"))
-            .buffer
-            .asUint8List();
+    var bytes = (await rootBundle.load(
+      "assets/images/app_icon/app_icon_rounded.png",
+    )).buffer.asUint8List();
 
     request.response
       ..headers.contentType = new ContentType("image", "png")

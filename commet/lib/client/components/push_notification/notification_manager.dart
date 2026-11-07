@@ -21,8 +21,9 @@ class NotificationManager {
 
   static Notifier? get notifier => _notifier;
 
-  static final List<NotificationModifier> _modifiers =
-      List.empty(growable: true);
+  static final List<NotificationModifier> _modifiers = List.empty(
+    growable: true,
+  );
 
   static Future<void>? notifierLoading;
 
@@ -91,9 +92,11 @@ class NotificationManager {
     await notifier?.clearNotifications(room);
   }
 
-  static Future<void> notify(NotificationContent notification,
-      {bool forceShow = false,
-      Function(String reason)? onNotificationRejected}) async {
+  static Future<void> notify(
+    NotificationContent notification, {
+    bool forceShow = false,
+    Function(String reason)? onNotificationRejected,
+  }) async {
     if (_notifier == null) {
       Log.e("Failed to show notification, notifier has not been initialzied");
       onNotificationRejected?.call("Notifier has not been initialized");
@@ -113,13 +116,16 @@ class NotificationManager {
         if (modifier is NotificationModifierSuppressOtherActiveDevice) continue;
       }
 
-      content = await modifier.process(content!,
-          onNotificationRejected: onNotificationRejected);
+      content = await modifier.process(
+        content!,
+        onNotificationRejected: onNotificationRejected,
+      );
       if (content == null) {
         Log.d("Modifier returned null notification, returning");
 
         onNotificationRejected?.call(
-            "Notification modifier '${modifier}' rejected the notification");
+          "Notification modifier '${modifier}' rejected the notification",
+        );
         return;
       }
     }

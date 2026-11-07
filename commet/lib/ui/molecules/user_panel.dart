@@ -11,14 +11,15 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UserPanel extends material.StatefulWidget {
-  const UserPanel(
-      {super.key,
-      required this.userId,
-      required this.client,
-      required this.contextRoom,
-      this.initialMember,
-      this.isDirectMessage = false,
-      this.onTap});
+  const UserPanel({
+    super.key,
+    required this.userId,
+    required this.client,
+    required this.contextRoom,
+    this.initialMember,
+    this.isDirectMessage = false,
+    this.onTap,
+  });
   final String userId;
   final Client client;
   final Member? initialMember;
@@ -57,7 +58,8 @@ class _UserPanelState extends material.State<UserPanel> {
       return;
     }
 
-    final member = widget.initialMember ??
+    final member =
+        widget.initialMember ??
         widget.contextRoom.getMemberOrFallback(widget.userId);
     displayName = member.displayName;
     color = member.defaultColor;
@@ -78,8 +80,8 @@ class _UserPanelState extends material.State<UserPanel> {
   }
 
   initPresence() async {
-    final presenceComponent =
-        widget.client.getComponent<UserPresenceComponent>();
+    final presenceComponent = widget.client
+        .getComponent<UserPresenceComponent>();
 
     if (presenceComponent == null) {
       return;
@@ -106,13 +108,9 @@ class _UserPanelState extends material.State<UserPanel> {
     style = currentStyle?.copyWith(fontSize: 10);
 
     if (presence.message != null) {
-      style = style?.copyWith(
-        fontWeight: FontWeight.w500,
-      );
+      style = style?.copyWith(fontWeight: FontWeight.w500);
     } else {
-      style = style?.copyWith(
-        color: Theme.of(context).colorScheme.secondary,
-      );
+      style = style?.copyWith(color: Theme.of(context).colorScheme.secondary);
     }
 
     return UserPanelView(
@@ -143,21 +141,22 @@ class _UserPanelState extends material.State<UserPanel> {
 }
 
 class UserPanelView extends material.StatelessWidget {
-  const UserPanelView(
-      {super.key,
-      this.avatar,
-      required this.displayName,
-      this.color,
-      this.avatarColor,
-      this.nameColor,
-      this.detail,
-      this.padding,
-      this.shimmer = false,
-      this.random = 0,
-      this.detailStringStyle,
-      this.presence,
-      this.avatarSize = 15,
-      this.onClicked});
+  const UserPanelView({
+    super.key,
+    this.avatar,
+    required this.displayName,
+    this.color,
+    this.avatarColor,
+    this.nameColor,
+    this.detail,
+    this.padding,
+    this.shimmer = false,
+    this.random = 0,
+    this.detailStringStyle,
+    this.presence,
+    this.avatarSize = 15,
+    this.onClicked,
+  });
   final ImageProvider? avatar;
   final String displayName;
   final double avatarSize;
@@ -216,8 +215,9 @@ class UserPanelView extends material.StatelessWidget {
                               height: 10,
                               width: (random * 50) + 50,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: shimmerColor),
+                                borderRadius: BorderRadius.circular(4),
+                                color: shimmerColor,
+                              ),
                             ),
                           if (shimmer)
                             material.Padding(
@@ -226,8 +226,9 @@ class UserPanelView extends material.StatelessWidget {
                                 height: 8,
                                 width: (random * 20) + 20,
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: shimmerColor),
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: shimmerColor,
+                                ),
                               ),
                             ),
                           if (!shimmer)
@@ -245,23 +246,29 @@ class UserPanelView extends material.StatelessWidget {
                                 if (presence!.message?.messageType ==
                                     PresenceMessageType.userCustom)
                                   material.Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                                    child: Icon(
-                                      Icons.chat_bubble,
-                                      size: 10,
+                                    padding: const EdgeInsets.fromLTRB(
+                                      0,
+                                      0,
+                                      4,
+                                      0,
                                     ),
+                                    child: Icon(Icons.chat_bubble, size: 10),
                                   ),
                                 Flexible(
                                   child: material.Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 0, 0, 2),
-                                      child: material.Text(
-                                        presence!.message!.message,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: detailStringStyle,
-                                      )),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      0,
+                                      0,
+                                      0,
+                                      2,
+                                    ),
+                                    child: material.Text(
+                                      presence!.message!.message,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: detailStringStyle,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -272,8 +279,12 @@ class UserPanelView extends material.StatelessWidget {
                               children: [
                                 Flexible(
                                   child: material.Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      0,
+                                      0,
+                                      0,
+                                      2,
+                                    ),
                                     child: buildDetailString(),
                                   ),
                                 ),
@@ -283,7 +294,7 @@ class UserPanelView extends material.StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -299,7 +310,9 @@ class UserPanelView extends material.StatelessWidget {
   }
 
   static material.DecoratedBox createPresenceIcon(
-      BuildContext context, UserPresenceStatus status) {
+    BuildContext context,
+    UserPresenceStatus status,
+  ) {
     var scheme = Theme.of(context).colorScheme;
 
     var backgroundColor = scheme.surfaceContainer;
@@ -311,14 +324,12 @@ class UserPanelView extends material.StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         border: Border.all(
-            width: 2,
-            strokeAlign: BorderSide.strokeAlignOutside,
-            color: backgroundColor),
+          width: 2,
+          strokeAlign: BorderSide.strokeAlignOutside,
+          color: backgroundColor,
+        ),
       ),
-      child: SizedBox(
-        width: 8,
-        height: 8,
-      ),
+      child: SizedBox(width: 8, height: 8),
     );
   }
 
@@ -331,9 +342,7 @@ class UserPanelView extends material.StatelessWidget {
       detail!,
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
-      style: detailStringStyle?.copyWith(
-        fontFamily: "Code",
-      ),
+      style: detailStringStyle?.copyWith(fontFamily: "Code"),
     );
   }
 }

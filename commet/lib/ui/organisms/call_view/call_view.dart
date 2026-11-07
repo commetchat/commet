@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
@@ -81,7 +82,7 @@ class _CallViewState extends State<CallView> {
         VoipState.connecting => callOutgoingView(),
         VoipState.ended => callEndedView(),
         VoipState.incoming => callIncomingView(),
-        _ => const Placeholder()
+        _ => const Placeholder(),
       },
     );
   }
@@ -96,20 +97,22 @@ class _CallViewState extends State<CallView> {
           color: Theme.of(context).colorScheme.primary,
           repeat: true,
           child: Avatar.large(
-              image: room.avatar,
-              placeholderColor: room.defaultColor,
-              placeholderText: room.displayName),
+            image: room.avatar,
+            placeholderColor: room.defaultColor,
+            placeholderText: room.displayName,
+          ),
         ),
       ),
     );
   }
 
-  Widget callButtons(
-      {bool canMute = false,
-      bool canScreenshare = false,
-      bool canHangUp = false,
-      bool canToggleCamera = false,
-      required Widget child}) {
+  Widget callButtons({
+    bool canMute = false,
+    bool canScreenshare = false,
+    bool canHangUp = false,
+    bool canToggleCamera = false,
+    required Widget child,
+  }) {
     final buttonRadius = MediaQuery.of(context).mobile ? 24.0 : 18.0;
     return MouseRegion(
       onEnter: (event) {
@@ -136,9 +139,10 @@ class _CallViewState extends State<CallView> {
                 children: [
                   if (canScreenshare)
                     tiamat.CircleButton(
-                        radius: buttonRadius,
-                        icon: Icons.screen_share_outlined,
-                        onPressed: widget.pickScreenshareSource),
+                      radius: buttonRadius,
+                      icon: Icons.screen_share_outlined,
+                      onPressed: widget.pickScreenshareSource,
+                    ),
                   if (widget.currentSession.isSharingScreen && canScreenshare)
                     tiamat.CircleButton(
                       radius: buttonRadius,
@@ -152,8 +156,9 @@ class _CallViewState extends State<CallView> {
                           ? Icons.mic_off
                           : Icons.mic,
                       onPressed: () async {
-                        await widget.setMicrophoneMute
-                            ?.call(!widget.currentSession.isMicrophoneMuted);
+                        await widget.setMicrophoneMute?.call(
+                          !widget.currentSession.isMicrophoneMuted,
+                        );
                         setState(() {});
                       },
                     ),
@@ -176,11 +181,11 @@ class _CallViewState extends State<CallView> {
                         await widget.hangUp?.call();
                         setState(() {});
                       },
-                    )
+                    ),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -188,21 +193,22 @@ class _CallViewState extends State<CallView> {
 
   Widget callConnectedView() {
     return callButtons(
-        canMute: true,
-        canHangUp: true,
-        canScreenshare: true,
-        canToggleCamera: true,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            var ratio = constraints.maxWidth / constraints.maxHeight;
+      canMute: true,
+      canHangUp: true,
+      canScreenshare: true,
+      canToggleCamera: true,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          var ratio = constraints.maxWidth / constraints.maxHeight;
 
-            if (ratio > 1 && mainStream == null) {
-              return Row(children: generateLayout());
-            } else {
-              return Column(children: generateLayout());
-            }
-          },
-        ));
+          if (ratio > 1 && mainStream == null) {
+            return Row(children: generateLayout());
+          } else {
+            return Column(children: generateLayout());
+          }
+        },
+      ),
+    );
   }
 
   Iterable<VoipStream> get visibleStreams => widget.currentSession.streams
@@ -234,26 +240,27 @@ class _CallViewState extends State<CallView> {
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             Scaffold(
-                          backgroundColor: Colors.black,
-                          body: VoipFullscreenStreamView(
-                            session: widget.currentSession,
-                            stream: mainStream!,
-                          ),
-                        ),
+                              backgroundColor: Colors.black,
+                              body: VoipFullscreenStreamView(
+                                session: widget.currentSession,
+                                stream: mainStream!,
+                              ),
+                            ),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
                         fullscreenDialog: true,
                       ),
                     );
                   },
                   fit: BoxFit.contain,
                   key: ValueKey(
-                      "callView_mainStreamView_${mainStream!.streamId}"),
+                    "callView_mainStreamView_${mainStream!.streamId}",
+                  ),
                 ),
               ),
             ),
@@ -264,46 +271,53 @@ class _CallViewState extends State<CallView> {
           fit: FlexFit.tight,
           flex: mainStream == null ? 75 : 50,
           child: Center(
-            child: BentoLayout(visibleStreams
-                .where((element) => element != mainStream)
-                .map((e) => GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        mainStream = e;
-                      });
-                    },
-                    child: VoipStreamView(
-                      key: ValueKey("callView__${e.streamId}"),
-                      e,
-                      fit: e.type == VoipStreamType.screenshare
-                          ? BoxFit.contain
-                          : BoxFit.cover,
-                      widget.currentSession,
-                      onFullscreen: () {
-                        NavigationUtils.navigateTo(
-                          context,
-                          Scaffold(
-                            backgroundColor: Colors.black,
-                            body: VoipFullscreenStreamView(
-                              session: widget.currentSession,
-                              stream: e,
-                            ),
-                          ),
-                        );
+            child: BentoLayout(
+              visibleStreams
+                  .where((element) => element != mainStream)
+                  .map(
+                    (e) => GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          mainStream = e;
+                        });
                       },
-                    )))
-                .toList()),
+                      child: VoipStreamView(
+                        key: ValueKey("callView__${e.streamId}"),
+                        e,
+                        fit: e.type == VoipStreamType.screenshare
+                            ? BoxFit.contain
+                            : BoxFit.cover,
+                        widget.currentSession,
+                        onFullscreen: () {
+                          NavigationUtils.navigateTo(
+                            context,
+                            Scaffold(
+                              backgroundColor: Colors.black,
+                              body: VoipFullscreenStreamView(
+                                session: widget.currentSession,
+                                stream: e,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
-        )
+        ),
     ];
   }
 
   bool shouldShowAudioStream(VoipStream element, List<VoipStream> streams) {
     if (element.type == VoipStreamType.audio) {
-      if (streams.any((i) =>
-          i.participantId == element.participantId &&
-          (i.type == VoipStreamType.screenshare ||
-              i.type == VoipStreamType.video))) {
+      if (streams.any(
+        (i) =>
+            i.participantId == element.participantId &&
+            (i.type == VoipStreamType.screenshare ||
+                i.type == VoipStreamType.video),
+      )) {
         {
           return false;
         }
@@ -326,9 +340,10 @@ class _CallViewState extends State<CallView> {
         Center(
           child: RingShakerAnimation(
             child: Avatar.large(
-                image: room.avatar,
-                placeholderColor: room.defaultColor,
-                placeholderText: room.displayName),
+              image: room.avatar,
+              placeholderColor: room.defaultColor,
+              placeholderText: room.displayName,
+            ),
           ),
         ),
         Padding(
@@ -349,7 +364,7 @@ class _CallViewState extends State<CallView> {
                   await widget.declineCall?.call();
                   setState(() {});
                 },
-              )
+              ),
             ],
           ),
         ),

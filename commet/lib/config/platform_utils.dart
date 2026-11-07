@@ -66,12 +66,6 @@ class PlatformUtils {
   }
 }
 
-enum DisplayServer {
-  Wayland,
-  X11,
-}
+enum DisplayServer { Wayland, X11 }
 
-enum DesktopEnvironment {
-  KDEPlasma,
-  GNOME,
-}
+enum DesktopEnvironment { KDEPlasma, GNOME }

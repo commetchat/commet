@@ -27,8 +27,10 @@ class MatrixTypingIndicatorsComponent
 
   @override
   bool? get typingIndicatorEnabledForRoom {
-    var publicTypingIndicatorForRoom = room.matrixRoom
-        .roomAccountData[publicTypingIndicatorKey]?.content["enabled"];
+    var publicTypingIndicatorForRoom = room
+        .matrixRoom
+        .roomAccountData[publicTypingIndicatorKey]
+        ?.content["enabled"];
     return publicTypingIndicatorForRoom is bool
         ? publicTypingIndicatorForRoom
         : null;
