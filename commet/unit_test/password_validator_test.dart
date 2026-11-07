@@ -1,6 +1,5 @@
 import 'package:commet/utils/text_utils.dart';
-import 'package:test/test.dart';
-
+import 'package:flutter_test/flutter_test.dart';
 void main() async {
   test("Force Digits: 'abcdefg'", () async {
     expect(

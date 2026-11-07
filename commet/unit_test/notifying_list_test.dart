@@ -1,5 +1,5 @@
 import 'package:commet/utils/notifying_list.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() async {
   NotifyingList<int> list = NotifyingList.empty(growable: true, sync: true);

@@ -8,3 +8,10 @@ analyzer:
     - lib/main.widgetbook.dart
     - integration_test/**
     - lib/generated/**
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**

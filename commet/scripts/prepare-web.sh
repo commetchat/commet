@@ -3,7 +3,7 @@
 # # Setup vodozemac
 git clone https://github.com/famedly/dart-vodozemac.git ../../.vodozemac
 cd ../../.vodozemac
-git checkout 0.5.0
+git checkout 0.9.0
 cargo install flutter_rust_bridge_codegen
 flutter_rust_bridge_codegen build-web --dart-root dart --rust-root $(readlink -f rust) --release
 cd ../commet/commet

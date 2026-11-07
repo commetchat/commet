@@ -10,7 +10,7 @@ extension ColorUtils on Color {
     final hexWithAlpha = hexCode.length == 6 ? 'FF$hexCode' : hexCode;
     try {
       return Color(int.parse(hexWithAlpha, radix: 16));
-    } catch (e, _) {
+    } catch (e) {
       return Color(0xFFFFFFFF);
     }
   }

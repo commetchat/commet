@@ -335,9 +335,9 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
   Future<matrix.Event?> tryDecryptEvent(matrix.MatrixEvent event) async {
     try {
-      return client.encryption!
+      return await client.encryption!
           .decryptRoomEvent(matrix.Event.fromMatrixEvent(event, room));
-    } catch (e, _) {
+    } catch (e) {
       return null;
     }
   }

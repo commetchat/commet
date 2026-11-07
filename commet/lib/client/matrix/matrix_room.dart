@@ -796,7 +796,7 @@ class MatrixRoom extends Room {
 
   @override
   Role getMemberRole(String identifier) {
-    return MatrixRole(_matrixRoom.getPowerLevelByUserId(identifier));
+    return MatrixRole(_matrixRoom.getPowerLevelByUserId(identifier).level);
   }
 
   void _updateDisplayName() {

@@ -162,7 +162,7 @@ If you already have a Unified Push compatible distributor app installed, you can
     await notifier?.init();
 
     if (mounted) {
-      UnifiedPush.registerAppWithDialog(context);
+     // UnifiedPush.registerAppWithDialog(context);
     }
 
     setState(() {
