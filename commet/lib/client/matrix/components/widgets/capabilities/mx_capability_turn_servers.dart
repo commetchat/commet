@@ -12,7 +12,9 @@ class MatrixCapabilityTurnServers implements MatrixWidgetCapability {
   static String name = "town.robin.msc3846.turn_servers";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name, (runner, type, key) => MatrixCapabilityTurnServers(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityTurnServers(runner: runner),
+  );
 
   @override
   String toString() {
@@ -28,13 +30,16 @@ class MatrixCapabilityTurnServers implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     if (message.action == "watch_turn_servers") {
       runner.client.matrixClient.getTurnServer().then((config) async {
-        runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+        runner.messageTransport.send(
+          runner.eventHandler.generateToWidgetEvent(
             action: "update_turn_servers",
             data: {
               "uris": config.uris,
               "username": config.username,
-              "password": config.password
-            }));
+              "password": config.password,
+            },
+          ),
+        );
       });
 
       return message.createResponseObject();

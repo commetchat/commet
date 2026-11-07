@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ThreadReplyFooter extends StatelessWidget {
-  const ThreadReplyFooter(
-      {required this.body,
-      required this.senderName,
-      this.senderAvatar,
-      this.senderColor,
-      this.onTap,
-      super.key});
+  const ThreadReplyFooter({
+    required this.body,
+    required this.senderName,
+    this.senderAvatar,
+    this.senderColor,
+    this.onTap,
+    super.key,
+  });
   final String body;
   final String senderName;
   final Color? senderColor;
@@ -36,7 +37,8 @@ class ThreadReplyFooter extends StatelessWidget {
                     child: SizedBox.expand(
                       child: CustomPaint(
                         painter: ThreadLinePainter(
-                            pathColor: Theme.of(context).colorScheme.secondary),
+                          pathColor: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
                     ),
                   ),
@@ -88,10 +90,7 @@ class ThreadReplyFooter extends StatelessWidget {
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                    child: Icon(
-                      Icons.chevron_right_rounded,
-                      size: 15,
-                    ),
+                    child: Icon(Icons.chevron_right_rounded, size: 15),
                   ),
                 ],
               ),

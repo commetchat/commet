@@ -8,12 +8,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
 
 class TimelineEventViewReply extends StatefulWidget {
-  const TimelineEventViewReply(
-      {super.key,
-      required this.timeline,
-      required this.index,
-      this.jumpToEvent,
-      this.avatarSize = 32});
+  const TimelineEventViewReply({
+    super.key,
+    required this.timeline,
+    required this.index,
+    this.jumpToEvent,
+    this.avatarSize = 32,
+  });
   final Timeline timeline;
   final Function(String eventId)? jumpToEvent;
   final int index;
@@ -93,63 +94,73 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
         child: InkWell(
           onTap: () => widget.jumpToEvent?.call(replyEventId!),
           child: IntrinsicHeight(
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              SizedBox(
-                width: 45,
-                child: SizedBox.expand(
-                  child: CustomPaint(
-                    painter: ReplyLinePainter2(
-                        pathColor:
-                            material.Theme.of(context).colorScheme.secondary,
-                        avatarSize: widget.avatarSize),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 45,
+                  child: SizedBox.expand(
+                    child: CustomPaint(
+                      painter: ReplyLinePainter2(
+                        pathColor: material.Theme.of(context)
+                            .colorScheme
+                            .secondary,
+                        avatarSize: widget.avatarSize,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              Flexible(
-                child: RichText(
+                Flexible(
+                  child: RichText(
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
-                    text: TextSpan(children: [
-                      TextSpan(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
                           text: "${senderName ?? "Loading"} ",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                  color: tiamat.Text.adjustColor(
-                                      context, senderColor ?? Colors.white))),
-                      TextSpan(
+                                color: tiamat.Text.adjustColor(
+                                  context,
+                                  senderColor ?? Colors.white,
+                                ),
+                              ),
+                        ),
+                        TextSpan(
                           text: body ?? "Unknown",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
+                          style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
-                                  color: material.Theme.of(context)
-                                      .colorScheme
-                                      .secondary)),
-                    ])),
-              )
-              // Column(
-              //   children: [
-              //     tiamat.Text(
-              //       senderName ?? "Loading",
-              //       color: senderColor,
-              //       autoAdjustBrightness: true,
-              //     ),
-              //   ],
-              // ),
-              // Flexible(
-              //   child: Padding(
-              //     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              //     child: tiamat.Text(
-              //       body ?? "Unknown",
-              //       maxLines: 2,
-              //       overflow: TextOverflow.ellipsis,
-              //       color: material.Theme.of(context).colorScheme.secondary,
-              //     ),
-              //   ),
-              // ),
-            ]),
+                                color: material.Theme.of(context)
+                                    .colorScheme
+                                    .secondary,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Column(
+                //   children: [
+                //     tiamat.Text(
+                //       senderName ?? "Loading",
+                //       color: senderColor,
+                //       autoAdjustBrightness: true,
+                //     ),
+                //   ],
+                // ),
+                // Flexible(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                //     child: tiamat.Text(
+                //       body ?? "Unknown",
+                //       maxLines: 2,
+                //       overflow: TextOverflow.ellipsis,
+                //       color: material.Theme.of(context).colorScheme.secondary,
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),
@@ -163,12 +174,13 @@ class ReplyLinePainter2 extends CustomPainter {
   double radius;
   double padding;
   double avatarSize;
-  ReplyLinePainter2(
-      {this.pathColor = Colors.white,
-      this.strokeWidth = 1.5,
-      this.radius = 5,
-      this.avatarSize = 32,
-      this.padding = 4}) {
+  ReplyLinePainter2({
+    this.pathColor = Colors.white,
+    this.strokeWidth = 1.5,
+    this.radius = 5,
+    this.avatarSize = 32,
+    this.padding = 4,
+  }) {
     _paint = Paint()
       ..color = pathColor
       ..style = PaintingStyle.stroke
@@ -183,8 +195,10 @@ class ReplyLinePainter2 extends CustomPainter {
     Path path = Path();
     path.moveTo(avatarSize / 2, size.height - padding);
     path.relativeLineTo(0, (-size.height + 9 + padding) + radius);
-    path.relativeArcToPoint(Offset(radius, -radius),
-        radius: Radius.circular(radius));
+    path.relativeArcToPoint(
+      Offset(radius, -radius),
+      radius: Radius.circular(radius),
+    );
     path.relativeLineTo(size.width - (avatarSize / 2) - radius - padding, 0);
     canvas.drawPath(path, _paint);
   }

@@ -44,15 +44,18 @@ class _AddWidgetDialogState extends State<AddWidgetDialog> {
                     width: 30,
                     height: 30,
                     child: Image(
-                        fit: BoxFit.cover,
-                        image: MatrixMxcImage(
-                            Uri.parse(widget.widgetUri.widgetAvatarMxc!),
-                            doThumbnail: false,
-                            doFullres: true,
-                            (widget.room.client as MatrixClient).matrixClient)),
+                      fit: BoxFit.cover,
+                      image: MatrixMxcImage(
+                        Uri.parse(widget.widgetUri.widgetAvatarMxc!),
+                        doThumbnail: false,
+                        doFullres: true,
+                        (widget.room.client as MatrixClient).matrixClient,
+                      ),
+                    ),
                   ),
                 tiamat.Text.label(
-                    "Add the widget '${widget.widgetUri.widgetName ?? "Custom"}' to ${widget.room.displayName}?"),
+                  "Add the widget '${widget.widgetUri.widgetName ?? "Custom"}' to ${widget.room.displayName}?",
+                ),
               ],
             ),
           ),
@@ -65,12 +68,14 @@ class _AddWidgetDialogState extends State<AddWidgetDialog> {
                 child: SizedBox(
                   height: 300,
                   child: Image(
-                      fit: BoxFit.cover,
-                      image: MatrixMxcImage(
-                          Uri.parse(widget.widgetUri.previewMxc!),
-                          doThumbnail: false,
-                          doFullres: true,
-                          (widget.room.client as MatrixClient).matrixClient)),
+                    fit: BoxFit.cover,
+                    image: MatrixMxcImage(
+                      Uri.parse(widget.widgetUri.previewMxc!),
+                      doThumbnail: false,
+                      doFullres: true,
+                      (widget.room.client as MatrixClient).matrixClient,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -86,13 +91,14 @@ class _AddWidgetDialogState extends State<AddWidgetDialog> {
 
                 await ErrorUtils.tryRun(context, () async {
                   await comp.addWidget(
-                      url: Uri.parse(widget.widgetUri.widgetUrl),
-                      room: widget.room,
-                      iconImageUrl: widget.widgetUri.widgetAvatarMxc != null
-                          ? Uri.tryParse(widget.widgetUri.widgetAvatarMxc!)
-                          : null,
-                      widgetName: widget.widgetUri.widgetName ?? "Custom",
-                      widgetType: widget.widgetUri.widgetType);
+                    url: Uri.parse(widget.widgetUri.widgetUrl),
+                    room: widget.room,
+                    iconImageUrl: widget.widgetUri.widgetAvatarMxc != null
+                        ? Uri.tryParse(widget.widgetUri.widgetAvatarMxc!)
+                        : null,
+                    widgetName: widget.widgetUri.widgetName ?? "Custom",
+                    widgetType: widget.widgetUri.widgetType,
+                  );
                 });
 
                 Navigator.of(context).pop();
@@ -104,7 +110,8 @@ class _AddWidgetDialogState extends State<AddWidgetDialog> {
             onTap: () => Navigator.of(context).pop(),
           ),
           tiamat.Text.error(
-              "Widgets are hosted on external websites, and the code can be changed without notice. Do not use the widget if you do not trust the host.")
+            "Widgets are hosted on external websites, and the code can be changed without notice. Do not use the widget if you do not trust the host.",
+          ),
         ],
       ),
     );

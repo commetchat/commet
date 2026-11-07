@@ -12,25 +12,24 @@ class AlertView extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: alert.action == null ? null : () => alert.action?.call(context),
-        child: Row(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              getIcon(),
-              color: getColor(context),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(getIcon(), color: getColor(context)),
             ),
-          ),
-          Flexible(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                tiamat.Text.labelEmphasised(alert.title),
-                tiamat.Text.labelLow(alert.message),
-              ],
+            Flexible(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  tiamat.Text.labelEmphasised(alert.title),
+                  tiamat.Text.labelLow(alert.message),
+                ],
+              ),
             ),
-          )
-        ]),
+          ],
+        ),
       ),
     );
   }

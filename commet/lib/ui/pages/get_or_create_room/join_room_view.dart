@@ -8,11 +8,13 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class JoinRoomView extends StatefulWidget {
-  const JoinRoomView(this.client,
-      {required this.asSpace,
-      this.onPicked,
-      this.initialRoomAddress,
-      super.key});
+  const JoinRoomView(
+    this.client, {
+    required this.asSpace,
+    this.onPicked,
+    this.initialRoomAddress,
+    super.key,
+  });
   final Client client;
   final String? initialRoomAddress;
   final bool asSpace;
@@ -33,22 +35,22 @@ class _JoinRoomViewState extends State<JoinRoomView> {
   late TextEditingController controller;
 
   String get promptConfirmRoomJoin => Intl.message(
-        "Join Room!",
-        name: "promptConfirmRoomJoin",
-        desc: "Label for a button which confirms the joining of a room",
-      );
+    "Join Room!",
+    name: "promptConfirmRoomJoin",
+    desc: "Label for a button which confirms the joining of a room",
+  );
 
   String get promptRoomAddress => Intl.message(
-        "Room Address",
-        name: "promptRoomAddress",
-        desc: "Short label to prompt for the input of a room address",
-      );
+    "Room Address",
+    name: "promptRoomAddress",
+    desc: "Short label to prompt for the input of a room address",
+  );
 
   String get placeholderRoomAlias => Intl.message(
-        "#awesome-room",
-        name: "placeholderRoomAlias",
-        desc: "Placeholder / Example for a room alias.",
-      );
+    "#awesome-room",
+    name: "placeholderRoomAlias",
+    desc: "Placeholder / Example for a room alias.",
+  );
 
   @override
   void initState() {
@@ -71,23 +73,25 @@ class _JoinRoomViewState extends State<JoinRoomView> {
             TextField(
               controller: controller,
               decoration: InputDecoration(
-                  label: Text(promptRoomAddress),
-                  hint: tiamat.Text.labelLow(placeholderRoomAlias)),
+                label: Text(promptRoomAddress),
+                hint: tiamat.Text.labelLow(placeholderRoomAlias),
+              ),
               onChanged: (value) {
                 onTextChanged(value);
               },
             ),
             Flexible(
               child: SizedBox(
-                  height: 200,
-                  child: loading
-                      ? Center(child: CircularProgressIndicator())
-                      : preview != null
-                          ? Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: RoomPreviewView(previewData: preview!),
-                            )
-                          : Container()),
+                height: 200,
+                child: loading
+                    ? Center(child: CircularProgressIndicator())
+                    : preview != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RoomPreviewView(previewData: preview!),
+                      )
+                    : Container(),
+              ),
             ),
           ],
         ),
@@ -108,7 +112,7 @@ class _JoinRoomViewState extends State<JoinRoomView> {
 
             widget.onPicked?.call(result);
           },
-        )
+        ),
       ],
     );
   }

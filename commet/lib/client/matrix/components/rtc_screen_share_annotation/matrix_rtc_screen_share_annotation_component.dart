@@ -32,9 +32,11 @@ class MatrixRtcScreenShareAnnotationComponent
 
   @override
   Future<RTCScreenShareAnnotationSession> createSession(
-      VoipSession session) async {
-    var annotationSession =
-        MatrixRTCScreenShareAnnotationSession(session as MatrixVoipSession);
+    VoipSession session,
+  ) async {
+    var annotationSession = MatrixRTCScreenShareAnnotationSession(
+      session as MatrixVoipSession,
+    );
 
     await annotationSession.create();
     _sessions[session.sessionId] = annotationSession;
@@ -43,7 +45,8 @@ class MatrixRtcScreenShareAnnotationComponent
 
   @override
   Future<RTCScreenShareAnnotationSession> getOrCreateSession(
-      VoipSession session) async {
+    VoipSession session,
+  ) async {
     var existing = _sessions[session.sessionId];
     if (existing != null) {
       return existing;
@@ -70,11 +73,13 @@ class MatrixRTCScreenShareAnnotationSession
   MatrixRTCScreenShareAnnotationSession(this.session);
 
   Future<void> create() async {
-    var dataChannelComp =
-        session.client.getComponent<RTCDataChannelComponent>()!;
+    var dataChannelComp = session.client
+        .getComponent<RTCDataChannelComponent>()!;
 
-    channel = await dataChannelComp.createDataChannel(session,
-        purpose: MatrixRtcScreenShareAnnotationComponent.rtcChannelPurpose);
+    channel = await dataChannelComp.createDataChannel(
+      session,
+      purpose: MatrixRtcScreenShareAnnotationComponent.rtcChannelPurpose,
+    );
   }
 
   void listen(DataChannel? remoteChannel) {
@@ -84,8 +89,11 @@ class MatrixRTCScreenShareAnnotationSession
   }
 
   @override
-  void setCursorPosition(
-      {required String streamId, required double x, required double y}) {
+  void setCursorPosition({
+    required String streamId,
+    required double x,
+    required double y,
+  }) {
     var now = DateTime.now();
     var diff = now.difference(lastSetCursorTime);
 
@@ -95,11 +103,7 @@ class MatrixRTCScreenShareAnnotationSession
 
     lastSetCursorTime = now;
 
-    var msg = const JsonEncoder().convert({
-      "stream": streamId,
-      "x": x,
-      "y": y,
-    });
+    var msg = const JsonEncoder().convert({"stream": streamId, "x": x, "y": y});
 
     channel?.sendMessage(msg);
   }
@@ -114,7 +118,9 @@ class MatrixRTCScreenShareAnnotationSession
       final member = room?.getMemberOrFallback(userId);
 
       constellation.createCursor(
-          userId, session.remoteUserName ?? "Unknown User");
+        userId,
+        session.remoteUserName ?? "Unknown User",
+      );
 
       if (member != null) {
         constellation.setCursorColor(userId, member.defaultColor);
@@ -128,8 +134,9 @@ class MatrixRTCScreenShareAnnotationSession
     var x = obj["x"] as num;
     var y = obj["y"] as num;
 
-    var stream =
-        session.streams.where((e) => e.streamId == streamId).firstOrNull;
+    var stream = session.streams
+        .where((e) => e.streamId == streamId)
+        .firstOrNull;
     if (stream != null && stream.direction == VoipStreamDirection.outgoing) {
       if (session.currentScreenshare != null) {
         final share = session.currentScreenshare as DesktopCapturerSourceNative;

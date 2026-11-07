@@ -17,13 +17,14 @@ class RoomActivitySession {
 
   UserWidgetInfo? associatedWidget;
 
-  RoomActivitySession(
-      {required this.participants,
-      required this.application,
-      this.thirdparty = true,
-      required this.icon,
-      this.associatedWidget,
-      String? appName}) {
+  RoomActivitySession({
+    required this.participants,
+    required this.application,
+    this.thirdparty = true,
+    required this.icon,
+    this.associatedWidget,
+    String? appName,
+  }) {
     this.knownName = appName;
   }
 }

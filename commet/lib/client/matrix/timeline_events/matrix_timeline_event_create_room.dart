@@ -8,11 +8,12 @@ class MatrixTimelineEventCreateRoom extends MatrixTimelineEvent
     implements TimelineEventGeneric {
   MatrixTimelineEventCreateRoom(super.event, {required super.client});
 
-  String messagePlaceholderUserCreatedRoom(String user) =>
-      Intl.message("$user created the room!",
-          desc: "Message body for when a user creates the room",
-          args: [user],
-          name: "messagePlaceholderUserCreatedRoom");
+  String messagePlaceholderUserCreatedRoom(String user) => Intl.message(
+    "$user created the room!",
+    desc: "Message body for when a user creates the room",
+    args: [user],
+    name: "messagePlaceholderUserCreatedRoom",
+  );
 
   @override
   IconData get icon {

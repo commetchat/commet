@@ -19,44 +19,45 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:timezone/standalone.dart' as tz;
 
 class UserProfileView extends StatefulWidget {
-  const UserProfileView(
-      {super.key,
-      this.userAvatar,
-      required this.displayName,
-      required this.userColor,
-      this.userBanner,
-      required this.identifier,
-      required this.isSelf,
-      this.presence,
-      this.onSetBanner,
-      this.timezone,
-      this.bannerHeight = 230.0,
-      this.width = 700,
-      this.setPreviewColor,
-      this.hasColorOverride = false,
-      this.setPreviewBrightness,
-      this.setColorOverride,
-      this.setPetName,
-      this.currentPetName,
-      this.hasPetName = false,
-      this.shareCurrentTimezone,
-      this.removeTimezone,
-      this.onSetAvatar,
-      this.bio,
-      this.onSetStatus,
-      this.editBadges,
-      this.setBio,
-      this.badges = const [],
-      this.clearBio,
-      this.showMessageButton = true,
-      this.doSafeArea = true,
-      this.onChangeName,
-      this.maxBioHeight = 200,
-      this.showSource,
-      this.pronouns = const [],
-      this.clearStatus,
-      this.savePreviewTheme,
-      this.onMessageButtonClicked});
+  const UserProfileView({
+    super.key,
+    this.userAvatar,
+    required this.displayName,
+    required this.userColor,
+    this.userBanner,
+    required this.identifier,
+    required this.isSelf,
+    this.presence,
+    this.onSetBanner,
+    this.timezone,
+    this.bannerHeight = 230.0,
+    this.width = 700,
+    this.setPreviewColor,
+    this.hasColorOverride = false,
+    this.setPreviewBrightness,
+    this.setColorOverride,
+    this.setPetName,
+    this.currentPetName,
+    this.hasPetName = false,
+    this.shareCurrentTimezone,
+    this.removeTimezone,
+    this.onSetAvatar,
+    this.bio,
+    this.onSetStatus,
+    this.editBadges,
+    this.setBio,
+    this.badges = const [],
+    this.clearBio,
+    this.showMessageButton = true,
+    this.doSafeArea = true,
+    this.onChangeName,
+    this.maxBioHeight = 200,
+    this.showSource,
+    this.pronouns = const [],
+    this.clearStatus,
+    this.savePreviewTheme,
+    this.onMessageButtonClicked,
+  });
   final ImageProvider? userAvatar;
   final ImageProvider? userBanner;
   final UserPresence? presence;
@@ -101,13 +102,17 @@ class UserProfileView extends StatefulWidget {
 class UserProfileViewState extends State<UserProfileView> {
   bool isLoadingDirectMessage = false;
 
-  String get promptOpenDirectMessage => Intl.message("Message",
-      desc: "Prompt on the button to open a direct message with another user",
-      name: "promptOpenDirectMessage");
+  String get promptOpenDirectMessage => Intl.message(
+    "Message",
+    desc: "Prompt on the button to open a direct message with another user",
+    name: "promptOpenDirectMessage",
+  );
 
-  String get promptProfileChangeBanner => Intl.message("Change Banner",
-      desc: "Prompt to change the banner on the user's profile",
-      name: "promptProfileChangeBanner");
+  String get promptProfileChangeBanner => Intl.message(
+    "Change Banner",
+    desc: "Prompt to change the banner on the user's profile",
+    name: "promptProfileChangeBanner",
+  );
 
   static String get promptProfileSetStatus =>
       Intl.message("Set Status", name: "promptProfileSetStatus");
@@ -124,32 +129,41 @@ class UserProfileViewState extends State<UserProfileView> {
   String get promptProfileClearBio =>
       Intl.message("Clear Bio", name: "promptProfileClearBio");
 
-  String get promptProfileShareTimezone => Intl.message("Share Timezone",
-      name: "promptProfileShareTimezone",
-      desc:
-          "Prompt the user to add their current timezone to their user profile");
+  String get promptProfileShareTimezone => Intl.message(
+    "Share Timezone",
+    name: "promptProfileShareTimezone",
+    desc: "Prompt the user to add their current timezone to their user profile",
+  );
 
-  String get promptProfileClearTimezone => Intl.message("Remove Timezone",
-      name: "promptProfileClearTimezone",
-      desc: "Prompt to remove the shared timezone from a users profile");
+  String get promptProfileClearTimezone => Intl.message(
+    "Remove Timezone",
+    name: "promptProfileClearTimezone",
+    desc: "Prompt to remove the shared timezone from a users profile",
+  );
 
-  String get promptProfileEditColorScheme => Intl.message("Edit Color Scheme",
-      name: "promptProfileEditColorScheme",
-      desc: "Prompt to edit the color scheme of the user's own profile");
+  String get promptProfileEditColorScheme => Intl.message(
+    "Edit Color Scheme",
+    name: "promptProfileEditColorScheme",
+    desc: "Prompt to edit the color scheme of the user's own profile",
+  );
 
-  String get promptProfileSetColorOverride => Intl.message("Set Color Override",
-      name: "promptProfileSetColorOverride",
-      desc: "Prompt to override the display color of a user");
+  String get promptProfileSetColorOverride => Intl.message(
+    "Set Color Override",
+    name: "promptProfileSetColorOverride",
+    desc: "Prompt to override the display color of a user",
+  );
 
-  String get promptProfileClearColorOverride =>
-      Intl.message("Clear Color Override",
-          name: "promptProfileClearColorOverride",
-          desc: "Prompt to remove an override of the display color of a user");
+  String get promptProfileClearColorOverride => Intl.message(
+    "Clear Color Override",
+    name: "promptProfileClearColorOverride",
+    desc: "Prompt to remove an override of the display color of a user",
+  );
 
-  String get promptProfileShowRawProfile => Intl.message("Show Raw Profile",
-      name: "promptProfileShowRawProfile",
-      desc:
-          "Show the raw data of a user profile, typically this is hidden behind developer mode");
+  String get promptProfileShowRawProfile => Intl.message(
+    "Show Raw Profile",
+    name: "promptProfileShowRawProfile",
+    desc: "Show the raw data of a user profile, typically this is hidden behind developer mode",
+  );
 
   bool editingColorScheme = false;
 
@@ -162,8 +176,10 @@ class UserProfileViewState extends State<UserProfileView> {
   @override
   void initState() {
     if (widget.timezone != null) {
-      timezoneTimer =
-          Timer.periodic(Duration(seconds: 1), (_) => updateLocalTime());
+      timezoneTimer = Timer.periodic(
+        Duration(seconds: 1),
+        (_) => updateLocalTime(),
+      );
       updateLocalTime();
     }
 
@@ -177,8 +193,10 @@ class UserProfileViewState extends State<UserProfileView> {
     timezoneTimer?.cancel();
 
     if (widget.timezone != null) {
-      timezoneTimer =
-          Timer.periodic(Duration(seconds: 1), (_) => updateLocalTime());
+      timezoneTimer = Timer.periodic(
+        Duration(seconds: 1),
+        (_) => updateLocalTime(),
+      );
       updateLocalTime();
     }
   }
@@ -222,160 +240,178 @@ class UserProfileViewState extends State<UserProfileView> {
                       height: bannerHeight,
                       width: double.infinity,
                       child: widget.userBanner != null
-                          ? Image(
-                              image: widget.userBanner!,
-                              fit: BoxFit.cover,
-                            )
+                          ? Image(image: widget.userBanner!, fit: BoxFit.cover)
                           : widget.userAvatar != null
-                              ? ClipRect(
-                                  child: ImageFiltered(
-                                    imageFilter: ImageFilter.blur(
-                                        sigmaX: 40,
-                                        sigmaY: 40,
-                                        tileMode: TileMode.repeated),
-                                    child: Container(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainer,
-                                      child: Image(
-                                        image: widget.userAvatar!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(
+                          ? ClipRect(
+                              child: ImageFiltered(
+                                imageFilter: ImageFilter.blur(
+                                  sigmaX: 40,
+                                  sigmaY: 40,
+                                  tileMode: TileMode.repeated,
+                                ),
+                                child: Container(
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .surfaceContainerLow,
+                                      .surfaceContainer,
+                                  child: Image(
+                                    image: widget.userAvatar!,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
+                              ),
+                            )
+                          : Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerLow,
+                            ),
                     ),
                     Align(
-                        alignment: AlignmentGeometry.topRight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadiusGeometry.circular(15),
-                            child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: Material(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                      .withAlpha(100),
-                                  child: AdaptiveContextMenu(
-                                    modal: true,
-                                    items: contextMenuItems(context),
-                                    child: Icon(
-                                      Icons.more_vert,
-                                      size: 15,
-                                    ),
-                                  ),
-                                )),
+                      alignment: AlignmentGeometry.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(15),
+                          child: SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: Material(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer
+                                  .withAlpha(100),
+                              child: AdaptiveContextMenu(
+                                modal: true,
+                                items: contextMenuItems(context),
+                                child: Icon(Icons.more_vert, size: 15),
+                              ),
+                            ),
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(
-                          0, bannerHeight - avatarOverlap, 0, 0),
+                        0,
+                        bannerHeight - avatarOverlap,
+                        0,
+                        0,
+                      ),
                       child: Stack(
                         children: [
                           Padding(
                             padding: const EdgeInsets.fromLTRB(
-                                0, avatarOverlap - 2, 0, 0),
+                              0,
+                              avatarOverlap - 2,
+                              0,
+                              0,
+                            ),
                             child: Container(
                               color: background,
                               child: ScaledSafeArea(
-                                  bottom: widget.doSafeArea,
-                                  top: widget.doSafeArea,
-                                  left: widget.doSafeArea,
-                                  right: widget.doSafeArea,
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                        8, avatarOverlap, 8, 8),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surfaceContainer,
-                                      ),
-                                      child: Column(
-                                        spacing: 8,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Flexible(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      12, 4, 12, 4),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Flexible(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        displayName(),
-                                                        username(context),
-                                                        pronouns(),
-                                                      ],
-                                                    ),
+                                bottom: widget.doSafeArea,
+                                top: widget.doSafeArea,
+                                left: widget.doSafeArea,
+                                right: widget.doSafeArea,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    8,
+                                    avatarOverlap,
+                                    8,
+                                    8,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainer,
+                                    ),
+                                    child: Column(
+                                      spacing: 8,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              12,
+                                              4,
+                                              12,
+                                              4,
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Flexible(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      displayName(),
+                                                      username(context),
+                                                      pronouns(),
+                                                    ],
                                                   ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(0, 8, 0, 0),
-                                                    child: Column(
-                                                      spacing: 8,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .end,
-                                                      children: [
-                                                        if (localTime != null &&
-                                                            widget.timezone !=
-                                                                null)
-                                                          userLocalTime(),
-                                                        badges(),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                        0,
+                                                        8,
+                                                        0,
+                                                        0,
+                                                      ),
+                                                  child: Column(
+                                                    spacing: 8,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.end,
+                                                    children: [
+                                                      if (localTime != null &&
+                                                          widget.timezone !=
+                                                              null)
+                                                        userLocalTime(),
+                                                      badges(),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          if (widget.bio != null)
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      8, 0, 8, 0),
-                                              child: buildBio(context),
+                                        ),
+                                        if (widget.bio != null)
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              8,
+                                              0,
+                                              8,
+                                              0,
                                             ),
-                                          if (!widget.isSelf &&
-                                              widget.showMessageButton)
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: tiamat.Button(
-                                                text: promptOpenDirectMessage,
-                                                isLoading:
-                                                    isLoadingDirectMessage,
-                                                onTap: clickMessageButton,
-                                              ),
+                                            child: buildBio(context),
+                                          ),
+                                        if (!widget.isSelf &&
+                                            widget.showMessageButton)
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: tiamat.Button(
+                                              text: promptOpenDirectMessage,
+                                              isLoading: isLoadingDirectMessage,
+                                              onTap: clickMessageButton,
                                             ),
-                                          if (editingColorScheme)
-                                            buildColorSchemeEditor()
-                                        ],
-                                      ),
+                                          ),
+                                        if (editingColorScheme)
+                                          buildColorSchemeEditor(),
+                                      ],
                                     ),
-                                  )),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                           Padding(
@@ -384,25 +420,29 @@ class UserProfileViewState extends State<UserProfileView> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 MouseRegion(
-                                    cursor: widget.isSelf
-                                        ? SystemMouseCursors.click
-                                        : MouseCursor.defer,
-                                    child: GestureDetector(
-                                        onTap: widget.isSelf
-                                            ? widget.onSetAvatar
-                                            : null,
-                                        child: tiamat.Avatar.large(
-                                          border: BoxBorder.all(
-                                              color: background,
-                                              width: 8,
-                                              strokeAlign: 0.9),
-                                          image: widget.userAvatar,
-                                          placeholderColor: widget.userColor,
-                                          placeholderText: widget.displayName,
-                                        ))),
+                                  cursor: widget.isSelf
+                                      ? SystemMouseCursors.click
+                                      : MouseCursor.defer,
+                                  child: GestureDetector(
+                                    onTap: widget.isSelf
+                                        ? widget.onSetAvatar
+                                        : null,
+                                    child: tiamat.Avatar.large(
+                                      border: BoxBorder.all(
+                                        color: background,
+                                        width: 8,
+                                        strokeAlign: 0.9,
+                                      ),
+                                      image: widget.userAvatar,
+                                      placeholderColor: widget.userColor,
+                                      placeholderText: widget.displayName,
+                                    ),
+                                  ),
+                                ),
                                 if (widget.presence?.message != null)
                                   Flexible(
-                                      child: buildPresenceDisplay(background))
+                                    child: buildPresenceDisplay(background),
+                                  ),
                               ],
                             ),
                           ),
@@ -423,47 +463,51 @@ class UserProfileViewState extends State<UserProfileView> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
       child: Opacity(
-          opacity: 0.8,
-          child: Row(
-            children: [
-              Text(
-                widget.identifier,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontFamily: "Code",
-                    color: Theme.of(context).colorScheme.onSurface),
+        opacity: 0.8,
+        child: Row(
+          children: [
+            Text(
+              widget.identifier,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontFamily: "Code",
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-              tiamat.IconButton(
-                icon: Icons.copy,
-                onPressed: () =>
-                    Clipboard.setData(ClipboardData(text: widget.identifier)),
-                size: Theme.of(context).textTheme.labelSmall?.fontSize ?? 12,
-                iconColor: Theme.of(context).colorScheme.onSurface,
-              ),
-            ],
-          )),
+            ),
+            tiamat.IconButton(
+              icon: Icons.copy,
+              onPressed: () =>
+                  Clipboard.setData(ClipboardData(text: widget.identifier)),
+              size: Theme.of(context).textTheme.labelSmall?.fontSize ?? 12,
+              iconColor: Theme.of(context).colorScheme.onSurface,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Container buildBio(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Theme.of(context).colorScheme.surface,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: widget.maxBioHeight),
+          child: Scrollbar(
+            thumbVisibility: true,
+            controller: bioScrollController,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(0),
+              controller: bioScrollController,
+              child: widget.bio,
+            ),
+          ),
         ),
-        child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: widget.maxBioHeight),
-              child: Scrollbar(
-                thumbVisibility: true,
-                controller: bioScrollController,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(0),
-                  controller: bioScrollController,
-                  child: widget.bio,
-                ),
-              ),
-            )));
+      ),
+    );
   }
 
   Widget userLocalTime() {
@@ -475,9 +519,9 @@ class UserProfileViewState extends State<UserProfileView> {
         : false;
     var localDay = DateFormat(DateFormat.WEEKDAY).format(DateTime.now());
     var day = DateFormat(DateFormat.WEEKDAY).format(t);
-    var time = MaterialLocalizations.of(context).formatTimeOfDay(
-        TimeOfDay.fromDateTime(t),
-        alwaysUse24HourFormat: use24);
+    var time = MaterialLocalizations.of(
+      context,
+    ).formatTimeOfDay(TimeOfDay.fromDateTime(t), alwaysUse24HourFormat: use24);
 
     var result = time;
     if (day != localDay) {
@@ -486,8 +530,11 @@ class UserProfileViewState extends State<UserProfileView> {
 
     final colors = Theme.of(context).colorScheme;
     return tiamat.Tooltip(
-      child: TinyPill(result,
-          background: colors.tertiary, foreground: colors.onTertiary),
+      child: TinyPill(
+        result,
+        background: colors.tertiary,
+        foreground: colors.onTertiary,
+      ),
       text: "Local Timezone: ${widget.timezone!}",
     );
   }
@@ -496,99 +543,111 @@ class UserProfileViewState extends State<UserProfileView> {
     return [
       if (widget.isSelf)
         profileMenuItem(
-            text: promptProfileChangeBanner,
-            onPressed: () => widget.onSetBanner?.call(),
-            icon: Icons.image),
+          text: promptProfileChangeBanner,
+          onPressed: () => widget.onSetBanner?.call(),
+          icon: Icons.image,
+        ),
       if (widget.isSelf)
         profileMenuItem(
-            text: promptProfileSetStatus,
-            onPressed: () => widget.onSetStatus?.call(),
-            onClearPressed: widget.presence?.message != null
-                ? () => widget.clearStatus?.call()
-                : null,
-            icon: Icons.short_text),
-      if (widget.isSelf)
-        profileMenuItem(
-            text: promptProfileSetBadges,
-            onPressed: () => widget.editBadges?.call(),
-            icon: Icons.star),
-      if (widget.isSelf)
-        profileMenuItem(
-            text: promptProfileSetBio,
-            onPressed: () => widget.setBio?.call(),
-            icon: Icons.text_snippet,
-            onClearPressed: () => widget.clearBio?.call()),
-      if (widget.isSelf)
-        profileMenuItem(
-            text: promptProfileShareTimezone,
-            onPressed: () => widget.shareCurrentTimezone?.call(),
-            icon: Icons.share_arrival_time,
-            onClearPressed: widget.timezone != null
-                ? () => widget.removeTimezone?.call()
-                : null),
-      if (widget.isSelf)
-        profileMenuItem(
-            text: promptProfileEditColorScheme,
-            onPressed: () => setState(() {
-                  editingColorScheme = true;
-                }),
-            icon: Icons.color_lens),
-      profileMenuItem(
-          text: promptProfileSetColorOverride,
-          onClearPressed: widget.hasColorOverride
-              ? () => widget.setColorOverride?.call(null)
+          text: promptProfileSetStatus,
+          onPressed: () => widget.onSetStatus?.call(),
+          onClearPressed: widget.presence?.message != null
+              ? () => widget.clearStatus?.call()
               : null,
-          onPressed: () async {
-            var color = await AdaptiveDialog.show<Color>(
-              title: promptProfileSetColorOverride,
-              context,
-              builder: (context) {
-                return SizedBox(
-                  width: 500,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: tiamat.Text.labelLow(
-                            "Set a local color override for a user. This is only visible to you"),
+          icon: Icons.short_text,
+        ),
+      if (widget.isSelf)
+        profileMenuItem(
+          text: promptProfileSetBadges,
+          onPressed: () => widget.editBadges?.call(),
+          icon: Icons.star,
+        ),
+      if (widget.isSelf)
+        profileMenuItem(
+          text: promptProfileSetBio,
+          onPressed: () => widget.setBio?.call(),
+          icon: Icons.text_snippet,
+          onClearPressed: () => widget.clearBio?.call(),
+        ),
+      if (widget.isSelf)
+        profileMenuItem(
+          text: promptProfileShareTimezone,
+          onPressed: () => widget.shareCurrentTimezone?.call(),
+          icon: Icons.share_arrival_time,
+          onClearPressed: widget.timezone != null
+              ? () => widget.removeTimezone?.call()
+              : null,
+        ),
+      if (widget.isSelf)
+        profileMenuItem(
+          text: promptProfileEditColorScheme,
+          onPressed: () => setState(() {
+            editingColorScheme = true;
+          }),
+          icon: Icons.color_lens,
+        ),
+      profileMenuItem(
+        text: promptProfileSetColorOverride,
+        onClearPressed: widget.hasColorOverride
+            ? () => widget.setColorOverride?.call(null)
+            : null,
+        onPressed: () async {
+          var color = await AdaptiveDialog.show<Color>(
+            title: promptProfileSetColorOverride,
+            context,
+            builder: (context) {
+              return SizedBox(
+                width: 500,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: tiamat.Text.labelLow(
+                        "Set a local color override for a user. This is only visible to you",
                       ),
-                      GridView(
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisSpacing: 3,
-                                  mainAxisSpacing: 3,
-                                  crossAxisCount:
-                                      MediaQuery.of(context).mobile ? 5 : 10),
-                          children: [
-                            for (int i = 0; i < 20; i++)
-                              buildColorSchemeItem(
-                                color: HSVColor.fromAHSV(1.0,
-                                        (i.toDouble() / 21) * 360, 0.8, 1.0)
-                                    .toColor(),
-                                onTap: (c) {
-                                  Navigator.of(context).pop(c);
-                                },
-                              )
-                          ]),
-                    ],
-                  ),
-                );
-              },
-            );
+                    ),
+                    GridView(
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: 3,
+                        mainAxisSpacing: 3,
+                        crossAxisCount: MediaQuery.of(context).mobile ? 5 : 10,
+                      ),
+                      children: [
+                        for (int i = 0; i < 20; i++)
+                          buildColorSchemeItem(
+                            color: HSVColor.fromAHSV(
+                              1.0,
+                              (i.toDouble() / 21) * 360,
+                              0.8,
+                              1.0,
+                            ).toColor(),
+                            onTap: (c) {
+                              Navigator.of(context).pop(c);
+                            },
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
 
-            if (color != null) {
-              widget.setColorOverride?.call(color);
-            }
-          },
-          icon: Icons.colorize),
+          if (color != null) {
+            widget.setColorOverride?.call(color);
+          }
+        },
+        icon: Icons.colorize,
+      ),
       profileMenuItem(
         text: "Set Nickame",
         icon: Icons.badge,
-        onClearPressed:
-            widget.hasPetName ? () => widget.setPetName?.call(null) : null,
+        onClearPressed: widget.hasPetName
+            ? () => widget.setPetName?.call(null)
+            : null,
         onPressed: () async {
           final text = await AdaptiveDialog.textPrompt(
             context,
@@ -596,24 +655,27 @@ class UserProfileViewState extends State<UserProfileView> {
             title: "Nickname",
           );
           if (text != null) {
-            await widget.setPetName
-                ?.call(text.trim().isEmpty ? null : text.trim());
+            await widget.setPetName?.call(
+              text.trim().isEmpty ? null : text.trim(),
+            );
           }
         },
       ),
       if (preferences.developerMode.value)
         profileMenuItem(
-            text: promptProfileShowRawProfile,
-            onPressed: () => widget.showSource?.call(),
-            icon: Icons.code),
+          text: promptProfileShowRawProfile,
+          onPressed: () => widget.showSource?.call(),
+          icon: Icons.code,
+        ),
     ];
   }
 
-  tiamat.ContextMenuItem profileMenuItem(
-      {required String text,
-      required IconData icon,
-      required Function onPressed,
-      Function? onClearPressed}) {
+  tiamat.ContextMenuItem profileMenuItem({
+    required String text,
+    required IconData icon,
+    required Function onPressed,
+    Function? onClearPressed,
+  }) {
     return tiamat.ContextMenuItem(
       text: text,
       icon: icon,
@@ -632,27 +694,27 @@ class UserProfileViewState extends State<UserProfileView> {
               children: [
                 Expanded(
                   child: InkWell(
-                      onTap: onClicked,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                          padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            spacing: 8,
-                            children: [
-                              Icon(
-                                icon,
-                                color: c,
-                                size: 20,
-                              ),
-                              tiamat.Text(text,
-                                  type: tiamat.TextType.body,
-                                  maxLines: 1,
-                                  color: c),
-                            ],
-                          ))),
+                    onTap: onClicked,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        spacing: 8,
+                        children: [
+                          Icon(icon, color: c, size: 20),
+                          tiamat.Text(
+                            text,
+                            type: tiamat.TextType.body,
+                            maxLines: 1,
+                            color: c,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 if (onClearPressed != null)
                   tiamat.IconButton(
@@ -676,67 +738,77 @@ class UserProfileViewState extends State<UserProfileView> {
     var run = 8;
     var count = run * 2;
     return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Theme.of(context).colorScheme.surfaceContainer,
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  GridView(
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisSpacing: 3,
-                        mainAxisSpacing: 3,
-                        crossAxisCount: run),
-                    children: [
-                      for (int i = 0; i < count; i++)
-                        buildColorSchemeItem(
-                          color: HSVColor.fromAHSV(1.0,
-                                  (i.toDouble() / (count + 1)) * 360, 0.5, 0.8)
-                              .toColor(),
-                          onTap: (c) => widget.setPreviewColor?.call(c),
-                        ),
-                      buildColorSchemeItem(
-                          icon: Icons.light_mode,
-                          onTap: (_) => widget.setPreviewBrightness
-                              ?.call(Brightness.light)),
-                      buildColorSchemeItem(
-                          icon: Icons.dark_mode,
-                          onTap: (_) => widget.setPreviewBrightness
-                              ?.call(Brightness.dark)),
-                      buildColorSchemeItem(
-                        icon: Icons.tag,
-                        onTap: (_) async {
-                          var hexCode = await AdaptiveDialog.textPrompt(context,
-                              title: "Enter Color Code", hintText: "#FFFFFF");
-                          if (hexCode != null) {
-                            var color = ColorUtils.fromHexCode(hexCode);
-                            widget.setPreviewColor?.call(color);
-                          }
-                        },
-                      ),
-                      buildColorSchemeItem(
-                        icon: Icons.save,
-                        onTap: (_) {
-                          widget.savePreviewTheme?.call();
-                          setState(() {
-                            editingColorScheme = false;
-                          });
-                        },
-                      ),
-                    ],
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).colorScheme.surfaceContainer,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                GridView(
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisSpacing: 3,
+                    mainAxisSpacing: 3,
+                    crossAxisCount: run,
                   ),
-                ],
-              ),
+                  children: [
+                    for (int i = 0; i < count; i++)
+                      buildColorSchemeItem(
+                        color: HSVColor.fromAHSV(
+                          1.0,
+                          (i.toDouble() / (count + 1)) * 360,
+                          0.5,
+                          0.8,
+                        ).toColor(),
+                        onTap: (c) => widget.setPreviewColor?.call(c),
+                      ),
+                    buildColorSchemeItem(
+                      icon: Icons.light_mode,
+                      onTap: (_) =>
+                          widget.setPreviewBrightness?.call(Brightness.light),
+                    ),
+                    buildColorSchemeItem(
+                      icon: Icons.dark_mode,
+                      onTap: (_) =>
+                          widget.setPreviewBrightness?.call(Brightness.dark),
+                    ),
+                    buildColorSchemeItem(
+                      icon: Icons.tag,
+                      onTap: (_) async {
+                        var hexCode = await AdaptiveDialog.textPrompt(
+                          context,
+                          title: "Enter Color Code",
+                          hintText: "#FFFFFF",
+                        );
+                        if (hexCode != null) {
+                          var color = ColorUtils.fromHexCode(hexCode);
+                          widget.setPreviewColor?.call(color);
+                        }
+                      },
+                    ),
+                    buildColorSchemeItem(
+                      icon: Icons.save,
+                      onTap: (_) {
+                        widget.savePreviewTheme?.call();
+                        setState(() {
+                          editingColorScheme = false;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget buildColorSchemeItem({
@@ -769,19 +841,21 @@ class UserProfileViewState extends State<UserProfileView> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 12),
       child: Container(
-          decoration: BoxDecoration(
-              border: BoxBorder.all(color: background, width: 4),
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: tiamat.Text(
-              widget.presence!.message!.message,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
-          )),
+        decoration: BoxDecoration(
+          border: BoxBorder.all(color: background, width: 4),
+          color: Theme.of(context).colorScheme.secondary,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: tiamat.Text(
+            widget.presence!.message!.message,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
+        ),
+      ),
     );
   }
 
@@ -818,30 +892,25 @@ class UserProfileViewState extends State<UserProfileView> {
     return tiamat.Tooltip(
       text: i.body,
       child: SizedBox(
-          width: 30,
-          height: 30,
-          child: Stack(
-            children: [
-              if (doOutline)
-                ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                        Theme.of(context)
-                            .colorScheme
-                            .inverseSurface
-                            .withAlpha(200),
-                        BlendMode.srcIn),
-                    child: Image(
-                      image: i.image,
-                    ),
+        width: 30,
+        height: 30,
+        child: Stack(
+          children: [
+            if (doOutline)
+              ImageFiltered(
+                imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.inverseSurface.withAlpha(200),
+                    BlendMode.srcIn,
                   ),
+                  child: Image(image: i.image),
                 ),
-              Image(
-                image: i.image,
               ),
-            ],
-          )),
+            Image(image: i.image),
+          ],
+        ),
+      ),
     );
   }
 
@@ -853,8 +922,9 @@ class UserProfileViewState extends State<UserProfileView> {
         child: Text(
           widget.displayName,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ),
     );
@@ -883,11 +953,12 @@ class UserProfileViewState extends State<UserProfileView> {
       child: InkWell(
         onTap: widget.isSelf ? () => widget.editBadges?.call() : null,
         child: Padding(
-            padding: EdgeInsetsGeometry.fromLTRB(2, 2, 2, 2),
-            child: Wrap(
-              spacing: 8,
-              children: widget.badges.map((i) => buildBadge(i)).toList(),
-            )),
+          padding: EdgeInsetsGeometry.fromLTRB(2, 2, 2, 2),
+          child: Wrap(
+            spacing: 8,
+            children: widget.badges.map((i) => buildBadge(i)).toList(),
+          ),
+        ),
       ),
     );
   }

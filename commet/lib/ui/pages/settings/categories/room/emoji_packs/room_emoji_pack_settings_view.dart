@@ -14,8 +14,11 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:path/path.dart' as path;
 
 class RoomEmojiPackSettingsView extends StatefulWidget {
-  const RoomEmojiPackSettingsView(
-      {required this.component, this.editable = true, super.key});
+  const RoomEmojiPackSettingsView({
+    required this.component,
+    this.editable = true,
+    super.key,
+  });
   final EmoticonComponent component;
   final bool editable;
   @override
@@ -29,9 +32,11 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   StreamSubscription? sub;
   bool canCreatePack = false;
 
-  String get promptImportPack => Intl.message("Import pack",
-      name: "promptImportPack",
-      desc: "Prompt to import a set of emoticons from an existing pack");
+  String get promptImportPack => Intl.message(
+    "Import pack",
+    name: "promptImportPack",
+    desc: "Prompt to import a set of emoticons from an existing pack",
+  );
 
   @override
   void initState() {
@@ -62,8 +67,12 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
       builder: (context) {
         return EmoticonBulkImportDialog(
           importPack: (name, avatarIndex, names, imageDatas) {
-            widget.component
-                .importEmoticonPack(name, avatarIndex, names, imageDatas);
+            widget.component.importEmoticonPack(
+              name,
+              avatarIndex,
+              names,
+              imageDatas,
+            );
             Navigator.pop(context);
           },
         );
@@ -81,10 +90,12 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                 (e) => Padding(
                   padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                   child: ExpansionTile(
-                    collapsedBackgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainer,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainer,
+                    collapsedBackgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainer,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainer,
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -94,9 +105,10 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                                 child: SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                    child: Image(image: e.image!)),
+                                  width: 40,
+                                  height: 40,
+                                  child: Image(image: e.image!),
+                                ),
                               ),
                             tiamat.Text.label(e.displayName),
                           ],
@@ -107,40 +119,44 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                               children: [
                                 if (widget.editable)
                                   tiamat.IconButton(
-                                      size: 20,
-                                      icon: Icons.edit,
-                                      onPressed: () => AdaptiveDialog.show(
-                                          context,
-                                          builder: (context) => EmoticonCreator(
-                                                pack: e,
-                                                createPack: true,
-                                                onCreate: (name, usage,
-                                                    newImageData) async {
-                                                  await e.updatePack(
-                                                    name: name,
-                                                    usage: usage,
-                                                    imageData: newImageData,
-                                                  );
-                                                  return true;
-                                                },
-                                                onDelete: () {
-                                                  return widget.component
-                                                      .deleteEmoticonPack(e);
-                                                },
-                                              ))),
+                                    size: 20,
+                                    icon: Icons.edit,
+                                    onPressed: () => AdaptiveDialog.show(
+                                      context,
+                                      builder: (context) => EmoticonCreator(
+                                        pack: e,
+                                        createPack: true,
+                                        onCreate:
+                                            (name, usage, newImageData) async {
+                                              await e.updatePack(
+                                                name: name,
+                                                usage: usage,
+                                                imageData: newImageData,
+                                              );
+                                              return true;
+                                            },
+                                        onDelete: () {
+                                          return widget.component
+                                              .deleteEmoticonPack(e);
+                                        },
+                                      ),
+                                    ),
+                                  ),
                                 if (e.isEmojiPack)
                                   Icon(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
-                                      size: 20,
-                                      Icons.emoji_emotions),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer,
+                                    size: 20,
+                                    Icons.emoji_emotions,
+                                  ),
                                 if (e.isStickerPack)
                                   Icon(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
-                                      Icons.sticky_note_2_rounded),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondaryContainer,
+                                    Icons.sticky_note_2_rounded,
+                                  ),
                                 tiamat.IconToggle(
                                   icon: Icons.favorite,
                                   size: 17,
@@ -153,7 +169,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                               ],
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     children: [
@@ -163,7 +179,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                           pack: e,
                           editable: widget.editable,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -177,47 +193,57 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 tiamat.CircleButton(
-                    icon: Icons.auto_awesome_motion,
-                    onPressed: promptBulkImport),
-                const SizedBox(
-                  width: 10,
+                  icon: Icons.auto_awesome_motion,
+                  onPressed: promptBulkImport,
                 ),
+                const SizedBox(width: 10),
                 tiamat.CircleButton(
-                    icon: Icons.add,
-                    onPressed: () => AdaptiveDialog.show(context,
-                        builder: (context) => EmoticonCreator(
-                              createPack: true,
-                              creatingNew: true,
-                              onCreate: (name, usage, newImageData) async {
-                                await widget.component
-                                    .createEmoticonPack(name, newImageData);
+                  icon: Icons.add,
+                  onPressed: () => AdaptiveDialog.show(
+                    context,
+                    builder: (context) => EmoticonCreator(
+                      createPack: true,
+                      creatingNew: true,
+                      onCreate: (name, usage, newImageData) async {
+                        await widget.component.createEmoticonPack(
+                          name,
+                          newImageData,
+                        );
 
-                                return true;
-                              },
-                            ))),
+                        return true;
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
-          )
+          ),
       ],
     );
   }
 }
 
 class EmoticonPackEditor extends StatelessWidget {
-  const EmoticonPackEditor(
-      {required this.pack, this.editable = false, super.key});
+  const EmoticonPackEditor({
+    required this.pack,
+    this.editable = false,
+    super.key,
+  });
   final EmoticonPack pack;
   final bool editable;
 
-  String get createEmoticonDialogTitle => Intl.message("Create Emote",
-      name: "createEmoticonDialogTitle",
-      desc:
-          "Title of a dialog that pops up when choosing to create a new emoticon");
+  String get createEmoticonDialogTitle => Intl.message(
+    "Create Emote",
+    name: "createEmoticonDialogTitle",
+    desc:
+        "Title of a dialog that pops up when choosing to create a new emoticon",
+  );
 
-  String get editEmoticonDialogTitle => Intl.message("Edit Emote",
-      name: "editEmoticonDialogTitle",
-      desc:
-          "Title of a dialog that pops up when choosing to edit an existing emoticon");
+  String get editEmoticonDialogTitle => Intl.message(
+    "Edit Emote",
+    name: "editEmoticonDialogTitle",
+    desc: "Title of a dialog that pops up when choosing to edit an existing emoticon",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -225,81 +251,86 @@ class EmoticonPackEditor extends StatelessWidget {
       children: [
         Column(
           children: pack.emotes
-              .map((e) => Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Material(
-                        child: InkWell(
-                          onTap: !editable
-                              ? null
-                              : () => AdaptiveDialog.show(context,
-                                  title: editEmoticonDialogTitle,
-                                  builder: (context) => EmoticonCreator(
-                                        pack: pack,
-                                        initialEmoticon: e,
-                                        onCreate:
-                                            (name, usage, newImageData) async {
-                                          await pack.updateEmoticon(
-                                            previous: e,
-                                            shortcode: name,
-                                            usage: usage,
-                                            data: newImageData,
-                                          );
-                                          return true;
-                                        },
-                                        onDelete: () async {
-                                          await pack.deleteEmoticon(e);
-                                        },
-                                      ),
-                                  dismissible: true),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                        width: 40,
-                                        height: 40,
-                                        child: Image(image: e.image!)),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    tiamat.Text.label(e.shortcode!)
-                                  ],
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      child: InkWell(
+                        onTap: !editable
+                            ? null
+                            : () => AdaptiveDialog.show(
+                                context,
+                                title: editEmoticonDialogTitle,
+                                builder: (context) => EmoticonCreator(
+                                  pack: pack,
+                                  initialEmoticon: e,
+                                  onCreate: (name, usage, newImageData) async {
+                                    await pack.updateEmoticon(
+                                      previous: e,
+                                      shortcode: name,
+                                      usage: usage,
+                                      data: newImageData,
+                                    );
+                                    return true;
+                                  },
+                                  onDelete: () async {
+                                    await pack.deleteEmoticon(e);
+                                  },
                                 ),
-                                Row(
-                                  children: [
-                                    if (e.isEmoji)
-                                      Icon(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondaryContainer,
-                                          size: 20,
-                                          Icons.emoji_emotions),
-                                    if (e.isSticker)
-                                      Icon(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondaryContainer,
-                                          Icons.sticky_note_2_rounded),
-                                    if (e.usage == EmoticonUsage.inherit)
-                                      Icon(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondaryContainer,
-                                          Icons.arrow_downward)
-                                  ],
-                                )
-                              ],
-                            ),
+                                dismissible: true,
+                              ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: Image(image: e.image!),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  tiamat.Text.label(e.shortcode!),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  if (e.isEmoji)
+                                    Icon(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      size: 20,
+                                      Icons.emoji_emotions,
+                                    ),
+                                  if (e.isSticker)
+                                    Icon(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      Icons.sticky_note_2_rounded,
+                                    ),
+                                  if (e.usage == EmoticonUsage.inherit)
+                                    Icon(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      Icons.arrow_downward,
+                                    ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  ))
+                  ),
+                ),
+              )
               .toList(),
         ),
         if (editable)
@@ -309,39 +340,43 @@ class EmoticonPackEditor extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
               child: tiamat.CircleButton(
                 icon: Icons.add,
-                onPressed: () => AdaptiveDialog.show(context,
-                    title: createEmoticonDialogTitle,
-                    builder: (context) => EmoticonCreator(
-                          pack: pack,
-                          creatingNew: true,
-                          onCreate: (name, usage, newImageData) async {
-                            await pack.addEmoticon(
-                                slug: name,
-                                shortcode: name,
-                                data: newImageData!,
-                                usage: usage);
+                onPressed: () => AdaptiveDialog.show(
+                  context,
+                  title: createEmoticonDialogTitle,
+                  builder: (context) => EmoticonCreator(
+                    pack: pack,
+                    creatingNew: true,
+                    onCreate: (name, usage, newImageData) async {
+                      await pack.addEmoticon(
+                        slug: name,
+                        shortcode: name,
+                        data: newImageData!,
+                        usage: usage,
+                      );
 
-                            return true;
-                          },
-                        ),
-                    dismissible: true),
+                      return true;
+                    },
+                  ),
+                  dismissible: true,
+                ),
               ),
             ),
-          )
+          ),
       ],
     );
   }
 }
 
 class EmoticonCreator extends StatefulWidget {
-  const EmoticonCreator(
-      {this.initialEmoticon,
-      this.pack,
-      this.createPack = false,
-      this.onCreate,
-      this.onDelete,
-      this.creatingNew = false,
-      super.key});
+  const EmoticonCreator({
+    this.initialEmoticon,
+    this.pack,
+    this.createPack = false,
+    this.onCreate,
+    this.onDelete,
+    this.creatingNew = false,
+    super.key,
+  });
 
   final Emoticon? initialEmoticon;
   final EmoticonPack? pack;
@@ -349,7 +384,11 @@ class EmoticonCreator extends StatefulWidget {
   final bool creatingNew;
 
   final Future<bool> Function(
-      String name, EmoticonUsage usage, Uint8List? newImageData)? onCreate;
+    String name,
+    EmoticonUsage usage,
+    Uint8List? newImageData,
+  )?
+  onCreate;
 
   final Future<void> Function()? onDelete;
 
@@ -365,18 +404,24 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
   TextEditingController controller = TextEditingController();
   bool loading = false;
 
-  String get promptEmoticonPackName => Intl.message("Pack name",
-      name: "promptEmoticonPackName",
-      desc: "Prompt for the input of the name of an emoticon pack");
+  String get promptEmoticonPackName => Intl.message(
+    "Pack name",
+    name: "promptEmoticonPackName",
+    desc: "Prompt for the input of the name of an emoticon pack",
+  );
 
-  String get promptEmoteName => Intl.message("Emote name",
-      name: "promptEmoteName",
-      desc: "Prompt for the input of the name of an emoji");
+  String get promptEmoteName => Intl.message(
+    "Emote name",
+    name: "promptEmoteName",
+    desc: "Prompt for the input of the name of an emoji",
+  );
 
-  String get promptConfirmSaveEmoticon => Intl.message("Save!",
-      name: "promptConfirmSaveEmoticon",
-      desc:
-          "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker");
+  String get promptConfirmSaveEmoticon => Intl.message(
+    "Save!",
+    name: "promptConfirmSaveEmoticon",
+    desc:
+        "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+  );
 
   @override
   void initState() {
@@ -439,9 +484,7 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                           },
                         ),
                       ),
-                      const SizedBox(
-                        width: 4,
-                      ),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(minWidth: 300),
@@ -453,12 +496,10 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                             controller: controller,
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  const SizedBox(height: 4),
                   SizedBox(
                     height: 40,
                     width: 40,
@@ -483,25 +524,21 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                               EmoticonUsage.sticker => Icons.sticky_note_2,
                               EmoticonUsage.emoji => Icons.emoji_emotions,
                               EmoticonUsage.inherit => Icons.arrow_downward,
-                              EmoticonUsage.all => Icons.star
+                              EmoticonUsage.all => Icons.star,
                             }),
-                            const SizedBox(
-                              width: 8,
-                            ),
+                            const SizedBox(width: 8),
                             tiamat.Text.label(switch (item) {
                               EmoticonUsage.sticker => "Sticker",
                               EmoticonUsage.emoji => "Emoji",
                               EmoticonUsage.inherit => "Follow Pack Settings",
                               EmoticonUsage.all => "Emoji & Sticker",
-                            })
+                            }),
                           ],
                         );
                       },
                     ),
                   ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  const SizedBox(height: 4),
                   SizedBox(
                     height: 48,
                     child: tiamat.Button(
@@ -512,23 +549,25 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                             loading = true;
                           });
 
-                          await widget.onCreate
-                              ?.call(controller.text, usage, imageData);
+                          await widget.onCreate?.call(
+                            controller.text,
+                            usage,
+                            imageData,
+                          );
 
                           if (context.mounted) Navigator.of(context).pop();
                         }
                       },
                     ),
                   ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  const SizedBox(height: 4),
                   if (!widget.creatingNew)
                     tiamat.Button.danger(
                       text: CommonStrings.promptDelete,
                       onTap: () async {
-                        final confirm =
-                            await AdaptiveDialog.confirmation(context);
+                        final confirm = await AdaptiveDialog.confirmation(
+                          context,
+                        );
 
                         if (confirm == true) {
                           setState(() {
@@ -540,13 +579,13 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                           if (context.mounted) Navigator.of(context).pop();
                         }
                       },
-                    )
+                    ),
                 ],
               ),
             ),
           ),
         ),
-        if (loading) const Center(child: CircularProgressIndicator())
+        if (loading) const Center(child: CircularProgressIndicator()),
       ],
     );
   }

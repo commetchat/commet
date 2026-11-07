@@ -14,12 +14,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
 class TimelineOverlay extends StatefulWidget {
-  const TimelineOverlay(
-      {required this.link,
-      this.showMessageMenu = true,
-      this.jumpToLatest,
-      this.onScrolled,
-      super.key});
+  const TimelineOverlay({
+    required this.link,
+    this.showMessageMenu = true,
+    this.jumpToLatest,
+    this.onScrolled,
+    super.key,
+  });
   final LayerLink link;
   final bool showMessageMenu;
   final Function()? jumpToLatest;
@@ -43,10 +44,11 @@ class TimelineOverlayState extends State<TimelineOverlay> {
 
   bool isAttatchedToBottom = true;
 
-  String get labelJumpToLatest => Intl.message("Jump to latest",
-      desc:
-          "Label for the button which jumps the room timeline view to the latest message",
-      name: "labelJumpToLatest");
+  String get labelJumpToLatest => Intl.message(
+    "Jump to latest",
+    desc: "Label for the button which jumps the room timeline view to the latest message",
+    name: "labelJumpToLatest",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -54,28 +56,33 @@ class TimelineOverlayState extends State<TimelineOverlay> {
       children: [
         if (widget.showMessageMenu)
           Positioned(
-              right: 0,
-              top: 0,
-              child: CompositedTransformFollower(
-                  targetAnchor: Alignment.topRight,
-                  followerAnchor: openDownwards == true
-                      ? Alignment.topRight
-                      : Alignment.bottomRight,
-                  showWhenUnlinked: false,
-                  offset: Offset(-20, openDownwards == true ? -50 : 0),
-                  link: widget.link,
-                  child: MouseRegion(
-                      child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: buildTooltipMenu(
-                        child: Listener(
-                            onPointerSignal: (event) {
-                              if (event is PointerScrollEvent) {
-                                widget.onScrolled?.call(event);
-                              }
-                            },
-                            child: buildPrimaryMenu(context))),
-                  )))),
+            right: 0,
+            top: 0,
+            child: CompositedTransformFollower(
+              targetAnchor: Alignment.topRight,
+              followerAnchor: openDownwards == true
+                  ? Alignment.topRight
+                  : Alignment.bottomRight,
+              showWhenUnlinked: false,
+              offset: Offset(-20, openDownwards == true ? -50 : 0),
+              link: widget.link,
+              child: MouseRegion(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: buildTooltipMenu(
+                    child: Listener(
+                      onPointerSignal: (event) {
+                        if (event is PointerScrollEvent) {
+                          widget.onScrolled?.call(event);
+                        }
+                      },
+                      child: buildPrimaryMenu(context),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         Align(
           alignment: Alignment.bottomCenter,
           child: AnimatedSlide(
@@ -87,7 +94,7 @@ class TimelineOverlayState extends State<TimelineOverlay> {
               onTap: widget.jumpToLatest,
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -110,11 +117,15 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                 borderRadius: BorderRadius.circular(8),
                 child: Tile.surfaceContainer(
                   child: SizedBox(
-                      width: tooltipHeight,
-                      height: tooltipHeight,
-                      child: MouseRegion(
-                          child: selectedEntry!.secondaryMenuBuilder
-                              ?.call(context, clearSelection))),
+                    width: tooltipHeight,
+                    height: tooltipHeight,
+                    child: MouseRegion(
+                      child: selectedEntry!.secondaryMenuBuilder?.call(
+                        context,
+                        clearSelection,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -135,67 +146,80 @@ class TimelineOverlayState extends State<TimelineOverlay> {
 
     return MouseRegion(
       child: DecoratedBox(
-          key: menuKey,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: m.Theme.of(context).colorScheme.surfaceDim,
-              border: Border.all(
-                  color:
-                      m.Theme.of(context).colorScheme.surfaceContainerHighest,
-                  width: 1)),
-          child: currentMenu != null
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                  child: Row(children: [
+        key: menuKey,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: m.Theme.of(context).colorScheme.surfaceDim,
+          border: Border.all(
+            color: m.Theme.of(context).colorScheme.surfaceContainerHighest,
+            width: 1,
+          ),
+        ),
+        child: currentMenu != null
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Row(
+                  children: [
                     for (var e in reactions!)
                       buildAction(
-                          name: e.shortcode,
-                          child: EmojiWidget(
+                        name: e.shortcode,
+                        child: EmojiWidget(
+                          e,
+                          height: size / 1.5,
+                          padding: const EdgeInsetsGeometry.all(2),
+                        ),
+                        onTap: () {
+                          currentMenu?.timeline.room.addReaction(
+                            currentMenu!.event,
                             e,
-                            height: size / 1.5,
-                            padding: const EdgeInsetsGeometry.all(2),
-                          ),
-                          onTap: () {
-                            currentMenu?.timeline.room
-                                .addReaction(currentMenu!.event, e);
-                          }),
+                          );
+                        },
+                      ),
                     if (currentMenu!.addReactionAction != null)
                       buildAction(
-                          name: currentMenu!.addReactionAction!.name,
-                          child: m.Icon(
-                            currentMenu!.addReactionAction!.icon,
-                            color: Theme.of(context).colorScheme.secondary,
-                            size: size / 1.5,
-                          ),
-                          onTap: () =>
-                              togglePopupMenu(currentMenu!.addReactionAction!)),
+                        name: currentMenu!.addReactionAction!.name,
+                        child: m.Icon(
+                          currentMenu!.addReactionAction!.icon,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: size / 1.5,
+                        ),
+                        onTap: () =>
+                            togglePopupMenu(currentMenu!.addReactionAction!),
+                      ),
                     if (currentMenu!.addReactionAction != null)
                       SizedBox(height: 10, child: VerticalDivider()),
                     for (var e in currentMenu!.primaryActions)
                       buildAction(
-                          name: e.name,
-                          child: m.Icon(
-                            e.icon,
-                            color: Theme.of(context).colorScheme.secondary,
-                            size: size / 1.5,
-                          ),
-                          size: size,
-                          onTap: e.secondaryMenuBuilder != null
-                              ? () => togglePopupMenu(e)
-                              : () => e.action?.call(context)),
-                    buildAction(
-                        name: "Options",
-                        child: Icon(m.Icons.more_vert),
+                        name: e.name,
+                        child: m.Icon(
+                          e.icon,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: size / 1.5,
+                        ),
                         size: size,
-                        contextMenuItems: currentMenu!.secondaryActions
-                            .map((e) => ContextMenuItem(
-                                text: e.name,
-                                icon: e.icon,
-                                onPressed: () => e.action?.call(context)))
-                            .toList())
-                  ]),
-                )
-              : Container()),
+                        onTap: e.secondaryMenuBuilder != null
+                            ? () => togglePopupMenu(e)
+                            : () => e.action?.call(context),
+                      ),
+                    buildAction(
+                      name: "Options",
+                      child: Icon(m.Icons.more_vert),
+                      size: size,
+                      contextMenuItems: currentMenu!.secondaryActions
+                          .map(
+                            (e) => ContextMenuItem(
+                              text: e.name,
+                              icon: e.icon,
+                              onPressed: () => e.action?.call(context),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
+                ),
+              )
+            : Container(),
+      ),
     );
   }
 
@@ -236,12 +260,13 @@ class TimelineOverlayState extends State<TimelineOverlay> {
     }
   }
 
-  Widget buildAction(
-      {required Widget child,
-      String? name,
-      Function()? onTap,
-      double size = 30,
-      List<ContextMenuItem>? contextMenuItems}) {
+  Widget buildAction({
+    required Widget child,
+    String? name,
+    Function()? onTap,
+    double size = 30,
+    List<ContextMenuItem>? contextMenuItems,
+  }) {
     var pad = const EdgeInsets.all(2);
 
     var result = m.Padding(
@@ -257,17 +282,12 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                 ? ContextMenu(
                     modal: true,
                     items: contextMenuItems,
-                    child: Padding(
-                      padding: pad,
-                      child: child,
-                    ),
+                    child: Padding(padding: pad, child: child),
                   )
                 : InkWell(
                     onTap: onTap,
-                    child: Padding(
-                      padding: pad,
-                      child: child,
-                    )),
+                    child: Padding(padding: pad, child: child),
+                  ),
           ),
         ),
       ),

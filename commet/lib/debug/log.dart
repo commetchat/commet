@@ -34,8 +34,9 @@ class LogEntryException extends LogEntry {
 }
 
 class Log {
-  static final NotifyingList<LogEntry> log =
-      NotifyingList.empty(growable: true);
+  static final NotifyingList<LogEntry> log = NotifyingList.empty(
+    growable: true,
+  );
 
   static String prefix = "";
 
@@ -77,20 +78,30 @@ class Log {
         }
       }
 
-      String? info =
-          stackTrace != null ? getDetailFromStackTrace(stackTrace) : null;
-      add(LogEntryException(
+      String? info = stackTrace != null
+          ? getDetailFromStackTrace(stackTrace)
+          : null;
+      add(
+        LogEntryException(
           LogType.error,
           "${error.toString()}${info != null ? " ($info)" : ""}",
           error,
-          stackTrace));
+          stackTrace,
+        ),
+      );
       return null;
     },
     handleUncaughtError: (self, parent, zone, error, stackTrace) {
       parent.print(zone, "HandleUncaughtError");
       String? info = getDetailFromStackTrace(stackTrace);
-      add(LogEntryException(
-          LogType.error, "${error.toString()} ($info)", error, stackTrace));
+      add(
+        LogEntryException(
+          LogType.error,
+          "${error.toString()} ($info)",
+          error,
+          stackTrace,
+        ),
+      );
     },
   );
 
@@ -144,8 +155,12 @@ class Log {
 
   static void onError(Object object, StackTrace trace, {String? content}) {
     String? info = getDetailFromStackTrace(trace);
-    var entry = LogEntryException(LogType.error,
-        content ?? "${object.toString()} ($info)", object, trace);
+    var entry = LogEntryException(
+      LogType.error,
+      content ?? "${object.toString()} ($info)",
+      object,
+      trace,
+    );
     _print(entry);
     // ignore: avoid_print
     print(trace);
@@ -153,19 +168,24 @@ class Log {
 
   static Function(FlutterErrorDetails)? _previousReporter;
   static Function(FlutterErrorDetails) getFlutterErrorReporter(
-      Function(FlutterErrorDetails)? current) {
+    Function(FlutterErrorDetails)? current,
+  ) {
     _previousReporter = current;
     return _onFlutterError;
   }
 
   static void _onFlutterError(FlutterErrorDetails details) {
-    String? info =
-        details.stack != null ? getDetailFromStackTrace(details.stack!) : null;
-    add(LogEntryException(
+    String? info = details.stack != null
+        ? getDetailFromStackTrace(details.stack!)
+        : null;
+    add(
+      LogEntryException(
         LogType.error,
         "${details.exception.toString()}${info != null ? " ($info)" : ""}",
         details.exception,
-        details.stack));
+        details.stack,
+      ),
+    );
 
     _previousReporter?.call(details);
   }

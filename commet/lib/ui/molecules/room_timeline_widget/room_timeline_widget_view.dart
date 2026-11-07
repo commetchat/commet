@@ -18,15 +18,16 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class RoomTimelineWidgetView extends StatefulWidget {
-  const RoomTimelineWidgetView(
-      {required this.timeline,
-      this.markAsRead,
-      this.onViewScrolled,
-      this.setEditingEvent,
-      this.setReplyingEvent,
-      this.onAttachedToBottom,
-      this.isThreadTimeline = false,
-      super.key});
+  const RoomTimelineWidgetView({
+    required this.timeline,
+    this.markAsRead,
+    this.onViewScrolled,
+    this.setEditingEvent,
+    this.setReplyingEvent,
+    this.onAttachedToBottom,
+    this.isThreadTimeline = false,
+    super.key,
+  });
   final Timeline timeline;
   final Function(TimelineEvent event)? markAsRead;
   final Function(TimelineEvent? event)? setReplyingEvent;
@@ -34,10 +35,12 @@ class RoomTimelineWidgetView extends StatefulWidget {
   final Function()? onAttachedToBottom;
   final bool isThreadTimeline;
 
-  final Function(
-      {required double offset,
-      required double maxScrollExtent,
-      required double minScrollExtent})? onViewScrolled;
+  final Function({
+    required double offset,
+    required double maxScrollExtent,
+    required double minScrollExtent,
+  })?
+  onViewScrolled;
 
   @override
   State<RoomTimelineWidgetView> createState() => RoomTimelineWidgetViewState();
@@ -77,7 +80,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   bool get attachedToBottom => controller.hasClients
       ? controller.offset - controller.positions.first.minScrollExtent < 50 ||
-          animatingToBottom
+            animatingToBottom
       : true;
 
   bool isLoadingFuture = false;
@@ -115,8 +118,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
       int? viewIndex = null;
       for (int i = index; i >= 1; i--) {
-        var eventType =
-            TimelineViewEntryState.eventToDisplayType(timeline.events[i - 1]);
+        var eventType = TimelineViewEntryState.eventToDisplayType(
+          timeline.events[i - 1],
+        );
 
         if (eventType == TimelineEventWidgetDisplayType.message) {
           lastReadEventId = timeline.events[i - 1].eventId;
@@ -157,9 +161,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     }
 
     eventKeys = List.from(
-        timeline.events
-            .map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
-        growable: true);
+      timeline.events.map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
+      growable: true,
+    );
   }
 
   @override
@@ -174,7 +178,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   void onEventAdded(int index, {bool cascade = true}) {
     eventKeys.insert(index, (
       GlobalKey(debugLabel: timeline.events[index].eventId),
-      timeline.events[index].eventId
+      timeline.events[index].eventId,
     ));
 
     if (index == 0 || index < recentItemsCount) {
@@ -217,9 +221,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     var existing = eventKeys[index];
     eventKeys[index] = (existing.$1, event.eventId);
 
-    var key = eventKeys.firstWhere(
-      (element) => element.$2 == event.eventId,
-    );
+    var key = eventKeys.firstWhere((element) => element.$2 == event.eventId);
 
     assert(event.eventId == key.$2);
 
@@ -252,9 +254,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.animateTo(controller.position.minScrollExtent,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeOutExpo);
+      controller.animateTo(
+        controller.position.minScrollExtent,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutExpo,
+      );
     });
   }
 
@@ -293,9 +297,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   void onScroll() {
     widget.onViewScrolled?.call(
-        offset: controller.offset,
-        maxScrollExtent: controller.position.maxScrollExtent,
-        minScrollExtent: controller.position.minScrollExtent);
+      offset: controller.offset,
+      maxScrollExtent: controller.position.maxScrollExtent,
+      minScrollExtent: controller.position.minScrollExtent,
+    );
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
     overlayState?.setAttachedToBottom(attachedToBottom);
@@ -347,15 +352,17 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     animatingToBottom = true;
 
     controller
-        .animateTo(controller.position.minScrollExtent,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutExpo)
+        .animateTo(
+          controller.position.minScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutExpo,
+        )
         .then((_) {
-      setState(() {
-        controller.jumpTo(0);
-        animatingToBottom = false;
-      });
-    });
+          setState(() {
+            controller.jumpTo(0);
+            animatingToBottom = false;
+          });
+        });
 
     setState(() {
       recentItemsCount = 0;
@@ -363,9 +370,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void eventHovered(String eventId) {
-    var key = eventKeys.firstWhere(
-      (element) => element.$2 == eventId,
-    );
+    var key = eventKeys.firstWhere((element) => element.$2 == eventId);
 
     assert(eventId == key.$2);
 
@@ -382,14 +387,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
         var overlayState = overlayKey.currentState as TimelineOverlayState?;
         var event = timeline.tryGetEvent(eventId)!;
-        overlayState?.setMenu(TimelineEventMenu(
-          timeline: timeline,
-          context: context,
-          isThreadTimeline: widget.isThreadTimeline,
-          event: event,
-          setEditingEvent: (event) => widget.setEditingEvent?.call(event),
-          setReplyingEvent: (event) => widget.setReplyingEvent?.call(event),
-        ));
+        overlayState?.setMenu(
+          TimelineEventMenu(
+            timeline: timeline,
+            context: context,
+            isThreadTimeline: widget.isThreadTimeline,
+            event: event,
+            setEditingEvent: (event) => widget.setEditingEvent?.call(event),
+            setReplyingEvent: (event) => widget.setReplyingEvent?.call(event),
+          ),
+        );
       }
     } else {
       Log.w("Failed to get selectable state");
@@ -424,15 +431,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   slivers: <Widget>[
                     if (isLoadingFuture)
                       SliverList(
-                          delegate: SliverChildBuilderDelegate(childCount: 1,
-                              (BuildContext context, int index) {
-                        return const SizedBox(
-                          height: 200,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      })),
+                        delegate: SliverChildBuilderDelegate(childCount: 1, (
+                          BuildContext context,
+                          int index,
+                        ) {
+                          return const SizedBox(
+                            height: 200,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }),
+                      ),
                     // The slivers are split into recent and history events and
                     // are rendered separately. This prevents the timeline from
                     // jumping around and allows jumping to specific indices
@@ -453,37 +461,42 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           key = eventKeys[timelineIndex];
 
                           assert(
-                              key.$2 == timeline.events[timelineIndex].eventId);
+                            key.$2 == timeline.events[timelineIndex].eventId,
+                          );
 
                           return Container(
                             alignment: Alignment.center,
-                            color: preferences.developerMode.value &&
+                            color:
+                                preferences.developerMode.value &&
                                     BuildConfig.DEBUG
                                 ? Colors.blue[200 + sliverIndex % 4 * 100]!
-                                    .withAlpha(30)
+                                      .withAlpha(30)
                                 : null,
                             child: TimelineViewEntry(
-                                key: key.$1,
-                                timeline: timeline,
-                                onEventHovered: eventHovered,
-                                canCollapse: true,
-                                setEditingEvent: widget.setEditingEvent,
-                                setReplyingEvent: widget.setReplyingEvent,
-                                isThreadTimeline: widget.isThreadTimeline,
-                                highlightedEventId: highlightedEventId,
-                                lastReadEventId: lastReadEventId,
-                                previewMedia:
-                                    widget.timeline.room.shouldPreviewMedia,
-                                jumpToEvent: jumpToEvent,
-                                initialIndex: timelineIndex),
+                              key: key.$1,
+                              timeline: timeline,
+                              onEventHovered: eventHovered,
+                              canCollapse: true,
+                              setEditingEvent: widget.setEditingEvent,
+                              setReplyingEvent: widget.setReplyingEvent,
+                              isThreadTimeline: widget.isThreadTimeline,
+                              highlightedEventId: highlightedEventId,
+                              lastReadEventId: lastReadEventId,
+                              previewMedia:
+                                  widget.timeline.room.shouldPreviewMedia,
+                              jumpToEvent: jumpToEvent,
+                              initialIndex: timelineIndex,
+                            ),
                           );
                         },
                         findChildIndexCallback: (key) {
-                          var timelineIndex = eventKeys
-                              .indexWhere((element) => element.$1 == key);
+                          var timelineIndex = eventKeys.indexWhere(
+                            (element) => element.$1 == key,
+                          );
                           if (timelineIndex == -1) {
                             Log.w(
-                                "Failed to get timeline index for key: $timelineIndex");
+                              "Failed to get timeline index for key: $timelineIndex",
+                            );
                             return null;
                           }
 
@@ -507,37 +520,42 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           key = eventKeys[timelineIndex];
 
                           assert(
-                              key.$2 == timeline.events[timelineIndex].eventId);
+                            key.$2 == timeline.events[timelineIndex].eventId,
+                          );
 
                           return Container(
                             alignment: Alignment.center,
-                            color: preferences.developerMode.value &&
+                            color:
+                                preferences.developerMode.value &&
                                     BuildConfig.DEBUG
                                 ? Colors.red[200 + sliverIndex % 4 * 100]!
-                                    .withAlpha(30)
+                                      .withAlpha(30)
                                 : null,
                             child: TimelineViewEntry(
-                                key: key.$1,
-                                onEventHovered: eventHovered,
-                                timeline: timeline,
-                                canCollapse: true,
-                                setEditingEvent: widget.setEditingEvent,
-                                setReplyingEvent: widget.setReplyingEvent,
-                                isThreadTimeline: widget.isThreadTimeline,
-                                highlightedEventId: highlightedEventId,
-                                previewMedia:
-                                    widget.timeline.room.shouldPreviewMedia,
-                                lastReadEventId: lastReadEventId,
-                                jumpToEvent: jumpToEvent,
-                                initialIndex: timelineIndex),
+                              key: key.$1,
+                              onEventHovered: eventHovered,
+                              timeline: timeline,
+                              canCollapse: true,
+                              setEditingEvent: widget.setEditingEvent,
+                              setReplyingEvent: widget.setReplyingEvent,
+                              isThreadTimeline: widget.isThreadTimeline,
+                              highlightedEventId: highlightedEventId,
+                              previewMedia:
+                                  widget.timeline.room.shouldPreviewMedia,
+                              lastReadEventId: lastReadEventId,
+                              jumpToEvent: jumpToEvent,
+                              initialIndex: timelineIndex,
+                            ),
                           );
                         },
                         findChildIndexCallback: (key) {
-                          var timelineIndex = eventKeys
-                              .indexWhere((element) => element.$1 == key);
+                          var timelineIndex = eventKeys.indexWhere(
+                            (element) => element.$1 == key,
+                          );
                           if (timelineIndex == -1) {
                             Log.w(
-                                "Failed to get timeline index for key: $timelineIndex");
+                              "Failed to get timeline index for key: $timelineIndex",
+                            );
                             return null;
                           }
 
@@ -547,26 +565,28 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                     ),
                     if (isLoadingHistory)
                       SliverList(
-                          delegate: SliverChildBuilderDelegate(childCount: 1,
-                              (BuildContext context, int index) {
-                        return const SizedBox(
-                          height: 200,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      })),
+                        delegate: SliverChildBuilderDelegate(childCount: 1, (
+                          BuildContext context,
+                          int index,
+                        ) {
+                          return const SizedBox(
+                            height: 200,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }),
+                      ),
                   ],
                 ),
               ),
               TimelineOverlay(
-                  key: overlayKey,
-                  showMessageMenu: MediaQuery.of(context).desktop,
-                  jumpToLatest: animateAndSnapToBottom,
-                  onScrolled: (event) {
-                    controller.jumpTo(controller.offset - event.scrollDelta.dy);
-                  },
-                  link: selectedEventLayerLink),
+                key: overlayKey,
+                showMessageMenu: MediaQuery.of(context).desktop,
+                jumpToLatest: animateAndSnapToBottom,
+                onScrolled: (event) {
+                  controller.jumpTo(controller.offset - event.scrollDelta.dy);
+                },
+                link: selectedEventLayerLink,
+              ),
               if (highlightedEventOffstageIndex != null &&
                   highlightedEventOffstageKey != null)
                 Offstage(
@@ -588,8 +608,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                 ),
               if (loading)
                 Container(
-                    color: Colors.black.withAlpha(50),
-                    child: const Center(child: CircularProgressIndicator()))
+                  color: Colors.black.withAlpha(50),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
             ],
           ),
         ),
@@ -608,11 +629,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       setState(() {
         loading = true;
       });
-      var newTimeline =
-          await timeline.room.getTimeline(contextEventId: eventId);
+      var newTimeline = await timeline.room.getTimeline(
+        contextEventId: eventId,
+      );
 
-      index =
-          newTimeline.events.indexWhere((event) => event.eventId == eventId);
+      index = newTimeline.events.indexWhere(
+        (event) => event.eventId == eventId,
+      );
 
       if (index == -1) {
         return;
@@ -644,9 +667,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         offset += eventHeight / 2;
       }
 
-      controller.animateTo(offset,
-          duration: const Duration(milliseconds: 300),
-          curve: Easing.emphasizedDecelerate);
+      controller.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 300),
+        curve: Easing.emphasizedDecelerate,
+      );
 
       if (mounted) {
         setState(() {
@@ -675,9 +700,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onReadReceiptUpdated(String event) {
-    var key = eventKeys.firstWhereOrNull(
-      (element) => element.$2 == event,
-    );
+    var key = eventKeys.firstWhereOrNull((element) => element.$2 == event);
 
     if (key == null) return;
 

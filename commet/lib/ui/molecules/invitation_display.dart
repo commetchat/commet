@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class InvitationDisplay extends StatefulWidget {
-  const InvitationDisplay(this.invitation,
-      {super.key, this.acceptInvitation, this.rejectInvitation});
+  const InvitationDisplay(
+    this.invitation, {
+    super.key,
+    this.acceptInvitation,
+    this.rejectInvitation,
+  });
   final Invitation invitation;
   final Future<void> Function(Invitation invite)? acceptInvitation;
   final Future<void> Function(Invitation invite)? rejectInvitation;
@@ -17,11 +21,11 @@ class InvitationDisplay extends StatefulWidget {
 
 class _InvitationDisplayState extends State<InvitationDisplay> {
   String labelInvitationBodyWithSender(String user) => Intl.message(
-      "$user invited you to a room",
-      desc:
-          "Message body for when an invitation was received, and we have a name for the sender",
-      args: [user],
-      name: "labelInvitationBodyWithSender");
+    "$user invited you to a room",
+    desc: "Message body for when an invitation was received, and we have a name for the sender",
+    args: [user],
+    name: "labelInvitationBodyWithSender",
+  );
 
   @override
   Widget build(BuildContext context) {

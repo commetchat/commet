@@ -4,8 +4,11 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixRoomAddLocalAliasView extends StatefulWidget {
   const MatrixRoomAddLocalAliasView(
-      this.homeserver, this.isAliasAvailable, this.createAlias,
-      {super.key});
+    this.homeserver,
+    this.isAliasAvailable,
+    this.createAlias, {
+    super.key,
+  });
   final String homeserver;
   final Future<bool> Function(String alias) isAliasAvailable;
   final Future<String?> Function(String alias) createAlias;
@@ -59,9 +62,7 @@ class _MatrixRoomAddLocalAliasViewState
           suffixText: ":${widget.homeserver}",
           prefixText: "#",
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -74,15 +75,18 @@ class _MatrixRoomAddLocalAliasViewState
               const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: SizedBox(
-                    width: 15, height: 15, child: CircularProgressIndicator()),
+                  width: 15,
+                  height: 15,
+                  child: CircularProgressIndicator(),
+                ),
               ),
             tiamat.Button(
               text: "Create!",
               onTap: submit,
               isLoading: createLoading,
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

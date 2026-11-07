@@ -14,22 +14,29 @@ class AdaptiveTextDialog {
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) async {
-    final result = await AdaptiveDialog.show<String>(context, title: title,
-        builder: (context) {
-      return AdaptiveTextDialogWidget(
-        description: description,
-        defaultText: defaultText,
-        placeholder: placeholder,
-      );
-    });
+    final result = await AdaptiveDialog.show<String>(
+      context,
+      title: title,
+      builder: (context) {
+        return AdaptiveTextDialogWidget(
+          description: description,
+          defaultText: defaultText,
+          placeholder: placeholder,
+        );
+      },
+    );
 
     return result;
   }
 }
 
 class AdaptiveTextDialogWidget extends StatefulWidget {
-  const AdaptiveTextDialogWidget(
-      {super.key, this.placeholder, this.description, this.defaultText});
+  const AdaptiveTextDialogWidget({
+    super.key,
+    this.placeholder,
+    this.description,
+    this.defaultText,
+  });
   final String? placeholder;
   final String? defaultText;
   final String? description;
@@ -59,24 +66,18 @@ class _AdaptiveTextDialogWidgetState extends State<AdaptiveTextDialogWidget> {
             if (widget.description != null)
               SizedBox(
                 width: 400,
-                child: tiamat.Text.labelLow(
-                  widget.description!,
-                ),
+                child: tiamat.Text.labelLow(widget.description!),
               ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
             tiamat.TextInput(
               placeholder: widget.placeholder,
               controller: controller,
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
             tiamat.Button(
               text: CommonStrings.promptSubmit,
               onTap: () => Navigator.of(context).pop(controller.text),
-            )
+            ),
           ],
         ),
       ),

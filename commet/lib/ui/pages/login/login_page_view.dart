@@ -15,20 +15,21 @@ import 'package:tiamat/atoms/circle_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class LoginPageView extends StatefulWidget {
-  const LoginPageView(
-      {super.key,
-      this.canNavigateBack = false,
-      this.progress,
-      this.flows,
-      required this.isLoggingIn,
-      this.homeserverChecked,
-      this.doSsoLogin,
-      this.doPasswordLogin,
-      this.loadingServerInfo = false,
-      this.isServerValid = false,
-      this.hasSsoSupport = false,
-      this.hasPasswordSupport = false,
-      this.updateHomeserver});
+  const LoginPageView({
+    super.key,
+    this.canNavigateBack = false,
+    this.progress,
+    this.flows,
+    required this.isLoggingIn,
+    this.homeserverChecked,
+    this.doSsoLogin,
+    this.doPasswordLogin,
+    this.loadingServerInfo = false,
+    this.isServerValid = false,
+    this.hasSsoSupport = false,
+    this.hasPasswordSupport = false,
+    this.updateHomeserver,
+  });
   final bool canNavigateBack;
   final bool isLoggingIn;
   final bool? homeserverChecked;
@@ -40,8 +41,11 @@ class LoginPageView extends StatefulWidget {
   final bool hasPasswordSupport;
   final Future<void> Function(SsoLoginFlow flow)? doSsoLogin;
   final Future<void> Function(
-          PasswordLoginFlow flow, String username, String password)?
-      doPasswordLogin;
+    PasswordLoginFlow flow,
+    String username,
+    String password,
+  )?
+  doPasswordLogin;
 
   final Function(String)? updateHomeserver;
 
@@ -56,21 +60,29 @@ class _LoginPageViewState extends State<LoginPageView> {
   final TextEditingController _usernameTextField = TextEditingController();
   final TextEditingController _passwordTextField = TextEditingController();
 
-  String get promptHomeserver => Intl.message("Homeserver",
-      name: "promptHomeserver",
-      desc: "Placeholder text for homeserver field on login form");
+  String get promptHomeserver => Intl.message(
+    "Homeserver",
+    name: "promptHomeserver",
+    desc: "Placeholder text for homeserver field on login form",
+  );
 
-  String get promptUsername => Intl.message("Username",
-      name: "promptUsername",
-      desc: "Placeholder text for username field on login form");
+  String get promptUsername => Intl.message(
+    "Username",
+    name: "promptUsername",
+    desc: "Placeholder text for username field on login form",
+  );
 
-  String get promptPassword => Intl.message("Password",
-      name: "promptPassword",
-      desc: "Placeholder text for password field on login form");
+  String get promptPassword => Intl.message(
+    "Password",
+    name: "promptPassword",
+    desc: "Placeholder text for password field on login form",
+  );
 
-  String get promptSubmitLogin => Intl.message("Login",
-      name: "promptSubmitLogin",
-      desc: "Prompt to submit the username and password, and attempt to login");
+  String get promptSubmitLogin => Intl.message(
+    "Login",
+    name: "promptSubmitLogin",
+    desc: "Prompt to submit the username and password, and attempt to login",
+  );
 
   @override
   void initState() {
@@ -101,11 +113,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                     color: Colors.transparent,
                     child: Padding(
                       padding: const EdgeInsets.all(8),
-                      child: Stack(
-                        children: [
-                          loginField(context),
-                        ],
-                      ),
+                      child: Stack(children: [loginField(context)]),
                     ),
                   ),
                 ),
@@ -113,33 +121,42 @@ class _LoginPageViewState extends State<LoginPageView> {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Align(
-                        alignment: Alignment.topLeft,
-                        child: CircleButton(
-                          radius: 25,
-                          icon: Icons.arrow_back,
-                          onPressed: () => Navigator.of(context).pop(),
-                        )),
+                      alignment: Alignment.topLeft,
+                      child: CircleButton(
+                        radius: 25,
+                        icon: Icons.arrow_back,
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
                   ),
               ],
             ),
           ),
           SafeArea(
             child: Align(
-                alignment: Alignment.topRight,
-                child: SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: tiamat.IconButton(
-                      icon: Icons.settings,
-                      onPressed: () => NavigationUtils.navigateTo(
-                          context, const AppSettingsPage()),
-                    ))),
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                height: 30,
+                width: 30,
+                child: tiamat.IconButton(
+                  icon: Icons.settings,
+                  onPressed: () => NavigationUtils.navigateTo(
+                    context,
+                    const AppSettingsPage(),
+                  ),
+                ),
+              ),
+            ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: EdgeInsets.fromLTRB(
-                  0, 0, 0, MediaQuery.of(context).padding.bottom),
+                0,
+                0,
+                0,
+                MediaQuery.of(context).padding.bottom,
+              ),
               child: SettingsCategoryAbout.info(context),
             ),
           ),
@@ -156,15 +173,19 @@ class _LoginPageViewState extends State<LoginPageView> {
             constraints: const BoxConstraints(maxWidth: 500),
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  border: Border.all(
-                      color: Theme.of(context).colorScheme.outline, width: 1),
-                  boxShadow: [
-                    BoxShadow(
-                        blurRadius: 50,
-                        color: Theme.of(context).shadowColor.withAlpha(50))
-                  ]),
+                borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outline,
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 50,
+                    color: Theme.of(context).shadowColor.withAlpha(50),
+                  ),
+                ],
+              ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Stack(
@@ -172,9 +193,10 @@ class _LoginPageViewState extends State<LoginPageView> {
                     IgnorePointer(
                       ignoring: widget.isLoggingIn,
                       child: AnimatedOpacity(
-                          opacity: widget.isLoggingIn ? 0.5 : 1.0,
-                          duration: Durations.short2,
-                          child: loginInputs(context)),
+                        opacity: widget.isLoggingIn ? 0.5 : 1.0,
+                        duration: Durations.short2,
+                        child: loginInputs(context),
+                      ),
                     ),
                   ],
                 ),
@@ -183,9 +205,7 @@ class _LoginPageViewState extends State<LoginPageView> {
           ),
         ),
         if (widget.isLoggingIn)
-          const Center(
-            child: CircularProgressIndicator(),
-          )
+          const Center(child: CircularProgressIndicator()),
       ],
     );
   }
@@ -197,91 +217,94 @@ class _LoginPageViewState extends State<LoginPageView> {
       defaultSso = ssoFlows.where((e) => e.id == null).firstOrNull;
     }
 
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Flexible(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            appIcon(context),
-          ],
-        ),
-      ),
-      const SizedBox(height: 16),
-      homeserverEntry(),
-      const SizedBox(height: 16),
-      if (widget.hasPasswordSupport) usenamePasswordLoginInputs(),
-      if (widget.hasSsoSupport)
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
         Flexible(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (widget.hasPasswordSupport)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        width: 100,
-                        height: 10,
-                        child: tiamat.Seperator(),
-                      ),
-                      tiamat.Text.labelLow(CommonStrings.labelOr),
-                      const SizedBox(
-                        width: 100,
-                        height: 10,
-                        child: tiamat.Seperator(),
-                      ),
-                    ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [appIcon(context)],
+          ),
+        ),
+        const SizedBox(height: 16),
+        homeserverEntry(),
+        const SizedBox(height: 16),
+        if (widget.hasPasswordSupport) usenamePasswordLoginInputs(),
+        if (widget.hasSsoSupport)
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (widget.hasPasswordSupport)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 100,
+                          height: 10,
+                          child: tiamat.Seperator(),
+                        ),
+                        tiamat.Text.labelLow(CommonStrings.labelOr),
+                        const SizedBox(
+                          width: 100,
+                          height: 10,
+                          child: tiamat.Seperator(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              if (defaultSso != null)
-                tiamat.Button.secondary(
-                  text: "Login with " + defaultSso.name,
-                  onTap: () => {widget.doSsoLogin?.call(defaultSso!)},
-                ),
-              if (ssoFlows != null)
-                Flexible(
+                if (defaultSso != null)
+                  tiamat.Button.secondary(
+                    text: "Login with " + defaultSso.name,
+                    onTap: () => {widget.doSsoLogin?.call(defaultSso!)},
+                  ),
+                if (ssoFlows != null)
+                  Flexible(
                     child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 10,
-                    children: ssoFlows
-                        .whereType<SsoLoginFlow>()
-                        .where((e) => e != defaultSso)
-                        .map((e) => ElevatedButton.icon(
-                              icon: SizedBox(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 10,
+                        children: ssoFlows
+                            .whereType<SsoLoginFlow>()
+                            .where((e) => e != defaultSso)
+                            .map(
+                              (e) => ElevatedButton.icon(
+                                icon: SizedBox(
                                   width: e.icon == null ? 0 : 32,
                                   height: 48,
                                   child: e.icon != null
                                       ? Image(image: e.icon!)
-                                      : null),
-                              label: Text("Continue with ${e.name}"),
-                              onPressed: () => widget.doSsoLogin?.call(e),
-                            ))
-                        .toList(),
+                                      : null,
+                                ),
+                                label: Text("Continue with ${e.name}"),
+                                onPressed: () => widget.doSsoLogin?.call(e),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
                   ),
-                ))
-            ],
+              ],
+            ),
+          ),
+        SizedBox(
+          height: 15,
+          child: Center(
+            child: SizedBox(
+              height: 5,
+              child: widget.progress == null
+                  ? null
+                  : LinearProgressIndicator(value: widget.progress),
+            ),
           ),
         ),
-      SizedBox(
-        height: 15,
-        child: Center(
-          child: SizedBox(
-            height: 5,
-            child: widget.progress == null
-                ? null
-                : LinearProgressIndicator(
-                    value: widget.progress,
-                  ),
-          ),
-        ),
-      ),
-    ]);
+      ],
+    );
   }
 
   Column usenamePasswordLoginInputs() {
@@ -312,8 +335,11 @@ class _LoginPageViewState extends State<LoginPageView> {
       child: tiamat.Button(
         text: promptSubmitLogin,
         onTap: flow != null
-            ? () => widget.doPasswordLogin
-                ?.call(flow, _usernameTextField.text, _passwordTextField.text)
+            ? () => widget.doPasswordLogin?.call(
+                flow,
+                _usernameTextField.text,
+                _passwordTextField.text,
+              )
             : null,
       ),
     );
@@ -354,21 +380,21 @@ class _LoginPageViewState extends State<LoginPageView> {
       keyboardType: TextInputType.url,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
-          prefixText: 'https://',
-          border: const OutlineInputBorder(),
-          labelText: promptHomeserver,
-          suffix: homeserverEntrySuffix()),
+        prefixText: 'https://',
+        border: const OutlineInputBorder(),
+        labelText: promptHomeserver,
+        suffix: homeserverEntrySuffix(),
+      ),
     );
   }
 
   Widget homeserverEntrySuffix() {
     if (widget.loadingServerInfo) {
       return const SizedBox(
-          width: 15,
-          height: 15,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-          ));
+        width: 15,
+        height: 15,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
     }
 
     return Icon(

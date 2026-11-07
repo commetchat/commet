@@ -56,13 +56,15 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   @override
   String get plainTextBody => stripFallback(event.plaintextBody);
 
-  String _getPlaintextBody({Timeline? timeline}) =>
-      stripFallback(_getRawPlaintextBody(timeline: timeline),
-          timeline: timeline);
+  String _getPlaintextBody({Timeline? timeline}) => stripFallback(
+    _getRawPlaintextBody(timeline: timeline),
+    timeline: timeline,
+  );
 
-  String _getFormattedBody({Timeline? timeline}) =>
-      stripFallbackHtml(_getRawFormattedBody(timeline: timeline),
-          timeline: timeline);
+  String _getFormattedBody({Timeline? timeline}) => stripFallbackHtml(
+    _getRawFormattedBody(timeline: timeline),
+    timeline: timeline,
+  );
 
   String _getRawPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
@@ -125,13 +127,19 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     }
 
     if (isFormatted) {
-      bool mentionsRoom = mentions?["room"] == true &&
+      bool mentionsRoom =
+          mentions?["room"] == true &&
           MatrixRoomPermissions.canUserMentionRoom(
-              displayEvent.senderId, (room as MatrixRoom).matrixRoom);
+            displayEvent.senderId,
+            (room as MatrixRoom).matrixRoom,
+          );
 
       return MatrixHtmlParser.parse(
-          _getFormattedBody(timeline: timeline), client, room,
-          mentionsRoom: mentionsRoom);
+        _getFormattedBody(timeline: timeline),
+        client,
+        room,
+        mentionsRoom: mentionsRoom,
+      );
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {
@@ -164,54 +172,63 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
 
       if (Mime.imageTypes.contains(event.attachmentMimetype)) {
         attachment = ImageAttachment(
-            MatrixMxcImage(event.attachmentMxcUrl!, mx,
-                blurhash: event.attachmentBlurhash,
-                doThumbnail: event.hasThumbnail,
-                doFullres: true,
-                thumbnailHeight: event.thumbnailHeight != null
-                    ? min(700, event.thumbnailHeight!.toInt())
-                    : 700,
-                // I noticed on linux, decoding really high res images would cause a flicker, so we will limit it to 1440p
-                fullResHeight: PlatformUtils.isLinux
-                    ? (event.attachmentHeight != null
-                        ? min(1440, event.attachmentHeight!.toInt())
-                        : 1440)
-                    : null,
-                autoLoadFullRes: !event.hasThumbnail,
-                matrixEvent: event),
-            MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
-            mimeType: event.attachmentMimetype,
-            width: width,
-            fileSize: event.infoMap['size'] as int?,
-            name: filename,
-            height: height);
+          MatrixMxcImage(
+            event.attachmentMxcUrl!,
+            mx,
+            blurhash: event.attachmentBlurhash,
+            doThumbnail: event.hasThumbnail,
+            doFullres: true,
+            thumbnailHeight: event.thumbnailHeight != null
+                ? min(700, event.thumbnailHeight!.toInt())
+                : 700,
+            // I noticed on linux, decoding really high res images would cause a flicker, so we will limit it to 1440p
+            fullResHeight: PlatformUtils.isLinux
+                ? (event.attachmentHeight != null
+                      ? min(1440, event.attachmentHeight!.toInt())
+                      : 1440)
+                : null,
+            autoLoadFullRes: !event.hasThumbnail,
+            matrixEvent: event,
+          ),
+          MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
+          mimeType: event.attachmentMimetype,
+          width: width,
+          fileSize: event.infoMap['size'] as int?,
+          name: filename,
+          height: height,
+        );
       } else if (Mime.videoTypes.contains(event.attachmentMimetype)) {
         // Only load videos if the event has finished sending, otherwise
         // matrix dart sdk gives us the video file when we ask for thumbnail
         if (event.status.isSending == false) {
           attachment = VideoAttachment(
-              MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
-              thumbnail: event.videoThumbnailUrl != null
-                  ? MatrixMxcImage(event.videoThumbnailUrl!, mx,
-                      blurhash: event.attachmentBlurhash,
-                      doFullres: false,
-                      autoLoadFullRes: false,
-                      doThumbnail: true,
-                      matrixEvent: event)
-                  : null,
-              name: filename,
-              mimeType: event.attachmentMimetype,
-              duration: event.attachmentDuration,
-              width: width,
-              fileSize: event.infoMap['size'] as int?,
-              height: height);
+            MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
+            thumbnail: event.videoThumbnailUrl != null
+                ? MatrixMxcImage(
+                    event.videoThumbnailUrl!,
+                    mx,
+                    blurhash: event.attachmentBlurhash,
+                    doFullres: false,
+                    autoLoadFullRes: false,
+                    doThumbnail: true,
+                    matrixEvent: event,
+                  )
+                : null,
+            name: filename,
+            mimeType: event.attachmentMimetype,
+            duration: event.attachmentDuration,
+            width: width,
+            fileSize: event.infoMap['size'] as int?,
+            height: height,
+          );
         }
       } else {
         attachment = FileAttachment(
-            MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
-            name: filename,
-            mimeType: event.attachmentMimetype,
-            fileSize: event.infoMap['size'] as int?);
+          MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
+          name: filename,
+          mimeType: event.attachmentMimetype,
+          fileSize: event.infoMap['size'] as int?,
+        );
       }
 
       return List.from([attachment]);
@@ -264,8 +281,11 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
 }
 
 class PlaintextMessageBody extends StatelessWidget {
-  const PlaintextMessageBody(
-      {required this.content, required this.clientIdentifier, super.key});
+  const PlaintextMessageBody({
+    required this.content,
+    required this.clientIdentifier,
+    super.key,
+  });
   final String content;
   final String clientIdentifier;
 
@@ -274,9 +294,15 @@ class PlaintextMessageBody extends StatelessWidget {
     var document = html_parser.parse(content);
     bool big = shouldDoBigEmoji(document);
 
-    return Text.rich(TextSpan(
+    return Text.rich(
+      TextSpan(
         style: TextStyle(fontSize: big ? 34 : null),
-        children: TextUtils.linkifyString(content,
-            context: context, clientId: clientIdentifier)));
+        children: TextUtils.linkifyString(
+          content,
+          context: context,
+          clientId: clientIdentifier,
+        ),
+      ),
+    );
   }
 }

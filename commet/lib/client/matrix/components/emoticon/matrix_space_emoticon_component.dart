@@ -19,14 +19,14 @@ class MatrixSpaceEmoticonComponent extends MatrixEmoticonComponent
   @override
   String get ownerDisplayName => space.displayName;
 
-  MatrixSpaceEmoticonComponent(
-    MatrixClient client,
-    this.space,
-  ) : super(client, MatrixEmoticonRoomStateManager(space.matrixRoom));
+  MatrixSpaceEmoticonComponent(MatrixClient client, this.space)
+    : super(client, MatrixEmoticonRoomStateManager(space.matrixRoom));
 
   @override
   bool isGloballyAvailable(String packId) {
-    return space.matrixRoom.client
-        .isEmoticonPackGloballyAvailable(space.matrixRoom.id, packId);
+    return space.matrixRoom.client.isEmoticonPackGloballyAvailable(
+      space.matrixRoom.id,
+      packId,
+    );
   }
 }

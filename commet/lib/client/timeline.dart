@@ -4,13 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:flutter/material.dart';
 
-enum TimelineEventStatus {
-  error,
-  sending,
-  sent,
-  synced,
-  roomState,
-}
+enum TimelineEventStatus { error, sending, sent, synced, roomState }
 
 TimelineEventStatus eventStatusFromInt(int intValue) =>
     TimelineEventStatus.values[intValue + 2];
@@ -18,8 +12,9 @@ TimelineEventStatus eventStatusFromInt(int intValue) =>
 /// Takes two [EventStatus] values and returns the one with higher
 /// (better in terms of message sending) status.
 TimelineEventStatus latestEventStatus(
-        TimelineEventStatus status1, TimelineEventStatus status2) =>
-    status1.intValue > status2.intValue ? status1 : status2;
+  TimelineEventStatus status1,
+  TimelineEventStatus status2,
+) => status1.intValue > status2.intValue ? status1 : status2;
 
 extension EventStatusExtension on TimelineEventStatus {
   /// Returns int value of the event status.
@@ -44,17 +39,17 @@ extension EventStatusExtension on TimelineEventStatus {
   /// Returns `true` if the status is sent or later:
   /// [EventStatus.sent], [EventStatus.synced] or [EventStatus.roomState].
   bool get isSent => [
-        TimelineEventStatus.sent,
-        TimelineEventStatus.synced,
-        TimelineEventStatus.roomState
-      ].contains(this);
+    TimelineEventStatus.sent,
+    TimelineEventStatus.synced,
+    TimelineEventStatus.roomState,
+  ].contains(this);
 
   /// Returns `true` if the status is `synced` or `roomState`:
   /// [EventStatus.synced] or [EventStatus.roomState].
   bool get isSynced => [
-        TimelineEventStatus.synced,
-        TimelineEventStatus.roomState,
-      ].contains(this);
+    TimelineEventStatus.synced,
+    TimelineEventStatus.roomState,
+  ].contains(this);
 }
 
 enum EventRelationshipType { reply }
@@ -62,8 +57,9 @@ enum EventRelationshipType { reply }
 abstract class Timeline {
   late List<TimelineEvent> events = List.empty(growable: true);
   final Map<String, TimelineEvent> _eventsDict = {};
-  late StreamController<int> onEventAdded =
-      StreamController.broadcast(sync: true);
+  late StreamController<int> onEventAdded = StreamController.broadcast(
+    sync: true,
+  );
   late StreamController<int> onChange = StreamController.broadcast(sync: false);
   late StreamController<int> onRemove = StreamController.broadcast(sync: true);
   late Client client;

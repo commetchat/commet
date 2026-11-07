@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -10,6 +11,7 @@ import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/debug/log.dart';
 
 import '../client.dart';
+
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixTimeline extends Timeline {
@@ -51,10 +53,11 @@ class MatrixTimeline extends Timeline {
     }
 
     _matrixTimeline = await _matrixRoom.getTimeline(
-        onInsert: onEventInserted,
-        onChange: onEventChanged,
-        onRemove: onEventRemoved,
-        eventContextId: contextEventId);
+      onInsert: onEventInserted,
+      onChange: onEventChanged,
+      onRemove: onEventRemoved,
+      eventContextId: contextEventId,
+    );
 
     if (_matrixTimeline?.events.isEmpty == true) {
       await _matrixTimeline?.requestHistory();
@@ -84,8 +87,9 @@ class MatrixTimeline extends Timeline {
 
     if (index < _matrixTimeline!.events.length) {
       events[index] = (room as MatrixRoom).convertEvent(
-          _matrixTimeline!.events[index],
-          timeline: _matrixTimeline);
+        _matrixTimeline!.events[index],
+        timeline: _matrixTimeline,
+      );
 
       notifyChanged(index);
     }
@@ -155,7 +159,8 @@ class MatrixTimeline extends Timeline {
     if (event.status == TimelineEventStatus.synced ||
         event.status == TimelineEventStatus.sent) {
       await _matrixTimeline?.setReadMarker(
-          public: receipts?.usePublicReadReceiptsForRoom);
+        public: receipts?.usePublicReadReceiptsForRoom,
+      );
 
       receipts?.handleEvent(event.eventId, room.client.self!.identifier);
     }
@@ -169,12 +174,17 @@ class MatrixTimeline extends Timeline {
   }
 
   Future<void> removeReaction(
-      TimelineEvent reactingTo, Emoticon reaction) async {
+    TimelineEvent reactingTo,
+    Emoticon reaction,
+  ) async {
     var event = await _matrixRoom.getEventById(reactingTo.eventId);
     if (event == null) return;
 
     if (!event.hasAggregatedEvents(
-        _matrixTimeline!, matrix.RelationshipTypes.reaction)) return;
+      _matrixTimeline!,
+      matrix.RelationshipTypes.reaction,
+    ))
+      return;
 
     var events = event
         .aggregatedEvents(_matrixTimeline!, matrix.RelationshipTypes.reaction)
@@ -204,7 +214,8 @@ class MatrixTimeline extends Timeline {
   @override
   bool canDeleteEvent(TimelineEvent event) {
     if (event.senderId != room.client.self!.identifier &&
-        room.permissions.canDeleteOtherUserMessages != true) return false;
+        room.permissions.canDeleteOtherUserMessages != true)
+      return false;
 
     if (event is TimelineEventMessage) {
       return true;

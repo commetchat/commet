@@ -15,38 +15,41 @@ class SpaceSettingsPage extends StatefulWidget {
 }
 
 class _SpaceSettingsPageState extends State<SpaceSettingsPage> {
-  String get promptLeaveSpace => Intl.message("Leave Space",
-      desc: "Text on a button to leave a space", name: "promptLeaveSpace");
+  String get promptLeaveSpace => Intl.message(
+    "Leave Space",
+    desc: "Text on a button to leave a space",
+    name: "promptLeaveSpace",
+  );
 
   String promptLeaveSpaceConfirmation(String spaceName) => Intl.message(
-      "Are you sure you want to leave $spaceName?",
-      desc: "Text for the popup dialog confirming the intent to leave a space",
-      args: [spaceName],
-      name: "promptLeaveSpaceConfirmation");
+    "Are you sure you want to leave $spaceName?",
+    desc: "Text for the popup dialog confirming the intent to leave a space",
+    args: [spaceName],
+    name: "promptLeaveSpaceConfirmation",
+  );
 
   @override
   Widget build(BuildContext context) {
     return SettingsPage(
-      settings: [
-        SettingsCategorySpace(
-          widget.space,
-        ),
-      ],
+      settings: [SettingsCategorySpace(widget.space)],
       buttons: [
         SettingsButton(
-            label: promptLeaveSpace,
-            icon: Icons.subdirectory_arrow_left_rounded,
-            color: Theme.of(context).colorScheme.error,
-            onPress: () => leaveSpace(context)),
+          label: promptLeaveSpace,
+          icon: Icons.subdirectory_arrow_left_rounded,
+          color: Theme.of(context).colorScheme.error,
+          onPress: () => leaveSpace(context),
+        ),
       ],
     );
   }
 
   Future<void> leaveSpace(BuildContext context) async {
-    if (await AdaptiveDialog.confirmation(context,
-            title: promptLeaveSpace,
-            prompt: promptLeaveSpaceConfirmation(widget.space.displayName),
-            dangerous: true) ==
+    if (await AdaptiveDialog.confirmation(
+          context,
+          title: promptLeaveSpace,
+          prompt: promptLeaveSpaceConfirmation(widget.space.displayName),
+          dangerous: true,
+        ) ==
         true) {
       if (context.mounted) Navigator.pop(context);
       widget.space.client.leaveSpace(widget.space);

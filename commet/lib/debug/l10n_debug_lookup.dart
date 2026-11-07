@@ -12,9 +12,14 @@ class DebugLookup implements MessageLookup {
   void addLocale(String localeName, Function findLocale) {}
 
   @override
-  String? lookupMessage(String? messageText, String? locale, String? name,
-      List<Object>? args, String? meaning,
-      {MessageIfAbsent? ifAbsent}) {
+  String? lookupMessage(
+    String? messageText,
+    String? locale,
+    String? name,
+    List<Object>? args,
+    String? meaning, {
+    MessageIfAbsent? ifAbsent,
+  }) {
     return "$name";
   }
 }

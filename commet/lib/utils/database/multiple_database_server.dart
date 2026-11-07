@@ -37,15 +37,13 @@ final class MultiDatabaseServer {
         return;
       }
 
-      final isolate = _activeIsolates.putIfAbsent(
-        name,
-        () {
-          return DriftIsolate.inCurrent(
-              serialize: true,
-              // obviously you can pass a path instead of a name and use that to open the right NativeDatabase
-              () => setupNativeDatabase(File(name), readOnly: readOnly));
-        },
-      );
+      final isolate = _activeIsolates.putIfAbsent(name, () {
+        return DriftIsolate.inCurrent(
+          serialize: true,
+          // obviously you can pass a path instead of a name and use that to open the right NativeDatabase
+          () => setupNativeDatabase(File(name), readOnly: readOnly),
+        );
+      });
 
       port.send(isolate.connectPort);
     });
@@ -74,8 +72,10 @@ class DatabaseIsolate {
     }
   }
 
-  static Future<DatabaseConnection> connect(String databaseName,
-      {bool readOnly = false}) async {
+  static Future<DatabaseConnection> connect(
+    String databaseName, {
+    bool readOnly = false,
+  }) async {
     if (connectToServer == null) {
       await start();
     }

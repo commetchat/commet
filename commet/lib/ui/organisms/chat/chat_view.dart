@@ -18,25 +18,29 @@ class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});
   final ChatState state;
 
-  String get sendEncryptedMessagePrompt =>
-      Intl.message("Send an encrypted message",
-          name: "sendEncryptedMessagePrompt",
-          desc: "Placeholder text for message input in an encrypted room");
+  String get sendEncryptedMessagePrompt => Intl.message(
+    "Send an encrypted message",
+    name: "sendEncryptedMessagePrompt",
+    desc: "Placeholder text for message input in an encrypted room",
+  );
 
-  String get sendUnencryptedMessagePrompt => Intl.message("Send a message",
-      name: "sendUnencryptedMessagePrompt",
-      desc: "Placeholder text for message input in an unencrypted room");
+  String get sendUnencryptedMessagePrompt => Intl.message(
+    "Send a message",
+    name: "sendUnencryptedMessagePrompt",
+    desc: "Placeholder text for message input in an unencrypted room",
+  );
 
   String get cantSentMessagePrompt => Intl.message(
-      "You do not have permission to send a message in this room",
-      name: "cantSentMessagePrompt",
-      desc: "Text that explains the user cannot send a message in this room");
+    "You do not have permission to send a message in this room",
+    name: "cantSentMessagePrompt",
+    desc: "Text that explains the user cannot send a message in this room",
+  );
 
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
       : state.room
-          .getMemberOrFallback(state.interactingEvent!.senderId)
-          .displayName;
+            .getMemberOrFallback(state.interactingEvent!.senderId)
+            .displayName;
 
   Color? get relatedEventSenderColor => state.interactingEvent == null
       ? null
@@ -44,28 +48,33 @@ class ChatView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Expanded(
+    return Column(
+      children: [
+        Expanded(
           child: Stack(
-        fit: StackFit.expand,
-        children: [timeline(), const ParticlePlayer()],
-      )),
-      input(context),
-    ]);
+            fit: StackFit.expand,
+            children: [timeline(), const ParticlePlayer()],
+          ),
+        ),
+        input(context),
+      ],
+    );
   }
 
   Widget timeline() {
     return state.timeline == null
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
+        ? const Center(child: CircularProgressIndicator())
         : RoomTimelineWidget(
             key: ValueKey("${state.room.identifier}-timeline"),
             timeline: state.timeline!,
-            setReplyingEvent: (event) => state.setInteractingEvent(event,
-                type: EventInteractionType.reply),
-            setEditingEvent: (event) => state.setInteractingEvent(event,
-                type: EventInteractionType.edit),
+            setReplyingEvent: (event) => state.setInteractingEvent(
+              event,
+              type: EventInteractionType.reply,
+            ),
+            setEditingEvent: (event) => state.setInteractingEvent(
+              event,
+              type: EventInteractionType.edit,
+            ),
             isThreadTimeline: state.isThread,
             clearNotifications: clearNotifications,
           );
@@ -141,15 +150,17 @@ class ChatView extends StatelessWidget {
             ?.getPrefixedAccount(input, state.room)
             ?.$1,
         onTapOverrideClient: (overrideClient) {
-          EventBus.doOpenRoom(state.room.identifier,
-              clientId: overrideClient.identifier);
+          EventBus.doOpenRoom(
+            state.room.identifier,
+            clientId: overrideClient.identifier,
+          );
 
           if (state.isThread) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               EventBus.openThread.add((
                 overrideClient.identifier,
                 state.room.identifier,
-                state.threadId!
+                state.threadId!,
               ));
             });
           }
@@ -157,8 +168,8 @@ class ChatView extends StatelessWidget {
         editLastMessage: state.editLastMessage,
         hintText: state.room.permissions.canSendMessage
             ? state.room.isE2EE
-                ? sendEncryptedMessagePrompt
-                : sendUnencryptedMessagePrompt
+                  ? sendEncryptedMessagePrompt
+                  : sendUnencryptedMessagePrompt
             : cantSentMessagePrompt,
         cancelReply: () {
           state.setInteractingEvent(null);
@@ -167,7 +178,8 @@ class ChatView extends StatelessWidget {
             ? TypingIndicatorsWidget(
                 component: state.typingIndicators!,
                 key: ValueKey(
-                    "room_typing_indicators_key_${state.room.identifier}"),
+                  "room_typing_indicators_key_${state.room.identifier}",
+                ),
               )
             : null,
         processAutofill: (text) =>

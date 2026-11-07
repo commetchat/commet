@@ -18,18 +18,20 @@ class UpdateCheckerSetup implements SetupMenu {
       children: [
         tiamat.Text.largeTitle("Check for updates"),
         tiamat.Text.label(
-            "Would you like Commet to automatically check for new updates?"),
+          "Would you like Commet to automatically check for new updates?",
+        ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-              decoration: BoxDecoration(
-                color: ColorScheme.of(context).surfaceContainerLowest,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CheckForUpdatesSettingWidget(),
-              )),
+            decoration: BoxDecoration(
+              color: ColorScheme.of(context).surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CheckForUpdatesSettingWidget(),
+            ),
+          ),
         ),
       ],
     );

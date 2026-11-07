@@ -15,11 +15,13 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MessageAttachment extends StatefulWidget {
-  const MessageAttachment(this.attachment,
-      {super.key,
-      this.ignorePointer = false,
-      this.constrainSize = true,
-      this.previewMedia = false});
+  const MessageAttachment(
+    this.attachment, {
+    super.key,
+    this.ignorePointer = false,
+    this.constrainSize = true,
+    this.previewMedia = false,
+  });
   final Attachment attachment;
   final bool ignorePointer;
   final bool previewMedia;
@@ -57,8 +59,11 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         return buildAudio(attachment);
       }
 
-      return buildFile(Mime.toIcon(attachment.mimeType), attachment.name,
-          attachment.fileSize);
+      return buildFile(
+        Mime.toIcon(attachment.mimeType),
+        attachment.name,
+        attachment.fileSize,
+      );
     }
 
     return const Placeholder();
@@ -71,36 +76,43 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     return IgnorePointer(
       ignoring: widget.ignorePointer,
       child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Material(
-              color: Colors.transparent,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: 200, minHeight: 40, maxWidth: 500, minWidth: 40),
-                child: InkWell(
-                  onTap: fullscreenAttachment,
-                  child: Stack(
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.fitWidth,
-                        child: SizedBox(
-                          width: attachment.width ?? 500,
-                          height: attachment.height ?? 500,
-                          child: Image(
-                            image: attachment.image,
-                            filterQuality: FilterQuality.medium,
-                            // if we know the height, its safe to fill as it wont appear stretched
-                            fit: attachment.width != null &&
-                                    attachment.height != null
-                                ? BoxFit.fill
-                                : BoxFit.fitWidth,
-                          ),
-                        ),
+        borderRadius: BorderRadius.circular(10),
+        child: Material(
+          color: Colors.transparent,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 200,
+              minHeight: 40,
+              maxWidth: 500,
+              minWidth: 40,
+            ),
+            child: InkWell(
+              onTap: fullscreenAttachment,
+              child: Stack(
+                children: [
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: SizedBox(
+                      width: attachment.width ?? 500,
+                      height: attachment.height ?? 500,
+                      child: Image(
+                        image: attachment.image,
+                        filterQuality: FilterQuality.medium,
+                        // if we know the height, its safe to fill as it wont appear stretched
+                        fit:
+                            attachment.width != null &&
+                                attachment.height != null
+                            ? BoxFit.fill
+                            : BoxFit.fitWidth,
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ))),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -115,32 +127,37 @@ class _MessageAttachmentState extends State<MessageAttachment> {
       child: SizedBox(
         height: widget.constrainSize ? height + (showInfo ? 30 : 0) : null,
         width: max(
-            widget.constrainSize ? attachment.aspectRatio * height : 200, 200),
+          widget.constrainSize ? attachment.aspectRatio * height : 200,
+          200,
+        ),
         child: Panel(
-            mainAxisSize: MainAxisSize.min,
-            header: showInfo
-                ? "${attachment.name} ${attachment.fileSize != null ? "- ${TextUtils.readableFileSize(attachment.fileSize!)}" : ""}"
-                : null,
-            mode: TileType.surfaceContainerLow,
-            padding: 0,
-            child: SizedBox(
-                height: height,
-                width: 500,
-                child: AspectRatio(
-                    aspectRatio: attachment.aspectRatio,
-                    child: isFullscreen
-                        ? null
-                        : VideoPlayer(
-                            attachment.file,
-                            streamUrl: attachment.streamUrl,
-                            thumbnail: attachment.thumbnail,
-                            fileName: attachment.name,
-                            doThumbnail: true,
-                            canGoFullscreen: true,
-                            onFullscreen: fullscreenVideo,
-                            controller: controller,
-                            key: videoPlayerKey,
-                          )))),
+          mainAxisSize: MainAxisSize.min,
+          header: showInfo
+              ? "${attachment.name} ${attachment.fileSize != null ? "- ${TextUtils.readableFileSize(attachment.fileSize!)}" : ""}"
+              : null,
+          mode: TileType.surfaceContainerLow,
+          padding: 0,
+          child: SizedBox(
+            height: height,
+            width: 500,
+            child: AspectRatio(
+              aspectRatio: attachment.aspectRatio,
+              child: isFullscreen
+                  ? null
+                  : VideoPlayer(
+                      attachment.file,
+                      streamUrl: attachment.streamUrl,
+                      thumbnail: attachment.thumbnail,
+                      fileName: attachment.name,
+                      doThumbnail: true,
+                      canGoFullscreen: true,
+                      onFullscreen: fullscreenVideo,
+                      controller: controller,
+                      key: videoPlayerKey,
+                    ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -161,13 +178,14 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     setState(() {
       isFullscreen = true;
     });
-    Lightbox.show(context,
-            video: attachment.file,
-            aspectRatio: attachment.aspectRatio,
-            thumbnail: attachment.thumbnail,
-            videoController: controller,
-            key: videoPlayerKey)
-        .then((value) {
+    Lightbox.show(
+      context,
+      video: attachment.file,
+      aspectRatio: attachment.aspectRatio,
+      thumbnail: attachment.thumbnail,
+      videoController: controller,
+      key: videoPlayerKey,
+    ).then((value) {
       setState(() {
         isFullscreen = false;
       });
@@ -205,7 +223,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                         ),
                         if (fileSize != null)
                           tiamat.Text.labelLow(
-                              TextUtils.readableFileSize(fileSize))
+                            TextUtils.readableFileSize(fileSize),
+                          ),
                       ],
                     ),
                   ),
@@ -238,7 +257,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                     },
                   ),
                 ),
-              )
+              ),
           ],
         ),
       ),
@@ -250,7 +269,9 @@ class _MessageAttachmentState extends State<MessageAttachment> {
   }
 
   Future<BackgroundTaskStatus> downloadTask(
-      FileAttachment attachment, String path) async {
+    FileAttachment attachment,
+    String path,
+  ) async {
     await attachment.file.save(path);
 
     return BackgroundTaskStatus.completed;

@@ -37,9 +37,7 @@ class _PollCreatorState extends State<PollCreator> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            SizedBox(
-              height: 8,
-            ),
+            SizedBox(height: 8),
             tiamat.DropdownSelector(
               value: openPoll,
               items: [true, false],
@@ -62,20 +60,18 @@ class _PollCreatorState extends State<PollCreator> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       tiamat.Text(msg),
-                      tiamat.Text.labelLow(descriptor)
+                      tiamat.Text.labelLow(descriptor),
                     ],
                   ),
                 );
               },
             ),
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
             SizedBox(
               height: 200,
               child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(context)
+                    .copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(2, 8, 2, 8),
@@ -90,21 +86,23 @@ class _PollCreatorState extends State<PollCreator> {
                                 child: TextField(
                                   controller: options[i],
                                   decoration: InputDecoration(
-                                      suffixIcon: SizedBox(
-                                          height: 34,
-                                          width: 34,
-                                          child: options.length > 2
-                                              ? tiamat.IconButton(
-                                                  icon: Icons.remove,
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      options.removeAt(i);
-                                                    });
-                                                  },
-                                                )
-                                              : null),
-                                      border: const OutlineInputBorder(),
-                                      labelText: "Option ${i + 1}"),
+                                    suffixIcon: SizedBox(
+                                      height: 34,
+                                      width: 34,
+                                      child: options.length > 2
+                                          ? tiamat.IconButton(
+                                              icon: Icons.remove,
+                                              onPressed: () {
+                                                setState(() {
+                                                  options.removeAt(i);
+                                                });
+                                              },
+                                            )
+                                          : null,
+                                    ),
+                                    border: const OutlineInputBorder(),
+                                    labelText: "Option ${i + 1}",
+                                  ),
                                 ),
                               ),
                             ],
@@ -122,17 +120,18 @@ class _PollCreatorState extends State<PollCreator> {
               children: [
                 Flexible(
                   child: CheckboxListTile(
-                      dense: true,
-                      title: tiamat.Text("Allow multiple answers"),
-                      value: multiAnswer,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            multiAnswer = value;
-                          });
-                        }
-                      }),
+                    dense: true,
+                    title: tiamat.Text("Allow multiple answers"),
+                    value: multiAnswer,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          multiAnswer = value;
+                        });
+                      }
+                    },
+                  ),
                 ),
                 TextButton.icon(
                   label: Text("Add Option"),
@@ -145,43 +144,45 @@ class _PollCreatorState extends State<PollCreator> {
               ],
             ),
             if (errorMessage != null) tiamat.Text.error(errorMessage!),
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
             tiamat.Button(
-                text: "Create",
-                onTap: () async {
-                  setState(() {
-                    errorMessage = null;
-                  });
+              text: "Create",
+              onTap: () async {
+                setState(() {
+                  errorMessage = null;
+                });
 
-                  String question = questionController.text;
-                  if (question.isEmpty) {
+                String question = questionController.text;
+                if (question.isEmpty) {
+                  setState(() {
+                    errorMessage = "Poll must have a question";
+                  });
+                  return;
+                }
+
+                List<String> parsedOptions = List.empty(growable: true);
+
+                for (var controller in options) {
+                  if (controller.text.trim().isEmpty) {
                     setState(() {
-                      errorMessage = "Poll must have a question";
+                      errorMessage = "Poll cannot have a blank option";
                     });
                     return;
                   }
 
-                  List<String> parsedOptions = List.empty(growable: true);
+                  parsedOptions.add(controller.text.trim());
+                }
 
-                  for (var controller in options) {
-                    if (controller.text.trim().isEmpty) {
-                      setState(() {
-                        errorMessage = "Poll cannot have a blank option";
-                      });
-                      return;
-                    }
-
-                    parsedOptions.add(controller.text.trim());
-                  }
-
-                  Navigator.of(context).pop(PollCreateArgs(
-                      question: question,
-                      options: parsedOptions,
-                      multiAnswer: multiAnswer,
-                      publicAnswers: openPoll));
-                })
+                Navigator.of(context).pop(
+                  PollCreateArgs(
+                    question: question,
+                    options: parsedOptions,
+                    multiAnswer: multiAnswer,
+                    publicAnswers: openPoll,
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

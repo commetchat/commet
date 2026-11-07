@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+
 import 'dart:ui' as ui;
 
 class ImageUtils {

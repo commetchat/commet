@@ -84,7 +84,8 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-          child: widget.voip.room.isE2EE &&
+          child:
+              widget.voip.room.isE2EE &&
                   preferences.experimentEnableE2eeElementCall.value == false
               ? e2eeUnsupportedView()
               : joinCallView(),
@@ -104,27 +105,27 @@ class _VoipRoomViewState extends State<VoipRoomView> {
                     Icon(Icons.lock, color: Colors.greenAccent),
                   if (!widget.voip.room.isE2EE)
                     Icon(Icons.lock_open, color: Colors.red),
-                  SizedBox(
-                    width: 3,
-                  ),
+                  SizedBox(width: 3),
                   Shimmer(
                     child: ShimmerLoading(
-                        isLoading: callServerUrl == null,
-                        child: callServerUrl == null
-                            ? Container(
-                                height: 16,
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: color),
-                              )
-                            : tiamat.Text.labelLow(callServerUrl!)),
+                      isLoading: callServerUrl == null,
+                      child: callServerUrl == null
+                          ? Container(
+                              height: 16,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: color,
+                              ),
+                            )
+                          : tiamat.Text.labelLow(callServerUrl!),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -135,36 +136,46 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       children: [
         if (participants.isNotEmpty)
           Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: BentoLayout(participants.map((item) {
-              final member = widget.voip.room.getMemberOrFallback(item);
-              return Container(
-                clipBehavior: Clip.antiAlias,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                child: tiamat.Tile.low(
-                  child: Center(
-                      child: tiamat.Avatar(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: BentoLayout(
+                participants.map((item) {
+                  final member = widget.voip.room.getMemberOrFallback(item);
+                  return Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: tiamat.Tile.low(
+                      child: Center(
+                        child: tiamat.Avatar(
                           radius: 50,
                           image: member.avatar,
                           placeholderColor: member.defaultColor,
-                          placeholderText: member.displayName)),
-                ),
-              );
-            }).toList()),
-          )),
+                          placeholderText: member.displayName,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
         if (participants.isEmpty)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                  clipBehavior: Clip.antiAlias,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                  child: tiamat.Tile.surfaceContainer(
-                      child: Center(
-                          child: tiamat.Text.labelLow("No one's here...")))),
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: tiamat.Tile.surfaceContainer(
+                  child: Center(
+                    child: tiamat.Text.labelLow("No one's here..."),
+                  ),
+                ),
+              ),
             ),
           ),
         if (widget.voip.canJoinCall)
@@ -177,8 +188,10 @@ class _VoipRoomViewState extends State<VoipRoomView> {
           ),
         if (!widget.voip.canJoinCall)
           Center(
-              child: tiamat.Text.labelLow(
-                  "You do not have permission to join this call"))
+            child: tiamat.Text.labelLow(
+              "You do not have permission to join this call",
+            ),
+          ),
       ],
     );
   }
@@ -213,10 +226,12 @@ class _VoipRoomViewState extends State<VoipRoomView> {
 
   e2eeUnsupportedView() {
     return Center(
-        child: Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: tiamat.Text.label(
-          "Sorry, End-to-end encrypted voice rooms are not yet supported."),
-    ));
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: tiamat.Text.label(
+          "Sorry, End-to-end encrypted voice rooms are not yet supported.",
+        ),
+      ),
+    );
   }
 }

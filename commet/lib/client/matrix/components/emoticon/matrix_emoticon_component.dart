@@ -46,16 +46,19 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   void refreshOwnedPacks() {
     final state = this.state.getAllStates();
 
-    _ownedPacks = state.entries.where((e) {
-      final val = e.value;
-      if (val is Map<String, dynamic>) {
-        return val.isNotEmpty;
-      } else {
-        return false;
-      }
-    }).map((e) {
-      return MatrixEmoticonPack(this, e.key, e.value);
-    }).toList();
+    _ownedPacks = state.entries
+        .where((e) {
+          final val = e.value;
+          if (val is Map<String, dynamic>) {
+            return val.isNotEmpty;
+          } else {
+            return false;
+          }
+        })
+        .map((e) {
+          return MatrixEmoticonPack(this, e.key, e.value);
+        })
+        .toList();
   }
 
   @override
@@ -92,8 +95,8 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     var content = {
       "pack": {
         "display_name": name,
-        if (avatar != null) "avatar_url": avatar.toString()
-      }
+        if (avatar != null) "avatar_url": avatar.toString(),
+      },
     };
 
     String stateKey = getNewPackKeyState(name);
@@ -102,8 +105,12 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   }
 
   @override
-  Future<void> importEmoticonPack(String name, int avatarIndex,
-      List<String> names, List<Uint8List> imageDatas) async {
+  Future<void> importEmoticonPack(
+    String name,
+    int avatarIndex,
+    List<String> names,
+    List<Uint8List> imageDatas,
+  ) async {
     var task = MatrixImportEmoticonPackTask(imageDatas, client);
     backgroundTaskManager.addTask(task);
     var uris = await task.uploadImages();
@@ -113,14 +120,14 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
         "display_name": name,
         "avatar_url": uris[avatarIndex].toString(),
       },
-      "images": <String, dynamic>{}
+      "images": <String, dynamic>{},
     };
 
     for (var i = 0; i < names.length; i++) {
       var name = names[i];
       content["images"]![name] = {
         "display_name": name,
-        "url": uris[i]!.toString()
+        "url": uris[i]!.toString(),
       };
     }
 
@@ -159,8 +166,9 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     if (!matrixClient.accountData.containsKey(globalEmoteRoomsStateKey))
       return [];
 
-    var rooms = matrixClient.accountData[globalEmoteRoomsStateKey]!
-        .content['rooms'] as Map<String, Object?>;
+    var rooms =
+        matrixClient.accountData[globalEmoteRoomsStateKey]!.content['rooms']
+            as Map<String, Object?>;
 
     var packs = List<EmoticonPack>.empty(growable: true);
 
@@ -192,8 +200,9 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
         if (emoji == null) continue;
 
-        var matchingPacks =
-            emoji.where((element) => element.identifier == packKey);
+        var matchingPacks = emoji.where(
+          (element) => element.identifier == packKey,
+        );
 
         if (matchingPacks.isEmpty) continue;
 
@@ -229,8 +238,12 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     return state.setState(packKey, content);
   }
 
-  Future<void> updatePack(String packKey,
-      {EmoticonUsage? usage, String? name, Uint8List? imageData}) async {
+  Future<void> updatePack(
+    String packKey, {
+    EmoticonUsage? usage,
+    String? name,
+    Uint8List? imageData,
+  }) async {
     var content = state.getState(packKey);
 
     if (usage != null) {
@@ -324,7 +337,8 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
       globalPacks() + ownedPacks + UnicodeEmojis.packs!;
 
   Map<String, Map<String, String>> getEmotePacksFlat(
-      matrix.ImagePackUsage emoticon) {
+    matrix.ImagePackUsage emoticon,
+  ) {
     var packs = globalPacks() + ownedPacks;
 
     var result = <String, Map<String, String>>{};
@@ -333,8 +347,8 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
       var key = "${pack.displayName}-${pack.hashCode}";
       result[key] = <String, String>{};
       for (var emote in pack.emotes) {
-        result[key]![emote.shortcode!] =
-            (emote as MatrixEmoticon).emojiUrl.toString();
+        result[key]![emote.shortcode!] = (emote as MatrixEmoticon).emojiUrl
+            .toString();
       }
     }
 

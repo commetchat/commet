@@ -1,6 +1,7 @@
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
@@ -20,14 +21,17 @@ import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart';
 import 'package:markdown/markdown.dart';
 import 'package:vector_math/vector_math.dart';
+
 import 'dart:ui' as ui;
 
 class NotificationModifierLinuxFormatting implements NotificationModifier {
   final double thumbnailImageSize = 100;
 
   @override
-  Future<NotificationContent?> process(NotificationContent content,
-      {Function(String reason)? onNotificationRejected}) async {
+  Future<NotificationContent?> process(
+    NotificationContent content, {
+    Function(String reason)? onNotificationRejected,
+  }) async {
     if (preferences.formatNotificationBody.value == false) {
       return content;
     }
@@ -187,7 +191,8 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
 
     final preview = room.client.getComponent<UrlPreviewComponent>();
 
-    bool shouldGetPreview = preview?.shouldGetPreviewsInRoom(room) == true &&
+    bool shouldGetPreview =
+        preview?.shouldGetPreviewsInRoom(room) == true &&
         preferences.previewUrlInNotifications.value;
 
     if (!shouldGetPreview) {
@@ -321,11 +326,10 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
   }
 
   Future<String?> convertPlainText(String formattedContent, Room room) async {
-    final html = markdownToHtml(formattedContent,
-        extensionSet: ExtensionSet(
-          [],
-          [AutolinkExtensionSyntax()],
-        ));
+    final html = markdownToHtml(
+      formattedContent,
+      extensionSet: ExtensionSet([], [AutolinkExtensionSyntax()]),
+    );
     return convertMatrixHtml(html, room);
   }
 }

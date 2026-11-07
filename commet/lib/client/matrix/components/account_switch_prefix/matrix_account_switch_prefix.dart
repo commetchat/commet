@@ -78,8 +78,11 @@ class MatrixAccountSwitchComponent extends AccountSwitchPrefix<MatrixClient> {
       content["prefix"] = prefix.trim();
     }
 
-    await client.matrixClient
-        .setAccountData(client.matrixClient.userID!, accountDataKey, content);
+    await client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      accountDataKey,
+      content,
+    );
   }
 
   @override

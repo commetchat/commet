@@ -39,18 +39,19 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
   static Future<MatrixLivekitEncryptionKeyProvider> create(mx.Room room) async {
     final rtc.KeyProviderOptions options = rtc.KeyProviderOptions(
-        sharedKey: false,
-        ratchetSalt: Uint8List.fromList(defaultRatchetSalt.codeUnits),
-        ratchetWindowSize: 10,
-        uncryptedMagicBytes: Uint8List.fromList(defaultMagicBytes.codeUnits),
-        failureTolerance: -1,
-        keyRingSize: 256,
-        keyDerivationAlgorithm: KeyDerivationAlgorithm.kHKDF,
-        discardFrameWhenCryptorNotReady:
-            defaultDiscardFrameWhenCryptorNotReady);
+      sharedKey: false,
+      ratchetSalt: Uint8List.fromList(defaultRatchetSalt.codeUnits),
+      ratchetWindowSize: 10,
+      uncryptedMagicBytes: Uint8List.fromList(defaultMagicBytes.codeUnits),
+      failureTolerance: -1,
+      keyRingSize: 256,
+      keyDerivationAlgorithm: KeyDerivationAlgorithm.kHKDF,
+      discardFrameWhenCryptorNotReady: defaultDiscardFrameWhenCryptorNotReady,
+    );
 
-    final keyProvider =
-        await rtc.frameCryptorFactory.createDefaultKeyProvider(options);
+    final keyProvider = await rtc.frameCryptorFactory.createDefaultKeyProvider(
+      options,
+    );
 
     var provider = BaseKeyProvider(keyProvider, options);
 
@@ -92,15 +93,24 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
   @override
   Future<void> setKey(String key, {String? participantId, int? keyIndex}) {
-    return _keyProvider.setKey(key,
-        participantId: participantId, keyIndex: keyIndex);
+    return _keyProvider.setKey(
+      key,
+      participantId: participantId,
+      keyIndex: keyIndex,
+    );
   }
 
   @override
-  Future<void> setRawKey(Uint8List key,
-      {String? participantId, int? keyIndex}) {
-    return _keyProvider.setRawKey(key,
-        participantId: participantId, keyIndex: keyIndex);
+  Future<void> setRawKey(
+    Uint8List key, {
+    String? participantId,
+    int? keyIndex,
+  }) {
+    return _keyProvider.setRawKey(
+      key,
+      participantId: participantId,
+      keyIndex: keyIndex,
+    );
   }
 
   @override
@@ -146,8 +156,10 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
     }
 
     setRawKey(bytes, participantId: localParticipant!, keyIndex: index);
-    lkRoom.e2eeManager
-        ?.setKeyIndex(index, participantIdentity: localParticipant!);
+    lkRoom.e2eeManager?.setKeyIndex(
+      index,
+      participantIdentity: localParticipant!,
+    );
   }
 
   Future<void> sendKeyToParticipants(Uint8List bytes, int keyIndex) async {
@@ -157,18 +169,11 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
     }
 
     var content = {
-      "keys": {
-        "index": keyIndex,
-        "key": base64Encode(bytes),
-      },
+      "keys": {"index": keyIndex, "key": base64Encode(bytes)},
       "member": {"claimed_device_id": room.client.deviceID!},
       "room_id": room.id,
       "sent_ts": DateTime.now().millisecondsSinceEpoch,
-      "session": {
-        "application": "m.call",
-        "call_id": "",
-        "scope": "m.room",
-      }
+      "session": {"application": "m.call", "call_id": "", "scope": "m.room"},
     };
 
     List<mx.DeviceKeys> sendToDevices = List.empty(growable: true);
@@ -197,14 +202,15 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
     if (sendToDevices.isNotEmpty) {
       room.client.sendToDeviceEncrypted(
-          sendToDevices, "io.element.call.encryption_keys", content);
+        sendToDevices,
+        "io.element.call.encryption_keys",
+        content,
+      );
     }
   }
 
   void onToDeviceEvent(mx.ToDeviceEvent event) {
-    Log.i(
-      "Received to device event: ${event.toJson()}",
-    );
+    Log.i("Received to device event: ${event.toJson()}");
 
     if (event.type == "io.element.call.encryption_keys") {
       var data = event.content["keys"] as Map<String, dynamic>;
@@ -216,8 +222,9 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
       var b = base64Decode(key);
 
-      var deviceId = (event.content["member"]
-          as Map<String, dynamic>)["claimed_device_id"] as String;
+      var deviceId =
+          (event.content["member"] as Map<String, dynamic>)["claimed_device_id"]
+              as String;
 
       var participantId = event.senderId + ":" + deviceId;
 
@@ -253,12 +260,14 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
       if (application != "m.call") {
         Log.w(
-            "Received membership state change for invalid application, not sending key");
+          "Received membership state change for invalid application, not sending key",
+        );
       }
 
       if (callid != "") {
         Log.w(
-            "Received membership state change for invalid call id, not sending key");
+          "Received membership state change for invalid call id, not sending key",
+        );
         continue;
       }
 

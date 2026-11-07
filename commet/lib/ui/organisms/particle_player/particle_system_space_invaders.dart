@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'dart:ui' as ui;
+
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
 import 'package:flutter/material.dart';
 import 'package:starfield/starfield.dart';
@@ -14,13 +15,12 @@ class MessageEffectSpaceInvaders implements MessageEffectParticles {
   @override
   Future<void> init() async {
     var data = await ImmutableBuffer.fromAsset(
-        "assets/images/effects/particles/fluent-emoji-alien-monster.png");
+      "assets/images/effects/particles/fluent-emoji-alien-monster.png",
+    );
     var codec = await ui.instantiateImageCodecFromBuffer(data);
     var sprite = ParticleSprite();
 
-    await sprite.init(
-      codec: codec,
-    );
+    await sprite.init(codec: codec);
 
     FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
 
@@ -33,7 +33,11 @@ class MessageEffectSpaceInvaders implements MessageEffectParticles {
     int columns = 5;
 
     system = ParticleSystemSpaceInvaders(
-        sprite: sprite, spriteSize: 0.2, gravity: 5, factor: rows);
+      sprite: sprite,
+      spriteSize: 0.2,
+      gravity: 5,
+      factor: rows,
+    );
 
     int numParticles = rows * columns;
 

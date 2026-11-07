@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'dart:ui' as ui;
+
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
 import 'package:flutter/material.dart';
 import 'package:starfield/starfield.dart';
@@ -13,16 +14,25 @@ class MessageEffectConfetti implements MessageEffectParticles {
   @override
   Future<void> init() async {
     var data = await ImmutableBuffer.fromAsset(
-        "assets/images/effects/particles/confetti.webp");
+      "assets/images/effects/particles/confetti.webp",
+    );
     var codec = await ui.instantiateImageCodecFromBuffer(data);
     var sprite = ParticleSprite();
 
     await sprite.init(
-        codec: codec,
-        spriteSheet: SpriteSheetInfo(
-            frames: 59, frameWidth: 64, frameHeight: 64, framesPerSecond: 50));
-    system =
-        ParticleSystemConfetti(sprite: sprite, spriteSize: 0.2, gravity: 10);
+      codec: codec,
+      spriteSheet: SpriteSheetInfo(
+        frames: 59,
+        frameWidth: 64,
+        frameHeight: 64,
+        framesPerSecond: 50,
+      ),
+    );
+    system = ParticleSystemConfetti(
+      sprite: sprite,
+      spriteSize: 0.2,
+      gravity: 10,
+    );
     system!.setSize(200);
   }
 

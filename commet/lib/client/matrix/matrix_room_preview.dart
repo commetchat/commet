@@ -24,11 +24,18 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
   @override
   late c.RoomType type;
 
-  MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient,
-      {this.via = const []}) {
+  MatrixSpaceRoomChunkPreview(
+    this.chunk,
+    this.matrixClient, {
+    this.via = const [],
+  }) {
     avatar = chunk.avatarUrl != null
-        ? MatrixMxcImage(chunk.avatarUrl!, matrixClient,
-            doFullres: false, doThumbnail: true)
+        ? MatrixMxcImage(
+            chunk.avatarUrl!,
+            matrixClient,
+            doFullres: false,
+            doThumbnail: true,
+          )
         : null;
 
     if (chunk.roomType == "m.space") {

@@ -21,8 +21,10 @@ class RTCDataMediaStream implements webrtc.MediaStream {
   bool? get active => throw UnimplementedError();
 
   @override
-  Future<void> addTrack(webrtc.MediaStreamTrack track,
-      {bool addToNative = true}) async {}
+  Future<void> addTrack(
+    webrtc.MediaStreamTrack track, {
+    bool addToNative = true,
+  }) async {}
 
   @override
   Future<webrtc.MediaStream> clone() async {
@@ -58,6 +60,8 @@ class RTCDataMediaStream implements webrtc.MediaStream {
   }
 
   @override
-  Future<void> removeTrack(webrtc.MediaStreamTrack track,
-      {bool removeFromNative = true}) async {}
+  Future<void> removeTrack(
+    webrtc.MediaStreamTrack track, {
+    bool removeFromNative = true,
+  }) async {}
 }

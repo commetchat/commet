@@ -12,10 +12,12 @@ class Alert {
   String get title => _titleGetter();
   String get message => _messageGetter();
 
-  Alert(this.type,
-      {required String Function() messageGetter,
-      required String Function() titleGetter,
-      this.action}) {
+  Alert(
+    this.type, {
+    required String Function() messageGetter,
+    required String Function() titleGetter,
+    this.action,
+  }) {
     _messageGetter = messageGetter;
     _titleGetter = titleGetter;
   }

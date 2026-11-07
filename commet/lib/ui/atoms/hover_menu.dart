@@ -2,13 +2,14 @@ import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
 
 class HoverMenu extends StatefulWidget {
-  const HoverMenu(
-      {super.key,
-      this.menuAlignment = Alignment.topLeft,
-      this.parentAlignment = Alignment.topLeft,
-      this.onHoverStateChanged,
-      required this.builder,
-      required this.child});
+  const HoverMenu({
+    super.key,
+    this.menuAlignment = Alignment.topLeft,
+    this.parentAlignment = Alignment.topLeft,
+    this.onHoverStateChanged,
+    required this.builder,
+    required this.child,
+  });
   final Widget child;
   final Widget Function(BuildContext context) builder;
   final Function(bool hovered)? onHoverStateChanged;
@@ -25,8 +26,9 @@ class HoverMenuState extends State<HoverMenu> {
 
   bool overlayHovered = false;
 
-  Debouncer overlayRemoveDebounder =
-      Debouncer(delay: Duration(milliseconds: 20));
+  Debouncer overlayRemoveDebounder = Debouncer(
+    delay: Duration(milliseconds: 20),
+  );
 
   void addOverlay() {
     widget.onHoverStateChanged?.call(true);
@@ -42,25 +44,25 @@ class HoverMenuState extends State<HoverMenu> {
         return Row(
           children: [
             CompositedTransformFollower(
-                link: link,
-                followerAnchor: widget.menuAlignment,
-                targetAnchor: widget.parentAlignment,
-                child: MouseRegion(
-                    onEnter: (event) {
-                      overlayRemoveDebounder.cancel();
-                    },
-                    onExit: (event) {
-                      overlayRemoveDebounder.run(removeOverlay);
-                    },
-                    child: widget.builder(context))),
+              link: link,
+              followerAnchor: widget.menuAlignment,
+              targetAnchor: widget.parentAlignment,
+              child: MouseRegion(
+                onEnter: (event) {
+                  overlayRemoveDebounder.cancel();
+                },
+                onExit: (event) {
+                  overlayRemoveDebounder.run(removeOverlay);
+                },
+                child: widget.builder(context),
+              ),
+            ),
           ],
         );
       },
     );
 
-    Overlay.of(
-      context,
-    ).insert(entry!);
+    Overlay.of(context).insert(entry!);
   }
 
   void removeOverlay() {
@@ -77,18 +79,19 @@ class HoverMenuState extends State<HoverMenu> {
     return CompositedTransformTarget(
       link: link,
       child: MouseRegion(
-          onEnter: (event) {
-            overlayRemoveDebounder.cancel();
-            if (entry == null) {
-              addOverlay();
-            }
-          },
-          onExit: (event) {
-            if (!overlayHovered) {
-              overlayRemoveDebounder.run(removeOverlay);
-            }
-          },
-          child: widget.child),
+        onEnter: (event) {
+          overlayRemoveDebounder.cancel();
+          if (entry == null) {
+            addOverlay();
+          }
+        },
+        onExit: (event) {
+          if (!overlayHovered) {
+            overlayRemoveDebounder.run(removeOverlay);
+          }
+        },
+        child: widget.child,
+      ),
     );
   }
 }

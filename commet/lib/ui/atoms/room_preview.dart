@@ -33,35 +33,31 @@ class RoomPreviewView extends StatelessWidget {
                   children: [
                     if (previewData.type != null)
                       tiamat.Tooltip(
-                          text: previewData.type!.string,
-                          child: Icon(size: 15, previewData.type!.icon)),
+                        text: previewData.type!.string,
+                        child: Icon(size: 15, previewData.type!.icon),
+                      ),
                     if (previewData.numMembers != null)
                       Row(
                         children: [
                           Icon(size: 15, Icons.people),
-                          tiamat.Text.labelLow("${previewData.numMembers}")
+                          tiamat.Text.labelLow("${previewData.numMembers}"),
                         ],
                       ),
-                    Icon(
-                        size: 15,
-                        switch (previewData.visibility) {
-                          null => Icons.lock,
-                          final RoomVisibilityPublic _ => Icons.public,
-                          final RoomVisibilityPrivate _ => Icons.lock,
-                          final RoomVisibilityRestricted _ => Icons.shield,
-                          _ => Icons.question_mark,
-                        })
+                    Icon(size: 15, switch (previewData.visibility) {
+                      null => Icons.lock,
+                      final RoomVisibilityPublic _ => Icons.public,
+                      final RoomVisibilityPrivate _ => Icons.lock,
+                      final RoomVisibilityRestricted _ => Icons.shield,
+                      _ => Icons.question_mark,
+                    }),
                   ],
                 ),
                 if (previewData.topic != null)
-                  Flexible(
-                      child: tiamat.Text.labelLow(
-                    previewData.topic!,
-                  ))
+                  Flexible(child: tiamat.Text.labelLow(previewData.topic!)),
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }

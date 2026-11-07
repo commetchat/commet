@@ -22,14 +22,18 @@ class MatrixRTCDataChannelComponent
       StreamController.broadcast();
 
   @override
-  Future<DataChannel?> createDataChannel(VoipSession session,
-      {required String purpose}) async {
+  Future<DataChannel?> createDataChannel(
+    VoipSession session, {
+    required String purpose,
+  }) async {
     var uuid = const Uuid();
     var label = uuid.v4();
 
     var sesh = session as MatrixVoipSession;
-    var channel = await sesh.session.pc
-        ?.createDataChannel(label, RTCDataChannelInit()..id = 1337);
+    var channel = await sesh.session.pc?.createDataChannel(
+      label,
+      RTCDataChannelInit()..id = 1337,
+    );
 
     sesh.session.addLocalStream(RTCDataMediaStream(channel!), purpose);
 
@@ -37,7 +41,9 @@ class MatrixRTCDataChannelComponent
   }
 
   void dataChannelOpenedCallback(
-      MatrixVoipSession session, RTCDataChannel channel) {
+    MatrixVoipSession session,
+    RTCDataChannel channel,
+  ) {
     var newChannel = MatrixRtcDataChannel(session, channel);
 
     if (newChannel.purpose ==

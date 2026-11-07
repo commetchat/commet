@@ -22,22 +22,24 @@ class CallManager {
       StreamController.broadcast();
 
   String notificationContentUserIsCalling(String user) => Intl.message(
-      "$user is calling!",
-      desc:
-          "Notification body content for when receiving an incoming call from another user",
-      args: [user],
-      name: "notificationContentUserIsCalling");
+    "$user is calling!",
+    desc: "Notification body content for when receiving an incoming call from another user",
+    args: [user],
+    name: "notificationContentUserIsCalling",
+  );
 
-  String notificationTitleIncomingCall(String roomName) =>
-      Intl.message("Incoming Call! ($roomName)",
-          desc: "Notification title for when a call is being received",
-          args: [roomName],
-          name: "notificationTitleIncomingCall");
+  String notificationTitleIncomingCall(String roomName) => Intl.message(
+    "Incoming Call! ($roomName)",
+    desc: "Notification title for when a call is being received",
+    args: [roomName],
+    name: "notificationTitleIncomingCall",
+  );
 
   Stream<VoipSession> get onSessionStarted => _onSessionStarted.stream;
 
-  NotifyingList<VoipSession> currentSessions =
-      NotifyingList.empty(growable: true);
+  NotifyingList<VoipSession> currentSessions = NotifyingList.empty(
+    growable: true,
+  );
 
   CallManager(this.clientManager) {
     clientManager.onClientAdded.stream.listen(_onClientAdded);
@@ -71,10 +73,12 @@ class CallManager {
 
       var member = room?.getMemberOrFallback(event.remoteUserId!);
 
-      NotificationManager.notify(CallNotificationContent(
+      NotificationManager.notify(
+        CallNotificationContent(
           title: notificationTitleIncomingCall(event.roomName),
           content: notificationContentUserIsCalling(
-              event.remoteUserName ?? event.remoteUserId!),
+            event.remoteUserName ?? event.remoteUserId!,
+          ),
           roomId: event.roomId,
           roomName: event.roomName,
           senderName: member?.displayName ?? event.remoteUserId!,
@@ -85,10 +89,13 @@ class CallManager {
           senderImageId: member?.avatarId,
           roomImageId: room?.avatarId,
           clientId: event.client.identifier,
-          isDirectMessage: event.client
+          isDirectMessage:
+              event.client
                   .getComponent<DirectMessagesComponent>()
                   ?.isRoomDirectMessage(room!) ==
-              true));
+              true,
+        ),
+      );
     }
 
     if (event.state == VoipState.outgoing) {
@@ -121,22 +128,25 @@ class CallManager {
   }
 
   void removeOverlay() {
-    for (var existing in WidgetComponent.currentSessions
-        .where((i) => i.info.type == VoipOverlay.widgetId)) {
+    for (var existing in WidgetComponent.currentSessions.where(
+      (i) => i.info.type == VoipOverlay.widgetId,
+    )) {
       existing.dispose();
     }
   }
 
   void onSessionEnded(VoipSession event) {
-    currentSessions
-        .removeWhere((element) => element.sessionId == event.sessionId);
+    currentSessions.removeWhere(
+      (element) => element.sessionId == event.sessionId,
+    );
 
     if (currentSessions.where((e) => e.state == VoipState.incoming).isEmpty) {
       stopRingtone();
     }
 
-    for (var existing in WidgetComponent.currentSessions
-        .where((i) => i.info.type == VoipOverlay.widgetId)) {
+    for (var existing in WidgetComponent.currentSessions.where(
+      (i) => i.info.type == VoipOverlay.widgetId,
+    )) {
       existing.dispose();
     }
 
@@ -146,7 +156,8 @@ class CallManager {
   VoipSession? getCallInRoom(Client client, String roomId) {
     return currentSessions
         .where(
-            (element) => element.client == client && element.roomId == roomId)
+          (element) => element.client == client && element.roomId == roomId,
+        )
         .firstOrNull;
   }
 

@@ -17,8 +17,9 @@ import 'package:tiamat/tiamat.dart';
 
 class AccountManagementSettingsTab extends StatefulWidget {
   const AccountManagementSettingsTab({super.key, required this.clientManager});
-  static ValueKey addAccountKey =
-      const ValueKey("ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON");
+  static ValueKey addAccountKey = const ValueKey(
+    "ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON",
+  );
   final ClientManager clientManager;
   @override
   State<AccountManagementSettingsTab> createState() =>
@@ -32,17 +33,23 @@ class _AccountManagementSettingsTabState
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   late int _numClients;
 
-  String get promptAddAccount => Intl.message("Add Account",
-      desc: "Label for button in settings to add another account",
-      name: "promptAddAccount");
+  String get promptAddAccount => Intl.message(
+    "Add Account",
+    desc: "Label for button in settings to add another account",
+    name: "promptAddAccount",
+  );
 
-  String get promptLogoutSingleAccount => Intl.message("Logout",
-      desc: "Label for button in settings to log out of an account",
-      name: "promptLogoutSingleAccount");
+  String get promptLogoutSingleAccount => Intl.message(
+    "Logout",
+    desc: "Label for button in settings to log out of an account",
+    name: "promptLogoutSingleAccount",
+  );
 
-  String get labelCurrentAccountsHeader => Intl.message("Current Accounts",
-      desc: "Label for header of accounts list",
-      name: "labelCurrentAccountsHeader");
+  String get labelCurrentAccountsHeader => Intl.message(
+    "Current Accounts",
+    desc: "Label for header of accounts list",
+    name: "labelCurrentAccountsHeader",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -51,26 +58,29 @@ class _AccountManagementSettingsTabState
 
   @override
   void initState() {
-    onClientAddedListener =
-        widget.clientManager.onClientAdded.stream.listen((index) {
+    onClientAddedListener = widget.clientManager.onClientAdded.stream.listen((
+      index,
+    ) {
       _listKey.currentState?.insertItem(index);
       setState(() {
         _numClients++;
       });
     });
 
-    onClientRemovedListener =
-        widget.clientManager.onClientRemoved.stream.listen((info) {
-      _listKey.currentState?.removeItem(
-          info.index,
-          (context, animation) => SizeTransition(
-                sizeFactor: animation,
-                child: accountListItem(
-                    displayName: info.displayName!,
-                    avatar: info.avatar,
-                    detail: info.identifier),
-              ));
-    });
+    onClientRemovedListener = widget.clientManager.onClientRemoved.stream
+        .listen((info) {
+          _listKey.currentState?.removeItem(
+            info.index,
+            (context, animation) => SizeTransition(
+              sizeFactor: animation,
+              child: accountListItem(
+                displayName: info.displayName!,
+                avatar: info.avatar,
+                detail: info.identifier,
+              ),
+            ),
+          );
+        });
 
     _numClients = widget.clientManager.clients.length;
 
@@ -101,7 +111,7 @@ class _AccountManagementSettingsTabState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   accountListBuilder(context, clientManager),
-                  addAccountButton(context)
+                  addAccountButton(context),
                 ],
               ),
             ),
@@ -122,25 +132,26 @@ class _AccountManagementSettingsTabState
         return SizeTransition(
           sizeFactor: animation,
           child: accountListItem(
-              client: clients[index],
-              displayName: clients[index].self!.displayName,
-              avatar: clients[index].self!.avatar,
-              detail: clients[index].self!.identifier,
-              internalId: clients[index].identifier,
-              onLogoutClicked: () =>
-                  clientmanager.logoutClient(clients[index])),
+            client: clients[index],
+            displayName: clients[index].self!.displayName,
+            avatar: clients[index].self!.avatar,
+            detail: clients[index].self!.identifier,
+            internalId: clients[index].identifier,
+            onLogoutClicked: () => clientmanager.logoutClient(clients[index]),
+          ),
         );
       },
     );
   }
 
-  Widget accountListItem(
-      {required String displayName,
-      Client? client,
-      ImageProvider? avatar,
-      String? detail,
-      String? internalId,
-      Function? onLogoutClicked}) {
+  Widget accountListItem({
+    required String displayName,
+    Client? client,
+    ImageProvider? avatar,
+    String? detail,
+    String? internalId,
+    Function? onLogoutClicked,
+  }) {
     String detailString = detail ?? "";
 
     if (preferences.developerMode.value && internalId != null) {
@@ -160,10 +171,11 @@ class _AccountManagementSettingsTabState
               : [
                   if (_numClients > 1)
                     tiamat.ContextMenuItem(
-                        text: "Set Prefix",
-                        onPressed: () {
-                          setPrefixDialog(client);
-                        })
+                      text: "Set Prefix",
+                      onPressed: () {
+                        setPrefixDialog(client);
+                      },
+                    ),
                 ],
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,7 +194,7 @@ class _AccountManagementSettingsTabState
                 onTap: () {
                   onLogoutClicked?.call();
                 },
-              )
+              ),
             ],
           ),
         ),
@@ -198,12 +210,12 @@ class _AccountManagementSettingsTabState
     }
 
     final newPrefix = await AdaptiveTextDialog.show(
-        title: "Set Prefix",
-        placeholder: "Enter Prefix",
-        description:
-            "When more than one of your logged in accounts share the same room, you can type this prefix to quickly send messages from this account",
-        context,
-        defaultText: component.clientPrefix);
+      title: "Set Prefix",
+      placeholder: "Enter Prefix",
+      description: "When more than one of your logged in accounts share the same room, you can type this prefix to quickly send messages from this account",
+      context,
+      defaultText: component.clientPrefix,
+    );
     if (newPrefix == null) {
       return;
     }
@@ -215,35 +227,36 @@ class _AccountManagementSettingsTabState
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 8, 12, 12),
       child: Align(
-          alignment: Alignment.centerRight,
-          child: JustTheTooltip(
-            content: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: tiamat.Text(promptAddAccount),
-            ),
-            preferredDirection: AxisDirection.down,
-            offset: 5,
-            tailLength: 5,
-            tailBaseWidth: 5,
-            backgroundColor:
-                Theme.of(context).colorScheme.surfaceContainerLowest,
-            child: tiamat.CircleButton(
-              key: AccountManagementSettingsTab.addAccountKey,
-              icon: Icons.add,
-              radius: 20,
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => LoginPage(
-                          canNavigateBack: true,
-                          onSuccess: (
-                            _,
-                          ) {
-                            Navigator.of(context).pop();
-                          },
-                        )));
-              },
-            ),
-          )),
+        alignment: Alignment.centerRight,
+        child: JustTheTooltip(
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: tiamat.Text(promptAddAccount),
+          ),
+          preferredDirection: AxisDirection.down,
+          offset: 5,
+          tailLength: 5,
+          tailBaseWidth: 5,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+          child: tiamat.CircleButton(
+            key: AccountManagementSettingsTab.addAccountKey,
+            icon: Icons.add,
+            radius: 20,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => LoginPage(
+                    canNavigateBack: true,
+                    onSuccess: (_) {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

@@ -9,8 +9,12 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/main.dart';
 
 class AudioPlayer extends StatefulWidget {
-  const AudioPlayer(
-      {required this.file, this.fileName, this.fileSize, super.key});
+  const AudioPlayer({
+    required this.file,
+    this.fileName,
+    this.fileSize,
+    super.key,
+  });
 
   final String? fileName;
   final int? fileSize;
@@ -20,11 +24,7 @@ class AudioPlayer extends StatefulWidget {
   State<AudioPlayer> createState() => _AudioPlayerState();
 }
 
-enum AudioPlayerState {
-  paused,
-  loading,
-  playing,
-}
+enum AudioPlayerState { paused, loading, playing }
 
 class _AudioPlayerState extends State<AudioPlayer> {
   Player player = Player();
@@ -74,8 +74,9 @@ class _AudioPlayerState extends State<AudioPlayer> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(8)),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: SizedBox(
         width: 500,
         child: Column(
@@ -89,13 +90,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.audio_file,
-                          size: 20,
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
+                        Icon(Icons.audio_file, size: 20),
+                        SizedBox(width: 8),
                         tiamat.Text.labelLow(widget.fileName!),
                       ],
                     ),
@@ -103,57 +99,57 @@ class _AudioPlayerState extends State<AudioPlayer> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
                         child: tiamat.Text.labelLow(
-                            TextUtils.readableFileSize(widget.fileSize!)),
+                          TextUtils.readableFileSize(widget.fileSize!),
+                        ),
                       ),
                   ],
                 ),
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
-              child: tiamat.Seperator(
-                padding: 0,
-              ),
+              child: tiamat.Seperator(padding: 0),
             ),
             Row(
               children: [
+                SizedBox(width: 8),
                 SizedBox(
-                  width: 8,
+                  width: 40,
+                  height: 40,
+                  child: state == AudioPlayerState.loading
+                      ? Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              value: downloadProgress,
+                            ),
+                          ),
+                        )
+                      : tiamat.IconButton(
+                          icon: state == AudioPlayerState.paused
+                              ? Icons.play_arrow
+                              : Icons.pause,
+                          onPressed: onPlayButtonPressed,
+                        ),
                 ),
-                SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: state == AudioPlayerState.loading
-                        ? Center(
-                            child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  value: downloadProgress,
-                                )),
-                          )
-                        : tiamat.IconButton(
-                            icon: state == AudioPlayerState.paused
-                                ? Icons.play_arrow
-                                : Icons.pause,
-                            onPressed: onPlayButtonPressed,
-                          )),
                 Expanded(
-                    child: tiamat.Slider(
-                  value: displayPosition,
-                  onChangeStart: (value) {
-                    dragging = true;
-                  },
-                  onChangeEnd: (value) {
-                    dragging = false;
+                  child: tiamat.Slider(
+                    value: displayPosition,
+                    onChangeStart: (value) {
+                      dragging = true;
+                    },
+                    onChangeEnd: (value) {
+                      dragging = false;
 
-                    var position = player.state.duration * value;
+                      var position = player.state.duration * value;
 
-                    player.seek(position);
-                  },
-                  onChanged: (value) => setState(() {
-                    displayPosition = value;
-                  }),
-                )),
+                      player.seek(position);
+                    },
+                    onChanged: (value) => setState(() {
+                      displayPosition = value;
+                    }),
+                  ),
+                ),
                 const SizedBox(width: 8),
                 HoverMenu(
                   key: menuKey,
@@ -163,8 +159,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
                     icon: isMuted
                         ? Icons.volume_mute
                         : volume == 0
-                            ? Icons.volume_off
-                            : Icons.volume_up,
+                        ? Icons.volume_off
+                        : Icons.volume_up,
                     onPressed: (() {
                       toggleIsMuted();
                       preferences.isPlayerMuted.set(isMuted);
@@ -172,22 +168,24 @@ class _AudioPlayerState extends State<AudioPlayer> {
                   ),
                   builder: (context) {
                     return RotatedBox(
-                        quarterTurns: 3,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: ColorScheme.of(context).surfaceContainer,
-                              borderRadius: BorderRadius.circular(8)),
-                          child: SizedBox(
-                            width: 200,
-                            height: 50,
-                            child: tiamat.Slider(
-                              value: volume / 100,
-                              onChanged: (value) => setVolume(value * 100),
-                              onChangeEnd: (value) =>
-                                  preferences.playerVolume.set(appliedVolume),
-                            ),
+                      quarterTurns: 3,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: ColorScheme.of(context).surfaceContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: SizedBox(
+                          width: 200,
+                          height: 50,
+                          child: tiamat.Slider(
+                            value: volume / 100,
+                            onChanged: (value) => setVolume(value * 100),
+                            onChangeEnd: (value) =>
+                                preferences.playerVolume.set(appliedVolume),
                           ),
-                        ));
+                        ),
+                      ),
+                    );
                   },
                 ),
                 const SizedBox(width: 12),
@@ -254,7 +252,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
   void onPositionChanged(Duration event) {
     if (!dragging) {
       setState(() {
-        var pos = event.inMilliseconds.toDouble() /
+        var pos =
+            event.inMilliseconds.toDouble() /
             player.state.duration.inMilliseconds.toDouble();
 
         if (pos >= 0 && pos <= 1) {
