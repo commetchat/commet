@@ -5,11 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-enum ImageEditAction {
-  cancel,
-  remove,
-  pick,
-}
+enum ImageEditAction { cancel, remove, pick }
 
 class ImageSelectDialog extends StatelessWidget {
   static Future<ImageEditAction?> show(
@@ -42,24 +38,35 @@ class ImageSelectDialog extends StatelessWidget {
     required this.onPick,
   });
 
-  static String get changeImageDialogTitle => Intl.message("Change Image",
-      name: "changeImageDialogTitle",
-      desc: "Title for the dialog used to change an image");
+  static String get changeImageDialogTitle => Intl.message(
+    "Change Image",
+    name: "changeImageDialogTitle",
+    desc: "Title for the dialog used to change an image",
+  );
 
-  String get removeImagePrompt => Intl.message("Remove Image",
-      name: "removeImagePrompt", desc: "Button text for removing an image");
+  String get removeImagePrompt => Intl.message(
+    "Remove Image",
+    name: "removeImagePrompt",
+    desc: "Button text for removing an image",
+  );
 
-  String get pickImagePrompt => Intl.message("Pick Image",
-      name: "pickImagePrompt", desc: "Button text for picking an image");
+  String get pickImagePrompt => Intl.message(
+    "Pick Image",
+    name: "pickImagePrompt",
+    desc: "Button text for picking an image",
+  );
 
-  String get confirmRemovePrompt =>
-      Intl.message("Are you sure you want to remove this image?",
-          name: "confirmRemovePrompt",
-          desc: "Prompt text for confirming image removal");
+  String get confirmRemovePrompt => Intl.message(
+    "Are you sure you want to remove this image?",
+    name: "confirmRemovePrompt",
+    desc: "Prompt text for confirming image removal",
+  );
 
-  String get emptyImagePrompt => Intl.message("No image set",
-      name: "emptyImagePrompt",
-      desc: "Text shown when there is no image to display");
+  String get emptyImagePrompt => Intl.message(
+    "No image set",
+    name: "emptyImagePrompt",
+    desc: "Text shown when there is no image to display",
+  );
 
   final ImageProvider? image;
   final VoidCallback onCancel;
@@ -89,10 +96,7 @@ class ImageSelectDialog extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: tiamat.Button(
-            text: pickImagePrompt,
-            onTap: onPick,
-          ),
+          child: tiamat.Button(text: pickImagePrompt, onTap: onPick),
         ),
       ],
     );
@@ -102,10 +106,7 @@ class ImageSelectDialog extends StatelessWidget {
         spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          tiamat.Button(
-            text: pickImagePrompt,
-            onTap: onPick,
-          ),
+          tiamat.Button(text: pickImagePrompt, onTap: onPick),
           tiamat.Button(
             text: removeImagePrompt,
             type: tiamat.ButtonType.danger,
@@ -138,16 +139,11 @@ class ImageSelectDialog extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerLow,
                   image: image != null
-                      ? DecorationImage(
-                          image: image!,
-                          fit: BoxFit.cover,
-                        )
+                      ? DecorationImage(image: image!, fit: BoxFit.cover)
                       : null,
                 ),
                 child: image == null
-                    ? Center(
-                        child: tiamat.Text.labelLow(emptyImagePrompt),
-                      )
+                    ? Center(child: tiamat.Text.labelLow(emptyImagePrompt))
                     : null,
               ),
             ),
@@ -169,9 +165,7 @@ class ImageSelectDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 12,
           children: [
-            tiamat.Text.body(
-              confirmRemovePrompt,
-            ),
+            tiamat.Text.body(confirmRemovePrompt),
             Row(
               spacing: 8,
               children: [

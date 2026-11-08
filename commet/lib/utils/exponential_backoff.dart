@@ -1,8 +1,10 @@
 import 'package:commet/debug/log.dart';
 
-Future<T?> exponentialBackoff<T>(Future<T> Function() callback,
-    {Duration maxDelay = const Duration(seconds: 30),
-    int maxRetries = 20}) async {
+Future<T?> exponentialBackoff<T>(
+  Future<T> Function() callback, {
+  Duration maxDelay = const Duration(seconds: 30),
+  int maxRetries = 20,
+}) async {
   var delay = Duration(milliseconds: 500);
 
   Log.d("Starting exponential backoff");

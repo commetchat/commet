@@ -50,8 +50,9 @@ class CalendarCreatorDescription extends StatelessWidget {
   const CalendarCreatorDescription({super.key});
 
   String get labelCalendarDescription => Intl.message(
-      "Create a shared calendar to keep track of your plans, and import your schedule from other calendars to let your friends know when you are busy.",
-      name: "labelCalendarDescription");
+    "Create a shared calendar to keep track of your plans, and import your schedule from other calendars to let your friends know when you are busy.",
+    name: "labelCalendarDescription",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -59,107 +60,100 @@ class CalendarCreatorDescription extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         tiamat.Text.labelLow(labelCalendarDescription),
-        SizedBox(
-          height: 10,
-        ),
-        LayoutBuilder(builder: (context, constraints) {
-          double width = (constraints.maxWidth / 4) - (10);
-          return Container(
-            decoration: BoxDecoration(
+        SizedBox(height: 10),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            double width = (constraints.maxWidth / 4) - (10);
+            return Container(
+              decoration: BoxDecoration(
                 color: ColorScheme.of(context).surfaceContainerLow,
-                borderRadius: BorderRadius.circular(8)),
-            child: Padding(
-              padding: EdgeInsetsGeometry.all(8),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 8,
-                  children: [
-                    Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          buildFakeEvent(
-                            width: width,
-                            height: 100,
-                            text: "Movies",
-                            senderId: "@luna:commet.chat",
-                          ),
-                          SizedBox(
-                            height: 40,
-                          ),
-                          buildFakeEvent(
-                            width: width,
-                            height: 100,
-                            text: "Unavailable",
-                            type: "unavailability",
-                            senderId: "@pluto:commet.chat",
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          buildFakeEvent(
-                            width: width,
-                            height: 50,
-                            text: "Dinner",
-                            senderId: "@pluto:commet.chat",
-                          )
-                        ],
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: EdgeInsetsGeometry.all(8),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            buildFakeEvent(
+                              width: width,
+                              height: 100,
+                              text: "Movies",
+                              senderId: "@luna:commet.chat",
+                            ),
+                            SizedBox(height: 40),
+                            buildFakeEvent(
+                              width: width,
+                              height: 100,
+                              text: "Unavailable",
+                              type: "unavailability",
+                              senderId: "@pluto:commet.chat",
+                            ),
+                            SizedBox(height: 20),
+                            buildFakeEvent(
+                              width: width,
+                              height: 50,
+                              text: "Dinner",
+                              senderId: "@pluto:commet.chat",
+                            ),
+                          ],
                         ),
-                        buildFakeEvent(
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(height: 50),
+                          buildFakeEvent(
                             width: width,
                             height: 250,
                             type: "unavailability",
                             text: "Work",
-                            senderId: "@luna:commet.chat"),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                        ),
-                        buildFakeEvent(
+                            senderId: "@luna:commet.chat",
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(height: 30),
+                          buildFakeEvent(
                             width: width,
                             height: 150,
                             type: "unavailability",
                             text: "work",
-                            senderId: "@pluto:commet.chat"),
-                        SizedBox(
-                          height: 40,
-                        ),
-                        buildFakeEvent(
+                            senderId: "@pluto:commet.chat",
+                          ),
+                          SizedBox(height: 40),
+                          buildFakeEvent(
                             width: width,
                             height: 70,
                             text: "Gaminggg",
-                            senderId: "@pluto:commet.chat"),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 170,
-                        ),
-                        buildFakeEvent(
+                            senderId: "@pluto:commet.chat",
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(height: 170),
+                          buildFakeEvent(
                             width: width,
                             height: 100,
                             text: "Beach Night",
-                            senderId: "@luna:commet.chat"),
-                      ],
-                    ),
-                  ],
+                            senderId: "@luna:commet.chat",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ],
     );
   }
@@ -172,14 +166,16 @@ class CalendarCreatorDescription extends StatelessWidget {
     String? type,
   }) {
     var event = MatrixCalendarEventState(
-        senderId: senderId,
-        type: type,
-        data: RFC8984CalendarEvent(
-            uid: "12312312",
-            updated: DateTime.now(),
-            title: text,
-            start: DateTime.now(),
-            duration: Duration(seconds: 5)));
+      senderId: senderId,
+      type: type,
+      data: RFC8984CalendarEvent(
+        uid: "12312312",
+        updated: DateTime.now(),
+        title: text,
+        start: DateTime.now(),
+        duration: Duration(seconds: 5),
+      ),
+    );
     event.loaded = true;
 
     var config = FakeCalendarConfig();
@@ -187,8 +183,12 @@ class CalendarCreatorDescription extends StatelessWidget {
     return SizedBox(
       height: height,
       width: width,
-      child: EventViewBox(event, config,
-          color: Colors.blue, boundary: Rect.fromLTWH(0, 0, width, height)),
+      child: EventViewBox(
+        event,
+        config,
+        color: Colors.blue,
+        boundary: Rect.fromLTWH(0, 0, width, height),
+      ),
     );
   }
 }

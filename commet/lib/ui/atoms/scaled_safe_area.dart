@@ -1,5 +1,6 @@
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
+
 import 'dart:math' as math;
 
 class ScaledSafeArea extends SafeArea {
@@ -19,7 +20,8 @@ class ScaledSafeArea extends SafeArea {
 
     if (maintainBottomViewPadding) {
       padding = padding.copyWith(
-          bottom: MediaQuery.of(context).scale().viewPadding.bottom);
+        bottom: MediaQuery.of(context).scale().viewPadding.bottom,
+      );
     }
 
     return Padding(

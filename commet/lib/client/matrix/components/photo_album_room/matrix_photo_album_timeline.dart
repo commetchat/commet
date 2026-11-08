@@ -118,7 +118,8 @@ class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
   void onEventRemoved(int index) {
     var event = matrixTimeline.events[index];
 
-    _photos
-        .removeWhere((e) => (e as MatrixPhoto).event.eventId == event.eventId);
+    _photos.removeWhere(
+      (e) => (e as MatrixPhoto).event.eventId == event.eventId,
+    );
   }
 }

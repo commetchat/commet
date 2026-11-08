@@ -7,8 +7,14 @@ import 'package:matrix/matrix.dart';
 import '../../../../../../matrix/verification/matrix_verification_page.dart';
 
 class MatrixSession extends StatefulWidget {
-  const MatrixSession(this.device, this.matrixClient,
-      {super.key, this.onUpdated, this.inactive = false, this.removeSession});
+  const MatrixSession(
+    this.device,
+    this.matrixClient, {
+    super.key,
+    this.onUpdated,
+    this.inactive = false,
+    this.removeSession,
+  });
   final Device device;
   final Client matrixClient;
   final Function? onUpdated;
@@ -37,7 +43,9 @@ class _MatrixSessionState extends State<MatrixSession> {
   }
 
   bool isVerified() {
-    var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]
+    var keys = widget
+        .matrixClient
+        .userDeviceKeys[widget.matrixClient.userID]
         ?.deviceKeys[widget.device.deviceId];
     return keys?.verified ?? false;
   }
@@ -47,16 +55,20 @@ class _MatrixSessionState extends State<MatrixSession> {
   }
 
   void beginVerification() async {
-    var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]
+    var keys = widget
+        .matrixClient
+        .userDeviceKeys[widget.matrixClient.userID]
         ?.deviceKeys[widget.device.deviceId];
     var request = await keys!.startVerification();
     previousOnUpdate = request.onUpdate;
     request.onUpdate = onRequestUpdate;
 
     if (mounted)
-      AdaptiveDialog.show(context,
-          builder: (_) => MatrixVerificationPage(request: request),
-          title: "Verification Request");
+      AdaptiveDialog.show(
+        context,
+        builder: (_) => MatrixVerificationPage(request: request),
+        title: "Verification Request",
+      );
   }
 
   void onRequestUpdate() {

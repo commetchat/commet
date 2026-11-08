@@ -10,23 +10,26 @@ import 'package:commet/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
 import '../../atoms/gradient_background.dart';
 import 'video_player_controller.dart';
 
 import '../../atoms/icon_button.dart' as i;
 
 class VideoPlayer extends StatefulWidget {
-  const VideoPlayer(this.videoFile,
-      {this.thumbnail,
-      this.fileName,
-      super.key,
-      this.canGoFullscreen = false,
-      this.onFullscreen,
-      this.streamUrl,
-      this.decodeFirstFrame = false,
-      this.controller,
-      this.doThumbnail = true,
-      this.showProgressBar = true});
+  const VideoPlayer(
+    this.videoFile, {
+    this.thumbnail,
+    this.fileName,
+    super.key,
+    this.canGoFullscreen = false,
+    this.onFullscreen,
+    this.streamUrl,
+    this.decodeFirstFrame = false,
+    this.controller,
+    this.doThumbnail = true,
+    this.showProgressBar = true,
+  });
   final FileProvider videoFile;
   final ImageProvider? thumbnail;
   final Uri? streamUrl;
@@ -102,14 +105,15 @@ class VideoPlayerState extends State<VideoPlayer> {
         if (updateSlider) {
           setState(() {
             videoProgress = clampDouble(
-                event.inMilliseconds.toDouble() /
-                    length.inMilliseconds.toDouble(),
-                0,
-                1);
+              event.inMilliseconds.toDouble() /
+                  length.inMilliseconds.toDouble(),
+              0,
+              1,
+            );
           });
         }
       }),
-      controller.onVolumeChanged.listen(onVolumeChanged)
+      controller.onVolumeChanged.listen(onVolumeChanged),
     ];
 
     super.initState();
@@ -132,7 +136,7 @@ class VideoPlayerState extends State<VideoPlayer> {
         if (widget.decodeFirstFrame || inited) pickPlayer(),
         if (showThumbnail) thumbnail(),
         if (buffering) bufferingWidget(),
-        controls()
+        controls(),
       ],
     );
   }
@@ -152,19 +156,17 @@ class VideoPlayerState extends State<VideoPlayer> {
           SizedBox(
             width: 50,
             height: 50,
-            child: CircularProgressIndicator(
-              value: progress,
-            ),
+            child: CircularProgressIndicator(value: progress),
           ),
           if (download != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
               child: TinyPill(
-                  background: Theme.of(context).colorScheme.secondaryContainer,
-                  foreground:
-                      Theme.of(context).colorScheme.onSecondaryContainer,
-                  "${TextUtils.readableFileSize(download.downloaded)} / ${TextUtils.readableFileSize(download.total)}"),
-            )
+                background: Theme.of(context).colorScheme.secondaryContainer,
+                foreground: Theme.of(context).colorScheme.onSecondaryContainer,
+                "${TextUtils.readableFileSize(download.downloaded)} / ${TextUtils.readableFileSize(download.total)}",
+              ),
+            ),
         ],
       ),
     );
@@ -172,13 +174,8 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   Widget thumbnail() {
     return widget.thumbnail != null
-        ? Image(
-            fit: BoxFit.cover,
-            image: widget.thumbnail!,
-          )
-        : Container(
-            color: Colors.black,
-          );
+        ? Image(fit: BoxFit.cover, image: widget.thumbnail!)
+        : Container(color: Colors.black);
   }
 
   Widget controls() {
@@ -217,8 +214,8 @@ class VideoPlayerState extends State<VideoPlayer> {
                         icon: isCompleted
                             ? Icons.replay
                             : playing
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded,
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
                         onPressed: () {
                           if (isCompleted) return replay();
                           if (playing) return pause();
@@ -277,14 +274,14 @@ class VideoPlayerState extends State<VideoPlayer> {
                                   parentAlignment: Alignment.topCenter,
                                   onHoverStateChanged: (hovered) =>
                                       setState(() {
-                                    showingVolumeSlider = hovered;
-                                  }),
+                                        showingVolumeSlider = hovered;
+                                      }),
                                   child: tiamat.IconButton(
                                     icon: isMuted
                                         ? Icons.volume_mute
                                         : appliedVolume == 0
-                                            ? Icons.volume_off
-                                            : Icons.volume_up,
+                                        ? Icons.volume_off
+                                        : Icons.volume_up,
                                     onPressed: (() {
                                       toggleIsMuted();
                                       preferences.isPlayerMuted.set(isMuted);
@@ -292,26 +289,29 @@ class VideoPlayerState extends State<VideoPlayer> {
                                   ),
                                   builder: (context) {
                                     return RotatedBox(
-                                        quarterTurns: 3,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: ColorScheme.of(context)
-                                                  .surfaceContainer,
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                          child: SizedBox(
-                                            width: 200,
-                                            height: 50,
-                                            child: tiamat.Slider(
-                                              value: appliedVolume / 100,
-                                              onChanged: (value) =>
-                                                  setVolume(value * 100),
-                                              onChangeEnd: (value) =>
-                                                  preferences.playerVolume
-                                                      .set(volume),
-                                            ),
+                                      quarterTurns: 3,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: ColorScheme.of(context)
+                                              .surfaceContainer,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
                                           ),
-                                        ));
+                                        ),
+                                        child: SizedBox(
+                                          width: 200,
+                                          height: 50,
+                                          child: tiamat.Slider(
+                                            value: appliedVolume / 100,
+                                            onChanged: (value) =>
+                                                setVolume(value * 100),
+                                            onChangeEnd: (value) => preferences
+                                                .playerVolume
+                                                .set(volume),
+                                          ),
+                                        ),
+                                      ),
+                                    );
                                   },
                                 ),
                               ),
@@ -326,12 +326,12 @@ class VideoPlayerState extends State<VideoPlayer> {
                                   widget.onFullscreen?.call();
                                 },
                               ),
-                            )
+                            ),
                         ],
                       ),
                     ),
                   ),
-                )
+                ),
             ],
           ),
         ),

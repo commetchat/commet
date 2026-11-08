@@ -11,8 +11,10 @@ class NativeImplementationsCustom extends NativeImplementationsIsolate {
   NativeImplementationsCustom(super.compute);
 
   @override
-  FutureOr<MatrixImageFileResizedResponse?> calcImageMetadata(Uint8List bytes,
-      {bool retryInDummy = false}) async {
+  FutureOr<MatrixImageFileResizedResponse?> calcImageMetadata(
+    Uint8List bytes, {
+    bool retryInDummy = false,
+  }) async {
     return await runInBackground(_calcImageMetadata, bytes);
   }
 
@@ -35,8 +37,12 @@ class NativeImplementationsCustom extends NativeImplementationsIsolate {
         width = 128;
       }
 
-      blurhashImage =
-          copyResize(image, width: width, height: height, maintainAspect: true);
+      blurhashImage = copyResize(
+        image,
+        width: width,
+        height: height,
+        maintainAspect: true,
+      );
     }
 
     String blurhash = BlurHash.encode(

@@ -92,8 +92,11 @@ class NotifyingList<T> implements INotifyingList<T> {
     return NotifyingList._internal(internalList, sync);
   }
 
-  factory NotifyingList.from(Iterable<dynamic> elements,
-      {bool growable = false, bool sync = true}) {
+  factory NotifyingList.from(
+    Iterable<dynamic> elements, {
+    bool growable = false,
+    bool sync = true,
+  }) {
     List<T> internalList = List.from(elements, growable: growable);
     return NotifyingList._internal(internalList, sync);
   }

@@ -20,16 +20,20 @@ class FatalErrorPage extends StatelessWidget {
                 const Text("Something went wrong!"),
                 Text(error.toString()),
                 const Text(
-                    "Sorry, there was a fatal error and Commet was unable to start. Please copy the error details and report this issue on GitHub"),
+                  "Sorry, there was a fatal error and Commet was unable to start. Please copy the error details and report this issue on GitHub",
+                ),
                 const Text(
-                    "Make sure to remove any personal/sensitive information before submitting the report!"),
+                  "Make sure to remove any personal/sensitive information before submitting the report!",
+                ),
                 ElevatedButton(
-                    onPressed: onCopyButtonPressed,
-                    child: const Text("Copy to clipboard")),
+                  onPressed: onCopyButtonPressed,
+                  child: const Text("Copy to clipboard"),
+                ),
                 ElevatedButton(
-                    onPressed: onReportButtonPressed,
-                    child: const Text("Report Issue")),
-                Text(trace.toString())
+                  onPressed: onReportButtonPressed,
+                  child: const Text("Report Issue"),
+                ),
+                Text(trace.toString()),
               ],
             ),
           ),

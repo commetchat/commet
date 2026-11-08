@@ -75,100 +75,106 @@ class _CurrentSessionPanelState extends State<CurrentSessionPanel> {
         children: [
           if (WidgetComponent.currentSessions.isNotEmpty)
             Padding(
-                padding: EdgeInsetsGeometry.fromLTRB(4, 4, 4, 0),
-                child: WidgetSessionsPanel(
-                  height: 40,
-                )),
+              padding: EdgeInsetsGeometry.fromLTRB(4, 4, 4, 0),
+              child: WidgetSessionsPanel(height: 40),
+            ),
           if (clientManager!.callManager.currentSessions.isNotEmpty)
             Padding(
               padding: EdgeInsetsGeometry.fromLTRB(4, 4, 4, 0),
-              child: CallSessionsPanel(
-                height: 40,
-              ),
+              child: CallSessionsPanel(height: 40),
             ),
           Material(
             color: Colors.transparent,
             child: Container(
-                child: AdaptiveContextMenu(
-              modal: true,
-              items: [
-                if (clientManager!.clients.length > 1)
-                  tiamat.ContextMenuItem(
+              child: AdaptiveContextMenu(
+                modal: true,
+                items: [
+                  if (clientManager!.clients.length > 1)
+                    tiamat.ContextMenuItem(
                       text: "Mix Accounts",
                       onPressed: () {
                         EventBus.setFilterClient.add(null);
                         preferences.filterClient.set(null);
-                      }),
-                if (clientManager!.clients.length > 1)
-                  ...clientManager!.clients
-                      .map((i) => tiamat.ContextMenuItem(
-                          text: i.self!.identifier,
-                          onPressed: () {
-                            print("Setting filter client");
-                            EventBus.setFilterClient.add(i);
-                            preferences.filterClient.set(i.identifier);
-                          }))
-                      .toList()
-              ],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  spacing: 8,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 8,
-                      children: [
-                        if (current != null)
-                          tiamat.Avatar(
-                            radius: 12,
-                            image: current.avatar,
-                            placeholderColor: current.defaultColor,
-                            placeholderText: current.displayName,
+                      },
+                    ),
+                  if (clientManager!.clients.length > 1)
+                    ...clientManager!.clients
+                        .map(
+                          (i) => tiamat.ContextMenuItem(
+                            text: i.self!.identifier,
+                            onPressed: () {
+                              print("Setting filter client");
+                              EventBus.setFilterClient.add(i);
+                              preferences.filterClient.set(i.identifier);
+                            },
                           ),
-                        if (current != null)
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                tiamat.Text.name(
+                        )
+                        .toList(),
+                ],
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    spacing: 8,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 8,
+                        children: [
+                          if (current != null)
+                            tiamat.Avatar(
+                              radius: 12,
+                              image: current.avatar,
+                              placeholderColor: current.defaultColor,
+                              placeholderText: current.displayName,
+                            ),
+                          if (current != null)
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  tiamat.Text.name(
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     color: current.defaultColor,
-                                    current.displayName),
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () => Clipboard.setData(
+                                    current.displayName,
+                                  ),
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () => Clipboard.setData(
                                         ClipboardData(
-                                            text: current!.identifier)),
-                                    child: Opacity(
-                                      opacity: 0.7,
-                                      child: Text(
-                                        maxLines: 1,
-                                        current.identifier,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall
-                                            ?.copyWith(
+                                          text: current!.identifier,
+                                        ),
+                                      ),
+                                      child: Opacity(
+                                        opacity: 0.7,
+                                        child: Text(
+                                          maxLines: 1,
+                                          current.identifier,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall
+                                              ?.copyWith(
                                                 fontFamily: "Code",
                                                 fontSize: 10,
                                                 color: Theme.of(context)
                                                     .colorScheme
-                                                    .secondary),
+                                                    .secondary,
+                                              ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        if (current == null)
-                          ...clientManager!.clients
-                              .where((i) => i.self != null)
-                              .map((i) => SizedBox(
+                          if (current == null)
+                            ...clientManager!.clients
+                                .where((i) => i.self != null)
+                                .map(
+                                  (i) => SizedBox(
                                     width: 24,
                                     height: 24,
                                     child: AspectRatio(
@@ -180,16 +186,16 @@ class _CurrentSessionPanelState extends State<CurrentSessionPanel> {
                                         image: i.self!.avatar,
                                       ),
                                     ),
-                                  )),
-                      ],
-                    ),
-                    UserPanelSettings(
-                      height: profileHeight,
-                    )
-                  ],
+                                  ),
+                                ),
+                        ],
+                      ),
+                      UserPanelSettings(height: profileHeight),
+                    ],
+                  ),
                 ),
               ),
-            )),
+            ),
           ),
         ],
       ),

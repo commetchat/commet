@@ -11,16 +11,18 @@ class MatrixPerMessageProfileData {
   final bool hasFallback;
   final List<String> pronouns;
 
-  const MatrixPerMessageProfileData(
-      {required this.id,
-      this.displayName,
-      this.avatarUrl,
-      this.clearAvatar = false,
-      this.hasFallback = false,
-      this.pronouns = const []});
+  const MatrixPerMessageProfileData({
+    required this.id,
+    this.displayName,
+    this.avatarUrl,
+    this.clearAvatar = false,
+    this.hasFallback = false,
+    this.pronouns = const [],
+  });
 
   static MatrixPerMessageProfileData? fromEventContent(
-      Map<String, Object?> content) {
+    Map<String, Object?> content,
+  ) {
     var profile = content[stableKey] ?? content[unstableKey];
 
     if (profile is! Map) {
@@ -55,12 +57,13 @@ class MatrixPerMessageProfileData {
     }
 
     return MatrixPerMessageProfileData(
-        id: id is String ? id : "",
-        displayName: displayName as String?,
-        avatarUrl: avatarUrl,
-        clearAvatar: clearAvatar,
-        hasFallback: profile["has_fallback"] == true,
-        pronouns: parsePronounsField(profile[pronounsFieldKey]));
+      id: id is String ? id : "",
+      displayName: displayName as String?,
+      avatarUrl: avatarUrl,
+      clearAvatar: clearAvatar,
+      hasFallback: profile["has_fallback"] == true,
+      pronouns: parsePronounsField(profile[pronounsFieldKey]),
+    );
   }
 }
 
@@ -70,9 +73,10 @@ String stripPerMessageProfileFallback(String body, String displayName) {
 }
 
 final RegExp _htmlFallback = RegExp(
-    r'^(\s*<mx-reply>.*?</mx-reply>)?\s*<strong[^>]*data-mx-profile-fallback[^>]*>.*?</strong>',
-    caseSensitive: false,
-    dotAll: true);
+  r'^(\s*<mx-reply>.*?</mx-reply>)?\s*<strong[^>]*data-mx-profile-fallback[^>]*>.*?</strong>',
+  caseSensitive: false,
+  dotAll: true,
+);
 
 String stripPerMessageProfileFallbackHtml(String html) =>
     html.replaceFirstMapped(_htmlFallback, (match) => match.group(1) ?? "");

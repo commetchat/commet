@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:isolate';
+
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
@@ -44,8 +45,10 @@ void handleTask(BackgroundServiceTask task, FlutterBackgroundService service) {
   if (task is BackgroundServiceTaskNotification) {
     Log.i("Handling task: ${task.eventId} ${task.hashCode}");
 
-    FlutterBackgroundService().invoke("on_message_received",
-        {"event_id": task.eventId, "room_id": task.roomId});
+    FlutterBackgroundService().invoke("on_message_received", {
+      "event_id": task.eventId,
+      "room_id": task.roomId,
+    });
   }
 }
 
@@ -60,21 +63,24 @@ Future<bool> initBackgroundService() async {
 
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+        AndroidFlutterLocalNotificationsPlugin
+      >()
       ?.createNotificationChannel(channel);
 
   try {
     _service!.configure(
-        iosConfiguration: IosConfiguration(),
-        androidConfiguration: AndroidConfiguration(
-            onStart: onServiceStarted,
-            isForegroundMode: true,
-            autoStart: false,
-            autoStartOnBoot: false,
-            initialNotificationTitle: "Updating Notifications",
-            initialNotificationContent: "Updating Notifications",
-            notificationChannelId: channel.id,
-            foregroundServiceNotificationId: id));
+      iosConfiguration: IosConfiguration(),
+      androidConfiguration: AndroidConfiguration(
+        onStart: onServiceStarted,
+        isForegroundMode: true,
+        autoStart: false,
+        autoStartOnBoot: false,
+        initialNotificationTitle: "Updating Notifications",
+        initialNotificationContent: "Updating Notifications",
+        notificationChannelId: channel.id,
+        foregroundServiceNotificationId: id,
+      ),
+    );
 
     await _service!.startService();
 
@@ -96,10 +102,12 @@ Future<bool> initBackgroundService() async {
   } catch (exception) {
     if (exception is MissingPluginException) {
       Log.w(
-          "Failed to start background service due to missing implementation. This wont show the banner, ${Isolate.current.debugName}");
+        "Failed to start background service due to missing implementation. This wont show the banner, ${Isolate.current.debugName}",
+      );
     } else {
       Log.w(
-          "Failed to start background service!, ${Isolate.current.debugName}");
+        "Failed to start background service!, ${Isolate.current.debugName}",
+      );
     }
     return false;
   }
@@ -121,14 +129,17 @@ void onServiceInit(Map<String, dynamic>? data) async {
         "Updating Notifications",
         null,
         NotificationDetails(
-          android: AndroidNotificationDetails(channel.id, channel.name,
-              category: AndroidNotificationCategory.service,
-              icon: "ic_bg_service_small",
-              ongoing: true,
-              showProgress: true,
-              silent: true,
-              maxProgress: 100,
-              indeterminate: true),
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            category: AndroidNotificationCategory.service,
+            icon: "ic_bg_service_small",
+            ongoing: true,
+            showProgress: true,
+            silent: true,
+            maxProgress: 100,
+            indeterminate: true,
+          ),
         ),
       );
     }

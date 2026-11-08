@@ -6,8 +6,11 @@ import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventViewSingle extends StatelessWidget {
-  const TimelineEventViewSingle(
-      {required this.room, required this.event, super.key});
+  const TimelineEventViewSingle({
+    required this.room,
+    required this.event,
+    super.key,
+  });
 
   final TimelineEvent event;
   final Room room;

@@ -26,27 +26,31 @@ class _RoomGeneralChatPrivacySettings
   bool? typingIndicatorEnabledForRoom;
 
   String labelDefaultReadReceiptsOption(pref) => Intl.message(
-      "Use global preference ($pref)",
-      desc:
-          "Label to use the global preference, showing the current global preference value",
-      name: "labelDefaultReadReceiptsOption",
-      args: [pref]);
+    "Use global preference ($pref)",
+    desc: "Label to use the global preference, showing the current global preference value",
+    name: "labelDefaultReadReceiptsOption",
+    args: [pref],
+  );
 
   String labelDefaultTypingIndicatorsOption(pref) => Intl.message(
-      "Use global preference ($pref)",
-      desc:
-          "Label to use the global preference, showing the current global preference value",
-      name: "labelDefaultTypingIndicatorsOption",
-      args: [pref]);
+    "Use global preference ($pref)",
+    desc: "Label to use the global preference, showing the current global preference value",
+    name: "labelDefaultTypingIndicatorsOption",
+    args: [pref],
+  );
 
-  String get labelReadReceiptsTitle => Intl.message("Read receipts",
-      desc:
-          "Label for the toggle for enabling and disabling public read receipts",
-      name: "labelReadReceiptsTitle");
+  String get labelReadReceiptsTitle => Intl.message(
+    "Read receipts",
+    desc:
+        "Label for the toggle for enabling and disabling public read receipts",
+    name: "labelReadReceiptsTitle",
+  );
 
-  String get labelTypingIndicatorTitle => Intl.message("Typing indicators",
-      desc: "Label for the toggle for enabling and disabling typing indicators",
-      name: "labelTypingIndicatorTitle");
+  String get labelTypingIndicatorTitle => Intl.message(
+    "Typing indicators",
+    desc: "Label for the toggle for enabling and disabling typing indicators",
+    name: "labelTypingIndicatorTitle",
+  );
 
   @override
   void initState() {
@@ -63,13 +67,13 @@ class _RoomGeneralChatPrivacySettings
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      publicReadReceiptsSettings(),
-      const SizedBox(
-        height: 10,
-      ),
-      publicTypingIndicatorSettings(),
-    ]);
+    return Column(
+      children: [
+        publicReadReceiptsSettings(),
+        const SizedBox(height: 10),
+        publicTypingIndicatorSettings(),
+      ],
+    );
   }
 
   Widget publicReadReceiptsSettings() {
@@ -77,38 +81,41 @@ class _RoomGeneralChatPrivacySettings
         .getComponent<UserPresenceComponent>()!
         .usePublicReadReceipts;
     return tiamat.Panel(
-        mode: tiamat.TileType.surfaceContainerLow,
-        header: labelReadReceiptsTitle,
-        child: material.Material(
-          color: material.Colors.transparent,
-          child: Column(
-            children: [
-              tiamat.RadioButton<bool?>(
-                groupValue: publicReadReceiptsForRoom,
-                value: null,
-                icon: material.Icons.remove_outlined,
-                text: labelDefaultReadReceiptsOption(usePublicReadReceipts
+      mode: tiamat.TileType.surfaceContainerLow,
+      header: labelReadReceiptsTitle,
+      child: material.Material(
+        color: material.Colors.transparent,
+        child: Column(
+          children: [
+            tiamat.RadioButton<bool?>(
+              groupValue: publicReadReceiptsForRoom,
+              value: null,
+              icon: material.Icons.remove_outlined,
+              text: labelDefaultReadReceiptsOption(
+                usePublicReadReceipts
                     ? CommonStrings.labelPublic
-                    : CommonStrings.labelPrivate),
-                onChanged: onReadReceiptPrefChanged,
+                    : CommonStrings.labelPrivate,
               ),
-              tiamat.RadioButton<bool?>(
-                groupValue: publicReadReceiptsForRoom,
-                value: false,
-                icon: material.Icons.hide_source,
-                text: CommonStrings.labelPrivate,
-                onChanged: onReadReceiptPrefChanged,
-              ),
-              tiamat.RadioButton<bool?>(
-                groupValue: publicReadReceiptsForRoom,
-                value: true,
-                icon: material.Icons.public,
-                text: CommonStrings.labelPublic,
-                onChanged: onReadReceiptPrefChanged,
-              ),
-            ],
-          ),
-        ));
+              onChanged: onReadReceiptPrefChanged,
+            ),
+            tiamat.RadioButton<bool?>(
+              groupValue: publicReadReceiptsForRoom,
+              value: false,
+              icon: material.Icons.hide_source,
+              text: CommonStrings.labelPrivate,
+              onChanged: onReadReceiptPrefChanged,
+            ),
+            tiamat.RadioButton<bool?>(
+              groupValue: publicReadReceiptsForRoom,
+              value: true,
+              icon: material.Icons.public,
+              text: CommonStrings.labelPublic,
+              onChanged: onReadReceiptPrefChanged,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget publicTypingIndicatorSettings() {
@@ -116,38 +123,41 @@ class _RoomGeneralChatPrivacySettings
         .getComponent<UserPresenceComponent>()!
         .typingIndicatorEnabled;
     return tiamat.Panel(
-        mode: tiamat.TileType.surfaceContainerLow,
-        header: labelTypingIndicatorTitle,
-        child: material.Material(
-          color: material.Colors.transparent,
-          child: Column(
-            children: [
-              tiamat.RadioButton<bool?>(
-                groupValue: typingIndicatorEnabledForRoom,
-                value: null,
-                icon: material.Icons.remove_outlined,
-                text: labelDefaultTypingIndicatorsOption(typingIndicatorEnabled
+      mode: tiamat.TileType.surfaceContainerLow,
+      header: labelTypingIndicatorTitle,
+      child: material.Material(
+        color: material.Colors.transparent,
+        child: Column(
+          children: [
+            tiamat.RadioButton<bool?>(
+              groupValue: typingIndicatorEnabledForRoom,
+              value: null,
+              icon: material.Icons.remove_outlined,
+              text: labelDefaultTypingIndicatorsOption(
+                typingIndicatorEnabled
                     ? CommonStrings.labelEnabled
-                    : CommonStrings.labelDisabled),
-                onChanged: onTypingIndicatorPrefChanged,
+                    : CommonStrings.labelDisabled,
               ),
-              tiamat.RadioButton<bool?>(
-                groupValue: typingIndicatorEnabledForRoom,
-                value: false,
-                icon: material.Icons.close,
-                text: CommonStrings.labelDisabled,
-                onChanged: onTypingIndicatorPrefChanged,
-              ),
-              tiamat.RadioButton<bool?>(
-                groupValue: typingIndicatorEnabledForRoom,
-                value: true,
-                icon: material.Icons.check,
-                text: CommonStrings.labelEnabled,
-                onChanged: onTypingIndicatorPrefChanged,
-              ),
-            ],
-          ),
-        ));
+              onChanged: onTypingIndicatorPrefChanged,
+            ),
+            tiamat.RadioButton<bool?>(
+              groupValue: typingIndicatorEnabledForRoom,
+              value: false,
+              icon: material.Icons.close,
+              text: CommonStrings.labelDisabled,
+              onChanged: onTypingIndicatorPrefChanged,
+            ),
+            tiamat.RadioButton<bool?>(
+              groupValue: typingIndicatorEnabledForRoom,
+              value: true,
+              icon: material.Icons.check,
+              text: CommonStrings.labelEnabled,
+              onChanged: onTypingIndicatorPrefChanged,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> onReadReceiptPrefChanged(bool? value) async {

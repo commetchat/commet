@@ -4,13 +4,15 @@ import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
+
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
 import '../generated/l10n.dart';
 
 void main() {
-  testWidgets('Test emoji verification started from another device',
-      (WidgetTester tester) async {
+  testWidgets('Test emoji verification started from another device', (
+    WidgetTester tester,
+  ) async {
     var app = await tester.setupApp();
     await tester.pumpWidget(app);
     await tester.login(app);
@@ -22,31 +24,36 @@ void main() {
     var client = matrixClient.getMatrixClient();
 
     var devices = await otherClient.getDevices();
-    var device =
-        devices!.firstWhere((element) => element.deviceId == client.deviceID);
+    var device = devices!.firstWhere(
+      (element) => element.deviceId == client.deviceID,
+    );
     expect(device, isNotNull);
 
     var verification = await otherClient
-        .userDeviceKeys[otherClient.userID]!.deviceKeys[device.deviceId]!
+        .userDeviceKeys[otherClient.userID]!
+        .deviceKeys[device.deviceId]!
         .startVerification();
     verification.onUpdate = () {};
 
     await tester.waitFor(
-        () => find.byType(MatrixVerificationPage).evaluate().isNotEmpty);
+      () => find.byType(MatrixVerificationPage).evaluate().isNotEmpty,
+    );
 
     await tester.pumpAndSettle();
 
     var button = find.descendant(
-        of: find.byType(MatrixVerificationPage),
-        matching:
-            find.widgetWithText(ElevatedButton, CommonStrings.promptAccept));
+      of: find.byType(MatrixVerificationPage),
+      matching: find.widgetWithText(ElevatedButton, CommonStrings.promptAccept),
+    );
 
     await tester.tap(button);
 
-    await tester.waitFor(() => find
-        .widgetWithText(ElevatedButton, T.current.promptConfirmEmojiMatches)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(
+      () => find
+          .widgetWithText(ElevatedButton, T.current.promptConfirmEmojiMatches)
+          .evaluate()
+          .isNotEmpty,
+    );
 
     await tester.pumpAndSettle();
 
@@ -56,10 +63,12 @@ void main() {
 
     await verification.acceptSas();
 
-    await tester.waitFor(() => find
-        .widgetWithText(ElevatedButton, T.current.messageVerificationComplete)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(
+      () => find
+          .widgetWithText(ElevatedButton, T.current.messageVerificationComplete)
+          .evaluate()
+          .isNotEmpty,
+    );
 
     await tester.pumpAndSettle();
 
@@ -67,12 +76,14 @@ void main() {
     expect(verification.state, equals(KeyVerificationState.done));
 
     expect(
-        client.userDeviceKeys[client.userID]!.deviceKeys[otherClient.deviceID!],
-        isNotNull);
+      client.userDeviceKeys[client.userID]!.deviceKeys[otherClient.deviceID!],
+      isNotNull,
+    );
     expect(
-        otherClient
-            .userDeviceKeys[otherClient.userID]!.deviceKeys[client.deviceID!],
-        isNotNull);
+      otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[client
+          .deviceID!],
+      isNotNull,
+    );
 
     await app.clientManager.close();
     await otherClient.dispose();

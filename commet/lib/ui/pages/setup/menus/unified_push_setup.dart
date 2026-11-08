@@ -174,7 +174,7 @@ If you already have a Unified Push compatible distributor app installed, you can
 
     if (mounted) {
       UnifiedPush.tryUseCurrentOrDefaultDistributor().then((success) {
-        if(success) {
+        if (success) {
           UnifiedPush.register();
         } else {
           Log.w("Failed to register unified push");

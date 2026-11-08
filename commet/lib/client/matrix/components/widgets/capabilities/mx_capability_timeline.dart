@@ -14,9 +14,10 @@ class MatrixCapabilityTimeline implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc2762.timeline";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) =>
-          MatrixCapabilityTimeline(roomId: type!, runner: runner));
+    name,
+    (runner, type, key) =>
+        MatrixCapabilityTimeline(roomId: type!, runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";

@@ -34,14 +34,17 @@ class _RoomQuickAccessMenuViewDesktopState
       spacing: 4,
       mainAxisSize: MainAxisSize.min,
       children: menu.actions
-          .map((e) => SizedBox(
+          .map(
+            (e) => SizedBox(
               width: 40,
               height: 40,
               child: tiamat.IconButton(
                 key: ValueKey("room-quick-access-menu-action-${e.name}"),
                 icon: e.icon,
                 onPressed: () => e.action?.call(context),
-              )))
+              ),
+            ),
+          )
           .toList(),
     );
   }

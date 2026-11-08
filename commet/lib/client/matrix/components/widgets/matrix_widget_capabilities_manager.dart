@@ -29,10 +29,13 @@ import 'package:matrix/matrix_api_lite/utils/try_get_map_extension.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 typedef MatrixWidgetCapability MatrixCapabilityConstructor(
-    MatrixWidgetRunner runner, String? type, String? key);
+  MatrixWidgetRunner runner,
+  String? type,
+  String? key,
+);
 
-typedef MatrixWidgetCapabilityConstructorEntry
-    = MapEntry<String, MatrixCapabilityConstructor>;
+typedef MatrixWidgetCapabilityConstructorEntry =
+    MapEntry<String, MatrixCapabilityConstructor>;
 
 class MatrixWidgetCapabilitiesManager
     implements WidgetCapabilityManager<MatrixWidgetMessage> {
@@ -40,16 +43,20 @@ class MatrixWidgetCapabilitiesManager
   Set<String> rejectedCapabilities = {};
 
   @override
-  NotifyingList<String> grantedCapabilityNames =
-      NotifyingList.empty(growable: true);
+  NotifyingList<String> grantedCapabilityNames = NotifyingList.empty(
+    growable: true,
+  );
 
   MatrixWidgetRunner runner;
   final BuildContext context;
 
   final bool privileged;
 
-  MatrixWidgetCapabilitiesManager(
-      {required this.runner, required this.context, this.privileged = false}) {
+  MatrixWidgetCapabilitiesManager({
+    required this.runner,
+    required this.context,
+    this.privileged = false,
+  }) {
     runner.onClosed.listen((_) {
       dispose();
     });
@@ -74,9 +81,13 @@ class MatrixWidgetCapabilitiesManager
     List<String> allowed = List.empty(growable: true);
 
     var rejected = await preferences.getRejectedWidgetCapabilities(
-        runner.client.identifier, runner.info.namespace);
+      runner.client.identifier,
+      runner.info.namespace,
+    );
     var accepted = await preferences.getAcceptedWidgetCapabilities(
-        runner.client.identifier, runner.info.namespace);
+      runner.client.identifier,
+      runner.info.namespace,
+    );
 
     for (var c in rejected) {
       needsPermission.remove(c);
@@ -88,9 +99,7 @@ class MatrixWidgetCapabilitiesManager
     }
 
     for (var defaultcapability in defaultCapabilities) {
-      Log.i(
-        "Allowing capability by default: $defaultcapability",
-      );
+      Log.i("Allowing capability by default: $defaultcapability");
 
       allowed.add(defaultcapability);
       needsPermission.remove(defaultcapability);
@@ -100,8 +109,12 @@ class MatrixWidgetCapabilitiesManager
       if (canCreateCapability(capability) == false) {
         needsPermission.remove(capability);
 
-        runner.logs.add(LogEntry(LogType.error,
-            "Cannot handle capability: $capability, rejecting by default"));
+        runner.logs.add(
+          LogEntry(
+            LogType.error,
+            "Cannot handle capability: $capability, rejecting by default",
+          ),
+        );
 
         Log.w("Cannot handle capability: $capability, rejecting by default");
         if (rejectedCapabilities.contains(capability) == false) {
@@ -114,16 +127,18 @@ class MatrixWidgetCapabilitiesManager
       if (privileged) {
         allowed.addAll(needsPermission);
       } else {
-        var groups =
-            MatrixWidgetPermissionGroup.groupPermissions(needsPermission);
+        var groups = MatrixWidgetPermissionGroup.groupPermissions(
+          needsPermission,
+        );
 
         var picked = await AdaptiveDialog.show<DialogResult<List<String>>>(
           navigator.currentContext!,
           title: "Widget Permissions",
           builder: (context) => MatrixWidgetPermissionsView(
-              runner: runner,
-              groupedPermissions: groups.$1,
-              ungrouped: groups.$2),
+            runner: runner,
+            groupedPermissions: groups.$1,
+            ungrouped: groups.$2,
+          ),
         );
 
         if (picked != null) {
@@ -135,10 +150,16 @@ class MatrixWidgetCapabilitiesManager
 
           if (picked.remember) {
             preferences.allowWidgetCapabilityPermissions(
-                runner.client.identifier, runner.info.namespace, picked.value);
+              runner.client.identifier,
+              runner.info.namespace,
+              picked.value,
+            );
 
             preferences.rejectWidgetCapabilityPermissions(
-                runner.client.identifier, runner.info.namespace, rejected);
+              runner.client.identifier,
+              runner.info.namespace,
+              rejected,
+            );
           }
         }
       }
@@ -159,21 +180,28 @@ class MatrixWidgetCapabilitiesManager
   }
 
   void notifyCapabilities(List<String> requested) {
-    List<String> approved =
-        List.from(grantedCapabilities.keys.toList(), growable: true);
+    List<String> approved = List.from(
+      grantedCapabilities.keys.toList(),
+      growable: true,
+    );
 
     if (approved.contains("io.element.requires_client") == false) {
       approved.add("io.element.requires_client");
     }
 
-    runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+    runner.messageTransport.send(
+      runner.eventHandler.generateToWidgetEvent(
         action: "notify_capabilities",
-        data: {"requested": requested, "approved": approved}));
+        data: {"requested": requested, "approved": approved},
+      ),
+    );
   }
 
-  static Map<String,
-          MatrixWidgetCapability Function(MatrixWidgetRunner, String?, String?)>
-      capabilityBuilders = Map.fromEntries([
+  static Map<
+    String,
+    MatrixWidgetCapability Function(MatrixWidgetRunner, String?, String?)
+  >
+  capabilityBuilders = Map.fromEntries([
     MatrixCapabilityReceiveEvent.entry,
     MatrixCapabilitySendEvent.entry,
     MatrixCapabilityUploadFile.entry,
@@ -219,7 +247,10 @@ class MatrixWidgetCapabilitiesManager
 
       if (builders.containsKey(parsed.capability)) {
         var created = builders[parsed.capability]!(
-            runner, parsed.eventType, parsed.eventKey);
+          runner,
+          parsed.eventType,
+          parsed.eventKey,
+        );
         grantedCapabilities[name] = created;
         granted.add(name);
 
@@ -239,9 +270,11 @@ class MatrixWidgetCapabilitiesManager
       Log.i(g);
     }
 
-    var unknown = capabilities.where((i) =>
-        grantedCapabilities.containsKey(i) == false &&
-        rejectedCapabilities.contains(i) == false);
+    var unknown = capabilities.where(
+      (i) =>
+          grantedCapabilities.containsKey(i) == false &&
+          rejectedCapabilities.contains(i) == false,
+    );
 
     Log.w("Unhandled Capabilities");
     for (var g in unknown) {
@@ -280,7 +313,7 @@ class MatrixWidgetCapabilitiesManager
       data: {
         "type": event.type,
         if (msgType != null) "msgtype": msgType,
-        if (event.stateKey != null) "state_key": event.stateKey
+        if (event.stateKey != null) "state_key": event.stateKey,
       },
     );
 
@@ -318,7 +351,8 @@ class MatrixWidgetCapabilitiesManager
     }
 
     return event.createResponseError(
-        message: "Unhandled widget request ${event.action}\n${event.data}");
+      message: "Unhandled widget request ${event.action}\n${event.data}",
+    );
   }
 
   @override

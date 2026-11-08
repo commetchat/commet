@@ -11,13 +11,16 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SendInvitationWidget extends StatefulWidget {
-  const SendInvitationWidget(this.client, this.component,
-      {super.key,
-      this.roomId,
-      this.displayName,
-      this.onUserPicked,
-      this.showSuggestions = true,
-      this.existingMembers});
+  const SendInvitationWidget(
+    this.client,
+    this.component, {
+    super.key,
+    this.roomId,
+    this.displayName,
+    this.onUserPicked,
+    this.showSuggestions = true,
+    this.existingMembers,
+  });
   final Client client;
   final bool showSuggestions;
   final Iterable<String>? existingMembers;
@@ -57,10 +60,13 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
     var dmComponent = widget.client.getComponent<DirectMessagesComponent>();
     var recommended = List.from(dmComponent?.directMessageRooms ?? []);
 
-    recommended.removeWhere((element) =>
-        widget.existingMembers
-            ?.contains(dmComponent?.getDirectMessagePartnerId(element)) ==
-        true);
+    recommended.removeWhere(
+      (element) =>
+          widget.existingMembers?.contains(
+            dmComponent?.getDirectMessagePartnerId(element),
+          ) ==
+          true,
+    );
 
     return Opacity(
       opacity: loading ? 0.3 : 1.0,
@@ -68,8 +74,9 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
         ignoring: loading,
         child: ScaledSafeArea(
           child: SizedBox(
-              width: 500,
-              child: Column(children: [
+            width: 500,
+            child: Column(
+              children: [
                 tiamat.TextInput(
                   controller: controller,
                   icon: const Icon(Icons.search),
@@ -78,22 +85,24 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                 ),
                 if (isSearching || searchResults?.isNotEmpty == true)
                   SizedBox(
-                      height: 300,
-                      child: isSearching
-                          ? const Center(child: CircularProgressIndicator())
-                          : ListView.builder(
-                              itemCount: searchResults!.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return MiniProfileView(
-                                  client: widget.component.client,
-                                  userId: searchResults![index].identifier,
-                                  initialProfile: searchResults![index],
-                                  onTap: () => invitePeer(
-                                      searchResults![index].identifier),
-                                );
-                              },
-                            )),
+                    height: 300,
+                    child: isSearching
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            itemCount: searchResults!.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return MiniProfileView(
+                                client: widget.component.client,
+                                userId: searchResults![index].identifier,
+                                initialProfile: searchResults![index],
+                                onTap: () => invitePeer(
+                                  searchResults![index].identifier,
+                                ),
+                              );
+                            },
+                          ),
+                  ),
                 if (!isSearching && searchResults?.isEmpty == true)
                   Column(
                     children: [
@@ -101,7 +110,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                       tiamat.Button(
                         text: "Send invite",
                         onTap: () => invitePeer(controller.text),
-                      )
+                      ),
                     ],
                   ),
                 if (showRecommendations && recommended.isNotEmpty)
@@ -114,17 +123,21 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                         itemCount: recommended.length,
                         itemBuilder: (context, index) {
                           var room = recommended[index];
-                          var userId =
-                              dmComponent!.getDirectMessagePartnerId(room)!;
+                          var userId = dmComponent!.getDirectMessagePartnerId(
+                            room,
+                          )!;
                           return MiniProfileView(
-                              client: room.client,
-                              onTap: () => invitePeer(userId),
-                              userId: userId);
+                            client: room.client,
+                            onTap: () => invitePeer(userId),
+                            userId: userId,
+                          );
                         },
                       ),
                     ],
-                  )
-              ])),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -163,10 +176,12 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
       return;
     }
 
-    final confirm = await AdaptiveDialog.confirmation(context,
-        prompt:
-            "Are you sure you want to Invite $userId to the room ${widget.displayName}?",
-        title: "Invitation");
+    final confirm = await AdaptiveDialog.confirmation(
+      context,
+      prompt:
+          "Are you sure you want to Invite $userId to the room ${widget.displayName}?",
+      title: "Invitation",
+    );
     if (confirm != true) {
       return;
     }

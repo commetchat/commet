@@ -1,5 +1,6 @@
 // Based on https://github.com/jemisgoti/simple_ripple_animation
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// You can use whatever widget as a [child], when you don't need to provide any
@@ -54,10 +55,7 @@ class RippleAnimationState extends State<RippleAnimation>
 
   @override
   void initState() {
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
 
     Timer? animationTimer;
 
@@ -81,24 +79,27 @@ class RippleAnimationState extends State<RippleAnimation>
 
   @override
   Widget build(BuildContext context) => CustomPaint(
-        painter: CirclePainter(_controller,
-            color: widget.color,
-            minRadius: widget.minRadius,
-            wavesCount: widget.ripplesCount + 2,
-            scale: widget.scale),
-        child: widget.child,
-      );
+    painter: CirclePainter(
+      _controller,
+      color: widget.color,
+      minRadius: widget.minRadius,
+      wavesCount: widget.ripplesCount + 2,
+      scale: widget.scale,
+    ),
+    child: widget.child,
+  );
 }
 
 /// Creating a Circular painter for clipping the rects and creating circle shape
 class CirclePainter extends CustomPainter {
   ///initialize the painter
-  CirclePainter(this.animation,
-      {required this.wavesCount,
-      required this.color,
-      this.minRadius,
-      this.scale = 1})
-      : super(repaint: animation);
+  CirclePainter(
+    this.animation, {
+    required this.wavesCount,
+    required this.color,
+    this.minRadius,
+    this.scale = 1,
+  }) : super(repaint: animation);
 
   ///[Color] of the painter
   final Color color;

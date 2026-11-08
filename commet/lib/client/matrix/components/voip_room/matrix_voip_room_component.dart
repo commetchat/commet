@@ -99,8 +99,8 @@ class MatrixVoipRoomComponent
 
   @override
   bool get canJoinCall => room.matrixRoom.canChangeStateEvent(
-        MatrixVoipRoomComponent.callMemberStateEvent,
-      );
+    MatrixVoipRoomComponent.callMemberStateEvent,
+  );
 
   @override
   Future<void> clearAllCallMembershipStatus() async {

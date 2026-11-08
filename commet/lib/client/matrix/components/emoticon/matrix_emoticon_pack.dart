@@ -35,8 +35,13 @@ class MatrixEmoticonPack implements EmoticonPack {
 
       final usage = usagesArrayToUsage(usages);
 
-      return MatrixEmoticon(Uri.parse(url), component.client.getMatrixClient(),
-          packUsage: this.usage, shortcode: shortCode, usage: usage);
+      return MatrixEmoticon(
+        Uri.parse(url),
+        component.client.getMatrixClient(),
+        packUsage: this.usage,
+        shortcode: shortCode,
+        usage: usage,
+      );
     }).toList();
   }
 
@@ -57,8 +62,12 @@ class MatrixEmoticonPack implements EmoticonPack {
     final url = pack?.tryGet<String>("avatar_url");
 
     if (url != null) {
-      return MatrixMxcImage(Uri.parse(url), component.client.getMatrixClient(),
-          doFullres: true, fullResHeight: 64);
+      return MatrixMxcImage(
+        Uri.parse(url),
+        component.client.getMatrixClient(),
+        doFullres: true,
+        fullResHeight: 64,
+      );
     }
 
     return null;
@@ -102,15 +111,21 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   @override
-  Future<void> updateEmoticon(
-      {String? slug,
-      String? shortcode,
-      Uint8List? data,
-      String? mimeType,
-      EmoticonUsage? usage,
-      required Emoticon previous}) async {
-    await component.updateEmoticon(identifier, shortcode!,
-        data: data, usage: usage, previous: previous);
+  Future<void> updateEmoticon({
+    String? slug,
+    String? shortcode,
+    Uint8List? data,
+    String? mimeType,
+    EmoticonUsage? usage,
+    required Emoticon previous,
+  }) async {
+    await component.updateEmoticon(
+      identifier,
+      shortcode!,
+      data: data,
+      usage: usage,
+      previous: previous,
+    );
   }
 
   @override
@@ -168,10 +183,17 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   @override
-  Future<void> updatePack(
-      {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
-    return component.updatePack(identifier,
-        usage: usage, name: name, imageData: imageData);
+  Future<void> updatePack({
+    EmoticonUsage? usage,
+    String? name,
+    Uint8List? imageData,
+  }) {
+    return component.updatePack(
+      identifier,
+      usage: usage,
+      name: name,
+      imageData: imageData,
+    );
   }
 
   @override
@@ -234,7 +256,8 @@ class MatrixEmoticonPack implements EmoticonPack {
     }
 
     final data = room
-        .client.accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey];
+        .client
+        .accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey];
     if (data == null) {
       return false;
     }

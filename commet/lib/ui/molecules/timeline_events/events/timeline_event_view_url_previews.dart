@@ -7,11 +7,12 @@ import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventViewUrlPreviews extends StatefulWidget {
-  const TimelineEventViewUrlPreviews(
-      {required this.initialIndex,
-      required this.timeline,
-      required this.component,
-      super.key});
+  const TimelineEventViewUrlPreviews({
+    required this.initialIndex,
+    required this.timeline,
+    required this.component,
+    super.key,
+  });
 
   final int initialIndex;
   final Timeline timeline;
@@ -37,14 +38,15 @@ class _TimelineEventViewUrlPreviewsState
     if (data == UrlPreviewComponent.invalidPreviewData) return Container();
 
     return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
-        child: UrlPreviewWidget(
-          key: key,
-          data,
-          onTap: () {
-            LinkUtils.open(data!.uri, context: context);
-          },
-        ));
+      padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
+      child: UrlPreviewWidget(
+        key: key,
+        data,
+        onTap: () {
+          LinkUtils.open(data!.uri, context: context);
+        },
+      ),
+    );
   }
 
   @override
@@ -74,25 +76,23 @@ class _TimelineEventViewUrlPreviewsState
       });
 
       if (event.status == TimelineEventStatus.synced) {
-        widget.component.getPreview(widget.timeline, event).then(
-          (value) async {
-            if (mounted) {
-              final image = value?.image;
-              if (image != null) {
-                if (context.mounted) {
-                  await precacheImage(image, context);
-                }
+        widget.component.getPreview(widget.timeline, event).then((value) async {
+          if (mounted) {
+            final image = value?.image;
+            if (image != null) {
+              if (context.mounted) {
+                await precacheImage(image, context);
               }
-
-              if (mounted)
-                setState(() {
-                  loading = false;
-                  data = value;
-                  key = GlobalKey();
-                });
             }
-          },
-        );
+
+            if (mounted)
+              setState(() {
+                loading = false;
+                data = value;
+                key = GlobalKey();
+              });
+          }
+        });
       }
     }
   }

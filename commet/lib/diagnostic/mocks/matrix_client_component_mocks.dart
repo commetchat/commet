@@ -22,27 +22,33 @@ class MockMatrixUrlPreviewComponent
 
   @override
   Future<UrlPreviewData?> getPreview(
-      Timeline timeline, TimelineEvent? event) async {
+    Timeline timeline,
+    TimelineEvent? event,
+  ) async {
     await Future.delayed(const Duration(seconds: 1));
 
     var image = [
       "assets/images/app_icon/app_icon_filled.png",
       "assets/images/app_icon/app_icon_rounded.png",
       "assets/images/app_icon/app_icon_transparent_cropped.png",
-      "assets/images/app_icon/app_icon_transparent.png"
+      "assets/images/app_icon/app_icon_transparent.png",
     ][imageIndex % 4];
 
     imageIndex += 1;
 
-    return UrlPreviewData(Uri.parse("https://example.com"),
-        siteName: "Example",
-        description: "Example description",
-        image: AssetImage(image));
+    return UrlPreviewData(
+      Uri.parse("https://example.com"),
+      siteName: "Example",
+      description: "Example description",
+      image: AssetImage(image),
+    );
   }
 
   @override
   bool shouldGetPreviewDataForTimelineEvent(
-      Timeline timeline, TimelineEvent event) {
+    Timeline timeline,
+    TimelineEvent event,
+  ) {
     return true;
   }
 

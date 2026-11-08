@@ -13,20 +13,23 @@ class WindowSettingsPage extends StatefulWidget {
 }
 
 class _WindowSettingsPageState extends State<WindowSettingsPage> {
-  String get labelSettingsWindowBehaviourTitle =>
-      Intl.message("Window behaviour",
-          desc: "Header for the window behaviour section of settings",
-          name: "labelSettingsWindowBehaviourTitle");
+  String get labelSettingsWindowBehaviourTitle => Intl.message(
+    "Window behaviour",
+    desc: "Header for the window behaviour section of settings",
+    name: "labelSettingsWindowBehaviourTitle",
+  );
 
-  String get labelSettingsMinimizeOnCloseToggle =>
-      Intl.message("Minimize on close",
-          desc: "Label for the toggle to turn on and off minimize on close",
-          name: "labelSettingsMinimizeOnCloseToggle");
+  String get labelSettingsMinimizeOnCloseToggle => Intl.message(
+    "Minimize on close",
+    desc: "Label for the toggle to turn on and off minimize on close",
+    name: "labelSettingsMinimizeOnCloseToggle",
+  );
 
   String get labelSettingsMinimizeOnCloseExplanation => Intl.message(
-      "When closing the window, the app will be minimized instead of exited",
-      desc: "Explains what the 'minimize on close' setting does",
-      name: "labelSettingsMinimizeOnCloseExplanation");
+    "When closing the window, the app will be minimized instead of exited",
+    desc: "Explains what the 'minimize on close' setting does",
+    name: "labelSettingsMinimizeOnCloseExplanation",
+  );
 
   @override
   void initState() {
@@ -38,13 +41,15 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
     return Panel(
       header: labelSettingsWindowBehaviourTitle,
       mode: TileType.surfaceContainerLow,
-      child: Column(children: [
-        BooleanPreferenceToggle(
-          preference: preferences.minimizeOnClose,
-          title: labelSettingsMinimizeOnCloseToggle,
-          description: labelSettingsMinimizeOnCloseExplanation,
-        )
-      ]),
+      child: Column(
+        children: [
+          BooleanPreferenceToggle(
+            preference: preferences.minimizeOnClose,
+            title: labelSettingsMinimizeOnCloseToggle,
+            description: labelSettingsMinimizeOnCloseExplanation,
+          ),
+        ],
+      ),
     );
   }
 }

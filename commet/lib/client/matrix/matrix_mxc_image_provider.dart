@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -23,28 +24,30 @@ class MatrixMxcImage extends LODImageProvider {
     super.fullResHeight,
     Event? matrixEvent,
   }) : super(
-          id: "$identifier-$doThumbnail-$doFullres-$thumbnailHeight-$fullResHeight",
-          loadThumbnail: (doThumbnail == null || doThumbnail == true)
-              ? () => retryUntilOnline<Uint8List?>(
-                  client,
-                  () => loadMatrixThumbnail(
-                        client,
-                        identifier,
-                        matrixEvent,
-                        cache: cache,
-                      ))
-              : null,
-          loadFullRes: (doFullres == null || doFullres == true)
-              ? () => retryUntilOnline<Uint8List?>(
-                  client,
-                  () => loadMatrixFullRes(
-                        client,
-                        identifier,
-                        matrixEvent,
-                        cache: cache,
-                      ))
-              : null,
-        );
+         id: "$identifier-$doThumbnail-$doFullres-$thumbnailHeight-$fullResHeight",
+         loadThumbnail: (doThumbnail == null || doThumbnail == true)
+             ? () => retryUntilOnline<Uint8List?>(
+                 client,
+                 () => loadMatrixThumbnail(
+                   client,
+                   identifier,
+                   matrixEvent,
+                   cache: cache,
+                 ),
+               )
+             : null,
+         loadFullRes: (doFullres == null || doFullres == true)
+             ? () => retryUntilOnline<Uint8List?>(
+                 client,
+                 () => loadMatrixFullRes(
+                   client,
+                   identifier,
+                   matrixEvent,
+                   cache: cache,
+                 ),
+               )
+             : null,
+       );
 
   static String getThumbnailIdentifier(Uri uri) {
     return "matrix_thumbnail-$uri";
@@ -55,7 +58,9 @@ class MatrixMxcImage extends LODImageProvider {
   }
 
   static Future<T> retryUntilOnline<T>(
-      Client client, Future<T> callback()) async {
+    Client client,
+    Future<T> callback(),
+  ) async {
     try {
       var value = await callback();
       return value;

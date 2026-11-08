@@ -32,9 +32,10 @@ class MatrixWidgetMessage {
     };
   }
 
-  Map<String, dynamic> createResponse(
-      {Map<String, dynamic> data = const {},
-      Map<String, dynamic> response = const {}}) {
+  Map<String, dynamic> createResponse({
+    Map<String, dynamic> data = const {},
+    Map<String, dynamic> response = const {},
+  }) {
     return {
       "api": "fromWidget",
       "widgetId": widgetId,
@@ -45,29 +46,34 @@ class MatrixWidgetMessage {
     };
   }
 
-  MatrixWidgetMessage createResponseObject(
-      {Map<String, dynamic> data = const {},
-      Map<String, dynamic> response = const {}}) {
+  MatrixWidgetMessage createResponseObject({
+    Map<String, dynamic> data = const {},
+    Map<String, dynamic> response = const {},
+  }) {
     return MatrixWidgetMessage(
-        api: api,
-        widgetId: widgetId,
-        requestId: requestId,
-        action: action,
-        data: data.isEmpty ? this.data : data,
-        response: response);
+      api: api,
+      widgetId: widgetId,
+      requestId: requestId,
+      action: action,
+      data: data.isEmpty ? this.data : data,
+      response: response,
+    );
   }
 
-  MatrixWidgetMessage createResponseError(
-      {Map<String, dynamic> data = const {}, required String message}) {
+  MatrixWidgetMessage createResponseError({
+    Map<String, dynamic> data = const {},
+    required String message,
+  }) {
     return MatrixWidgetMessage(
-        api: api,
-        widgetId: widgetId,
-        requestId: requestId,
-        action: action,
-        data: data.isEmpty ? this.data : data,
-        response: {
-          "error": {"message": message}
-        });
+      api: api,
+      widgetId: widgetId,
+      requestId: requestId,
+      action: action,
+      data: data.isEmpty ? this.data : data,
+      response: {
+        "error": {"message": message},
+      },
+    );
   }
 }
 
@@ -96,11 +102,12 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
     // This is a request initiated by the widget, to us
     if (api == "fromWidget") {
       var request = MatrixWidgetMessage(
-          api: api!,
-          requestId: requestId,
-          action: action,
-          data: messageData,
-          widgetId: runner.widgetId);
+        api: api!,
+        requestId: requestId,
+        action: action,
+        data: messageData,
+        widgetId: runner.widgetId,
+      );
 
       final handler = defaultHandlers[action];
 
@@ -127,35 +134,35 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
     if (capabilities != null) {
       var allowed = await runner.capabilities.requestCapabilities(capabilities);
 
-      var response = msg.createResponse(data: {
-        "capabilities": allowed,
-      });
+      var response = msg.createResponse(data: {"capabilities": allowed});
 
       runner.messageTransport.send(response);
     }
   }
 
   handleSupportedApiVersions(MatrixWidgetMessage msg) {
-    var response = msg.createResponse(response: {
-      "supported_versions": [
-        "0.0.1",
-        "0.0.2",
-        "org.matrix.msc2762", // Read / Send Events
-        "org.matrix.msc2762_update_state",
-        "org.matrix.msc2871", // Capabilities Notifications
-        "org.matrix.msc2974", // Widgets: Capabilities re-exchange
-        "org.matrix.msc4039", // Access the Content repository with the Widget API
-        "town.robin.msc3846", // Allowing widgets to access TURN servers
-        "org.matrix.msc3819", // Allowing widgets to send/receive to-device messages
-        "org.matrix.msc3869", // Read event relations with the Widget API
-        if (BuildConfig.DEBUG) ...[
-          "org.matrix.msc2873", //  Identifying clients and user settings in widgets
-          "org.matrix.msc2931", // Allow widgets to navigate with matrix.to URIs
-          "org.matrix.msc2876", // Allowing widgets to read events in a room (Closed)
-          "org.matrix.msc3973", // Search users in the user directory with the Widget API
-        ]
-      ]
-    });
+    var response = msg.createResponse(
+      response: {
+        "supported_versions": [
+          "0.0.1",
+          "0.0.2",
+          "org.matrix.msc2762", // Read / Send Events
+          "org.matrix.msc2762_update_state",
+          "org.matrix.msc2871", // Capabilities Notifications
+          "org.matrix.msc2974", // Widgets: Capabilities re-exchange
+          "org.matrix.msc4039", // Access the Content repository with the Widget API
+          "town.robin.msc3846", // Allowing widgets to access TURN servers
+          "org.matrix.msc3819", // Allowing widgets to send/receive to-device messages
+          "org.matrix.msc3869", // Read event relations with the Widget API
+          if (BuildConfig.DEBUG) ...[
+            "org.matrix.msc2873", //  Identifying clients and user settings in widgets
+            "org.matrix.msc2931", // Allow widgets to navigate with matrix.to URIs
+            "org.matrix.msc2876", // Allowing widgets to read events in a room (Closed)
+            "org.matrix.msc3973", // Search users in the user directory with the Widget API
+          ],
+        ],
+      },
+    );
 
     runner.messageTransport.send(response);
 
@@ -164,8 +171,12 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
 
   Future<void> sendInitialCapabilitiesRequest() async {
     Log.i("Sending initial capabilities request");
-    var response = await runner.messageTransport.send(runner.eventHandler
-        .generateToWidgetEvent(action: "capabilities", data: {}));
+    var response = await runner.messageTransport.send(
+      runner.eventHandler.generateToWidgetEvent(
+        action: "capabilities",
+        data: {},
+      ),
+    );
 
     Log.i("Received response to initial capabilities!");
     Log.i(response);
@@ -185,14 +196,16 @@ class MatrixWidgetMessageHandler implements WidgetEventHandler {
     return "widgetapi-$requestNum";
   }
 
-  Map<String, dynamic> generateToWidgetEvent(
-      {required String action, required Map<String, dynamic> data}) {
+  Map<String, dynamic> generateToWidgetEvent({
+    required String action,
+    required Map<String, dynamic> data,
+  }) {
     return {
       "api": "toWidget",
       "widgetId": runner.widgetId,
       "requestId": generateRequestId(),
       "action": action,
-      "data": data
+      "data": data,
     };
   }
 }

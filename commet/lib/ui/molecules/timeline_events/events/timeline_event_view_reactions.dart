@@ -12,8 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 
 class TimelineEventViewReactions extends StatefulWidget {
-  const TimelineEventViewReactions(
-      {required this.initialIndex, required this.timeline, super.key});
+  const TimelineEventViewReactions({
+    required this.initialIndex,
+    required this.timeline,
+    super.key,
+  });
 
   final int initialIndex;
   final Timeline timeline;
@@ -45,51 +48,51 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
     }
 
     return Wrap(
-        spacing: 3,
-        runSpacing: 3,
-        direction: material.Axis.horizontal,
-        children: reactions!.keys.map((key) {
-          var value = reactions![key]!;
+      spacing: 3,
+      runSpacing: 3,
+      direction: material.Axis.horizontal,
+      children: reactions!.keys.map((key) {
+        var value = reactions![key]!;
 
-          return EmojiReaction(
-              emoji: key,
-              onTapped: onReactionTapped,
-              onLongPressed: (emote) {
-                AdaptiveDialog.show(
-                  context,
-                  scrollable: false,
-                  builder: (context) => SizedBox(
-                    height: 400,
-                    width: 400,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: EmojiWidget(
-                            key,
-                            height: 40,
-                          ),
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: value.length,
-                            itemBuilder: (context, index) {
-                              final id = value.elementAt(index % value.length);
-                              return UserPanel(
-                                  userId: id,
-                                  contextRoom: widget.timeline.room,
-                                  client: widget.timeline.client);
-                            },
-                          ),
-                        ),
-                      ],
+        return EmojiReaction(
+          emoji: key,
+          onTapped: onReactionTapped,
+          onLongPressed: (emote) {
+            AdaptiveDialog.show(
+              context,
+              scrollable: false,
+              builder: (context) => SizedBox(
+                height: 400,
+                width: 400,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: EmojiWidget(key, height: 40),
                     ),
-                  ),
-                );
-              },
-              numReactions: value.length,
-              highlighted: value.contains(currentUserIdentifier));
-        }).toList());
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: value.length,
+                        itemBuilder: (context, index) {
+                          final id = value.elementAt(index % value.length);
+                          return UserPanel(
+                            userId: id,
+                            contextRoom: widget.timeline.room,
+                            client: widget.timeline.client,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          numReactions: value.length,
+          highlighted: value.contains(currentUserIdentifier),
+        );
+      }).toList(),
+    );
   }
 
   void onReactionTapped(Emoticon emote) {
@@ -113,8 +116,9 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
     setState(() {
       final event = widget.timeline.events[index];
       if (event is TimelineEventFeatureReactions) {
-        reactions = (event as TimelineEventFeatureReactions)
-            .getReactions(widget.timeline);
+        reactions = (event as TimelineEventFeatureReactions).getReactions(
+          widget.timeline,
+        );
       }
     });
   }

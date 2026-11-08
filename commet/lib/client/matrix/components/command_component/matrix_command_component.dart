@@ -43,8 +43,12 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   }
 
   @override
-  Future<void> executeCommand(String string, Room room,
-      {TimelineEvent? interactingEvent, EventInteractionType? type}) async {
+  Future<void> executeCommand(
+    String string,
+    Room room, {
+    TimelineEvent? interactingEvent,
+    EventInteractionType? type,
+  }) async {
     var mxRoom = (room as MatrixRoom).matrixRoom;
     matrix.Event? event;
     if (interactingEvent != null) {
@@ -63,20 +67,22 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
       }
       if (editingEvent != null) {
         await room.sendMessage(
-            message:
-                editingEvent.plainTextBody.replaceFirst(match[1]!, match[2]!),
-            replaceEvent: editingEvent);
+          message: editingEvent.plainTextBody.replaceFirst(
+            match[1]!,
+            match[2]!,
+          ),
+          replaceEvent: editingEvent,
+        );
         return;
       }
     }
 
     await client.getMatrixClient().parseAndRunCommand(
-          mxRoom,
-          string,
-          inReplyTo: type == EventInteractionType.reply ? event : null,
-          editEventId:
-              type == EventInteractionType.edit ? event?.eventId : null,
-        );
+      mxRoom,
+      string,
+      inReplyTo: type == EventInteractionType.reply ? event : null,
+      editEventId: type == EventInteractionType.edit ? event?.eventId : null,
+    );
   }
 
   @override
@@ -84,7 +90,8 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     if (string.startsWith("/")) {
       var command = string.substring(1).split(" ").first;
       return client.getMatrixClient().commands.containsKey(command);
-    } else if (sed_pattern.firstMatch(string) != null) return true;
+    } else if (sed_pattern.firstMatch(string) != null)
+      return true;
 
     return false;
   }
@@ -93,9 +100,12 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     var json = const JsonDecoder().convert(args.msg) as Map<String, dynamic>;
 
     var tx = client.getMatrixClient().generateUniqueTransactionId();
-    client
-        .getMatrixClient()
-        .sendMessage(args.room!.id, json["type"], tx, json['content']);
+    client.getMatrixClient().sendMessage(
+      args.room!.id,
+      json["type"],
+      tx,
+      json['content'],
+    );
 
     return null;
   }
@@ -106,25 +116,33 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   }
 
   FutureOr<String?> setStatus(
-      matrix.CommandArgs args, StringBuffer? out) async {
+    matrix.CommandArgs args,
+    StringBuffer? out,
+  ) async {
     client.getComponent<UserProfileComponent>()?.setStatus(args.msg);
 
     await client.getMatrixClient().setPresence(
-        client.getMatrixClient().userID!, PresenceType.online,
-        statusMsg: args.msg);
+      client.getMatrixClient().userID!,
+      PresenceType.online,
+      statusMsg: args.msg,
+    );
 
     return null;
   }
 
   FutureOr<String?> clearEmojiStats(
-      matrix.CommandArgs args, StringBuffer? out) async {
+    matrix.CommandArgs args,
+    StringBuffer? out,
+  ) async {
     var c = client.getComponent<RecentEmoticonComponent>();
     c?.clear();
     return null;
   }
 
   FutureOr<String?> setProfile(
-      matrix.CommandArgs args, StringBuffer? stdout) async {
+    matrix.CommandArgs args,
+    StringBuffer? stdout,
+  ) async {
     final parts = args.msg.split(" ");
     final field = parts[0];
     final content = parts.sublist(1).join(" ");
@@ -142,7 +160,9 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   }
 
   FutureOr<String?> addWidget(
-      matrix.CommandArgs args, StringBuffer? out) async {
+    matrix.CommandArgs args,
+    StringBuffer? out,
+  ) async {
     if (args.room == null) return null;
 
     var custom = CustomURI.parse(args.msg);
@@ -150,23 +170,32 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     if (custom == null) {
       var url = Uri.parse(args.msg);
       custom = AddWidgetURI(
-          widgetUrl: url.toString(),
-          widgetName: "Custom",
-          widgetType: "m.custom");
+        widgetUrl: url.toString(),
+        widgetName: "Custom",
+        widgetType: "m.custom",
+      );
     }
 
     if (custom case AddWidgetURI widgetUri) {
-      AdaptiveDialog.show(navigator.currentContext!, builder: (dialogContext) {
-        return AddWidgetDialog(
-            widgetUri: widgetUri, room: client.getRoom(args.room!.id)!);
-      }, title: 'Add "${widgetUri.widgetName ?? "Widget"}"?');
+      AdaptiveDialog.show(
+        navigator.currentContext!,
+        builder: (dialogContext) {
+          return AddWidgetDialog(
+            widgetUri: widgetUri,
+            room: client.getRoom(args.room!.id)!,
+          );
+        },
+        title: 'Add "${widgetUri.widgetName ?? "Widget"}"?',
+      );
     }
 
     return null;
   }
 
   FutureOr<String?> sendRainbow(
-      matrix.CommandArgs args, StringBuffer? out) async {
+    matrix.CommandArgs args,
+    StringBuffer? out,
+  ) async {
     if (args.room == null) return null;
     if (args.msg.isEmpty) return null;
 

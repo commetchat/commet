@@ -12,18 +12,20 @@ class MatrixTimelineEventEmote extends MatrixTimelineEvent
     implements TimelineEventEmote, TimelineEventGeneric {
   MatrixTimelineEventEmote(super.event, {required super.client});
 
-  String messageUserEmote(String user, String emote) =>
-      Intl.message("*$user $emote",
-          desc: "Message to display when a user does a custom emote (/me)",
-          args: [user, emote],
-          name: "messageUserEmote");
+  String messageUserEmote(String user, String emote) => Intl.message(
+    "*$user $emote",
+    desc: "Message to display when a user does a custom emote (/me)",
+    args: [user, emote],
+    name: "messageUserEmote",
+  );
 
   String messageUserEmoteViaProfile(String user, String emote, String sender) =>
-      Intl.message("*$user $emote (via $sender)",
-          desc:
-              "Message to display when a user does a custom emote (/me) with a per message profile",
-          args: [user, emote, sender],
-          name: "messageUserEmoteViaProfile");
+      Intl.message(
+        "*$user $emote (via $sender)",
+        desc: "Message to display when a user does a custom emote (/me) with a per message profile",
+        args: [user, emote, sender],
+        name: "messageUserEmoteViaProfile",
+      );
 
   @override
   String getBody({Timeline? timeline}) {

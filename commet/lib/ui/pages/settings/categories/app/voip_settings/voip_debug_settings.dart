@@ -41,7 +41,7 @@ class _VoipDebugSettingsState extends State<VoipDebugSettings> {
               selectedClient as MatrixClient,
               key: ValueKey(selectedClient.identifier),
             ),
-          )
+          ),
       ],
     );
   }

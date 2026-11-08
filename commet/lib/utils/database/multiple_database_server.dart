@@ -60,7 +60,7 @@ class DatabaseIsolate {
 
   static Future<void> start() async {
     Log.i("Starting database server: $isolateName");
-    
+
     connectToServer = IsolateNameServer.lookupPortByName(isolateName);
     if (connectToServer == null) {
       Isolate.spawn(

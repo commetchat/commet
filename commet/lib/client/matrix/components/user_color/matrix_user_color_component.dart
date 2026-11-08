@@ -35,8 +35,11 @@ class MatrixUserColorComponent
       overrides[identifier] = color.toHexCode();
     }
 
-    await client.matrixClient
-        .setAccountData(client.matrixClient.userID!, key, overrides);
+    await client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      key,
+      overrides,
+    );
   }
 
   @override

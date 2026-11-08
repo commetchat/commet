@@ -19,77 +19,91 @@ class AppearanceSettingsPage extends StatefulWidget {
 }
 
 class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
-  String get labelSettingsAppTheme => Intl.message("Theme",
-      name: "labelSettingsAppTheme",
-      desc: "Label for theme section of app appearance");
+  String get labelSettingsAppTheme => Intl.message(
+    "Theme",
+    name: "labelSettingsAppTheme",
+    desc: "Label for theme section of app appearance",
+  );
 
-  String get labelAppScale => Intl.message("App Scale",
-      name: 'labelAppScale',
-      desc:
-          "Label for the setting which controls the UI scale of the overall app");
+  String get labelAppScale => Intl.message(
+    "App Scale",
+    name: 'labelAppScale',
+    desc:
+        "Label for the setting which controls the UI scale of the overall app",
+  );
 
-  String get labelUseRoomAvatars => Intl.message("Use room avatars",
-      name: "labelUseRoomAvatars",
-      desc: "Label for enabling using room avatars instead of icons");
+  String get labelUseRoomAvatars => Intl.message(
+    "Use room avatars",
+    name: "labelUseRoomAvatars",
+    desc: "Label for enabling using room avatars instead of icons",
+  );
 
-  String get labelEnableRoomIconsDescription =>
-      Intl.message("Show room avatar images instead of icons",
-          name: "labelEnableRoomIconsDescription",
-          desc: "Description for the enable room icons setting");
+  String get labelEnableRoomIconsDescription => Intl.message(
+    "Show room avatar images instead of icons",
+    name: "labelEnableRoomIconsDescription",
+    desc: "Description for the enable room icons setting",
+  );
 
-  String get labelUseRoomAvatarPlaceholders =>
-      Intl.message("Use placeholder avatars",
-          name: "labelUseRoomAvatarPlaceholders",
-          desc: "Label for enabling generic icons in the appearance settings");
+  String get labelUseRoomAvatarPlaceholders => Intl.message(
+    "Use placeholder avatars",
+    name: "labelUseRoomAvatarPlaceholders",
+    desc: "Label for enabling generic icons in the appearance settings",
+  );
 
   String get labelUseRoomAvatarPlaceholdersDescription => Intl.message(
-      "When a room does not have an avatar set, or using them is disabled, fallback to a generic color + first letter placeholder for the image",
-      name: "labelUseRoomAvatarPlaceholdersDescription",
-      desc: "Description for the enable generic icons setting");
+    "When a room does not have an avatar set, or using them is disabled, fallback to a generic color + first letter placeholder for the image",
+    name: "labelUseRoomAvatarPlaceholdersDescription",
+    desc: "Description for the enable generic icons setting",
+  );
 
   String get labelShowRoomPreviewsInSpaceSidebar => Intl.message(
-      "Show unjoined rooms in sidebar",
-      name: "labelShowRoomPreviewsInSpaceSidebar",
-      desc: "Label for enabling using the preview list in the space sidebar");
+    "Show unjoined rooms in sidebar",
+    name: "labelShowRoomPreviewsInSpaceSidebar",
+    desc: "Label for enabling using the preview list in the space sidebar",
+  );
 
   String get labelShowRoomPreviewsInSpaceSidebarDescription => Intl.message(
-      "When there are rooms which you have not joined in a space, show them in the sidebar with the rest of the rooms in the space",
-      name: "labelShowRoomPreviewsInSpaceSidebarDescription",
-      desc:
-          "Description for enabling using the preview list in the space sidebar");
+    "When there are rooms which you have not joined in a space, show them in the sidebar with the rest of the rooms in the space",
+    name: "labelShowRoomPreviewsInSpaceSidebarDescription",
+    desc:
+        "Description for enabling using the preview list in the space sidebar",
+  );
 
-  String get labelShowRoomStateEvents => Intl.message("Show state events",
-      name: "labelShowRoomStateEvents",
-      desc:
-          "Label for enabling visibility of state events in the room timeline");
+  String get labelShowRoomStateEvents => Intl.message(
+    "Show state events",
+    name: "labelShowRoomStateEvents",
+    desc: "Label for enabling visibility of state events in the room timeline",
+  );
 
   String get labelShowRoomStateEventsDescription => Intl.message(
-      "Show changes to the room state, such as members joining and leaving, in the chat timeline",
-      name: "labelShowRoomStateEventsDescription",
-      desc:
-          "Description for enabling using visibility of room state events in the timeline");
+    "Show changes to the room state, such as members joining and leaving, in the chat timeline",
+    name: "labelShowRoomStateEventsDescription",
+    desc: "Description for enabling using visibility of room state events in the timeline",
+  );
 
-  String get labelCollapseStateEvents => Intl.message("Collapse state events",
-      name: "labelCollapseStateEvents",
-      desc:
-          "Label for enabling collapsing of state events in the room timeline");
+  String get labelCollapseStateEvents => Intl.message(
+    "Collapse state events",
+    name: "labelCollapseStateEvents",
+    desc: "Label for enabling collapsing of state events in the room timeline",
+  );
 
   String get labelCollapseStateEventsDescription => Intl.message(
-      "Group changes to room state in to a single timeline event",
-      name: "labelCollapseStateEventsDescription",
-      desc:
-          "Description for enabling using collapsing of room state events in the timeline");
+    "Group changes to room state in to a single timeline event",
+    name: "labelCollapseStateEventsDescription",
+    desc: "Description for enabling using collapsing of room state events in the timeline",
+  );
 
-  String get labelShowRoomsInSidebar => Intl.message("Show rooms in sidebar",
-      name: "labelShowRoomsInSidebar",
-      desc:
-          "Label for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
+  String get labelShowRoomsInSidebar => Intl.message(
+    "Show rooms in sidebar",
+    name: "labelShowRoomsInSidebar",
+    desc: "Label for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar",
+  );
 
   String get labelShowRoomsInSidebarDescription => Intl.message(
-      "Add an entry to the sidebar that shows all rooms which are not contained in a space",
-      name: "labelShowRoomsInSidebarDescription",
-      desc:
-          "Description for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar");
+    "Add an entry to the sidebar that shows all rooms which are not contained in a space",
+    name: "labelShowRoomsInSidebarDescription",
+    desc: "Description for the toggle which shows an extra entry for rooms which are not contained in a space in the sidebar",
+  );
 
   @override
   void initState() {
@@ -101,9 +115,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
     return Column(
       children: [
         themeSettings(context),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Panel(
           header: "Scaling",
           mode: TileType.surfaceContainerLow,
@@ -118,8 +130,8 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 onChanged: (p0) {
                   ScaledWidgetsFlutterBinding.instance.scaleFactor =
                       (deviceSize) {
-                    return p0;
-                  };
+                        return p0;
+                      };
                 },
                 title: labelAppScale,
                 description: "Resizes the overall interface of the app",
@@ -131,13 +143,11 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 preference: preferences.textScale,
                 title: "Text Scale",
                 description: "Multiply the size of text",
-              )
+              ),
             ],
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Panel(
           header: "Other Options",
           mode: TileType.surfaceContainerLow,
@@ -178,7 +188,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.collapseStateEvents,
                   title: labelCollapseStateEvents,
                   description: labelCollapseStateEventsDescription,
-                )
+                ),
               ],
             ),
           ),
@@ -193,8 +203,9 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
         Panel(
           header: labelSettingsAppTheme,
           mode: TileType.surfaceContainerLow,
-          child: Column(children: [
-            Padding(
+          child: Column(
+            children: [
+              Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                 child: BooleanPreferenceToggle(
                   preference: preferences.shouldFollowSystemTheme,
@@ -204,8 +215,9 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                     var theme = await preferences.resolveTheme();
                     if (context.mounted) ThemeChanger.setTheme(context, theme);
                   },
-                )),
-            Padding(
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                 child: BooleanPreferenceToggle(
                   preference: preferences.shouldFollowSystemColors,
@@ -215,10 +227,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                     var theme = await preferences.resolveTheme();
                     if (context.mounted) ThemeChanger.setTheme(context, theme);
                   },
-                )),
-            const Seperator(),
-            const ThemeListWidget(),
-          ]),
+                ),
+              ),
+              const Seperator(),
+              const ThemeListWidget(),
+            ],
+          ),
         ),
       ],
     );
@@ -249,17 +263,18 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
         children: [
           SizedBox(width: 30, child: tiamat.Text(value.toStringAsPrecision(2))),
           Expanded(
-              child: Slider(
-            min: 0.5,
-            max: preferences.developerMode.value ? 3 : 2,
-            value: value,
-            divisions: preferences.developerMode.value ? 25 : 15,
-            onChanged: (value) {
-              setState(() {
-                this.value = value;
-              });
-            },
-          )),
+            child: Slider(
+              min: 0.5,
+              max: preferences.developerMode.value ? 3 : 2,
+              value: value,
+              divisions: preferences.developerMode.value ? 25 : 15,
+              onChanged: (value) {
+                setState(() {
+                  this.value = value;
+                });
+              },
+            ),
+          ),
           Button.secondary(
             text: CommonStrings.promptApply,
             onTap: () {
@@ -269,7 +284,7 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
                 return newValue;
               };
             },
-          )
+          ),
         ],
       ),
     );

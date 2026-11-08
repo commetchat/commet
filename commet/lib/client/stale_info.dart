@@ -5,8 +5,12 @@ class StalePeerInfo {
   String? displayName;
   String? identifier;
   ImageProvider? avatar;
-  StalePeerInfo(
-      {required this.index, this.displayName, this.identifier, this.avatar});
+  StalePeerInfo({
+    required this.index,
+    this.displayName,
+    this.identifier,
+    this.avatar,
+  });
 }
 
 class StaleSpaceInfo {
@@ -14,8 +18,12 @@ class StaleSpaceInfo {
   String? name;
   ImageProvider? avatar;
   ImageProvider? userAvatar;
-  StaleSpaceInfo(
-      {required this.index, this.name, this.avatar, this.userAvatar});
+  StaleSpaceInfo({
+    required this.index,
+    this.name,
+    this.avatar,
+    this.userAvatar,
+  });
 }
 
 class StaleRoomInfo {

@@ -8,8 +8,10 @@ abstract class ThreadsComponent<T extends Client> implements Component<T> {
 
   bool isHeadOfThread(TimelineEvent event, Timeline timeline);
 
-  Future<Timeline?> getThreadTimeline(
-      {required Timeline roomTimeline, required String threadRootEventId});
+  Future<Timeline?> getThreadTimeline({
+    required Timeline roomTimeline,
+    required String threadRootEventId,
+  });
 
   Future<TimelineEvent?> sendMessage({
     required String threadRootEventId,

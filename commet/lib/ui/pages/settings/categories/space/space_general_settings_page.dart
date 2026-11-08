@@ -31,11 +31,9 @@ class _SpaceGeneralSettingsPageState extends State<SpaceGeneralSettingsPage> {
           pushRule: pushRule,
           onPushRuleChanged: setPushRule,
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         if (widget.space is MatrixSpace)
-          MatrixRoomAddressSettings((widget.space as MatrixSpace).matrixRoom)
+          MatrixRoomAddressSettings((widget.space as MatrixSpace).matrixRoom),
       ],
     );
   }

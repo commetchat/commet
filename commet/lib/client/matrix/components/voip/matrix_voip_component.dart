@@ -78,13 +78,15 @@ class MatrixVoipComponent
       mx.EventTypes.CallHangup,
       mx.EventTypes.CallAnswer,
       mx.EventTypes.CallInvite,
-      mx.EventTypes.CallReject
+      mx.EventTypes.CallReject,
     ].contains(event.event.type);
   }
 
   @override
-  Widget? displayTimelineEvent(TimelineEvent event,
-      {required String senderName}) {
+  Widget? displayTimelineEvent(
+    TimelineEvent event, {
+    required String senderName,
+  }) {
     if (event is! MatrixTimelineEvent) {
       return null;
     }
@@ -116,7 +118,8 @@ class MatrixVoipComponent
   }
 
   Future<Map<String, dynamic>> alterPeerConfiguration(
-      Map<String, dynamic> configuration) async {
+    Map<String, dynamic> configuration,
+  ) async {
     List<Map<String, dynamic>> newServers = List.empty(growable: true);
 
     // Split up the urls in to individual servers, this helps flutter_webrtc to get all candidates correctly
@@ -139,11 +142,13 @@ class MatrixVoipComponent
     var servers = configuration["iceServers"] as List<dynamic>;
     if (servers.isEmpty) {
       if (preferences.useFallbackTurnServer.value == false) {
-        var result = await AdaptiveDialog.show<bool>(navigator.currentContext!,
-            builder: (context) =>
-                VoipTurnFallbackDialog(client.getMatrixClient().homeserver!),
-            dismissible: false,
-            title: "Call Error");
+        var result = await AdaptiveDialog.show<bool>(
+          navigator.currentContext!,
+          builder: (context) =>
+              VoipTurnFallbackDialog(client.getMatrixClient().homeserver!),
+          dismissible: false,
+          title: "Call Error",
+        );
 
         preferences.useFallbackTurnServer.set(result ?? false);
       }
@@ -151,8 +156,8 @@ class MatrixVoipComponent
       if (preferences.useFallbackTurnServer.value) {
         servers = [
           {
-            "urls": [preferences.fallbackTurnServer.value]
-          }
+            "urls": [preferences.fallbackTurnServer.value],
+          },
         ];
         configuration["iceServers"] = servers;
       }
@@ -163,15 +168,17 @@ class MatrixVoipComponent
 
   @override
   Future<RTCPeerConnection> createPeerConnection(
-      Map<String, dynamic> configuration,
-      [Map<String, dynamic> constraints = const {}]) async {
+    Map<String, dynamic> configuration, [
+    Map<String, dynamic> constraints = const {},
+  ]) async {
     configuration = await alterPeerConfiguration(configuration);
 
     var servers = configuration['iceServers'] as List<dynamic>;
 
     if (servers.isEmpty) {
       throw Exception(
-          "No Turn servers are configured, this call cannot be connected");
+        "No Turn servers are configured, this call cannot be connected",
+      );
     }
 
     var pc = await webrtc.createPeerConnection(configuration, constraints);
@@ -203,7 +210,7 @@ class MatrixVoipComponent
 
     var callType = switch (type) {
       CallType.voice => mx.CallType.kVoice,
-      CallType.video => mx.CallType.kVideo
+      CallType.video => mx.CallType.kVideo,
     };
 
     var room = client.getMatrixClient().getRoomById(roomId);

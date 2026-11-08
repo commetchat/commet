@@ -21,17 +21,21 @@ class LinkExecutorOpenUri extends LinkExecutor {
 
     // Uri Encode all components, to protect against weird url escapes: `https://example.com; rm -rf ~`
     var processed = Uri(
-        scheme: uri.scheme,
-        host: uri.host,
-        port: uri.port,
-        queryParameters: uri.queryParameters.isEmpty
-            ? null
-            : Map.fromEntries(uri.queryParameters.entries.map(
-                (i) => MapEntry(procComponent(i.key), procComponent(i.value)))),
-        pathSegments: uri.pathSegments.isEmpty
-            ? null
-            : uri.pathSegments.map((i) => procComponent(i)).toList(),
-        fragment: uri.fragment.isEmpty ? null : procComponent(uri.fragment));
+      scheme: uri.scheme,
+      host: uri.host,
+      port: uri.port,
+      queryParameters: uri.queryParameters.isEmpty
+          ? null
+          : Map.fromEntries(
+              uri.queryParameters.entries.map(
+                (i) => MapEntry(procComponent(i.key), procComponent(i.value)),
+              ),
+            ),
+      pathSegments: uri.pathSegments.isEmpty
+          ? null
+          : uri.pathSegments.map((i) => procComponent(i)).toList(),
+      fragment: uri.fragment.isEmpty ? null : procComponent(uri.fragment),
+    );
 
     result = result.replaceAll("\${uri}", processed.toString());
 

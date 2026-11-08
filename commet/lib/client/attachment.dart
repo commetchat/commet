@@ -25,8 +25,13 @@ class PendingFileAttachment {
   Size? dimensions;
   Duration? length;
 
-  PendingFileAttachment(
-      {this.name, this.path, this.data, this.mimeType, this.size}) {
+  PendingFileAttachment({
+    this.name,
+    this.path,
+    this.data,
+    this.mimeType,
+    this.size,
+  }) {
     assert(path != null || data != null);
 
     mimeType ??= Mime.lookupType(path ?? name ?? "", data: data);
@@ -96,13 +101,15 @@ class VideoAttachment extends FileAttachment {
 
   final Uri? streamUrl;
 
-  VideoAttachment(super.file,
-      {super.name,
-      required super.mimeType,
-      this.thumbnail,
-      this.streamUrl,
-      this.width,
-      this.height,
-      this.duration,
-      super.fileSize});
+  VideoAttachment(
+    super.file, {
+    super.name,
+    required super.mimeType,
+    this.thumbnail,
+    this.streamUrl,
+    this.width,
+    this.height,
+    this.duration,
+    super.fileSize,
+  });
 }

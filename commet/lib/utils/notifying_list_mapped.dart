@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:commet/utils/notifying_list.dart';
 
 class NotifyingListMapped<T, R> implements INotifyingList<T> {
@@ -11,9 +12,10 @@ class NotifyingListMapped<T, R> implements INotifyingList<T> {
 
   late List<StreamSubscription> subs;
 
-  NotifyingListMapped(
-      {required NotifyingList<R> baseList,
-      required List<T> Function(R value) map}) {
+  NotifyingListMapped({
+    required NotifyingList<R> baseList,
+    required List<T> Function(R value) map,
+  }) {
     this.mapFunction = map;
     this._baseList = baseList;
 
@@ -369,13 +371,17 @@ class NotifyingListMapped<T, R> implements INotifyingList<T> {
     final mapped = mapFunction(event);
 
     if (mapped case INotifyingList n) {
-      subs.add(n.onAdd.listen((d) {
-        _internalList.add(d);
-      }));
+      subs.add(
+        n.onAdd.listen((d) {
+          _internalList.add(d);
+        }),
+      );
 
-      subs.add(n.onRemove.listen((d) {
-        _internalList.remove(d);
-      }));
+      subs.add(
+        n.onRemove.listen((d) {
+          _internalList.remove(d);
+        }),
+      );
     }
 
     _internalList.addAll(mapped);

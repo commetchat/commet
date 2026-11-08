@@ -6,11 +6,7 @@ const _shimmerGradient = LinearGradient(
     Color.fromARGB(100, 244, 244, 244),
     Color.fromARGB(50, 65, 65, 65),
   ],
-  stops: [
-    0.1,
-    0.3,
-    0.4,
-  ],
+  stops: [0.1, 0.3, 0.4],
   begin: Alignment(-1.0, -0.3),
   end: Alignment(1.0, 0.3),
   tileMode: TileMode.clamp,
@@ -27,11 +23,7 @@ class Shimmer extends StatefulWidget {
       Color.fromARGB(200, 244, 244, 244),
       Color.fromARGB(200, 65, 65, 65),
     ],
-    stops: [
-      0.0,
-      0.3,
-      0.4,
-    ],
+    stops: [0.0, 0.3, 0.4],
     begin: Alignment(-1, 0),
     end: Alignment(1, 0),
     tileMode: TileMode.clamp,
@@ -68,13 +60,14 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   }
 
   LinearGradient get gradient => LinearGradient(
-        colors: widget.linearGradient.colors,
-        stops: widget.linearGradient.stops,
-        begin: widget.linearGradient.begin,
-        end: widget.linearGradient.end,
-        transform:
-            _SlidingGradientTransform(slidePercent: _shimmerController.value),
-      );
+    colors: widget.linearGradient.colors,
+    stops: widget.linearGradient.stops,
+    begin: widget.linearGradient.begin,
+    end: widget.linearGradient.end,
+    transform: _SlidingGradientTransform(
+      slidePercent: _shimmerController.value,
+    ),
+  );
 
   bool get isSized =>
       (context.findRenderObject() as RenderBox?)?.hasSize ?? false;
@@ -98,9 +91,7 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
 }
 
 class _SlidingGradientTransform extends GradientTransform {
-  const _SlidingGradientTransform({
-    required this.slidePercent,
-  });
+  const _SlidingGradientTransform({required this.slidePercent});
 
   final double slidePercent;
 

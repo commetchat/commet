@@ -10,14 +10,15 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'video_player_controller.dart';
 
 class VideoPlayerImplementation extends StatefulWidget {
-  const VideoPlayerImplementation(
-      {required this.controller,
-      required this.videoFile,
-      this.decodeFirstFrame = false,
-      this.streamUrl,
-      this.width = 640,
-      this.height = 340,
-      super.key});
+  const VideoPlayerImplementation({
+    required this.controller,
+    required this.videoFile,
+    this.decodeFirstFrame = false,
+    this.streamUrl,
+    this.width = 640,
+    this.height = 340,
+    super.key,
+  });
   final FileProvider videoFile;
   final Uri? streamUrl;
   final int width;
@@ -48,25 +49,24 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
     }
 
     widget.controller.attach(
-        pause: pause,
-        play: play,
-        replay: replay,
-        screenshot: screenshot,
-        getSize: getSize,
-        getVolume: getVolume,
-        seekTo: seekTo,
-        getLength: getLength,
-        setVolume: setVolume);
+      pause: pause,
+      play: play,
+      replay: replay,
+      screenshot: screenshot,
+      getSize: getSize,
+      getVolume: getVolume,
+      seekTo: seekTo,
+      getLength: getLength,
+      setVolume: setVolume,
+    );
 
     player.stream.position.listen((event) {
       widget.controller.setProgress(event);
     });
 
-    player.stream.completed.listen(
-      (completed) {
-        widget.controller.setCompleted(completed);
-      },
-    );
+    player.stream.completed.listen((completed) {
+      widget.controller.setCompleted(completed);
+    });
 
     player.stream.volume.listen(widget.controller.handleInternalVolumeChange);
 
@@ -82,8 +82,10 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
 
         sub?.cancel();
 
-        await player.open(Playlist([Media(file.toString())]),
-            play: !widget.decodeFirstFrame);
+        await player.open(
+          Playlist([Media(file.toString())]),
+          play: !widget.decodeFirstFrame,
+        );
         widget.controller.setBuffering(false);
 
         setState(() {
@@ -99,19 +101,23 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
         bool allowed = preferences.allowedRemoteVideoHosts.value.contains(host);
 
         if (!allowed) {
-          bool? confirmation = await AdaptiveDialog.confirmation(context,
-              dangerous: true,
-              title: "Stream Remote Video",
-              prompt:
-                  "Do you want to allow connections to `${widget.streamUrl!.host}` to stream this video?");
+          bool? confirmation = await AdaptiveDialog.confirmation(
+            context,
+            dangerous: true,
+            title: "Stream Remote Video",
+            prompt:
+                "Do you want to allow connections to `${widget.streamUrl!.host}` to stream this video?",
+          );
 
           allowed = confirmation == true;
           preferences.allowedRemoteVideoHosts.add(host);
         }
 
         if (allowed) {
-          await player.open(Playlist([Media(widget.streamUrl!.toString())]),
-              play: !widget.decodeFirstFrame);
+          await player.open(
+            Playlist([Media(widget.streamUrl!.toString())]),
+            play: !widget.decodeFirstFrame,
+          );
         }
 
         widget.controller.setBuffering(false);
@@ -176,7 +182,9 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
     }
 
     return Size(
-        player.state.width!.toDouble(), player.state.height!.toDouble());
+      player.state.width!.toDouble(),
+      player.state.height!.toDouble(),
+    );
   }
 
   Future<double> getVolume() async {

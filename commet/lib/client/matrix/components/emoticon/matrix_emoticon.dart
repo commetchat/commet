@@ -23,16 +23,22 @@ class MatrixEmoticon implements Emoticon {
 
   EmoticonUsage packUsage;
 
-  MatrixEmoticon(this.emojiUrl, matrix.Client client,
-      {required this.packUsage,
-      required String shortcode,
-      required this.usage}) {
+  MatrixEmoticon(
+    this.emojiUrl,
+    matrix.Client client, {
+    required this.packUsage,
+    required String shortcode,
+    required this.usage,
+  }) {
     _shortcode = shortcode;
-    _image = MatrixMxcImage(emojiUrl, client,
-        fullResHeight: 100,
-        doThumbnail: false,
-        doFullres: true,
-        autoLoadFullRes: true);
+    _image = MatrixMxcImage(
+      emojiUrl,
+      client,
+      fullResHeight: 100,
+      doThumbnail: false,
+      doFullres: true,
+      autoLoadFullRes: true,
+    );
   }
 
   void setShortcode(String shortcode) {

@@ -4,7 +4,9 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:flutter/material.dart';
+
 import 'emoji/emoji_matcher.dart';
+
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart' as material;
 
@@ -47,21 +49,25 @@ class TextUtils {
     return _urlRegex.hasMatch(text);
   }
 
-  static List<InlineSpan> linkifyString(String text,
-      {TextStyle? style,
-      required BuildContext context,
-      required String clientId}) {
+  static List<InlineSpan> linkifyString(
+    String text, {
+    TextStyle? style,
+    required BuildContext context,
+    required String clientId,
+  }) {
     var matches = _urlRegex.allMatches(text);
     return formatMatches(
       matches,
       text,
       style: style,
       builder: (matchedText, theme) {
-        return LinkSpan.create(matchedText,
-            clientId: clientId,
-            context: context,
-            destination: Uri.parse(matchedText),
-            style: style);
+        return LinkSpan.create(
+          matchedText,
+          clientId: clientId,
+          context: context,
+          destination: Uri.parse(matchedText),
+          style: style,
+        );
       },
     );
   }
@@ -83,10 +89,11 @@ class TextUtils {
   }
 
   static List<InlineSpan> formatMatches(
-      Iterable<RegExpMatch> matches, String text,
-      {required InlineSpan Function(String matchedText, TextStyle? theme)
-          builder,
-      TextStyle? style}) {
+    Iterable<RegExpMatch> matches,
+    String text, {
+    required InlineSpan Function(String matchedText, TextStyle? theme) builder,
+    TextStyle? style,
+  }) {
     if (matches.isEmpty) return [TextSpan(text: text, style: style)];
 
     List<InlineSpan> span = List.empty(growable: true);
@@ -139,7 +146,8 @@ class TextUtils {
 
     if (forceSpecialCharacter) {
       if (!password.characters.any(
-          (char) => ("!@#\$%^&*()_+`{}|:\"<>?/.,';][=-\\").contains(char))) {
+        (char) => ("!@#\$%^&*()_+`{}|:\"<>?/.,';][=-\\").contains(char),
+      )) {
         return NewPasswordResult.noSymbols;
       }
     }
@@ -227,11 +235,14 @@ class TextUtils {
 
   static String toHexString(Uint8List bytes) {
     return bytes.fold<String>(
-        '', (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'));
+      '',
+      (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'),
+    );
   }
 
   static Uint8List parseHexString(String hexString) => Uint8List.fromList(
-          (RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
-        return int.parse(byte.group(0)!, radix: 16);
-      }).toList());
+    (RegExp(r'.{1,2}').allMatches(hexString).toList()).map<int>((byte) {
+      return int.parse(byte.group(0)!, radix: 16);
+    }).toList(),
+  );
 }

@@ -8,13 +8,15 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
 
 class MatrixUIARequestView extends StatefulWidget {
-  const MatrixUIARequestView(this.state,
-      {this.onSubmitAuthentication,
-      required this.nextSteps,
-      super.key,
-      this.onFail,
-      this.onSubmitSso,
-      this.onSuccess});
+  const MatrixUIARequestView(
+    this.state, {
+    this.onSubmitAuthentication,
+    required this.nextSteps,
+    super.key,
+    this.onFail,
+    this.onSubmitSso,
+    this.onSuccess,
+  });
   final UiaRequestState state;
   final Set<String> nextSteps;
   final Function(String password)? onSubmitAuthentication;
@@ -26,10 +28,7 @@ class MatrixUIARequestView extends StatefulWidget {
   State<MatrixUIARequestView> createState() => _MatrixUIARequestViewState();
 }
 
-enum UIAStep {
-  password,
-  sso,
-}
+enum UIAStep { password, sso }
 
 class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
   TextEditingController passwordFieldController = TextEditingController();
@@ -53,10 +52,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 500,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: buildView(),
-      ),
+      child: Padding(padding: const EdgeInsets.all(12.0), child: buildView()),
     );
   }
 
@@ -90,18 +86,20 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
             ),
           if (canUseSso)
             tiamat.Button(
-                text: "Continue with SSO",
-                onTap: () {
-                  widget.onSubmitSso?.call();
-                  setState(() {
-                    pickedStep = UIAStep.sso;
-                  });
-                }),
+              text: "Continue with SSO",
+              onTap: () {
+                widget.onSubmitSso?.call();
+                setState(() {
+                  pickedStep = UIAStep.sso;
+                });
+              },
+            ),
           if (canUseAnyNextStep == false) ...[
             tiamat.Text.labelLow(
-                "Sorry, none of the authentication methods provided by the server are supported."),
+              "Sorry, none of the authentication methods provided by the server are supported.",
+            ),
             tiamat.Text.labelLow(widget.nextSteps.toString()),
-          ]
+          ],
         ],
       ),
     );
@@ -122,11 +120,10 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
 
   Widget showSsoStep() {
     return SizedBox(
-        height: 300,
-        width: 300,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ));
+      height: 300,
+      width: 300,
+      child: Center(child: CircularProgressIndicator()),
+    );
   }
 
   Widget userPasswordInput() {
@@ -141,20 +138,20 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
           controller: passwordFieldController,
         ),
         SizedBox(
-            height: 40,
-            child: Button(
-              text: CommonStrings.promptSubmit,
-              onTap: () => widget.onSubmitAuthentication
-                  ?.call(passwordFieldController.text),
-            ))
+          height: 40,
+          child: Button(
+            text: CommonStrings.promptSubmit,
+            onTap: () => widget.onSubmitAuthentication?.call(
+              passwordFieldController.text,
+            ),
+          ),
+        ),
       ],
     );
   }
 
   Widget loading() {
-    return const Center(
-      child: material.CircularProgressIndicator(),
-    );
+    return const Center(child: material.CircularProgressIndicator());
   }
 
   Widget done(BuildContext context) {
@@ -173,7 +170,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                 size: 40,
               ),
             ),
-            const tiamat.Text.largeTitle("Success!")
+            const tiamat.Text.largeTitle("Success!"),
           ],
         ),
         SizedBox(
@@ -183,7 +180,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
             text: CommonStrings.promptContinue,
             onTap: () => widget.onSuccess?.call(),
           ),
-        )
+        ),
       ],
     );
   }
@@ -203,7 +200,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                 size: 40,
               ),
             ),
-            const tiamat.Text.largeTitle("Login failed...")
+            const tiamat.Text.largeTitle("Login failed..."),
           ],
         ),
         SizedBox(
@@ -213,7 +210,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
             text: CommonStrings.promptContinue,
             onTap: () => widget.onFail?.call(),
           ),
-        )
+        ),
       ],
     );
   }

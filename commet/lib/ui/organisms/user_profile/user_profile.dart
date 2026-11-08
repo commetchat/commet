@@ -23,16 +23,17 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UserProfile extends StatefulWidget {
-  const UserProfile(
-      {super.key,
-      required this.userId,
-      this.width = 700,
-      this.bannerHeight = 230.0,
-      required this.client,
-      this.maxBioHeight = 200,
-      this.doSafeArea = true,
-      this.showMessageButton = true,
-      this.dismiss});
+  const UserProfile({
+    super.key,
+    required this.userId,
+    this.width = 700,
+    this.bannerHeight = 230.0,
+    required this.client,
+    this.maxBioHeight = 200,
+    this.doSafeArea = true,
+    this.showMessageButton = true,
+    this.dismiss,
+  });
   final Client client;
   final String userId;
   final double bannerHeight;
@@ -56,24 +57,33 @@ class UserProfile extends StatefulWidget {
   }) async {
     if (MediaQuery.of(context).desktop)
       return showGeneralDialog(
-          context: context,
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return Theme(
-              data: Theme.of(context),
-              child: Center(child: UserProfile(userId: userId, client: client)),
-            );
-          },
-          barrierLabel: "USER_PROFILE_BARRIER",
-          barrierDismissible: dismissible,
-          transitionDuration: const Duration(milliseconds: 300),
-          transitionBuilder: (context, animation, secondaryAnimation, child) =>
-              SlideTransition(
-                position:
-                    Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-                        .animate(CurvedAnimation(
-                            parent: animation, curve: Curves.easeOutCubic)),
-                child: child,
-              ));
+        context: context,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return Theme(
+            data: Theme.of(context),
+            child: Center(
+              child: UserProfile(userId: userId, client: client),
+            ),
+          );
+        },
+        barrierLabel: "USER_PROFILE_BARRIER",
+        barrierDismissible: dismissible,
+        transitionDuration: const Duration(milliseconds: 300),
+        transitionBuilder: (context, animation, secondaryAnimation, child) =>
+            SlideTransition(
+              position:
+                  Tween(
+                    begin: const Offset(0, 1),
+                    end: const Offset(0, 0),
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    ),
+                  ),
+              child: child,
+            ),
+      );
 
     return showModalBottomSheet(
       isScrollControlled: true,
@@ -128,8 +138,13 @@ class _UserProfileState extends State<UserProfile> {
 
     if (avatar case MatrixMxcImage mxc) {
       // create a new image instance so we can load fullres without it loading everywhere
-      avatar = MatrixMxcImage(mxc.identifier, mxc.client,
-          doThumbnail: false, doFullres: true, autoLoadFullRes: true);
+      avatar = MatrixMxcImage(
+        mxc.identifier,
+        mxc.client,
+        doThumbnail: false,
+        doFullres: true,
+        autoLoadFullRes: true,
+      );
     }
 
     if (value case ProfileWithColorScheme p) {
@@ -138,9 +153,10 @@ class _UserProfileState extends State<UserProfile> {
 
         if (p.color != null) {
           scheme = ColorScheme.fromSeed(
-              seedColor: p.color!,
-              brightness: brightness,
-              dynamicSchemeVariant: DynamicSchemeVariant.content);
+            seedColor: p.color!,
+            brightness: brightness,
+            dynamicSchemeVariant: DynamicSchemeVariant.content,
+          );
         }
       }
     }
@@ -153,14 +169,16 @@ class _UserProfileState extends State<UserProfile> {
     if (scheme == null) {
       if (avatar != null) {
         scheme = await ColorScheme.fromImageProvider(
-            provider: value!.banner ?? value.avatar!,
-            brightness: brightness,
-            dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
+          provider: value!.banner ?? value.avatar!,
+          brightness: brightness,
+          dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+        );
       } else {
         scheme = ColorScheme.fromSeed(
-            seedColor: value!.defaultColor,
-            brightness: brightness,
-            dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
+          seedColor: value!.defaultColor,
+          brightness: brightness,
+          dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+        );
       }
     }
 
@@ -196,7 +214,9 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     if (profile == null) {
       return SizedBox(
-          height: 300, child: const Center(child: CircularProgressIndicator()));
+        height: 300,
+        child: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     Widget? bio;
@@ -243,9 +263,10 @@ class _UserProfileState extends State<UserProfile> {
         currentPetName: widget.client
             .getComponent<PetNameComponent>()
             ?.getPetName(widget.userId),
-        hasPetName: widget.client
-                .getComponent<PetNameComponent>()
-                ?.getPetName(widget.userId) !=
+        hasPetName:
+            widget.client.getComponent<PetNameComponent>()?.getPetName(
+              widget.userId,
+            ) !=
             null,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
@@ -254,9 +275,10 @@ class _UserProfileState extends State<UserProfile> {
         clearStatus: clearStatus,
         shareCurrentTimezone: shareTimezone,
         pronouns: pronouns,
-        hasColorOverride: widget.client
-                .getComponent<UserColorComponent>()
-                ?.getColor(profile!.identifier) !=
+        hasColorOverride:
+            widget.client.getComponent<UserColorComponent>()?.getColor(
+              profile!.identifier,
+            ) !=
             null,
       ),
     );
@@ -270,17 +292,23 @@ class _UserProfileState extends State<UserProfile> {
       return;
     }
 
-    var existingRooms = component.directMessageRooms.where((element) =>
-        profile!.identifier == component.getDirectMessagePartnerId(element));
+    var existingRooms = component.directMessageRooms.where(
+      (element) =>
+          profile!.identifier == component.getDirectMessagePartnerId(element),
+    );
 
     if (existingRooms.isNotEmpty == true) {
-      EventBus.doOpenRoom(existingRooms.first.identifier,
-          clientId: widget.client.identifier);
+      EventBus.doOpenRoom(
+        existingRooms.first.identifier,
+        clientId: widget.client.identifier,
+      );
     } else {
       var room = await component.createDirectMessage(profile!.identifier);
       if (room != null) {
-        EventBus.doOpenRoom(room.identifier,
-            clientId: widget.client.identifier);
+        EventBus.doOpenRoom(
+          room.identifier,
+          clientId: widget.client.identifier,
+        );
       }
     }
 
@@ -288,10 +316,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
-    final action = await ImageSelectDialog.show(
-      context,
-      image: banner,
-    );
+    final action = await ImageSelectDialog.show(context, image: banner);
 
     if (!mounted) return;
 
@@ -302,8 +327,10 @@ class _UserProfileState extends State<UserProfile> {
 
     if (action != ImageEditAction.pick) return;
 
-    var result =
-        await PickerUtils.pickImageAndCrop(context, aspectRatio: 700 / 230);
+    var result = await PickerUtils.pickImageAndCrop(
+      context,
+      aspectRatio: 700 / 230,
+    );
     if (result == null) return;
 
     setState(() {
@@ -334,9 +361,10 @@ class _UserProfileState extends State<UserProfile> {
   void updatePreviewTheme() {
     theme = Theme.of(context).copyWith(
       colorScheme: ColorScheme.fromSeed(
-          seedColor: previewColor,
-          brightness: previewBrightness,
-          dynamicSchemeVariant: DynamicSchemeVariant.content),
+        seedColor: previewColor,
+        brightness: previewBrightness,
+        dynamicSchemeVariant: DynamicSchemeVariant.content,
+      ),
     );
   }
 
@@ -397,13 +425,16 @@ class _UserProfileState extends State<UserProfile> {
     if (text != null) {
       var client = widget.client;
       client.getComponent<UserProfileComponent>()?.setStatus(text);
-      client
-          .getComponent<UserPresenceComponent>()
-          ?.setStatus(UserPresenceStatus.online, message: text);
+      client.getComponent<UserPresenceComponent>()?.setStatus(
+        UserPresenceStatus.online,
+        message: text,
+      );
 
       setState(() {
-        presence = UserPresence(UserPresenceStatus.online,
-            message: UserPresenceMessage(text, PresenceMessageType.userCustom));
+        presence = UserPresence(
+          UserPresenceStatus.online,
+          message: UserPresenceMessage(text, PresenceMessageType.userCustom),
+        );
       });
     }
   }
@@ -413,9 +444,10 @@ class _UserProfileState extends State<UserProfile> {
     await client.getComponent<UserProfileComponent>()?.setStatus(null);
 
     await client.getComponent<UserPresenceComponent>()?.setStatus(
-        UserPresenceStatus.online,
-        message: null,
-        clearMessage: true);
+      UserPresenceStatus.online,
+      message: null,
+      clearMessage: true,
+    );
 
     setState(() {
       presence = UserPresence(UserPresenceStatus.online);
@@ -431,7 +463,10 @@ class _UserProfileState extends State<UserProfile> {
           width: 1000,
           child: SelectionArea(
             child: ExpandableCodeBlock(
-                expanded: true, text: profile!.source, language: "json"),
+              expanded: true,
+              text: profile!.source,
+              language: "json",
+            ),
           ),
         );
       },
@@ -439,25 +474,27 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   String labelConfirmShareTimezone(String timezone) => Intl.message(
-      "Are you sure you want to share your timezone '$timezone' publicly?",
-      name: "labelConfirmShareTimezone",
-      args: [timezone],
-      desc:
-          "Ask the user to confirm that they want to share their current timezone as public information on their profile");
+    "Are you sure you want to share your timezone '$timezone' publicly?",
+    name: "labelConfirmShareTimezone",
+    args: [timezone],
+    desc: "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+  );
 
   Future<void> shareTimezone() async {
     final currentTimeZone = await FlutterTimezone.getLocalTimezone();
-    if (await AdaptiveDialog.confirmation(context,
-            prompt: labelConfirmShareTimezone(currentTimeZone.identifier)) ==
+    if (await AdaptiveDialog.confirmation(
+          context,
+          prompt: labelConfirmShareTimezone(currentTimeZone.identifier),
+        ) ==
         true) {
       setState(() {
         timezone = currentTimeZone.identifier;
       });
 
       print(currentTimeZone.identifier);
-      return widget.client
-          .getComponent<UserProfileComponent>()
-          ?.setTimezone(currentTimeZone.identifier);
+      return widget.client.getComponent<UserProfileComponent>()?.setTimezone(
+        currentTimeZone.identifier,
+      );
     }
   }
 
@@ -469,45 +506,53 @@ class _UserProfileState extends State<UserProfile> {
     });
   }
 
-  String get promptProfileWriteBioHint => Intl.message("Write about yourself",
-      name: "promptProfileWriteBioHint",
-      desc: "Hint text for the profile bio editor");
+  String get promptProfileWriteBioHint => Intl.message(
+    "Write about yourself",
+    name: "promptProfileWriteBioHint",
+    desc: "Hint text for the profile bio editor",
+  );
 
   Future<void> setBio() async {
-    AdaptiveDialog.show(context, builder: (context) {
-      String? plaintext;
+    AdaptiveDialog.show(
+      context,
+      builder: (context) {
+        String? plaintext;
 
-      if (profile case ProfileWithBio p) {
-        plaintext = p.plaintextBio;
-      }
+        if (profile case ProfileWithBio p) {
+          plaintext = p.plaintextBio;
+        }
 
-      return SizedBox(
-        width: 600,
-        child: MessageInput(
-          hintText: promptProfileWriteBioHint,
-          initialText: bioText ?? plaintext,
-          showAttachmentButton: false,
-          client: widget.client,
-          showGifSearch: false,
-          disableEnterToSend: true,
-          compact: true,
-          enableKeyboardAdapter: false,
-          availibleEmoticons:
-              widget.client.getComponent<EmoticonComponent>()?.availablePacks,
-          onSendMessage: (message, {overrideClient}) {
-            widget.client.getComponent<UserProfileComponent>()?.setBio(message);
+        return SizedBox(
+          width: 600,
+          child: MessageInput(
+            hintText: promptProfileWriteBioHint,
+            initialText: bioText ?? plaintext,
+            showAttachmentButton: false,
+            client: widget.client,
+            showGifSearch: false,
+            disableEnterToSend: true,
+            compact: true,
+            enableKeyboardAdapter: false,
+            availibleEmoticons: widget.client
+                .getComponent<EmoticonComponent>()
+                ?.availablePacks,
+            onSendMessage: (message, {overrideClient}) {
+              widget.client.getComponent<UserProfileComponent>()?.setBio(
+                message,
+              );
 
-            setState(() {
-              bioText = message;
-            });
+              setState(() {
+                bioText = message;
+              });
 
-            Navigator.of(context).pop();
+              Navigator.of(context).pop();
 
-            return MessageInputSendResult.success;
-          },
-        ),
-      );
-    });
+              return MessageInputSendResult.success;
+            },
+          ),
+        );
+      },
+    );
   }
 
   Future<void> clearBio() async {
@@ -524,31 +569,32 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  String get labelProfileYourBadges => Intl.message("Your Badges",
-      name: "labelProfileYourBadges",
-      desc:
-          "label for the ui to select which badges to display on the users profile");
+  String get labelProfileYourBadges => Intl.message(
+    "Your Badges",
+    name: "labelProfileYourBadges",
+    desc: "label for the ui to select which badges to display on the users profile",
+  );
 
   String get labelProfileNoBadges => Intl.message(
-      "You don't have any badges. You can get badges by donating and supporting development of Commet",
-      name: "labelProfileNoBadges",
-      desc:
-          "text that is shown when the user has no badges, and explain where they can get badges");
+    "You don't have any badges. You can get badges by donating and supporting development of Commet",
+    name: "labelProfileNoBadges",
+    desc: "text that is shown when the user has no badges, and explain where they can get badges",
+  );
 
   Future<void> editBadges() async {
     var availableBadges = await component.getAvailableBadges();
 
     if (availableBadges.isEmpty) {
-      AdaptiveDialog.show(context,
-          builder: (context) => SizedBox(
-                height: 200,
-                child: Center(
-                  child: Container(
-                    child: tiamat.Text.labelLow(labelProfileNoBadges),
-                  ),
-                ),
-              ),
-          title: labelProfileYourBadges);
+      AdaptiveDialog.show(
+        context,
+        builder: (context) => SizedBox(
+          height: 200,
+          child: Center(
+            child: Container(child: tiamat.Text.labelLow(labelProfileNoBadges)),
+          ),
+        ),
+        title: labelProfileYourBadges,
+      );
       return;
     }
 

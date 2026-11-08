@@ -15,12 +15,14 @@ class AppFocus {
   static void init() {
     _state = WidgetsBinding.instance.lifecycleState;
 
-    WidgetsBinding.instance.addObserver(AppFocusObserver((state) {
-      Log.i("App lifecycle state changed: ${state}");
+    WidgetsBinding.instance.addObserver(
+      AppFocusObserver((state) {
+        Log.i("App lifecycle state changed: ${state}");
 
-      _state = state;
-      _focusStateChanged.add(null);
-    }));
+        _state = state;
+        _focusStateChanged.add(null);
+      }),
+    );
   }
 }
 
