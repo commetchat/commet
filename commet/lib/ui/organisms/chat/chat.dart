@@ -43,10 +43,7 @@ class Chat extends StatefulWidget {
   State<Chat> createState() => ChatState();
 }
 
-enum EventInteractionType {
-  reply,
-  edit,
-}
+enum EventInteractionType { reply, edit }
 
 class ChatState extends State<Chat> {
   Room get room => widget.room;
@@ -57,16 +54,16 @@ class ChatState extends State<Chat> {
   ThreadsComponent? threadsComponent;
 
   String get labelChatPageFileTooLarge => Intl.message(
-      "This file is too large to upload!",
-      desc:
-          "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
-      name: "labelChatPageFileTooLarge");
+    "This file is too large to upload!",
+    desc: "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+    name: "labelChatPageFileTooLarge",
+  );
 
   String get labelChatPageFileTooLargeTitle => Intl.message(
-      "Max file size exceeded",
-      desc:
-          "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
-      name: "labelChatPageFileTooLargeTitle");
+    "Max file size exceeded",
+    desc: "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    name: "labelChatPageFileTooLargeTitle",
+  );
 
   bool processing = false;
   List<PendingFileAttachment> attachments = List.empty(growable: true);
@@ -85,8 +82,9 @@ class ChatState extends State<Chat> {
   ReadReceiptComponent? receipts;
   TypingIndicatorComponent? typingIndicators;
 
-  Debouncer typingStatusDebouncer =
-      Debouncer(delay: const Duration(seconds: 5));
+  Debouncer typingStatusDebouncer = Debouncer(
+    delay: const Duration(seconds: 5),
+  );
   DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
 
   bool get isThread => widget.threadId != null;
@@ -98,10 +96,12 @@ class ChatState extends State<Chat> {
   @override
   void initState() {
     Log.i(
-        "Initializing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
+      "Initializing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}",
+    );
 
-    onFileDroppedSubscription =
-        EventBus.onFileDropped.stream.listen(onFileDropped);
+    onFileDroppedSubscription = EventBus.onFileDropped.stream.listen(
+      onFileDropped,
+    );
 
     gifs = room.client.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
@@ -142,7 +142,9 @@ class ChatState extends State<Chat> {
       timeline ??= await room.getTimeline(contextEventId: initialEventId);
 
       var threadTimeline = await threadsComponent!.getThreadTimeline(
-          roomTimeline: timeline, threadRootEventId: widget.threadId!);
+        roomTimeline: timeline,
+        threadRootEventId: widget.threadId!,
+      );
       setState(() {
         _timeline = threadTimeline;
       });
@@ -152,7 +154,8 @@ class ChatState extends State<Chat> {
   @override
   void dispose() {
     Log.i(
-        "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
+      "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}",
+    );
 
     onLinkedSubscription?.cancel();
     onFileDroppedSubscription?.cancel();
@@ -168,12 +171,18 @@ class ChatState extends State<Chat> {
     if (room.client.maxFileSize != null) {
       if (attachment.size != null &&
           attachment.size! > room.client.maxFileSize!) {
-        AdaptiveDialog.show(context, builder: (_) {
-          return SizedBox(
+        AdaptiveDialog.show(
+          context,
+          builder: (_) {
+            return SizedBox(
               height: 100,
-              child:
-                  Center(child: tiamat.Text.label(labelChatPageFileTooLarge)));
-        }, title: labelChatPageFileTooLargeTitle);
+              child: Center(
+                child: tiamat.Text.label(labelChatPageFileTooLarge),
+              ),
+            );
+          },
+          title: labelChatPageFileTooLargeTitle,
+        );
 
         return;
       }
@@ -201,13 +210,15 @@ class ChatState extends State<Chat> {
 
       if (exif.keys.any((e) => e.toLowerCase().contains("gps"))) {
         // ignore: use_build_context_synchronously
-        var confirmation = await AdaptiveDialog.confirmation(context,
-            title: file.name ?? "File",
-            confirmationText: "Send File",
-            cancelText: "Don't send file",
-            dangerous: true,
-            prompt:
-                "Location data was detected in file '${file.name}', are you sure you want to send?");
+        var confirmation = await AdaptiveDialog.confirmation(
+          context,
+          title: file.name ?? "File",
+          confirmationText: "Send File",
+          cancelText: "Don't send file",
+          dangerous: true,
+          prompt:
+              "Location data was detected in file '${file.name}', are you sure you want to send?",
+        );
 
         if (confirmation != true) {
           setState(() {
@@ -229,7 +240,8 @@ class ChatState extends State<Chat> {
         Log.d("Overriding room for client: ${overrideClient}");
       } else {
         Log.e(
-            "Failed to find correct room to send event for override client. Cancelling");
+          "Failed to find correct room to send event for override client. Cancelling",
+        );
 
         return;
       }
@@ -247,26 +259,28 @@ class ChatState extends State<Chat> {
       doCommand(component, message);
     } else if (isThread) {
       targetThread!.sendMessage(
-          threadRootEventId: widget.threadId!,
-          room: targetRoom,
-          message: message,
-          inReplyTo: interactionType == EventInteractionType.reply
-              ? interactingEvent
-              : null,
-          replaceEvent: interactionType == EventInteractionType.edit
-              ? interactingEvent
-              : null,
-          processedAttachments: processedAttachments);
+        threadRootEventId: widget.threadId!,
+        room: targetRoom,
+        message: message,
+        inReplyTo: interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null,
+        replaceEvent: interactionType == EventInteractionType.edit
+            ? interactingEvent
+            : null,
+        processedAttachments: processedAttachments,
+      );
     } else {
       targetRoom.sendMessage(
-          message: message,
-          inReplyTo: interactionType == EventInteractionType.reply
-              ? interactingEvent
-              : null,
-          replaceEvent: interactionType == EventInteractionType.edit
-              ? interactingEvent
-              : null,
-          processedAttachments: processedAttachments);
+        message: message,
+        inReplyTo: interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null,
+        replaceEvent: interactionType == EventInteractionType.edit
+            ? interactingEvent
+            : null,
+        processedAttachments: processedAttachments,
+      );
     }
 
     typingIndicators?.setTypingStatus(false);
@@ -276,15 +290,23 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> doCommand(
-      CommandComponent<Client>? component, String message) async {
+    CommandComponent<Client>? component,
+    String message,
+  ) async {
     try {
-      await component?.executeCommand(message, room,
-          interactingEvent: interactingEvent, type: interactionType);
+      await component?.executeCommand(
+        message,
+        room,
+        interactingEvent: interactingEvent,
+        type: interactionType,
+      );
     } catch (error, trace) {
       Log.onError(error, trace);
       if (mounted)
-        AdaptiveDialog.show(context,
-            builder: (context) => tiamat.Text.label("$error"));
+        AdaptiveDialog.show(
+          context,
+          builder: (context) => tiamat.Text.label("$error"),
+        );
     }
   }
 
@@ -310,9 +332,10 @@ class ChatState extends State<Chat> {
           onFocusMessageInput.add(null);
           break;
         case EventInteractionType.edit:
-          if (event case TimelineEventMessage m) if (timeline != null) {
-            setMessageInputText.add(m.getPlaintextBody(timeline!));
-          }
+          if (event case TimelineEventMessage m)
+            if (timeline != null) {
+              setMessageInputText.add(m.getPlaintextBody(timeline!));
+            }
 
           onFocusMessageInput.add(null);
           break;
@@ -333,10 +356,9 @@ class ChatState extends State<Chat> {
 
   void sendSticker(Emoticon sticker) {
     emoticons?.sendSticker(
-        sticker,
-        interactionType == EventInteractionType.reply
-            ? interactingEvent
-            : null);
+      sticker,
+      interactionType == EventInteractionType.reply ? interactingEvent : null,
+    );
 
     if (interactionType == EventInteractionType.reply) {
       setInteractingEvent(null);
@@ -345,11 +367,10 @@ class ChatState extends State<Chat> {
 
   Future<void> sendGif(GifSearchResult gif) async {
     await gifs?.sendGif(
-        room,
-        gif,
-        interactionType == EventInteractionType.reply
-            ? interactingEvent
-            : null);
+      room,
+      gif,
+      interactionType == EventInteractionType.reply ? interactingEvent : null,
+    );
 
     if (interactionType == EventInteractionType.reply) {
       setInteractingEvent(null);
@@ -412,9 +433,13 @@ class ChatState extends State<Chat> {
       var custom = CustomURI.parse(path);
 
       if (custom case AddWidgetURI widgetUri) {
-        AdaptiveDialog.show(context, builder: (dialogContext) {
-          return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
-        }, title: 'Add "${widgetUri.widgetName ?? "Custom"}"?');
+        AdaptiveDialog.show(
+          context,
+          builder: (dialogContext) {
+            return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
+          },
+          title: 'Add "${widgetUri.widgetName ?? "Custom"}"?',
+        );
       }
     }
 
@@ -427,14 +452,18 @@ class ChatState extends State<Chat> {
 
       if (mounted) {
         var attachment = PendingFileAttachment(
-            name: file.name, path: file.path, size: size, data: data);
+          name: file.name,
+          path: file.path,
+          size: size,
+          data: data,
+        );
 
         var processedAttachment =
-            await AdaptiveDialog.show<PendingFileAttachment>(context,
-                scrollable: false,
-                builder: (context) => AttachmentProcessor(
-                      attachment: attachment,
-                    ));
+            await AdaptiveDialog.show<PendingFileAttachment>(
+              context,
+              scrollable: false,
+              builder: (context) => AttachmentProcessor(attachment: attachment),
+            );
 
         if (processedAttachment != null) {
           setState(() {
@@ -447,20 +476,23 @@ class ChatState extends State<Chat> {
 
   Future<void> sendFavoriteGif(FavoriteGif gif) async {
     await room.client.getComponent<GifComponent>()?.sendFavoriteGif(
-        room,
-        gif,
-        interactionType == EventInteractionType.reply
-            ? interactingEvent
-            : null);
+      room,
+      gif,
+      interactionType == EventInteractionType.reply ? interactingEvent : null,
+    );
   }
 
   void onLinked(Uri event) {
     var custom = CustomURI.parse(event.toString());
 
     if (custom case AddWidgetURI widgetUri) {
-      AdaptiveDialog.show(context, builder: (dialogContext) {
-        return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
-      }, title: 'Add "${widgetUri.widgetName ?? "Custom"}"?');
+      AdaptiveDialog.show(
+        context,
+        builder: (dialogContext) {
+          return AddWidgetDialog(widgetUri: widgetUri, room: widget.room);
+        },
+        title: 'Add "${widgetUri.widgetName ?? "Custom"}"?',
+      );
     }
   }
 }

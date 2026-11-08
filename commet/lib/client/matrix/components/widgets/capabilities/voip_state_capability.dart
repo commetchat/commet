@@ -30,7 +30,9 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
   static String name = "chat.commet.voip_overlay.voip_state";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name, (runner, type, key) => MatrixCapabilityVoipState(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityVoipState(runner: runner),
+  );
 
   @override
   String toString() {
@@ -56,8 +58,9 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
 
     subs.addAll([
       session.onStateChanged.listen((_) => onSessionStateChanged(session)),
-      session.onUpdateVolumeVisualizers
-          .listen((_) => onSessionStateChanged(session))
+      session.onUpdateVolumeVisualizers.listen(
+        (_) => onSessionStateChanged(session),
+      ),
     ]);
 
     sendCurrentState();
@@ -94,15 +97,14 @@ class MatrixCapabilityVoipState implements MatrixWidgetCapability {
     var str = jsonEncode(state);
 
     if (str != lastState) {
-      Log.i(
-        "Current voip state: ${state}",
-      );
+      Log.i("Current voip state: ${state}");
 
-      runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+      runner.messageTransport.send(
+        runner.eventHandler.generateToWidgetEvent(
           action: "chat.commet.voip_overlay.voip_state",
-          data: {
-            "state": state,
-          }));
+          data: {"state": state},
+        ),
+      );
 
       lastState = str;
     } else {

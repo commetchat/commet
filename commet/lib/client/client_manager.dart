@@ -66,8 +66,9 @@ class ClientManager {
 
   List<Space> get spaces => _spaces;
 
-  final NotifyingList<Client> _clientsList =
-      NotifyingList.empty(growable: true);
+  final NotifyingList<Client> _clientsList = NotifyingList.empty(
+    growable: true,
+  );
   final Map<Client, List<StreamSubscription>> _clientSubscriptions = {};
 
   NotifyingList<Client> get clients => _clientsList;
@@ -105,8 +106,10 @@ class ClientManager {
     final newClientManager = ClientManager();
 
     await Future.wait([
-      MatrixClient.loadFromDB(newClientManager,
-          isBackgroundService: isBackgroundService),
+      MatrixClient.loadFromDB(
+        newClientManager,
+        isBackgroundService: isBackgroundService,
+      ),
     ]);
 
     return newClientManager;
@@ -128,16 +131,20 @@ class ClientManager {
 
       _clientSubscriptions[client] = [
         client.onSync.listen((_) => _synced()),
-        client.onTimelineEvent
-            .listen((i) => _onEventReceived.add((client, i.$1, i.$2))),
+        client.onTimelineEvent.listen(
+          (i) => _onEventReceived.add((client, i.$1, i.$2)),
+        ),
         client.onRoomAdded.listen((room) => _onClientAddedRoom(client, room)),
-        client.onRoomRemoved
-            .listen((room) => _onClientRemovedRoom(client, room)),
+        client.onRoomRemoved.listen(
+          (room) => _onClientRemovedRoom(client, room),
+        ),
         client.onSpaceAdded.listen((space) => _addSpace(client, space)),
-        client.onSpaceRemoved
-            .listen((space) => _onClientRemovedSpace(client, space)),
-        client.connectionStatusChanged.stream
-            .listen((event) => _onClientConnectionStatusChanged(client, event)),
+        client.onSpaceRemoved.listen(
+          (space) => _onClientRemovedSpace(client, space),
+        ),
+        client.connectionStatusChanged.stream.listen(
+          (event) => _onClientConnectionStatusChanged(client, event),
+        ),
       ];
 
       onClientAdded.add(_clients.length - 1);
@@ -145,7 +152,9 @@ class ClientManager {
   }
 
   void _onClientConnectionStatusChanged(
-      Client client, ClientConnectionStatusUpdate status) {
+    Client client,
+    ClientConnectionStatusUpdate status,
+  ) {
     if (status.status == ClientConnectionStatus.connected) {
       return;
     }
@@ -205,10 +214,11 @@ class ClientManager {
     }
 
     var clientInfo = StalePeerInfo(
-        index: clientIndex,
-        displayName: client.self!.displayName,
-        identifier: client.self!.identifier,
-        avatar: client.self!.avatar);
+      index: clientIndex,
+      displayName: client.self!.displayName,
+      identifier: client.self!.identifier,
+      avatar: client.self!.avatar,
+    );
 
     for (int i = rooms.length - 1; i >= 0; i--) {
       if (rooms[i].client == client) {

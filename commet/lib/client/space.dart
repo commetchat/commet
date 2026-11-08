@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/permissions.dart';
@@ -35,7 +36,10 @@ abstract class Space {
   }
 
   void _addSubspaceRooms(
-      List<Room> rooms, Space space, List<Space> handledSpaces) {
+    List<Room> rooms,
+    Space space,
+    List<Space> handledSpaces,
+  ) {
     rooms.addAll(space.rooms);
     handledSpaces.add(space);
     for (var subspace in space.subspaces) {
@@ -59,8 +63,10 @@ abstract class Space {
 
   List<SpaceChild> get children;
 
-  Future<void> setChildrenOrder(List<SpaceChild> children,
-      {Function(double?)? onProgressChanged});
+  Future<void> setChildrenOrder(
+    List<SpaceChild> children, {
+    Function(double?)? onProgressChanged,
+  });
 
   bool get isTopLevel;
 
@@ -103,16 +109,17 @@ abstract class Space {
   int get notificationCount => roomsWithChildren
       .where((element) => element.pushRule == PushRule.notify)
       .fold(
-          0,
-          (previousValue, element) =>
-              previousValue + element.notificationCount);
+        0,
+        (previousValue, element) => previousValue + element.notificationCount,
+      );
 
   int get highlightedNotificationCount => roomsWithChildren
       .where((element) => element.pushRule != PushRule.dontNotify)
       .fold(
-          0,
-          (previousValue, element) =>
-              previousValue + element.highlightedNotificationCount);
+        0,
+        (previousValue, element) =>
+            previousValue + element.highlightedNotificationCount,
+      );
 
   int get displayNotificationCount =>
       pushRule == PushRule.notify ? notificationCount : 0;

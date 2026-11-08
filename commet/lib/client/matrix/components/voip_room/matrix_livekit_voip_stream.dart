@@ -92,10 +92,10 @@ class MatrixLivekitVoipStream implements VoipStream {
   @override
   // TODO: implement stats
   String get stats => JsonEncoder.withIndent("  ").convert({
-        "is encrypted": publication.participant.isEncrypted,
-        "encryption type": publication.encryptionType.toString(),
-        "publication": publication.name
-      });
+    "is encrypted": publication.participant.isEncrypted,
+    "encryption type": publication.encryptionType.toString(),
+    "publication": publication.name,
+  });
 
   String get volumeKey =>
       type == VoipStreamType.screenshareAudio ? "stream:${userId}" : userId;

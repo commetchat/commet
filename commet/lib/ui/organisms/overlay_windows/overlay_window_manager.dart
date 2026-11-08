@@ -6,8 +6,11 @@ class OverlayWindow {
   String title;
   Stream onClose;
 
-  OverlayWindow(
-      {required this.widget, required this.title, required this.onClose});
+  OverlayWindow({
+    required this.widget,
+    required this.title,
+    required this.onClose,
+  });
 }
 
 class OverlayWindowsData extends InheritedWidget {
@@ -78,14 +81,16 @@ class OverlayWindowsSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var data = OverlayWindowsData.of(context);
-    return Stack(children: [
-      for (var i in data.windows)
-        OverlayWindowWidget(
-          window: i,
-          onClose: () {
-            OverlayWindowsManager.of(context).windowClosed(i);
-          },
-        ),
-    ]);
+    return Stack(
+      children: [
+        for (var i in data.windows)
+          OverlayWindowWidget(
+            window: i,
+            onClose: () {
+              OverlayWindowsManager.of(context).windowClosed(i);
+            },
+          ),
+      ],
+    );
   }
 }

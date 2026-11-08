@@ -5,9 +5,10 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class VoiceChatCreatorDescription extends StatelessWidget {
   const VoiceChatCreatorDescription({super.key});
 
-  String get labelVoiceChatDescription =>
-      Intl.message("A dedicated room for voice calls, for two or more people",
-          name: "labelVoiceChatDescription");
+  String get labelVoiceChatDescription => Intl.message(
+    "A dedicated room for voice calls, for two or more people",
+    name: "labelVoiceChatDescription",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +33,11 @@ class VoiceChatCreatorDescription extends StatelessWidget {
                     spacing: 12,
                     children: [
                       Icon(Icons.volume_up),
-                      Text("General",
-                          style: TextTheme.of(context)
-                              .headlineSmall
-                              ?.copyWith(fontSize: 20))
+                      Text(
+                        "General",
+                        style: TextTheme.of(context).headlineSmall
+                            ?.copyWith(fontSize: 20),
+                      ),
                     ],
                   ),
                 ),
@@ -45,9 +47,7 @@ class VoiceChatCreatorDescription extends StatelessWidget {
                   name: "pluto",
                   color: Colors.pinkAccent,
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 buildVoiceChatMember(
                   context,
                   image: AssetImage("assets/images/placeholders/avatar2.jpg"),
@@ -58,7 +58,7 @@ class VoiceChatCreatorDescription extends StatelessWidget {
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -81,15 +81,13 @@ class VoiceChatCreatorDescription extends StatelessWidget {
           spacing: 16,
           children: [
             Icon(mute ? Icons.mic_off : Icons.mic),
-            tiamat.Avatar(
-              image: image,
-            ),
+            tiamat.Avatar(image: image),
             tiamat.Text(
               name,
               type: tiamat.TextType.name,
               color: color,
               autoAdjustBrightness: true,
-            )
+            ),
           ],
         ),
       ),

@@ -27,8 +27,12 @@ import 'package:window_manager/window_manager.dart';
 import 'package:http/http.dart' as http;
 
 class NotificationDebugger extends StatefulWidget {
-  const NotificationDebugger(
-      {this.event, this.room, required this.client, super.key});
+  const NotificationDebugger({
+    this.event,
+    this.room,
+    required this.client,
+    super.key,
+  });
   final TimelineEvent? event;
   final Client client;
   final Room? room;
@@ -41,13 +45,17 @@ class _NotificationDebugStep {
   String description;
   bool? passed;
 
-  _NotificationDebugStep(
-      {required this.name, required this.description, required this.passed});
+  _NotificationDebugStep({
+    required this.name,
+    required this.description,
+    required this.passed,
+  });
 }
 
 class _NotificationDebuggerState extends State<NotificationDebugger> {
-  NotifyingList<_NotificationDebugStep> steps =
-      NotifyingList.empty(growable: true);
+  NotifyingList<_NotificationDebugStep> steps = NotifyingList.empty(
+    growable: true,
+  );
   bool running = true;
 
   @override
@@ -83,10 +91,13 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
         }
       }
     } catch (e) {
-      steps.add(_NotificationDebugStep(
+      steps.add(
+        _NotificationDebugStep(
           name: "Tests failed",
           description: "An error occured while running tests: ${e}",
-          passed: false));
+          passed: false,
+        ),
+      );
     }
     setState(() {
       running = false;
@@ -97,11 +108,14 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
     var evaluator = room.matrixRoom.client.pushruleEvaluator;
     var match = evaluator.match(event.event);
 
-    steps.add(_NotificationDebugStep(
+    steps.add(
+      _NotificationDebugStep(
         name: "Push Rules",
         description:
             "Check if the event matches your account's defined push rules",
-        passed: match.notify));
+        passed: match.notify,
+      ),
+    );
   }
 
   Future<void> checkPermissions() async {
@@ -117,10 +131,10 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
     }
 
     var step = _NotificationDebugStep(
-        name: "Check permissions",
-        description:
-            "Tests if we have permission from the system to display a notification",
-        passed: permission);
+      name: "Check permissions",
+      description: "Tests if we have permission from the system to display a notification",
+      passed: permission,
+    );
 
     steps.add(step);
   }
@@ -130,49 +144,63 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
       event,
       onNotificationRejected: (reason) {
         var step = _NotificationDebugStep(
-            name: "Notification rejected",
-            description: "$reason",
-            passed: false);
+          name: "Notification rejected",
+          description: "$reason",
+          passed: false,
+        );
 
         steps.add(step);
       },
     );
 
     var step = _NotificationDebugStep(
-        name: "Should Notify",
-        description:
-            "Tests whether the given event should trigger a notification",
-        passed: shouldNotify);
+      name: "Should Notify",
+      description:
+          "Tests whether the given event should trigger a notification",
+      passed: shouldNotify,
+    );
 
     steps.add(step);
   }
 
   Future<void> checkPushGateway(
-      MatrixTimelineEvent event, MatrixRoom room) async {
+    MatrixTimelineEvent event,
+    MatrixRoom room,
+  ) async {
     var matrixClient = (widget.client as MatrixClient).getMatrixClient();
     var pushers = await matrixClient.getPushers();
 
     if (BuildConfig.ENABLE_GOOGLE_SERVICES == false) {
-      steps.add(_NotificationDebugStep(
+      steps.add(
+        _NotificationDebugStep(
           name: "Unified Push Configuration",
           description: "Checks the current config for unified push",
-          passed: preferences.unifiedPushEnabled.value == true &&
-              preferences.unifiedPushEndpoint.value != null));
+          passed:
+              preferences.unifiedPushEnabled.value == true &&
+              preferences.unifiedPushEndpoint.value != null,
+        ),
+      );
 
       if (preferences.unifiedPushEnabled.value == true) {
         var distributor = await UnifiedPush.getDistributor();
 
-        steps.add(_NotificationDebugStep(
+        steps.add(
+          _NotificationDebugStep(
             name: "Unified Push Distributor",
             description: "distributor for unified push: $distributor",
-            passed: distributor != null));
+            passed: distributor != null,
+          ),
+        );
       }
     } else {
-      steps.add(_NotificationDebugStep(
+      steps.add(
+        _NotificationDebugStep(
           name: "Google Services Configuration",
           description:
               "Checks the current config for Google services notifications: ${preferences.fcmKey.value == null ? "null" : preferences.fcmKey.value!.substring(0, 10) + "..."}",
-          passed: preferences.fcmKey.value != null));
+          passed: preferences.fcmKey.value != null,
+        ),
+      );
     }
 
     String? pushKey = BuildConfig.ENABLE_GOOGLE_SERVICES
@@ -180,27 +208,33 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
         : preferences.unifiedPushEndpoint.value;
 
     var pusher = pushers
-        ?.where((i) =>
-            i.deviceDisplayName == matrixClient.clientName &&
-            i.pushkey == pushKey)
+        ?.where(
+          (i) =>
+              i.deviceDisplayName == matrixClient.clientName &&
+              i.pushkey == pushKey,
+        )
         .firstOrNull;
 
     var step = _NotificationDebugStep(
-        name: "Has Registered Pusher",
-        description:
-            "Tests if the client has registered a push notification service with the homeserver: ${pusher?.data.url?.host}",
-        passed: pusher != null);
+      name: "Has Registered Pusher",
+      description:
+          "Tests if the client has registered a push notification service with the homeserver: ${pusher?.data.url?.host}",
+      passed: pusher != null,
+    );
 
     steps.add(step);
 
     if (pusher != null) {
       if (BuildConfig.ENABLE_GOOGLE_SERVICES &&
           pusher.data.additionalProperties["type"] == "fcm") {
-        steps.add(_NotificationDebugStep(
+        steps.add(
+          _NotificationDebugStep(
             name: "Pusher configuration",
             description:
                 "Checks the pusher is configured to use Google services",
-            passed: true));
+            passed: true,
+          ),
+        );
       }
 
       final url = pusher.data.url!.replace(path: "/_matrix/push/v1/notify");
@@ -210,37 +244,35 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
           "devices": [
             {
               "app_id": pusher.appId,
-              "data": {
-                ...pusher.data.additionalProperties,
-              },
+              "data": {...pusher.data.additionalProperties},
               "pushkey": pusher.pushkey,
             },
           ],
           "event_id": event.eventId,
           "prio": "high",
-          "room_id": room.identifier
-        }
+          "room_id": room.identifier,
+        },
       };
 
       Log.i("Sending to: $url");
-      Log.i(
-        "Sending test notification: ${content}",
-      );
+      Log.i("Sending test notification: ${content}");
 
       var startTime = DateTime.now();
 
-      var nextData =
-          EventBus.onReceivedPushNotificationData.stream.nextItemAsFuture();
+      var nextData = EventBus.onReceivedPushNotificationData.stream
+          .nextItemAsFuture();
 
-      var result = await http.post(url, body: jsonEncode(content), headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      });
+      var result = await http.post(
+        url,
+        body: jsonEncode(content),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      );
 
       var step = _NotificationDebugStep(
-          name: "Send test notification",
-          description:
-              "Tests if sending a notification to the registered pusher is accepted",
-          passed: result.statusCode == 200);
+        name: "Send test notification",
+        description: "Tests if sending a notification to the registered pusher is accepted",
+        passed: result.statusCode == 200,
+      );
 
       steps.add(step);
       try {
@@ -248,27 +280,29 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
         var endTime = DateTime.now();
         var length = endTime.difference(startTime);
         var step = _NotificationDebugStep(
-            name: "Receive notification",
-            description:
-                "Received data back from push service in ${length.inMilliseconds}ms: $result",
-            passed: true);
+          name: "Receive notification",
+          description:
+              "Received data back from push service in ${length.inMilliseconds}ms: $result",
+          passed: true,
+        );
 
         steps.add(step);
       } catch (e) {
         if (e is TimeoutException) {
           var step = _NotificationDebugStep(
-              name: "Receive notification",
-              description:
-                  "Did not receive any data back from push service after waiting 20 seconds",
-              passed: false);
+            name: "Receive notification",
+            description: "Did not receive any data back from push service after waiting 20 seconds",
+            passed: false,
+          );
 
           steps.add(step);
         } else {
           var step = _NotificationDebugStep(
-              name: "Receive notification",
-              description:
-                  "Unknown error occured waiting for notification data: $e",
-              passed: false);
+            name: "Receive notification",
+            description:
+                "Unknown error occured waiting for notification data: $e",
+            passed: false,
+          );
 
           steps.add(step);
         }
@@ -281,9 +315,10 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
       event,
       onNotificationRejected: (reason) {
         var step = _NotificationDebugStep(
-            name: "Notification rejected",
-            description: "$reason",
-            passed: false);
+          name: "Notification rejected",
+          description: "$reason",
+          passed: false,
+        );
 
         steps.add(step);
       },
@@ -292,9 +327,10 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
     await f;
 
     var step = _NotificationDebugStep(
-        name: "Handle Notification",
-        description: "If you saw a notification, this test passed.",
-        passed: null);
+      name: "Handle Notification",
+      description: "If you saw a notification, this test passed.",
+      passed: null,
+    );
 
     steps.add(step);
   }
@@ -311,7 +347,8 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
               children: [
                 if (usesDesktopNotification)
                   tiamat.Text.labelLow(
-                      "The app may be minimized while testing. if minimized, wait for atleast 5 seconds before re-opening"),
+                    "The app may be minimized while testing. if minimized, wait for atleast 5 seconds before re-opening",
+                  ),
                 CircularProgressIndicator(),
               ],
             ),
@@ -333,22 +370,20 @@ class _NotificationDebuggerState extends State<NotificationDebugger> {
                         value.passed == null
                             ? Icons.question_mark
                             : value.passed!
-                                ? Icons.check
-                                : Icons.error,
+                            ? Icons.check
+                            : Icons.error,
                         color: value.passed == null
                             ? null
                             : value.passed!
-                                ? Colors.green
-                                : Colors.red,
+                            ? Colors.green
+                            : Colors.red,
                       ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             tiamat.Text(value.name),
-                            tiamat.Text.labelLow(
-                              value.description,
-                            )
+                            tiamat.Text.labelLow(value.description),
                           ],
                         ),
                       ),

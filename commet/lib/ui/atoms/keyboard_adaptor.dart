@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:commet/main.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,8 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
 
     var padding = scaledQuery.viewPadding;
 
-    bool shouldPushContent = widget.shouldPushContent == null ||
+    bool shouldPushContent =
+        widget.shouldPushContent == null ||
         widget.shouldPushContent?.call() == true;
 
     if (sizeOverride != null && offset > sizeOverride!) {
@@ -69,8 +71,9 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
           child: AnimatedContainer(
             duration: Durations.short1,
             child: widget.paddingContent,
-            height:
-                (!widget.enabled && sizeOverride == null) ? 0 : contentHeight,
+            height: (!widget.enabled && sizeOverride == null)
+                ? 0
+                : contentHeight,
           ),
         ),
         Container(
@@ -80,9 +83,7 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
             height: widget.enabled ? pushHeight : 0,
           ),
         ),
-        SizedBox(
-          height: widget.enabled ? padding.bottom : 0,
-        )
+        SizedBox(height: widget.enabled ? padding.bottom : 0),
       ],
     );
   }

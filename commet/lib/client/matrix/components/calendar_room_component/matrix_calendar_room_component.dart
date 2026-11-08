@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_sync.dart';
@@ -69,8 +70,10 @@ class MatrixCalendarRoomComponent
   }
 
   MatrixCalendarRoomComponent(this.client, this.room) {
-    var api =
-        PrivelidgedMatrixWidgetRunner(client.matrixClient, room.matrixRoom);
+    var api = PrivelidgedMatrixWidgetRunner(
+      client.matrixClient,
+      room.matrixRoom,
+    );
 
     if (isCalendarRoom) {
       _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
@@ -104,10 +107,14 @@ class MatrixCalendarRoomComponent
       return _calendar!;
     } else {
       if (isCalendarRoom || hasCalendarWidget) {
-        var api =
-            PrivelidgedMatrixWidgetRunner(client.matrixClient, room.matrixRoom);
-        _calendar =
-            MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
+        var api = PrivelidgedMatrixWidgetRunner(
+          client.matrixClient,
+          room.matrixRoom,
+        );
+        _calendar = MatrixCalendar(
+          api,
+          config: CustomMatrixCalendarConfig(room),
+        );
         _calendar!.controller.addListener(() {
           controller.add(());
         });
@@ -120,11 +127,14 @@ class MatrixCalendarRoomComponent
 
   bool get hasCalendarWidget =>
       room.matrixRoom.states.containsKey("chat.commet.calendar_events") ||
-      room.matrixRoom.states["im.vector.modular.widgets"]?.values.any((i) =>
-              i.content["type"] == "chat.commet.widgets.calendar" ||
-              (i.content["url"] as String?)?.startsWith(
-                      "https://${GlobalConfig.calendarWidgetHost}") ==
-                  true) ==
+      room.matrixRoom.states["im.vector.modular.widgets"]?.values.any(
+            (i) =>
+                i.content["type"] == "chat.commet.widgets.calendar" ||
+                (i.content["url"] as String?)?.startsWith(
+                      "https://${GlobalConfig.calendarWidgetHost}",
+                    ) ==
+                    true,
+          ) ==
           true;
 
   @override
@@ -152,20 +162,26 @@ class MatrixCalendarRoomComponent
     if (data != null && room.isE2EE) {
       if (data.content.isNotEmpty) {
         Log.w(
-            "Deleting calendar URL source because this room is encrypted, and the source is stored in plaintext - you should generate a new URL");
+          "Deleting calendar URL source because this room is encrypted, and the source is stored in plaintext - you should generate a new URL",
+        );
         Log.w(data.content);
 
         room.matrixRoom.client.setAccountDataPerRoom(
-            client.matrixClient.userID!,
-            room.identifier,
-            syncedCalendarsEventType, {});
+          client.matrixClient.userID!,
+          room.identifier,
+          syncedCalendarsEventType,
+          {},
+        );
       }
     }
 
     if (room.isE2EE) {
-      data = BasicEvent(type: syncedCalendarsEventType, content: {
-        "remote_calendars": preferences.getCalendarSources(room.identifier)
-      });
+      data = BasicEvent(
+        type: syncedCalendarsEventType,
+        content: {
+          "remote_calendars": preferences.getCalendarSources(room.identifier),
+        },
+      );
     }
 
     if (data == null) {
@@ -260,13 +276,16 @@ class MatrixCalendarRoomComponent
 
         if (entry.value.overrideEventName != null) {
           events = events
-              .map((i) => RFC8984CalendarEvent(
+              .map(
+                (i) => RFC8984CalendarEvent(
                   uid: i.uid,
                   updated: i.updated,
                   title: entry.value.overrideEventName!,
                   start: i.start,
                   timeZone: i.timeZone,
-                  duration: i.duration))
+                  duration: i.duration,
+                ),
+              )
               .toList();
         }
 
@@ -280,11 +299,13 @@ class MatrixCalendarRoomComponent
           foundEvents[entry.key] = events;
         }
       }
-      calendar!.syncEvents(foundEvents,
-          eventType: switch (entry.value.syncType) {
-            CalendarSyncType.events => "event",
-            CalendarSyncType.unavailability => "unavailability"
-          });
+      calendar!.syncEvents(
+        foundEvents,
+        eventType: switch (entry.value.syncType) {
+          CalendarSyncType.events => "event",
+          CalendarSyncType.unavailability => "unavailability",
+        },
+      );
     }
   }
 
@@ -320,7 +341,8 @@ class MatrixCalendarRoomComponent
 
     final title = (data["summary"] as String?) ?? "(No title)";
 
-    var updated = (data["lastModified"] as ical.IcsDateTime?)?.toDateTime() ??
+    var updated =
+        (data["lastModified"] as ical.IcsDateTime?)?.toDateTime() ??
         DateTime.now();
 
     var uid = sha1.convert("$calendarId/${data["uid"]}".codeUnits);
@@ -352,8 +374,9 @@ class MatrixCalendarRoomComponent
     var frequency = rule["FREQ"]?.toLowerCase();
     var firstDayOfWeek = rule["WKST"]?.toLowerCase();
     int? count = rule["COUNT"] != null ? int.parse(rule["COUNT"]!) : null;
-    int? interval =
-        rule["INTERVAL"] != null ? int.parse(rule["INTERVAL"]!) : null;
+    int? interval = rule["INTERVAL"] != null
+        ? int.parse(rule["INTERVAL"]!)
+        : null;
 
     if (frequency == null) return null;
 
@@ -363,11 +386,12 @@ class MatrixCalendarRoomComponent
     }
 
     return RFC8984RecurrenceRule(
-        firstDayOfWeek: firstDayOfWeek,
-        frequency: frequency,
-        interval: interval,
-        count: count,
-        byDay: byDays);
+      firstDayOfWeek: firstDayOfWeek,
+      frequency: frequency,
+      interval: interval,
+      count: count,
+      byDay: byDays,
+    );
   }
 
   List<Rfc8984NDay> parseByDays(String rule) {
@@ -417,8 +441,10 @@ class MatrixCalendarRoomComponent
   }
 
   @override
-  Future<List<RFC8984CalendarEvent>> getEventsFromIcsUrl(Uri uri,
-      {String? calendarId}) async {
+  Future<List<RFC8984CalendarEvent>> getEventsFromIcsUrl(
+    Uri uri, {
+    String? calendarId,
+  }) async {
     var result = await http.get(uri);
 
     if (result.statusCode != 200) {
@@ -436,8 +462,10 @@ class MatrixCalendarRoomComponent
     return results;
   }
 
-  bool shouldUpdateState(List<MatrixCalendarEventState> existingEvents,
-      List<MatrixCalendarEventState> eventsAfterSync) {
+  bool shouldUpdateState(
+    List<MatrixCalendarEventState> existingEvents,
+    List<MatrixCalendarEventState> eventsAfterSync,
+  ) {
     if (existingEvents.length != eventsAfterSync.length) return true;
 
     existingEvents.sort((a, b) => a.data.start.compareTo(b.data.start));
@@ -453,7 +481,9 @@ class MatrixCalendarRoomComponent
   }
 
   bool containsEvent(
-      List<RFC8984CalendarEvent> list, RFC8984CalendarEvent event) {
+    List<RFC8984CalendarEvent> list,
+    RFC8984CalendarEvent event,
+  ) {
     var b = event.toJson();
     b.remove("uid");
     b.remove("updated");
@@ -472,8 +502,10 @@ class MatrixCalendarRoomComponent
     return contained != null;
   }
 
-  bool areEventListsIdentical(List<RFC8984CalendarEvent> existingEvents,
-      List<RFC8984CalendarEvent> events) {
+  bool areEventListsIdentical(
+    List<RFC8984CalendarEvent> existingEvents,
+    List<RFC8984CalendarEvent> events,
+  ) {
     if (existingEvents.any((i) => !containsEvent(events, i))) {
       return false;
     }

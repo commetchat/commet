@@ -7,16 +7,17 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ImagePickerButton extends StatefulWidget {
-  const ImagePickerButton(
-      {super.key,
-      this.currentImage,
-      this.onImagePicked,
-      this.onImageRead,
-      this.size = 128,
-      this.cropAspectRatio,
-      this.tooltip = "Pick Image",
-      this.withData = false,
-      this.icon});
+  const ImagePickerButton({
+    super.key,
+    this.currentImage,
+    this.onImagePicked,
+    this.onImageRead,
+    this.size = 128,
+    this.cropAspectRatio,
+    this.tooltip = "Pick Image",
+    this.withData = false,
+    this.icon,
+  });
   final ImageProvider? currentImage;
   final bool withData;
   final double? cropAspectRatio;
@@ -25,7 +26,7 @@ class ImagePickerButton extends StatefulWidget {
   final IconData? icon;
   final Function(String filepath)? onImagePicked;
   final Function(Uint8List bytes, String? mimeType, String filePath)?
-      onImageRead;
+  onImageRead;
 
   @override
   State<ImagePickerButton> createState() => _ImagePickerButtonState();
@@ -55,8 +56,10 @@ class _ImagePickerButtonState extends State<ImagePickerButton> {
   }
 
   void pickImage() async {
-    var result = await PickerUtils.pickImageAndCrop(context,
-        aspectRatio: widget.cropAspectRatio);
+    var result = await PickerUtils.pickImageAndCrop(
+      context,
+      aspectRatio: widget.cropAspectRatio,
+    );
 
     if (result == null) return;
 

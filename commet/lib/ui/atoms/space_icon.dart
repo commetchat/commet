@@ -7,22 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 
 class SpaceIcon extends StatefulWidget {
-  const SpaceIcon(
-      {super.key,
-      this.width = 44,
-      this.onTap,
-      this.showUser = false,
-      this.onUpdate,
-      required this.spaceId,
-      required this.clientId,
-      this.avatar,
-      this.placeholderColor,
-      this.notificationCount = 0,
-      this.highlightedNotificationCount = 0,
-      required this.displayName,
-      this.userAvatar,
-      this.userDisplayName,
-      this.userColor});
+  const SpaceIcon({
+    super.key,
+    this.width = 44,
+    this.onTap,
+    this.showUser = false,
+    this.onUpdate,
+    required this.spaceId,
+    required this.clientId,
+    this.avatar,
+    this.placeholderColor,
+    this.notificationCount = 0,
+    this.highlightedNotificationCount = 0,
+    required this.displayName,
+    this.userAvatar,
+    this.userDisplayName,
+    this.userColor,
+  });
   final double width;
   final void Function()? onTap;
   final bool showUser;
@@ -51,8 +52,9 @@ class _SpaceIconState extends State<SpaceIcon> {
       setState(() {});
     });
 
-    spaceSelectionSub =
-        EventBus.onSelectedSpaceChanged.stream.listen(onSelectedSpaceChanged);
+    spaceSelectionSub = EventBus.onSelectedSpaceChanged.stream.listen(
+      onSelectedSpaceChanged,
+    );
 
     super.initState();
   }
@@ -61,7 +63,8 @@ class _SpaceIconState extends State<SpaceIcon> {
 
   void onSelectedSpaceChanged(Space? event) {
     setState(() {
-      selected = event?.identifier == widget.spaceId &&
+      selected =
+          event?.identifier == widget.spaceId &&
           event?.client.identifier == widget.clientId;
     });
   }
@@ -75,26 +78,29 @@ class _SpaceIconState extends State<SpaceIcon> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      AspectRatio(
-        aspectRatio: 1.0,
-        child: ImageButton(
-          border: selected
-              ? Border.all(
-                  color: ColorScheme.of(context).inverseSurface,
-                  width: 3,
-                  strokeAlign: 0.5)
-              : null,
-          image: widget.avatar,
-          onTap: widget.onTap,
-          size: widget.width,
-          placeholderColor: widget.placeholderColor,
-          placeholderText: widget.displayName,
+    return Stack(
+      children: [
+        AspectRatio(
+          aspectRatio: 1.0,
+          child: ImageButton(
+            border: selected
+                ? Border.all(
+                    color: ColorScheme.of(context).inverseSurface,
+                    width: 3,
+                    strokeAlign: 0.5,
+                  )
+                : null,
+            image: widget.avatar,
+            onTap: widget.onTap,
+            size: widget.width,
+            placeholderColor: widget.placeholderColor,
+            placeholderText: widget.displayName,
+          ),
         ),
-      ),
-      if (widget.showUser) avatarOverlay(),
-      if (widget.highlightedNotificationCount > 0) notificationOverlay(),
-    ]);
+        if (widget.showUser) avatarOverlay(),
+        if (widget.highlightedNotificationCount > 0) notificationOverlay(),
+      ],
+    );
   }
 
   Positioned avatarOverlay() {
@@ -106,18 +112,17 @@ class _SpaceIconState extends State<SpaceIcon> {
           width: 20,
           height: 20,
           child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, blurRadius: 4)
-                ],
-              ),
-              child: Avatar(
-                radius: 10,
-                image: widget.userAvatar,
-                placeholderColor: widget.userColor,
-                placeholderText: widget.userDisplayName,
-              )),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 4)],
+            ),
+            child: Avatar(
+              radius: 10,
+              image: widget.userAvatar,
+              placeholderColor: widget.userColor,
+              placeholderText: widget.userDisplayName,
+            ),
+          ),
         ),
       ),
     );
@@ -139,8 +144,9 @@ class _SpaceIconState extends State<SpaceIcon> {
         height: 8,
         child: DecoratedBox(
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface,
-              borderRadius: BorderRadius.circular(5)),
+            color: Theme.of(context).colorScheme.onSurface,
+            borderRadius: BorderRadius.circular(5),
+          ),
         ),
       ),
     );

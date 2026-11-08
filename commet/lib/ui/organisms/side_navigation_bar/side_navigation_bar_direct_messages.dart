@@ -8,8 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 
 class SideNavigationBarDirectMessages extends StatefulWidget {
-  const SideNavigationBarDirectMessages(this.directMessages,
-      {super.key, this.onRoomTapped, this.filterClient});
+  const SideNavigationBarDirectMessages(
+    this.directMessages, {
+    super.key,
+    this.onRoomTapped,
+    this.filterClient,
+  });
   final DirectMessagesInterface directMessages;
   final Client? filterClient;
 
@@ -35,8 +39,9 @@ class _SideNavigationBarDirectMessagesState
     rooms = widget.directMessages.highlightedRoomsList;
     subscriptions = [
       EventBus.setFilterClient.stream.listen(setFilterClient),
-      widget.directMessages.highlightedRoomsList.onListUpdated
-          .listen(onListUpdated),
+      widget.directMessages.highlightedRoomsList.onListUpdated.listen(
+        onListUpdated,
+      ),
     ];
   }
 

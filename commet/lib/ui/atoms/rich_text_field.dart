@@ -24,10 +24,11 @@ class RichTextEditingController extends TextEditingController {
   final Client? client;
 
   @override
-  TextSpan buildTextSpan(
-      {required BuildContext context,
-      TextStyle? style,
-      required bool withComposing}) {
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
     return build(text, context);
   }
 
@@ -35,18 +36,24 @@ class RichTextEditingController extends TextEditingController {
     var roomEmoticons = room?.getComponent<MatrixRoomEmoticonComponent>();
     var clientEmoticons = client?.getComponent<MatrixEmoticonComponent>();
     var doc = md.Document(
-        encodeHtml: false,
-        extensionSet: md.ExtensionSet.gitHubFlavored,
-        inlineSyntaxes: [
-          mx_markdown.PillSyntax(),
-          mx_markdown.SpoilerSyntax(),
-          if (roomEmoticons != null)
-            mx_markdown.EmoteSyntax(() => roomEmoticons
-                .getEmotePacksFlat(matrix.ImagePackUsage.emoticon)),
-          if (roomEmoticons == null && clientEmoticons != null)
-            mx_markdown.EmoteSyntax(() => clientEmoticons
-                .getEmotePacksFlat(matrix.ImagePackUsage.emoticon))
-        ]);
+      encodeHtml: false,
+      extensionSet: md.ExtensionSet.gitHubFlavored,
+      inlineSyntaxes: [
+        mx_markdown.PillSyntax(),
+        mx_markdown.SpoilerSyntax(),
+        if (roomEmoticons != null)
+          mx_markdown.EmoteSyntax(
+            () =>
+                roomEmoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
+          ),
+        if (roomEmoticons == null && clientEmoticons != null)
+          mx_markdown.EmoteSyntax(
+            () => clientEmoticons.getEmotePacksFlat(
+              matrix.ImagePackUsage.emoticon,
+            ),
+          ),
+      ],
+    );
 
     List<md.Node>? parsed;
     try {
@@ -61,8 +68,14 @@ class RichTextEditingController extends TextEditingController {
     int currentIndex = 0;
 
     for (var element in parsed) {
-      currentIndex =
-          handleNode(context, currentIndex, text, children, style, element);
+      currentIndex = handleNode(
+        context,
+        currentIndex,
+        text,
+        children,
+        style,
+        element,
+      );
     }
 
     if (currentIndex <= text.length - 1) {
@@ -72,9 +85,16 @@ class RichTextEditingController extends TextEditingController {
     return TextSpan(children: children);
   }
 
-  int handleNode(BuildContext context, int currentIndex, String text,
-      List<TextSpan> children, TextStyle style, md.Node node,
-      {Widget? overrideWidget, double overrideVerticalOffset = 2.5}) {
+  int handleNode(
+    BuildContext context,
+    int currentIndex,
+    String text,
+    List<TextSpan> children,
+    TextStyle style,
+    md.Node node, {
+    Widget? overrideWidget,
+    double overrideVerticalOffset = 2.5,
+  }) {
     var originalStyle = style.copyWith();
 
     if (node is md.Text) {
@@ -89,8 +109,9 @@ class RichTextEditingController extends TextEditingController {
       if (index != 0) {
         var sub = substr.substring(0, index);
 
-        children.add(TextSpan(
-            text: sub, style: Theme.of(context).textTheme.bodyMedium!));
+        children.add(
+          TextSpan(text: sub, style: Theme.of(context).textTheme.bodyMedium!),
+        );
         currentIndex += sub.length;
       }
 
@@ -100,27 +121,22 @@ class RichTextEditingController extends TextEditingController {
         // cursor renders in the correct place.
         // This is a hacky way to acheive that
         var widgetChildren = List<InlineSpan>.generate(
-            nodeText.length,
-            (i) => WidgetSpan(
-                child: Container(
-                    child: i == 0
-                        ? Transform.translate(
-                            offset: Offset(0, overrideVerticalOffset),
-                            child: overrideWidget)
-                        : SizedBox(
-                            width: 0,
-                            height: 0,
-                          ))));
+          nodeText.length,
+          (i) => WidgetSpan(
+            child: Container(
+              child: i == 0
+                  ? Transform.translate(
+                      offset: Offset(0, overrideVerticalOffset),
+                      child: overrideWidget,
+                    )
+                  : SizedBox(width: 0, height: 0),
+            ),
+          ),
+        );
 
-        children.add(TextSpan(
-          children: widgetChildren,
-          style: originalStyle,
-        ));
+        children.add(TextSpan(children: widgetChildren, style: originalStyle));
       } else {
-        children.add(TextSpan(
-          text: nodeText,
-          style: originalStyle,
-        ));
+        children.add(TextSpan(text: nodeText, style: originalStyle));
       }
 
       currentIndex += nodeText.length;
@@ -136,23 +152,26 @@ class RichTextEditingController extends TextEditingController {
           break;
         case "span":
           if (node.attributes.containsKey("data-mx-spoiler"))
-            style =
-                style.copyWith(backgroundColor: style.color?.withAlpha(200));
+            style = style.copyWith(
+              backgroundColor: style.color?.withAlpha(200),
+            );
           break;
         case "code":
           var color =
               Theme.of(context).extension<ExtraColors>()?.codeHighlight ??
-                  Theme.of(context).colorScheme.primary;
+              Theme.of(context).colorScheme.primary;
           style = style.copyWith(
-              color: color,
-              fontFamily: "code",
-              fontFeatures: const [FontFeature.disable("calt")]);
+            color: color,
+            fontFamily: "code",
+            fontFeatures: const [FontFeature.disable("calt")],
+          );
           break;
         case "pre":
           style = style.copyWith(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              fontFamily: "code",
-              fontFeatures: const [FontFeature.disable("calt")]);
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            fontFamily: "code",
+            fontFeatures: const [FontFeature.disable("calt")],
+          );
           break;
         case "img":
           if (client case MatrixClient mx) {
@@ -161,17 +180,28 @@ class RichTextEditingController extends TextEditingController {
             var uri = Uri.parse(src);
             var size = 24.0;
             currentIndex = handleNode(
-                context, currentIndex, text, children, style, md.Text(content!),
-                overrideVerticalOffset: 5,
-                overrideWidget: SizedBox(
-                    height: size,
-                    width: size,
-                    child: EmojiWidget(
-                        height: size,
-                        MatrixEmoticon(uri, mx.matrixClient,
-                            shortcode: content,
-                            packUsage: EmoticonUsage.all,
-                            usage: EmoticonUsage.emoji))));
+              context,
+              currentIndex,
+              text,
+              children,
+              style,
+              md.Text(content!),
+              overrideVerticalOffset: 5,
+              overrideWidget: SizedBox(
+                height: size,
+                width: size,
+                child: EmojiWidget(
+                  height: size,
+                  MatrixEmoticon(
+                    uri,
+                    mx.matrixClient,
+                    shortcode: content,
+                    packUsage: EmoticonUsage.all,
+                    usage: EmoticonUsage.emoji,
+                  ),
+                ),
+              ),
+            );
             return currentIndex;
           }
         case "a":
@@ -187,33 +217,48 @@ class RichTextEditingController extends TextEditingController {
                   var user = room?.getMember(mxId);
                   if (user != null) {
                     currentIndex = handleNode(
-                        context, currentIndex, text, children, style, element,
-                        overrideWidget: MentionWidget(
-                            displayName: user.displayName,
-                            avatar: user.avatar,
-                            style: style,
-                            placeholderColor: user.defaultColor));
+                      context,
+                      currentIndex,
+                      text,
+                      children,
+                      style,
+                      element,
+                      overrideWidget: MentionWidget(
+                        displayName: user.displayName,
+                        avatar: user.avatar,
+                        style: style,
+                        placeholderColor: user.defaultColor,
+                      ),
+                    );
                     return currentIndex;
                   }
                 } else if (result.$1 == MatrixLinkType.room) {
                   var taggedRoom = client?.getRoom(mxId);
 
-                  var vias =
-                      (client as MatrixClient).parseAddressToIdAndVia(href);
+                  var vias = (client as MatrixClient).parseAddressToIdAndVia(
+                    href,
+                  );
 
                   if (taggedRoom != null) {
                     currentIndex = handleNode(
-                        context, currentIndex, text, children, style, element,
-                        overrideWidget: MentionWidget(
-                            fallbackIcon:
-                                preferences.usePlaceholderRoomAvatars.value
-                                    ? null
-                                    : taggedRoom.icon,
-                            displayName: taggedRoom.displayName,
-                            avatar: taggedRoom.avatar,
-                            vias: vias?.$2,
-                            style: style,
-                            placeholderColor: taggedRoom.defaultColor));
+                      context,
+                      currentIndex,
+                      text,
+                      children,
+                      style,
+                      element,
+                      overrideWidget: MentionWidget(
+                        fallbackIcon:
+                            preferences.usePlaceholderRoomAvatars.value
+                            ? null
+                            : taggedRoom.icon,
+                        displayName: taggedRoom.displayName,
+                        avatar: taggedRoom.avatar,
+                        vias: vias?.$2,
+                        style: style,
+                        placeholderColor: taggedRoom.defaultColor,
+                      ),
+                    );
                     return currentIndex;
                   }
                 }
@@ -228,30 +273,44 @@ class RichTextEditingController extends TextEditingController {
           style = style.copyWith(fontSize: 14 * 2, fontWeight: FontWeight.bold);
           break;
         case "h2":
-          style =
-              style.copyWith(fontSize: 14 * 1.5, fontWeight: FontWeight.bold);
+          style = style.copyWith(
+            fontSize: 14 * 1.5,
+            fontWeight: FontWeight.bold,
+          );
           break;
         case "h3":
-          style =
-              style.copyWith(fontSize: 14 * 1.17, fontWeight: FontWeight.bold);
+          style = style.copyWith(
+            fontSize: 14 * 1.17,
+            fontWeight: FontWeight.bold,
+          );
           break;
         case "h4":
           style = style.copyWith(fontSize: 14 * 1, fontWeight: FontWeight.bold);
           break;
         case "h5":
-          style =
-              style.copyWith(fontSize: 14 * 0.83, fontWeight: FontWeight.bold);
+          style = style.copyWith(
+            fontSize: 14 * 0.83,
+            fontWeight: FontWeight.bold,
+          );
           break;
         case "h6":
-          style =
-              style.copyWith(fontSize: 14 * 0.67, fontWeight: FontWeight.bold);
+          style = style.copyWith(
+            fontSize: 14 * 0.67,
+            fontWeight: FontWeight.bold,
+          );
           break;
       }
 
       if (node.children != null) {
         for (var element in node.children!) {
-          currentIndex =
-              handleNode(context, currentIndex, text, children, style, element);
+          currentIndex = handleNode(
+            context,
+            currentIndex,
+            text,
+            children,
+            style,
+            element,
+          );
         }
       }
     }

@@ -42,17 +42,11 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
 
   dynamic encodeArrayBuffers(dynamic input) {
     if (input is Uint8List) {
-      return {
-        '__type': 'ArrayBuffer',
-        'data': base64Encode(input),
-      };
+      return {'__type': 'ArrayBuffer', 'data': base64Encode(input)};
     }
 
     if (input is MatrixWidgetBlob) {
-      return {
-        '__type': 'Blob',
-        'data': base64Encode(input.bytes),
-      };
+      return {'__type': 'Blob', 'data': base64Encode(input.bytes)};
     }
 
     if (input is List) {
@@ -110,7 +104,7 @@ class MatrixWidgetTransport implements WidgetMessageTransport {
     if (preferences.widgetDeveloperMode.value) {
       messageLogs.add((
         WidgetMessageDirection.outgoing,
-        Map<String, dynamic>.from(encoded)
+        Map<String, dynamic>.from(encoded),
       ));
     }
 

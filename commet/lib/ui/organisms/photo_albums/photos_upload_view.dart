@@ -29,34 +29,36 @@ class _PhotosAlbumUploadViewState extends State<PhotosAlbumUploadView> {
             height: 300,
             width: 500,
             child: MasonryGridView.extent(
-                maxCrossAxisExtent: 100,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                itemCount: widget.photos.length,
-                itemBuilder: (context, i) {
-                  return Column(
-                    children: [
-                      if (widget.photos[i].filepath != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(2, 2, 8, 2),
-                          child: ClipRRect(
-                            child: SizedBox(
-                                width: 64,
-                                height: 64,
-                                child: ClipRRect(
-                                    borderRadius:
-                                        BorderRadiusGeometry.circular(8),
-                                    child: buildFilePreview(i))),
+              maxCrossAxisExtent: 100,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              itemCount: widget.photos.length,
+              itemBuilder: (context, i) {
+                return Column(
+                  children: [
+                    if (widget.photos[i].filepath != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2, 2, 8, 2),
+                        child: ClipRRect(
+                          child: SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: ClipRRect(
+                              borderRadius: BorderRadiusGeometry.circular(8),
+                              child: buildFilePreview(i),
+                            ),
                           ),
                         ),
-                      tiamat.Text.tiny(
-                        widget.photos[i].name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  );
-                }),
+                    tiamat.Text.tiny(
+                      widget.photos[i].name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
           if (sendOriginal)
             SizedBox(
@@ -76,17 +78,20 @@ class _PhotosAlbumUploadViewState extends State<PhotosAlbumUploadView> {
                 onChanged: (val) => setState(() {
                   sendOriginal = val;
                 }),
-              )
+              ),
             ],
           ),
           tiamat.Button(
             text: "Upload Files",
             onTap: () {
-              widget.component.uploadPhotos(widget.photos,
-                  sendOriginal: sendOriginal, extractMetadata: true);
+              widget.component.uploadPhotos(
+                widget.photos,
+                sendOriginal: sendOriginal,
+                extractMetadata: true,
+              );
               Navigator.of(context).pop();
             },
-          )
+          ),
         ],
       ),
     );

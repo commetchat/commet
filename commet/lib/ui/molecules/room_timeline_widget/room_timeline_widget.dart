@@ -7,13 +7,14 @@ import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_vi
 import 'package:flutter/material.dart';
 
 class RoomTimelineWidget extends StatefulWidget {
-  const RoomTimelineWidget(
-      {required this.timeline,
-      this.setEditingEvent,
-      this.setReplyingEvent,
-      this.isThreadTimeline = false,
-      this.clearNotifications,
-      super.key});
+  const RoomTimelineWidget({
+    required this.timeline,
+    this.setEditingEvent,
+    this.setReplyingEvent,
+    this.isThreadTimeline = false,
+    this.clearNotifications,
+    super.key,
+  });
   final Timeline timeline;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;

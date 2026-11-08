@@ -21,8 +21,9 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
   void loadShader() async {
     loadingShader = true;
 
-    var program =
-        await FragmentProgram.fromAsset('assets/shader/constellation.frag');
+    var program = await FragmentProgram.fromAsset(
+      'assets/shader/constellation.frag',
+    );
     shader = program.fragmentShader();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -69,9 +70,7 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
     } else {
       return CustomPaint(
         painter: StarTrailsPainter(shader!, delta * .3),
-        child: Container(
-          child: widget.child,
-        ),
+        child: Container(child: widget.child),
       );
     }
   }

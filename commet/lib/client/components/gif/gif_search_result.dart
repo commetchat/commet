@@ -6,5 +6,10 @@ class GifSearchResult {
   final String mimeType;
 
   GifSearchResult(
-      this.previewUrl, this.fullResUrl, this.x, this.y, this.mimeType);
+    this.previewUrl,
+    this.fullResUrl,
+    this.x,
+    this.y,
+    this.mimeType,
+  );
 }

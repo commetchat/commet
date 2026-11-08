@@ -29,10 +29,11 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   GlobalKey pushGatewayKey = GlobalKey();
   bool isPushGatewayLoading = false;
 
-  String get notificationSettingsNotSupported =>
-      Intl.message("Push notifications are not supported on this system",
-          name: "notificationSettingsNotSupported",
-          desc: "Message to display when push notifications are not supported");
+  String get notificationSettingsNotSupported => Intl.message(
+    "Push notifications are not supported on this system",
+    name: "notificationSettingsNotSupported",
+    desc: "Message to display when push notifications are not supported",
+  );
 
   @override
   void initState() {
@@ -58,24 +59,21 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               if (notifier is UnifiedPushNotifier)
                 Column(
                   children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     Panel(
-                        mode: tiamat.TileType.surfaceContainerLow,
-                        header: "Unified Push",
-                        child: Column(
-                          children: [
-                            UnifiedPushSetupView(
-                              onToggled: (_) => setState(() {}),
-                            ),
-                            if (preferences.unifiedPushEnabled.value == true)
-                              pushGatewaySelector(),
-                          ],
-                        )),
-                    const SizedBox(
-                      height: 10,
+                      mode: tiamat.TileType.surfaceContainerLow,
+                      header: "Unified Push",
+                      child: Column(
+                        children: [
+                          UnifiedPushSetupView(
+                            onToggled: (_) => setState(() {}),
+                          ),
+                          if (preferences.unifiedPushEnabled.value == true)
+                            pushGatewaySelector(),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 10),
                   ],
                 ),
             ],
@@ -97,8 +95,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           BooleanPreferenceToggle(
             preference: preferences.silenceNotifications,
             title: "Silence Notifications",
-            description:
-                "When another device or client is active, silence notifications on this device",
+            description: "When another device or client is active, silence notifications on this device",
           ),
         if (PlatformUtils.isLinux || PlatformUtils.isWindows)
           Column(
@@ -112,20 +109,16 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               BooleanPreferenceToggle(
                 preference: preferences.suppressNotificationWhenRoomFocused,
                 title: "Hide notifications for current room",
-                description:
-                    "When receiving a message, if you have the chat selected and the app is in focus, dont show the notification",
+                description: "When receiving a message, if you have the chat selected and the app is in focus, dont show the notification",
               ),
               if (PlatformUtils.isLinux)
                 Column(
                   children: [
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                     BooleanPreferenceToggle(
                       preference: preferences.showNotificationBadgesInTaskbar,
                       title: "Notification Badges",
-                      description:
-                          "Show a badge with the number of unread messages in the system taskbar",
+                      description: "Show a badge with the number of unread messages in the system taskbar",
                       onChanged: (enabled) {
                         if (enabled) {
                           NotificationManager.notifier?.enableBadges();
@@ -141,8 +134,9 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                           "Apply user formatting in message notifications",
                     ),
                     AnimatedOpacity(
-                      opacity:
-                          preferences.formatNotificationBody.value ? 1 : 0.3,
+                      opacity: preferences.formatNotificationBody.value
+                          ? 1
+                          : 0.3,
                       duration: Durations.short4,
                       child: IgnorePointer(
                         ignoring:
@@ -152,14 +146,12 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                             BooleanPreferenceToggle(
                               preference: preferences.showMediaInNotifications,
                               title: "Show Images",
-                              description:
-                                  "Show images in notifications, if allowed by 'General > Media Preview' settings",
+                              description: "Show images in notifications, if allowed by 'General > Media Preview' settings",
                             ),
                             BooleanPreferenceToggle(
                               preference: preferences.previewUrlInNotifications,
                               title: "Preview Urls",
-                              description:
-                                  "Fetch URL previews to show extra information about links in notifications",
+                              description: "Fetch URL previews to show extra information about links in notifications",
                             ),
                           ],
                         ),
@@ -167,9 +159,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                     ),
                   ],
                 ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               DoublePreferenceSlider(
                 preference: preferences.notificationsVolume,
                 min: 0,
@@ -196,20 +186,21 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         tiamat.DropdownTextField(
-            key: pushGatewayKey,
-            initialValue: preferences.pushGateway,
-            textEditorPlaceholder: "push.example.com",
-            editableEntryPlaceholder: "Custom push gateway",
-            items: [
-              "push.commet.chat",
-              if (notifier is UnifiedPushNotifier)
-                "matrix.gateway.unifiedpush.org"
-            ]),
+          key: pushGatewayKey,
+          initialValue: preferences.pushGateway,
+          textEditorPlaceholder: "push.example.com",
+          editableEntryPlaceholder: "Custom push gateway",
+          items: [
+            "push.commet.chat",
+            if (notifier is UnifiedPushNotifier)
+              "matrix.gateway.unifiedpush.org",
+          ],
+        ),
         tiamat.Button(
           text: CommonStrings.promptApply,
           isLoading: isPushGatewayLoading,
           onTap: onPushGatewaySelected,
-        )
+        ),
       ],
     );
   }

@@ -42,8 +42,9 @@ class MatrixActivitiesComponent
 
       var application = entry.value.content.tryGet<String>("application");
       if (application == null) continue;
-      var activity =
-          activities.firstWhereOrNull((i) => i.application == application);
+      var activity = activities.firstWhereOrNull(
+        (i) => i.application == application,
+      );
 
       var expires = entry.value.content.tryGet<int>("expires");
 
@@ -77,12 +78,13 @@ class MatrixActivitiesComponent
         }
 
         activity = RoomActivitySession(
-            participants: Set(),
-            application: application,
-            appName: name,
-            icon: icon,
-            associatedWidget: widget,
-            thirdparty: thirdparty);
+          participants: Set(),
+          application: application,
+          appName: name,
+          icon: icon,
+          associatedWidget: widget,
+          thirdparty: thirdparty,
+        );
         activities.add(activity);
       }
 
@@ -128,7 +130,11 @@ class MatrixActivitiesComponent
       if (entry.value.content.isEmpty) continue;
 
       await room.matrixRoom.client.setRoomStateWithKey(
-          room.identifier, callMemberStateEvent, entry.value.stateKey!, {});
+        room.identifier,
+        callMemberStateEvent,
+        entry.value.stateKey!,
+        {},
+      );
     }
   }
 }

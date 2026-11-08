@@ -7,13 +7,14 @@ import 'package:flutter/material.dart' as material;
 import 'emoji_widget.dart';
 
 class EmojiReaction extends StatelessWidget {
-  const EmojiReaction(
-      {required this.emoji,
-      required this.numReactions,
-      this.highlighted = false,
-      this.onTapped,
-      this.onLongPressed,
-      super.key});
+  const EmojiReaction({
+    required this.emoji,
+    required this.numReactions,
+    this.highlighted = false,
+    this.onTapped,
+    this.onLongPressed,
+    super.key,
+  });
 
   final Function(Emoticon emote)? onTapped;
   final Function(Emoticon emote)? onLongPressed;
@@ -37,25 +38,19 @@ class EmojiReaction extends StatelessWidget {
       borderRadius: borderRadius,
       child: DecoratedBox(
         decoration: BoxDecoration(
-            color: bgColor.withAlpha(70),
-            border: Border.all(color: bgColor, width: 1),
-            borderRadius: borderRadius),
+          color: bgColor.withAlpha(70),
+          border: Border.all(color: bgColor, width: 1),
+          borderRadius: borderRadius,
+        ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              EmojiWidget(
-                emoji,
-                height: 17,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
+              EmojiWidget(emoji, height: 17),
+              const SizedBox(width: 5),
               tiamat.Text.label(numReactions.toString()),
-              const SizedBox(
-                width: 3,
-              ),
+              const SizedBox(width: 3),
             ],
           ),
         ),

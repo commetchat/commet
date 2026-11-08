@@ -4,6 +4,7 @@ import 'package:integration_test/integration_test.dart';
 
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
+
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../generated/l10n.dart';
@@ -18,24 +19,37 @@ void main() {
     await tester.pumpWidget(app);
     await tester.login(app);
 
-    await tester.waitFor(() => app.clientManager.isLoggedIn(),
-        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await tester.waitFor(
+      () => app.clientManager.isLoggedIn(),
+      timeout: const Duration(seconds: 5),
+      skipPumpAndSettle: true,
+    );
 
     await tester.openSettings(app);
 
-    await tester.waitFor(() => find
-        .widgetWithText(
-            tiamat.TextButton, T.current.labelSettingsTabManageAccounts)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(
+      () => find
+          .widgetWithText(
+            tiamat.TextButton,
+            T.current.labelSettingsTabManageAccounts,
+          )
+          .evaluate()
+          .isNotEmpty,
+    );
 
-    await tester.tap(find.widgetWithText(
-        tiamat.TextButton, T.current.labelSettingsTabManageAccounts));
+    await tester.tap(
+      find.widgetWithText(
+        tiamat.TextButton,
+        T.current.labelSettingsTabManageAccounts,
+      ),
+    );
 
-    await tester.waitFor(() => find
-        .byKey(AccountManagementSettingsTab.addAccountKey)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(
+      () => find
+          .byKey(AccountManagementSettingsTab.addAccountKey)
+          .evaluate()
+          .isNotEmpty,
+    );
 
     await tester.tap(find.byKey(AccountManagementSettingsTab.addAccountKey));
 
@@ -45,11 +59,13 @@ void main() {
 
     expect(app.clientManager.clients.length, equals(2));
     expect(
-        app.clientManager.clients
-            .where((client) =>
-                client.self!.identifier.contains(tester.userTwoName))
-            .isNotEmpty,
-        isTrue);
+      app.clientManager.clients
+          .where(
+            (client) => client.self!.identifier.contains(tester.userTwoName),
+          )
+          .isNotEmpty,
+      isTrue,
+    );
 
     await app.clientManager.close();
     await tester.clean();
@@ -62,31 +78,45 @@ void main() {
     await tester.pumpWidget(app);
     await tester.login(app);
 
-    await tester.waitFor(() => app.clientManager.isLoggedIn(),
-        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await tester.waitFor(
+      () => app.clientManager.isLoggedIn(),
+      timeout: const Duration(seconds: 5),
+      skipPumpAndSettle: true,
+    );
 
     await tester.openSettings(app);
 
-    await tester.waitFor(() => find
-        .widgetWithText(
-            tiamat.TextButton, T.current.labelSettingsTabManageAccounts)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(
+      () => find
+          .widgetWithText(
+            tiamat.TextButton,
+            T.current.labelSettingsTabManageAccounts,
+          )
+          .evaluate()
+          .isNotEmpty,
+    );
 
-    await tester.tap(find.widgetWithText(
-        tiamat.TextButton, T.current.labelSettingsTabManageAccounts));
+    await tester.tap(
+      find.widgetWithText(
+        tiamat.TextButton,
+        T.current.labelSettingsTabManageAccounts,
+      ),
+    );
 
-    await tester.waitFor(() => find
-        .byKey(AccountManagementSettingsTab.addAccountKey)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(
+      () => find
+          .byKey(AccountManagementSettingsTab.addAccountKey)
+          .evaluate()
+          .isNotEmpty,
+    );
 
     await tester.tap(find.byKey(AccountManagementSettingsTab.addAccountKey));
 
     await tester.login(app);
 
-    await tester.waitFor(() =>
-        find.text(T.current.messageAlreadyLoggedIn).evaluate().isNotEmpty);
+    await tester.waitFor(
+      () => find.text(T.current.messageAlreadyLoggedIn).evaluate().isNotEmpty,
+    );
 
     expect(app.clientManager.clients.length, equals(1));
 

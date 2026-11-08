@@ -14,7 +14,8 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
   static bool get supportsSystemAudio => PlatformUtils.isWindows;
 
   static Future<ScreenCaptureSource?> showSelectSourcePrompt(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     if (PlatformUtils.isAndroid) {
       return WebrtcAndroidScreencaptureSource.getCaptureSource(context);
     }
@@ -30,10 +31,14 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
     }
 
     if (context.mounted) {
-      var result = await PopupDialog.show<DesktopCapturerSource>(context,
-          content: ScreenCaptureSourceDialog(
-              sources, desktopCapturer.onThumbnailChanged.stream),
-          title: "Screen Share");
+      var result = await PopupDialog.show<DesktopCapturerSource>(
+        context,
+        content: ScreenCaptureSourceDialog(
+          sources,
+          desktopCapturer.onThumbnailChanged.stream,
+        ),
+        title: "Screen Share",
+      );
 
       if (result != null) {
         return WebrtcScreencaptureSource(result);

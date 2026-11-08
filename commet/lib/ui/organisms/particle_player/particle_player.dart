@@ -56,7 +56,8 @@ class _ParticlePlayerState extends State<ParticlePlayer> {
   Widget build(BuildContext context) {
     if (currentEffect?.system != null) {
       return IgnorePointer(
-          child: ParticleSystemRenderer(system: currentEffect!.system!));
+        child: ParticleSystemRenderer(system: currentEffect!.system!),
+      );
     } else {
       return Container();
     }

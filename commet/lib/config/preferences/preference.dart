@@ -39,12 +39,14 @@ class Preference<T> {
   @override
   bool operator ==(Object other) {
     throw Exception(
-        "Do not check for equality on a preference, check the preferences value");
+      "Do not check for equality on a preference, check the preferences value",
+    );
   }
 
   @override
   String toString() {
     throw Exception(
-        "Do not convert a preference to string, use the preferences value");
+      "Do not convert a preference to string, use the preferences value",
+    );
   }
 }

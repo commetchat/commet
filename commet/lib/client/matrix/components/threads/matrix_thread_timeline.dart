@@ -78,23 +78,28 @@ class MatrixThreadTimeline implements Timeline {
     events = List.empty(growable: true);
   }
 
-  Future<List<TimelineEvent>> getThreadEvents(
-      {int limit = 20, String? nextBatch}) async {
+  Future<List<TimelineEvent>> getThreadEvents({
+    int limit = 20,
+    String? nextBatch,
+  }) async {
     var client = this.client as MatrixClient;
     var room = this.room as MatrixRoom;
 
     var mx = client.getMatrixClient();
-    var data = await mx.request(matrix.RequestType.GET,
-        "/client/unstable/rooms/${room.identifier}/relations/$threadRootId/m.thread",
-        query: {
-          "limit": limit.toString(),
-          if (nextBatch != null) "from": nextBatch
-        });
+    var data = await mx.request(
+      matrix.RequestType.GET,
+      "/client/unstable/rooms/${room.identifier}/relations/$threadRootId/m.thread",
+      query: {
+        "limit": limit.toString(),
+        if (nextBatch != null) "from": nextBatch,
+      },
+    );
 
     var chunk = List<Map<String, dynamic>>.from(data["chunk"] as Iterable);
 
-    var mxevents =
-        chunk.map((e) => matrix.Event.fromJson(e, room.matrixRoom)).toList();
+    var mxevents = chunk
+        .map((e) => matrix.Event.fromJson(e, room.matrixRoom))
+        .toList();
 
     for (var i = 0; i < mxevents.length; i++) {
       var event = mxevents[i];
@@ -112,8 +117,10 @@ class MatrixThreadTimeline implements Timeline {
     }
 
     var convertedEvents = mxevents
-        .map((e) =>
-            room.convertEvent(e, timeline: mainRoomTimeline.matrixTimeline))
+        .map(
+          (e) =>
+              room.convertEvent(e, timeline: mainRoomTimeline.matrixTimeline),
+        )
         .toList();
 
     this.nextBatch = data["next_batch"] as String?;
@@ -284,8 +291,9 @@ class MatrixThreadTimeline implements Timeline {
   void onMainTimelineEventChanged(int index) {
     var event = mainRoomTimeline.events[index];
     if (isEventInThisThread(event)) {
-      var originalIndex =
-          events.indexWhere((element) => element.eventId == event.eventId);
+      var originalIndex = events.indexWhere(
+        (element) => element.eventId == event.eventId,
+      );
 
       var finalIndex = originalIndex;
 
@@ -303,8 +311,9 @@ class MatrixThreadTimeline implements Timeline {
   void onMainTimelineEventRemoved(int index) {
     var event = mainRoomTimeline.events[index];
     if (isEventInThisThread(event)) {
-      var index =
-          events.indexWhere((element) => element.eventId == event.eventId);
+      var index = events.indexWhere(
+        (element) => element.eventId == event.eventId,
+      );
 
       events.removeAt(index);
 

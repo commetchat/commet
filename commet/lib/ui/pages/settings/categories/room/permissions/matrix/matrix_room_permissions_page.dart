@@ -38,8 +38,11 @@ class MatrixRoomRoleEntry {
 }
 
 class MatrixRoomPermissionsPage extends StatefulWidget {
-  const MatrixRoomPermissionsPage(this.room,
-      {super.key, this.showCalendarPermissions = false});
+  const MatrixRoomPermissionsPage(
+    this.room, {
+    super.key,
+    this.showCalendarPermissions = false,
+  });
   final matrix.Room room;
   final bool showCalendarPermissions;
 
@@ -54,34 +57,34 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   bool loading = false;
 
   String get labelMatrixPermissionsRoleOwner => Intl.message(
-        "Owner",
-        name: "labelMatrixPermissionsRoleOwner",
-        desc: "Label for the room owner role",
-      );
+    "Owner",
+    name: "labelMatrixPermissionsRoleOwner",
+    desc: "Label for the room owner role",
+  );
 
   String get labelMatrixPermissionsRoleAdmin => Intl.message(
-        "Admin",
-        name: "labelMatrixPermissionsRoleAdmin",
-        desc: "Label for the room administrator role",
-      );
+    "Admin",
+    name: "labelMatrixPermissionsRoleAdmin",
+    desc: "Label for the room administrator role",
+  );
 
   String get labelMatrixPermissionsRoleModerator => Intl.message(
-        "Moderator",
-        name: "labelMatrixPermissionsRoleModerator",
-        desc: "Label for the room moderator role",
-      );
+    "Moderator",
+    name: "labelMatrixPermissionsRoleModerator",
+    desc: "Label for the room moderator role",
+  );
 
   String get labelMatrixPermissionsRoleMember => Intl.message(
-        "Room Member",
-        name: "labelMatrixPermissionsRoleMember",
-        desc: "Label for the room member role",
-      );
+    "Room Member",
+    name: "labelMatrixPermissionsRoleMember",
+    desc: "Label for the room member role",
+  );
 
   String get labelMatrixPermissionsSpaceManageChildrenTitle => Intl.message(
-        "Manage Children",
-        name: "labelMatrixPermissionsSpaceManageChildrenTitle",
-        desc: "Title for permission to manage children",
-      );
+    "Manage Children",
+    name: "labelMatrixPermissionsSpaceManageChildrenTitle",
+    desc: "Title for permission to manage children",
+  );
 
   String get labelMatrixPermissionsSpaceManageChildrenDescription =>
       Intl.message(
@@ -91,10 +94,10 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       );
 
   String get labelMatrixPermissionsRoomDeleteMessagesTitle => Intl.message(
-        "Delete Messages",
-        name: "labelMatrixPermissionsRoomDeleteMessagesTitle",
-        desc: "Title for permission to delete messages",
-      );
+    "Delete Messages",
+    name: "labelMatrixPermissionsRoomDeleteMessagesTitle",
+    desc: "Title for permission to delete messages",
+  );
 
   String get labelMatrixPermissionsRoomDeleteMessagesDescription =>
       Intl.message(
@@ -104,34 +107,34 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       );
 
   String get labelMatrixPermissionsRoomSendMessagesTitle => Intl.message(
-        "Send Messages",
-        name: "labelMatrixPermissionsRoomSendMessagesTitle",
-        desc: "Title for the permission to send messages",
-      );
+    "Send Messages",
+    name: "labelMatrixPermissionsRoomSendMessagesTitle",
+    desc: "Title for the permission to send messages",
+  );
 
   String get labelMatrixPermissionsRoomSendMessagesDescription => Intl.message(
-        "Allows a user to send messages in this room",
-        name: "labelMatrixPermissionsRoomSendMessagesDescription",
-        desc: "Describes the permission to send messages",
-      );
+    "Allows a user to send messages in this room",
+    name: "labelMatrixPermissionsRoomSendMessagesDescription",
+    desc: "Describes the permission to send messages",
+  );
 
   String get labelMatrixPermissionsRoomAddReactionsTitle => Intl.message(
-        "Add Reactions",
-        name: "labelMatrixPermissionsRoomAddReactionsTitle",
-        desc: "Title for the permission to add an emoji reaction to a message",
-      );
+    "Add Reactions",
+    name: "labelMatrixPermissionsRoomAddReactionsTitle",
+    desc: "Title for the permission to add an emoji reaction to a message",
+  );
 
   String get labelMatrixPermissionsRoomAddReactionsDescription => Intl.message(
-        "Add reactions to messages",
-        name: "labelMatrixPermissionsRoomAddReactionsDescription",
-        desc: "describes the permission to add an emoji reaction to a message",
-      );
+    "Add reactions to messages",
+    name: "labelMatrixPermissionsRoomAddReactionsDescription",
+    desc: "describes the permission to add an emoji reaction to a message",
+  );
 
   String get labelMatrixPermissionsRoomHistoryVisibilityTitle => Intl.message(
-        "History Visibility",
-        name: "labelMatrixPermissionsRoomHistoryVisibilityTitle",
-        desc: "Title for the permission to add change room history settings",
-      );
+    "History Visibility",
+    name: "labelMatrixPermissionsRoomHistoryVisibilityTitle",
+    desc: "Title for the permission to add change room history settings",
+  );
 
   String get labelMatrixPermissionsRoomHistoryVisibilityDescription =>
       Intl.message(
@@ -141,59 +144,58 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       );
 
   String get labelMatrixPermissionsRoomAvatarTitle => Intl.message(
-        "Set Room Avatar",
-        name: "labelMatrixPermissionsRoomAvatarTitle",
-        desc: "Title for the permission to add change the rooms avatar image",
-      );
+    "Set Room Avatar",
+    name: "labelMatrixPermissionsRoomAvatarTitle",
+    desc: "Title for the permission to add change the rooms avatar image",
+  );
 
   String get labelMatrixPermissionsRoomAvatarDescription => Intl.message(
-        "Change the room's avatar image",
-        name: "labelMatrixPermissionsRoomAvatarDescription",
-        desc: "Title for the permission to add change the rooms avatar image",
-      );
+    "Change the room's avatar image",
+    name: "labelMatrixPermissionsRoomAvatarDescription",
+    desc: "Title for the permission to add change the rooms avatar image",
+  );
 
   String get labelMatrixPermissionsMentionRoomTitle => Intl.message(
-        "Use @room mentions",
-        name: "labelMatrixPermissionsMentionRoomTitle",
-        desc: "Title for the permission to use '@room' mentions in a message",
-      );
+    "Use @room mentions",
+    name: "labelMatrixPermissionsMentionRoomTitle",
+    desc: "Title for the permission to use '@room' mentions in a message",
+  );
 
   String get labelMatrixPermissionsMentionRoomDescription => Intl.message(
-        "Allow use of '@room' to notify all members of the room",
-        name: "labelMatrixPermissionsMentionRoomDescription",
-        desc:
-            "Description for the permission to use '@room' mentions in a message",
-      );
+    "Allow use of '@room' to notify all members of the room",
+    name: "labelMatrixPermissionsMentionRoomDescription",
+    desc: "Description for the permission to use '@room' mentions in a message",
+  );
 
   String get labelMatrixPermissionsChangeRoomNameTitle => Intl.message(
-        "Change room name",
-        name: "labelMatrixPermissionsChangeRoomNameTitle",
-        desc: "Title for the permission to add change the rooms name",
-      );
+    "Change room name",
+    name: "labelMatrixPermissionsChangeRoomNameTitle",
+    desc: "Title for the permission to add change the rooms name",
+  );
 
   String get labelMatrixPermissionsChangeRoomNameDescription => Intl.message(
-        "Allows the user to change the name of this room",
-        name: "labelMatrixPermissionsChangeRoomNameDescription",
-        desc: "Description for the permission to add change the rooms name",
-      );
+    "Allows the user to change the name of this room",
+    name: "labelMatrixPermissionsChangeRoomNameDescription",
+    desc: "Description for the permission to add change the rooms name",
+  );
 
   String get labelMatrixPermissionsChangeRoomTopicTitle => Intl.message(
-        "Change room topic",
-        name: "labelMatrixPermissionsChangeRoomTopicTitle",
-        desc: "Title for the permission to add change the rooms topic",
-      );
+    "Change room topic",
+    name: "labelMatrixPermissionsChangeRoomTopicTitle",
+    desc: "Title for the permission to add change the rooms topic",
+  );
 
   String get labelMatrixPermissionsChangeRoomTopicDescription => Intl.message(
-        "Allows the user to change the topic of this room",
-        name: "labelMatrixPermissionsChangeRoomTopicDescription",
-        desc: "Description for the permission to add change the rooms topic",
-      );
+    "Allows the user to change the topic of this room",
+    name: "labelMatrixPermissionsChangeRoomTopicDescription",
+    desc: "Description for the permission to add change the rooms topic",
+  );
 
   String get labelMatrixPermissionsChangeRoomPermissionsTitle => Intl.message(
-        "Change permissions",
-        name: "labelMatrixPermissionsChangeRoomPermissionsTitle",
-        desc: "Title for the permission to change permissions of the room",
-      );
+    "Change permissions",
+    name: "labelMatrixPermissionsChangeRoomPermissionsTitle",
+    desc: "Title for the permission to change permissions of the room",
+  );
 
   String get labelMatrixPermissionsChangeRoomPermissionsDescription =>
       Intl.message(
@@ -204,56 +206,52 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       );
 
   String get labelMatrixPermissionsKickUserTitle => Intl.message(
-        "Kick users",
-        name: "labelMatrixPermissionsKickUserTitle",
-        desc: "Title for the permission to kick other users out of the room",
-      );
+    "Kick users",
+    name: "labelMatrixPermissionsKickUserTitle",
+    desc: "Title for the permission to kick other users out of the room",
+  );
 
   String get labelMatrixPermissionsKickUserDescription => Intl.message(
-        "Kick other users out of the room",
-        name: "labelMatrixPermissionsKickUserDescription",
-        desc:
-            "Description for the permission to kick other users out of the room",
-      );
+    "Kick other users out of the room",
+    name: "labelMatrixPermissionsKickUserDescription",
+    desc: "Description for the permission to kick other users out of the room",
+  );
 
   String get labelMatrixPermissionsBanUserTitle => Intl.message(
-        "Ban users",
-        name: "labelMatrixPermissionsBanUserTitle",
-        desc: "Title for the permission to ban other users from the room",
-      );
+    "Ban users",
+    name: "labelMatrixPermissionsBanUserTitle",
+    desc: "Title for the permission to ban other users from the room",
+  );
 
   String get labelMatrixPermissionsBanUserDescription => Intl.message(
-        "Ban other users from the room",
-        name: "labelMatrixPermissionsBanUserDescription",
-        desc: "Description for the permission to ban other users from the room",
-      );
+    "Ban other users from the room",
+    name: "labelMatrixPermissionsBanUserDescription",
+    desc: "Description for the permission to ban other users from the room",
+  );
 
   String get labelMatrixPermissionsJoinCallTitle => Intl.message(
-        "Join Call",
-        name: "labelMatrixPermissionsJoinCallTitle",
-        desc:
-            "Title for the permission to allow users to join a call in a room",
-      );
+    "Join Call",
+    name: "labelMatrixPermissionsJoinCallTitle",
+    desc: "Title for the permission to allow users to join a call in a room",
+  );
 
   String get labelMatrixPermissionsJoinCallDescription => Intl.message(
-        "Allow users to join an ongoing call in this room",
-        name: "labelMatrixPermissionsJoinCallDescription",
-        desc:
-            "Description for the permission to allow users to join a call in a room",
-      );
+    "Allow users to join an ongoing call in this room",
+    name: "labelMatrixPermissionsJoinCallDescription",
+    desc: "Description for the permission to allow users to join a call in a room",
+  );
 
   String get labelMatrixPermissionsAddCalendarEventTitle => Intl.message(
-        "Edit Calendar Events",
-        name: "labelMatrixPermissionsAddCalendarEventTitle",
-        desc: "Title for the permission to allow users to edit the calendar",
-      );
+    "Edit Calendar Events",
+    name: "labelMatrixPermissionsAddCalendarEventTitle",
+    desc: "Title for the permission to allow users to edit the calendar",
+  );
 
   String get labelMatrixPermissionsAddCalendarEventDescription => Intl.message(
-        "Allow users to edit events in the calendar",
-        name: "labelMatrixPermissionsAddCalendarEventDescription",
-        desc:
-            "Description for the permission to allow users to create an event on the calendar",
-      );
+    "Allow users to edit events in the calendar",
+    name: "labelMatrixPermissionsAddCalendarEventDescription",
+    desc: "Description for the permission to allow users to create an event on the calendar",
+  );
 
   void initPermissions() {
     bool isCalendarRoom = widget.showCalendarPermissions;
@@ -262,9 +260,10 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
     roles = [
       if (version != null && version >= 12)
         MatrixRoomRoleEntry(
-            name: labelMatrixPermissionsRoleOwner,
-            powerlevel: 150,
-            icon: Icons.local_police),
+          name: labelMatrixPermissionsRoleOwner,
+          powerlevel: 150,
+          icon: Icons.local_police,
+        ),
       MatrixRoomRoleEntry(
         name: labelMatrixPermissionsRoleAdmin,
         powerlevel: 100,
@@ -424,16 +423,21 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         if (events != null) {
           for (var entry in events.entries) {
             if (permissions.any(
-                (i) => i.keyParent == "events" && i.key == entry.key)) continue;
+              (i) => i.keyParent == "events" && i.key == entry.key,
+            ))
+              continue;
 
-            permissions.add(MatrixRoomPermissionEntry(
+            permissions.add(
+              MatrixRoomPermissionEntry(
                 key: entry.key,
                 title: entry.key,
                 keyParent: "events",
                 description:
                     "Allow the user to send events of type '${entry.key}'",
                 icon: Icons.question_mark_rounded,
-                powerLevel: entry.value));
+                powerLevel: entry.value,
+              ),
+            );
           }
         }
       }

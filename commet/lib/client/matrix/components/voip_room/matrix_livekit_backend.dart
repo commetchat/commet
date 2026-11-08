@@ -21,13 +21,12 @@ class MatrixLivekitBackend {
     final selectedFocus = findSelectedFocus();
 
     var wellKnown = await room.matrixRoom.client.getWellknown();
-    final livekitJwtServiceUrl = wellKnown
-        .additionalProperties["org.matrix.msc4143.rtc_foci"] as List<dynamic>?;
+    final livekitJwtServiceUrl =
+        wellKnown.additionalProperties["org.matrix.msc4143.rtc_foci"]
+            as List<dynamic>?;
 
     if (livekitJwtServiceUrl == null) {
-      return [
-        if (selectedFocus != null) selectedFocus,
-      ];
+      return [if (selectedFocus != null) selectedFocus];
     }
 
     Uri? fociUrl;
@@ -47,9 +46,7 @@ class MatrixLivekitBackend {
       ];
     }
 
-    return [
-      if (selectedFocus != null) selectedFocus,
-    ];
+    return [if (selectedFocus != null) selectedFocus];
   }
 
   Uri? findSelectedFocus() {
@@ -63,8 +60,9 @@ class MatrixLivekitBackend {
     values.sort((a, b) => a.originServerTs.compareTo(b.originServerTs));
 
     for (var entry in values) {
-      final focusActive =
-          entry.content.tryGet<Map<String, dynamic>>("focus_active");
+      final focusActive = entry.content.tryGet<Map<String, dynamic>>(
+        "focus_active",
+      );
 
       if (focusActive == null) {
         continue;
@@ -77,12 +75,14 @@ class MatrixLivekitBackend {
 
       if (focusActive['focus_selection'] != "oldest_membership") {
         Log.e(
-            "Unknown focus selection algorithm: ${focusActive['focus_selection']}");
+          "Unknown focus selection algorithm: ${focusActive['focus_selection']}",
+        );
         continue;
       }
 
-      final fociPreferred =
-          entry.content.tryGet<List<dynamic>>("foci_preferred");
+      final fociPreferred = entry.content.tryGet<List<dynamic>>(
+        "foci_preferred",
+      );
       Log.e("Selecting focus");
       if (fociPreferred == null) {
         continue;
@@ -111,8 +111,10 @@ class MatrixLivekitBackend {
     final selectedFocus = fociUrl.first;
     Log.d("Got Foci Url: ${fociUrl}");
 
-    final token = await room.matrixRoom.client
-        .requestOpenIdToken(room.matrixRoom.client.userID!, {});
+    final token = await room.matrixRoom.client.requestOpenIdToken(
+      room.matrixRoom.client.userID!,
+      {},
+    );
 
     if (selectedFocus.scheme != "https") {
       throw Exception("Selected focus JWT does not use HTTPS");
@@ -128,7 +130,7 @@ class MatrixLivekitBackend {
         "matrix_server_name": token.matrixServerName,
         "access_token": token.accessToken,
         "expires_in": token.expiresIn,
-      }
+      },
     };
 
     var result = await http.post(uri, body: jsonEncode(body));
@@ -146,20 +148,22 @@ class MatrixLivekitBackend {
     MatrixLivekitEncryptionKeyProvider? provider;
 
     if (room.isE2EE) {
-      provider =
-          await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom);
+      provider = await MatrixLivekitEncryptionKeyProvider.create(
+        room.matrixRoom,
+      );
       e2eeOptions = lk.E2EEOptions(keyProvider: provider);
     }
 
     final roomOptions = lk.RoomOptions(
-        adaptiveStream: true,
-        dynacast: true,
-        e2eeOptions: e2eeOptions,
-        defaultAudioPublishOptions: lk.AudioPublishOptions(
-          encoding: lk.AudioEncoding(
-              maxBitrate:
-                  (preferences.streamAudioBitrate.value * 1000).toInt()),
-        ));
+      adaptiveStream: true,
+      dynacast: true,
+      e2eeOptions: e2eeOptions,
+      defaultAudioPublishOptions: lk.AudioPublishOptions(
+        encoding: lk.AudioEncoding(
+          maxBitrate: (preferences.streamAudioBitrate.value * 1000).toInt(),
+        ),
+      ),
+    );
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
 
@@ -167,25 +171,31 @@ class MatrixLivekitBackend {
     final stateKey =
         "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 
-    await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
-        MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {
-      "application": "m.call",
-      "call_id": "",
-      "device_id": room.matrixRoom.client.deviceID!,
-      "expires": 14400000,
-      "foci_preferred": fociUrl
-          .map((e) => {
+    await room.matrixRoom.client.setRoomStateWithKey(
+      room.matrixRoom.id,
+      MatrixVoipRoomComponent.callMemberStateEvent,
+      stateKey,
+      {
+        "application": "m.call",
+        "call_id": "",
+        "device_id": room.matrixRoom.client.deviceID!,
+        "expires": 14400000,
+        "foci_preferred": fociUrl
+            .map(
+              (e) => {
                 "type": "livekit",
                 "livekit_alias": room.identifier,
-                "livekit_service_url": e.toString()
-              })
-          .toList(),
-      "focus_active": {
-        "focus_selection": "oldest_membership",
-        "type": "livekit"
+                "livekit_service_url": e.toString(),
+              },
+            )
+            .toList(),
+        "focus_active": {
+          "focus_selection": "oldest_membership",
+          "type": "livekit",
+        },
+        "scope": "m.room",
       },
-      "scope": "m.room"
-    });
+    );
 
     await lkRoom.connect(sfuUrl, jwt);
 
@@ -193,8 +203,10 @@ class MatrixLivekitBackend {
 
     print("Using default device: ${device}");
 
-    lkRoom.localParticipant?.setMicrophoneEnabled(true,
-        audioCaptureOptions: lk.AudioCaptureOptions(deviceId: device));
+    lkRoom.localParticipant?.setMicrophoneEnabled(
+      true,
+      audioCaptureOptions: lk.AudioCaptureOptions(deviceId: device),
+    );
 
     livekitRoom = lkRoom;
     return MatrixLivekitVoipSession(room, lkRoom, keyProvider: provider);

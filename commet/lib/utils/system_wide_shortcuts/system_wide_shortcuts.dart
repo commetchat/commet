@@ -32,29 +32,37 @@ class SystemWideShortcuts {
     return false;
   }
 
-  static String get shortcutNameMute => Intl.message("Mute",
-      name: "shortcutNameMute",
-      desc: "name for the system wide shortcut to activate microphone mute");
+  static String get shortcutNameMute => Intl.message(
+    "Mute",
+    name: "shortcutNameMute",
+    desc: "name for the system wide shortcut to activate microphone mute",
+  );
 
-  static String get shortcutNameUnmute => Intl.message("Unmute",
-      name: "shortcutNameUnmute",
-      desc: "name for the system wide shortcut to disable microphone mute");
+  static String get shortcutNameUnmute => Intl.message(
+    "Unmute",
+    name: "shortcutNameUnmute",
+    desc: "name for the system wide shortcut to disable microphone mute",
+  );
 
-  static String get shortcutNameToggleMute => Intl.message("Toggle Mute",
-      name: "shortcutNameToggleMute",
-      desc:
-          "name for the system wide shortcut to toggle the microphone mute status");
+  static String get shortcutNameToggleMute => Intl.message(
+    "Toggle Mute",
+    name: "shortcutNameToggleMute",
+    desc: "name for the system wide shortcut to toggle the microphone mute status",
+  );
 
   static Map<String, AppShortcut> shortcuts = {
     "mute": AppShortcut(
-        getDisplayName: () => shortcutNameMute,
-        callback: () => clientManager?.callManager.mute()),
+      getDisplayName: () => shortcutNameMute,
+      callback: () => clientManager?.callManager.mute(),
+    ),
     "unmute": AppShortcut(
-        getDisplayName: () => shortcutNameUnmute,
-        callback: () => clientManager?.callManager.unmute()),
+      getDisplayName: () => shortcutNameUnmute,
+      callback: () => clientManager?.callManager.unmute(),
+    ),
     "toggle_mute": AppShortcut(
-        getDisplayName: () => shortcutNameToggleMute,
-        callback: () => clientManager?.callManager.toggleMute()),
+      getDisplayName: () => shortcutNameToggleMute,
+      callback: () => clientManager?.callManager.toggleMute(),
+    ),
   };
 
   static Future<void> storeHotkeys() async {
@@ -71,10 +79,7 @@ class AppShortcut {
 
   HotKey? hotkey;
 
-  AppShortcut({
-    required this.getDisplayName,
-    required this.callback,
-  });
+  AppShortcut({required this.getDisplayName, required this.callback});
 
   Future<void> setHotkey(HotKey newHotkey) async {
     if (hotkey != null) {

@@ -16,21 +16,13 @@ void main() async {
     listUpdatedCalled = false;
   }
 
-  list.onAdd.listen(
-    (event) => addedCalled = true,
-  );
+  list.onAdd.listen((event) => addedCalled = true);
 
-  list.onItemUpdated.listen(
-    (event) => itemUpdatedCalled = true,
-  );
+  list.onItemUpdated.listen((event) => itemUpdatedCalled = true);
 
-  list.onListUpdated.listen(
-    (event) => listUpdatedCalled = true,
-  );
+  list.onListUpdated.listen((event) => listUpdatedCalled = true);
 
-  list.onRemove.listen(
-    (event) => removedCalled = true,
-  );
+  list.onRemove.listen((event) => removedCalled = true);
 
   test("Add", () {
     resetFlags();

@@ -18,10 +18,16 @@ abstract class GifComponent<T extends Client> implements Component<T> {
   Future<List<GifSearchResult>> search(String query);
 
   Future<TimelineEvent?> sendGif(
-      Room room, GifSearchResult gif, TimelineEvent? inReplyTo);
+    Room room,
+    GifSearchResult gif,
+    TimelineEvent? inReplyTo,
+  );
 
   Future<TimelineEvent?> sendFavoriteGif(
-      Room room, FavoriteGif gif, TimelineEvent? inReplyTo);
+    Room room,
+    FavoriteGif gif,
+    TimelineEvent? inReplyTo,
+  );
 
   String get searchPlaceholder;
 

@@ -12,11 +12,14 @@ class MatrixMember implements Member {
 
   @override
   ImageProvider<Object>? get avatar => matrixUser.avatarUrl != null
-      ? MatrixMxcImage(matrixUser.avatarUrl!, client.matrixClient,
+      ? MatrixMxcImage(
+          matrixUser.avatarUrl!,
+          client.matrixClient,
           doThumbnail: true,
           autoLoadFullRes: false,
           doFullres: false,
-          thumbnailHeight: 86)
+          thumbnailHeight: 86,
+        )
       : null;
 
   @override

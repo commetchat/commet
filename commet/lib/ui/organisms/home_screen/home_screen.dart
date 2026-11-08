@@ -80,14 +80,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void updateRecent() {
-    recentActivity =
-        List.from(filterClient?.rooms ?? widget.clientManager.rooms);
+    recentActivity = List.from(
+      filterClient?.rooms ?? widget.clientManager.rooms,
+    );
 
     recentActivity.removeWhere((element) => element.lastEvent == null);
 
-    mergeSort(recentActivity, compare: (a, b) {
-      return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
-    });
+    mergeSort(
+      recentActivity,
+      compare: (a, b) {
+        return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
+      },
+    );
 
     if (recentActivity.length > widget.numRecentRooms) {
       recentActivity = recentActivity.sublist(0, widget.numRecentRooms);
@@ -114,12 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   onBurgerMenuTap: widget.onBurgerMenuTap,
                   text: CommonStrings.promptHome,
                   menu: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: tiamat.IconButton(
-                        icon: Icons.search,
-                        onPressed: () => QuickSwitcher.show(context),
-                      )),
+                    width: 50,
+                    height: 50,
+                    child: tiamat.IconButton(
+                      icon: Icons.search,
+                      onPressed: () => QuickSwitcher.show(context),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -138,15 +143,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(spacing: 8, children: [
-                        Icon(Icons.search),
-                        tiamat.Text.labelLow(CommonStrings.promptSearch),
-                      ]),
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Icon(Icons.search),
+                          tiamat.Text.labelLow(CommonStrings.promptSearch),
+                        ],
+                      ),
                       if (MediaQuery.of(context).desktop)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                           child: tiamat.Text.labelLow("Ctrl + K"),
-                        )
+                        ),
                     ],
                   ),
                 ),
@@ -164,18 +172,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     IncomingInvitationsWidget(widget.clientManager),
                     HomeScreenView(
                       clientManager: widget.clientManager,
-                      rooms: widget.clientManager
-                          .singleRooms(filterClient: filterClient),
+                      rooms: widget.clientManager.singleRooms(
+                        filterClient: filterClient,
+                      ),
                       recentActivity: recentActivity,
                       onRoomClicked: (room) => EventBus.doOpenRoom(
-                          room.identifier,
-                          clientId: room.client.identifier),
+                        room.identifier,
+                        clientId: room.client.identifier,
+                      ),
                       joinRoom: joinRoom,
                       createRoom: createRoom,
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -4,28 +4,29 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventLayoutMessage extends StatelessWidget {
-  const TimelineEventLayoutMessage(
-      {super.key,
-      required this.senderName,
-      required this.senderColor,
-      this.viaSenderName,
-      this.senderAvatar,
-      this.formattedContent,
-      this.attachments,
-      this.inResponseTo,
-      this.reactions,
-      this.timestamp,
-      this.sticker,
-      this.thread,
-      this.urlPreviews,
-      this.readReceipts,
-      this.onAvatarTapped,
-      this.edited = false,
-      this.isMentioningSelf = false,
-      this.avatarSize = 32,
-      this.avatarBuilder,
-      this.showSender = true,
-      this.onDoubleTapMessage});
+  const TimelineEventLayoutMessage({
+    super.key,
+    required this.senderName,
+    required this.senderColor,
+    this.viaSenderName,
+    this.senderAvatar,
+    this.formattedContent,
+    this.attachments,
+    this.inResponseTo,
+    this.reactions,
+    this.timestamp,
+    this.sticker,
+    this.thread,
+    this.urlPreviews,
+    this.readReceipts,
+    this.onAvatarTapped,
+    this.edited = false,
+    this.isMentioningSelf = false,
+    this.avatarSize = 32,
+    this.avatarBuilder,
+    this.showSender = true,
+    this.onDoubleTapMessage,
+  });
   final String senderName;
   final Color senderColor;
   final String? viaSenderName;
@@ -48,15 +49,18 @@ class TimelineEventLayoutMessage extends StatelessWidget {
 
   final double avatarSize;
 
-  String get messageEditedMarker => Intl.message("(Edited)",
-      name: "messageEditedMarker",
-      desc: "Short text to mark that a message has been edited");
+  String get messageEditedMarker => Intl.message(
+    "(Edited)",
+    name: "messageEditedMarker",
+    desc: "Short text to mark that a message has been edited",
+  );
 
-  String messageSentViaProfile(String sender) => Intl.message("via $sender",
-      name: "messageSentViaProfile",
-      desc:
-          "Shows the real name of the account which sent a message with a per message profile",
-      args: [sender]);
+  String messageSentViaProfile(String sender) => Intl.message(
+    "via $sender",
+    name: "messageSentViaProfile",
+    desc: "Shows the real name of the account which sent a message with a per message profile",
+    args: [sender],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -109,24 +113,25 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                                   if (urlPreviews != null) urlPreviews!,
                                   if (reactions != null)
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                      padding: const EdgeInsets.fromLTRB(
+                                        0,
+                                        4,
+                                        0,
+                                        0,
+                                      ),
                                       child: reactions!,
                                     ),
                                 ],
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 35,
-                            child: readReceipts,
-                          )
+                          SizedBox(width: 35, child: readReceipts),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
           if (thread != null) thread!,
@@ -137,12 +142,14 @@ class TimelineEventLayoutMessage extends StatelessWidget {
     if (isMentioningSelf)
       result = Container(
         decoration: BoxDecoration(
-            border: Border(
-                left: BorderSide(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    width: mentionHighlightSize)),
-            color:
-                Theme.of(context).colorScheme.tertiaryContainer.withAlpha(30)),
+          border: Border(
+            left: BorderSide(
+              color: Theme.of(context).colorScheme.tertiary,
+              width: mentionHighlightSize,
+            ),
+          ),
+          color: Theme.of(context).colorScheme.tertiaryContainer.withAlpha(30),
+        ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: result,
@@ -157,10 +164,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: onAvatarTapped,
-        child: tiamat.Text.name(
-          senderName,
-          color: senderColor,
-        ),
+        child: tiamat.Text.name(senderName, color: senderColor),
       ),
     );
 

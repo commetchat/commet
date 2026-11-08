@@ -7,8 +7,11 @@ import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 
 class ProfileEditTab extends StatefulWidget {
-  const ProfileEditTab(
-      {required this.clientManager, this.selectedClientIndex = 0, super.key});
+  const ProfileEditTab({
+    required this.clientManager,
+    this.selectedClientIndex = 0,
+    super.key,
+  });
   final ClientManager clientManager;
   final int selectedClientIndex;
   @override
@@ -38,7 +41,7 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
               client: client,
               maxBioHeight: double.infinity,
             ),
-            const Seperator()
+            const Seperator(),
           ],
         );
       },

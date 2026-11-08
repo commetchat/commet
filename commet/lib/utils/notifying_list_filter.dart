@@ -12,15 +12,19 @@ class NotifyingListFilter<T> implements INotifyingList<T> {
 
   late List<StreamSubscription> subs;
 
-  NotifyingListFilter(INotifyingList<T> base,
-      {required bool Function(T item) where,
-      List<Stream>? onFilterParamsChanged}) {
+  NotifyingListFilter(
+    INotifyingList<T> base, {
+    required bool Function(T item) where,
+    List<Stream>? onFilterParamsChanged,
+  }) {
     this._baseList = base;
 
     this.whereFunction = where;
 
-    this._internalList =
-        NotifyingList.from(base.where(whereFunction), growable: true);
+    this._internalList = NotifyingList.from(
+      base.where(whereFunction),
+      growable: true,
+    );
 
     subs = [
       _baseList.onRemove.listen(_onBaseItemRemoved),

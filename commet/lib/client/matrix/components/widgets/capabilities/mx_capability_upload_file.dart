@@ -20,8 +20,10 @@ class MatrixCapabilityUploadFile implements MatrixWidgetCapability {
 
   static const String name = "org.matrix.msc4039.upload_file";
 
-  static MatrixWidgetCapabilityConstructorEntry entry =
-      MapEntry(name, (runner, type, key) => MatrixCapabilityUploadFile(runner));
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
+    name,
+    (runner, type, key) => MatrixCapabilityUploadFile(runner),
+  );
 
   @override
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
@@ -35,7 +37,9 @@ class MatrixCapabilityUploadFile implements MatrixWidgetCapability {
       Log.d("Upload finished!");
 
       return message.createResponseObject(
-          data: {}, response: {"content_uri": result.toString()});
+        data: {},
+        response: {"content_uri": result.toString()},
+      );
     } else {
       return message.createResponseError(message: "Invalid message");
     }

@@ -122,7 +122,8 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
       url = Uri.encodeFull(url);
 
-      result.add(MatrixUserWidgetInfo(
+      result.add(
+        MatrixUserWidgetInfo(
           id: id,
           name: name,
           stateKey: s.key,
@@ -130,7 +131,9 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
           type: type,
           roomId: room.identifier,
           event: s.value,
-          icon: icon));
+          icon: icon,
+        ),
+      );
     }
 
     return result;
@@ -141,8 +144,9 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
     WidgetComponent.currentSessions.add(runner);
 
-    runner.onClosed
-        .listen((_) => WidgetComponent.currentSessions.remove(runner));
+    runner.onClosed.listen(
+      (_) => WidgetComponent.currentSessions.remove(runner),
+    );
   }
 
   @override
@@ -172,7 +176,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       return const [
         WidgetHostType.childProcess,
         WidgetHostType.embedded,
-        WidgetHostType.remoteHttpClient
+        WidgetHostType.remoteHttpClient,
       ];
     }
 
@@ -196,8 +200,11 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
 
   @override
   Future<void> openWidget(
-      UserWidgetInfo widget, Room room, BuildContext context,
-      {WidgetHostType? type}) async {
+    UserWidgetInfo widget,
+    Room room,
+    BuildContext context, {
+    WidgetHostType? type,
+  }) async {
     ErrorUtils.tryRun(context, () async {
       var info = widget as MatrixUserWidgetInfo;
       var url = Uri.encodeFull(info.url);
@@ -209,8 +216,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         "\$matrix_display_name": room.client.self!.displayName,
         "\$org.matrix.msc3819.matrix_device_id":
             (room.client as MatrixClient).matrixClient.deviceID!,
-        "\$org.matrix.msc4039.matrix_base_url":
-            (room.client as MatrixClient).matrixClient.baseUri.toString(),
+        "\$org.matrix.msc4039.matrix_base_url": (room.client as MatrixClient)
+            .matrixClient
+            .baseUri
+            .toString(),
         "\$chat.commet.color_scheme": Uri.encodeComponent(colorScheme),
         "\$org.matrix.msc2873.client_theme":
             Theme.of(context).brightness == Brightness.light ? "light" : "dark",
@@ -225,16 +234,17 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
       var uri = Uri.parse(url);
 
       uri = Uri(
-          scheme: uri.scheme,
-          host: uri.host,
-          port: uri.port,
-          path: uri.path,
-          fragment: uri.fragment.isEmpty ? null : uri.fragment,
-          queryParameters: {
-            ...uri.queryParameters,
-            "parentUrl": "commet://widget",
-            "widgetId": info.id,
-          });
+        scheme: uri.scheme,
+        host: uri.host,
+        port: uri.port,
+        path: uri.path,
+        fragment: uri.fragment.isEmpty ? null : uri.fragment,
+        queryParameters: {
+          ...uri.queryParameters,
+          "parentUrl": "commet://widget",
+          "widgetId": info.id,
+        },
+      );
 
       url = uri.toString();
 
@@ -258,49 +268,66 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
           }
 
           uri = Uri(
-              scheme: uri.scheme,
-              host: uri.host,
-              port: uri.port,
-              path: uri.path,
-              fragment: uri.fragment.isEmpty ? null : uri.fragment,
-              queryParameters: {
-                ...uri.queryParameters,
-                "parentUrl": server == null
-                    ? "http://localhost/widget"
-                    : "http://localhost:${server.port}",
-                "widgetId": info.id,
-              });
+            scheme: uri.scheme,
+            host: uri.host,
+            port: uri.port,
+            path: uri.path,
+            fragment: uri.fragment.isEmpty ? null : uri.fragment,
+            queryParameters: {
+              ...uri.queryParameters,
+              "parentUrl": server == null
+                  ? "http://localhost/widget"
+                  : "http://localhost:${server.port}",
+              "widgetId": info.id,
+            },
+          );
 
           url = uri.toString();
 
-          await createEmbeddedWidget(url, info, widget, room, context,
-              server: server);
+          await createEmbeddedWidget(
+            url,
+            info,
+            widget,
+            room,
+            context,
+            server: server,
+          );
           return;
         case WidgetHostType.childProcess:
           await spawnChildProcess(url, room, widget);
           return;
         case WidgetHostType.remoteHttpClient:
-          await createRemoteHttpWidgetRunner(url, room, widget,
-              useInsecureHttp: false, allowRemoteConnection: true);
+          await createRemoteHttpWidgetRunner(
+            url,
+            room,
+            widget,
+            useInsecureHttp: false,
+            allowRemoteConnection: true,
+          );
           return;
         case WidgetHostType.externalBrowser:
-          await createRemoteHttpWidgetRunner(url, room, widget,
-              launchBrowser: true,
-              useInsecureHttp: true,
-              allowRemoteConnection: false);
+          await createRemoteHttpWidgetRunner(
+            url,
+            room,
+            widget,
+            launchBrowser: true,
+            useInsecureHttp: true,
+            allowRemoteConnection: false,
+          );
           return;
         case WidgetHostType.androidActivity:
           uri = Uri(
-              scheme: uri.scheme,
-              host: uri.host,
-              port: uri.port,
-              path: uri.path,
-              fragment: uri.fragment.isEmpty ? null : uri.fragment,
-              queryParameters: {
-                ...uri.queryParameters,
-                "parentUrl": "http://localhost/widget",
-                "widgetId": info.id,
-              });
+            scheme: uri.scheme,
+            host: uri.host,
+            port: uri.port,
+            path: uri.path,
+            fragment: uri.fragment.isEmpty ? null : uri.fragment,
+            queryParameters: {
+              ...uri.queryParameters,
+              "parentUrl": "http://localhost/widget",
+              "widgetId": info.id,
+            },
+          );
 
           url = uri.toString();
           createAndroidActivityWidget(url, widget, room, context);
@@ -309,16 +336,19 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     });
   }
 
-  Future<void> createAndroidActivityWidget(String url,
-      MatrixUserWidgetInfo info, Room room, BuildContext context) async {
+  Future<void> createAndroidActivityWidget(
+    String url,
+    MatrixUserWidgetInfo info,
+    Room room,
+    BuildContext context,
+  ) async {
     var receiveSocketPath = await AppConfig.getWidgetSocketPath();
 
     var file = File(receiveSocketPath);
 
-    var bytes =
-        (await rootBundle.load("assets/data/widget_runner_android.html"))
-            .buffer
-            .asUint8List();
+    var bytes = (await rootBundle.load(
+      "assets/data/widget_runner_android.html",
+    )).buffer.asUint8List();
 
     var text = Utf8Decoder().convert(bytes);
 
@@ -327,8 +357,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         .asUint8List();
     var scriptText = Utf8Decoder().convert(scriptBytes);
 
-    text =
-        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+    text = text.replaceAll(
+      "\$RUNNER_PAGE_TITLE",
+      "Commet Widget | ${info.name}",
+    );
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
     text = text.replaceAll("\$WIDGET_ID", info.id);
@@ -352,23 +384,28 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     });
 
     var runner = MatrixWidgetAndroidRunner(
-        room: room as MatrixRoom,
-        widgetId: info.id,
-        client: room.client as MatrixClient,
-        info: info,
-        socket: server,
-        context: context);
+      room: room as MatrixRoom,
+      widgetId: info.id,
+      client: room.client as MatrixClient,
+      info: info,
+      socket: server,
+      context: context,
+    );
 
     registerRunner(runner);
   }
 
-  Future<void> createEmbeddedWidget(String url, MatrixUserWidgetInfo info,
-      MatrixUserWidgetInfo widget, Room room, BuildContext context,
-      {HttpServer? server}) async {
-    var bytes =
-        (await rootBundle.load("assets/data/widget_runner_embedded.html"))
-            .buffer
-            .asUint8List();
+  Future<void> createEmbeddedWidget(
+    String url,
+    MatrixUserWidgetInfo info,
+    MatrixUserWidgetInfo widget,
+    Room room,
+    BuildContext context, {
+    HttpServer? server,
+  }) async {
+    var bytes = (await rootBundle.load(
+      "assets/data/widget_runner_embedded.html",
+    )).buffer.asUint8List();
 
     var text = Utf8Decoder().convert(bytes);
 
@@ -377,8 +414,10 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         .asUint8List();
     var scriptText = Utf8Decoder().convert(scriptBytes);
 
-    text =
-        text.replaceAll("\$RUNNER_PAGE_TITLE", "Commet Widget | ${info.name}");
+    text = text.replaceAll(
+      "\$RUNNER_PAGE_TITLE",
+      "Commet Widget | ${info.name}",
+    );
 
     text = text.replaceAll("\$IFRAME_URL", url.toString());
 
@@ -411,46 +450,56 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     });
 
     var builtWidget = MatrixWidgetInappwebviewRunnerWidget(
-        info: info,
-        widgetId: widget.id,
-        initialPageData: text,
-        onExitController: onExitController,
-        room: room as MatrixRoom,
-        server: server,
-        component: this);
+      info: info,
+      widgetId: widget.id,
+      initialPageData: text,
+      onExitController: onExitController,
+      room: room as MatrixRoom,
+      server: server,
+      component: this,
+    );
 
     var window = OverlayWindow(
-        widget: builtWidget,
-        title: info.name,
-        onClose: onExitController.stream);
+      widget: builtWidget,
+      title: info.name,
+      onClose: onExitController.stream,
+    );
 
     OverlayWindowsManager.of(context).addWindow(window);
   }
 
   Future<void> spawnChildProcess(
-      String url, Room room, MatrixUserWidgetInfo widget) async {
+    String url,
+    Room room,
+    MatrixUserWidgetInfo widget,
+  ) async {
     var exe = Platform.resolvedExecutable;
-    var process = await Process.start(
-      exe,
-      ['--widget_runner', '--title="commet | Widget Runner"', '--url=${url}'],
-    );
+    var process = await Process.start(exe, [
+      '--widget_runner',
+      '--title="commet | Widget Runner"',
+      '--url=${url}',
+    ]);
 
     var runner = MatrixUserWidgetSubprocessRunner(
-        process: process,
-        room: room as MatrixRoom,
-        context: navigator.currentContext!,
-        widgetId: widget.id,
-        info: widget,
-        client: room.client as MatrixClient);
+      process: process,
+      room: room as MatrixRoom,
+      context: navigator.currentContext!,
+      widgetId: widget.id,
+      info: widget,
+      client: room.client as MatrixClient,
+    );
 
     registerRunner(runner);
   }
 
   Future<void> createRemoteHttpWidgetRunner(
-      String url, Room room, MatrixUserWidgetInfo widget,
-      {bool launchBrowser = false,
-      bool useInsecureHttp = false,
-      bool allowRemoteConnection = false}) async {
+    String url,
+    Room room,
+    MatrixUserWidgetInfo widget, {
+    bool launchBrowser = false,
+    bool useInsecureHttp = false,
+    bool allowRemoteConnection = false,
+  }) async {
     final info = NetworkInfo();
 
     var ip = await info.getWifiIP();
@@ -482,28 +531,30 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     Log.i("Hosted server: ${ip}");
 
     var runner = MatrixUserWidgetRemoteHttpRunner(
-        room: room as MatrixRoom,
-        widgetId: widget.id,
-        client: client,
-        url: url,
-        info: widget,
-        server: server,
-        allowRemoteConnection: allowRemoteConnection,
-        launchBrowser: launchBrowser,
-        context: navigator.currentContext!,
-        useInsecureHttp: useInsecureHttp,
-        hostName: ip!);
+      room: room as MatrixRoom,
+      widgetId: widget.id,
+      client: client,
+      url: url,
+      info: widget,
+      server: server,
+      allowRemoteConnection: allowRemoteConnection,
+      launchBrowser: launchBrowser,
+      context: navigator.currentContext!,
+      useInsecureHttp: useInsecureHttp,
+      hostName: ip!,
+    );
 
     registerRunner(runner);
   }
 
   @override
-  Future<void> addWidget(
-      {required Uri url,
-      required Room room,
-      Uri? iconImageUrl,
-      String? widgetType,
-      String? widgetName}) async {
+  Future<void> addWidget({
+    required Uri url,
+    required Room room,
+    Uri? iconImageUrl,
+    String? widgetType,
+    String? widgetName,
+  }) async {
     var uuid = const Uuid();
     var id = uuid.v4();
 
@@ -523,16 +574,24 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     }
 
     await client.matrixClient.setRoomStateWithKey(
-        room.identifier, "im.vector.modular.widgets", id, content);
+      room.identifier,
+      "im.vector.modular.widgets",
+      id,
+      content,
+    );
   }
 
   @override
-  Future<void> removeWidget(
-      {required UserWidgetInfo widget, required Room room}) async {
+  Future<void> removeWidget({
+    required UserWidgetInfo widget,
+    required Room room,
+  }) async {
     await client.matrixClient.setRoomStateWithKey(
-        room.identifier,
-        "im.vector.modular.widgets",
-        (widget as MatrixUserWidgetInfo).stateKey, {});
+      room.identifier,
+      "im.vector.modular.widgets",
+      (widget as MatrixUserWidgetInfo).stateKey,
+      {},
+    );
   }
 
   @override

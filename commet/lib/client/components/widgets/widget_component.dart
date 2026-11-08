@@ -48,10 +48,7 @@ abstract class WidgetTransceiver {
   Stream<Uint8List> get onReceived;
 }
 
-enum WidgetMessageDirection {
-  incoming,
-  outgoing,
-}
+enum WidgetMessageDirection { incoming, outgoing }
 
 abstract class WidgetMessageTransport {
   Future<Map<String, dynamic>> send(Map<String, dynamic> msg);
@@ -64,8 +61,10 @@ abstract class WidgetMessageTransport {
 abstract class WidgetEventHandler {
   String generateRequestId();
 
-  Map<String, dynamic> generateToWidgetEvent(
-      {required String action, required Map<String, dynamic> data});
+  Map<String, dynamic> generateToWidgetEvent({
+    required String action,
+    required Map<String, dynamic> data,
+  });
 }
 
 abstract class WidgetRunner<T, R> {
@@ -95,11 +94,16 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
 
   Stream<void> get onWidgetsChanged;
 
-  static NotifyingList<WidgetRunner> currentSessions =
-      NotifyingList.empty(growable: true);
+  static NotifyingList<WidgetRunner> currentSessions = NotifyingList.empty(
+    growable: true,
+  );
 
-  static void runWidget(Room room, BuildContext context, UserWidgetInfo data,
-      {WidgetHostType? type}) async {
+  static void runWidget(
+    Room room,
+    BuildContext context,
+    UserWidgetInfo data, {
+    WidgetHostType? type,
+  }) async {
     var widgetComponent = room.client.getComponent<WidgetComponent>();
 
     for (var session in WidgetComponent.currentSessions) {
@@ -111,13 +115,15 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
     }
 
     if (!preferences.getWidgetAllowed(room.client.identifier, data.namespace)) {
-      var confirmed = await AdaptiveDialog.confirmationWithOptions(context,
-          title: "Widget",
-          showRememberChoice: true,
-          defaultRememberSetting: true,
-          prompt:
-              """Open `${Uri.parse(data.url).authority}`?\n\n'**${data.name}**' was added by `${data.senderId}`""",
-          confirmationText: "Open Widget");
+      var confirmed = await AdaptiveDialog.confirmationWithOptions(
+        context,
+        title: "Widget",
+        showRememberChoice: true,
+        defaultRememberSetting: true,
+        prompt:
+            """Open `${Uri.parse(data.url).authority}`?\n\n'**${data.name}**' was added by `${data.senderId}`""",
+        confirmationText: "Open Widget",
+      );
 
       if (confirmed?.value != true) {
         return;
@@ -125,7 +131,10 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
 
       if (confirmed?.remember == true) {
         preferences.setWidgetAllowed(
-            room.client.identifier, data.namespace, true);
+          room.client.identifier,
+          data.namespace,
+          true,
+        );
       }
     }
     widgetComponent?.openWidget(data, room, context, type: type);
@@ -139,10 +148,15 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
     String? widgetName,
   });
 
-  Future<void> removeWidget(
-      {required UserWidgetInfo widget, required Room room});
+  Future<void> removeWidget({
+    required UserWidgetInfo widget,
+    required Room room,
+  });
 
   Future<void> openWidget(
-      UserWidgetInfo widget, Room room, BuildContext context,
-      {WidgetHostType? type});
+    UserWidgetInfo widget,
+    Room room,
+    BuildContext context, {
+    WidgetHostType? type,
+  });
 }

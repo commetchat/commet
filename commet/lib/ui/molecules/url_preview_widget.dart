@@ -50,41 +50,42 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ConstrainedBox(
-                      constraints:
-                          const BoxConstraints(maxWidth: 300, maxHeight: 240),
-                      child: widget.data == null
-                          ? buildLoadingDisplay()
-                          : Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Align(
-                                    alignment: Alignment.topLeft,
-                                    child: body(context)),
-                                if (hasBody)
-                                  const SizedBox(
-                                    width: 10,
-                                    height: 10,
-                                  ),
-                                if (widget.data!.image != null &&
-                                    widget.data?.video == null)
-                                  Flexible(child: image()),
-                                if (widget.data!.video != null)
-                                  MessageAttachment(
-                                    previewMedia: true,
-                                    widget.data!.video!,
-                                    constrainSize: false,
-                                  )
-                              ],
-                            ),
-                    )
-                  ]),
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 300,
+                      maxHeight: 240,
+                    ),
+                    child: widget.data == null
+                        ? buildLoadingDisplay()
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: body(context),
+                              ),
+                              if (hasBody)
+                                const SizedBox(width: 10, height: 10),
+                              if (widget.data!.image != null &&
+                                  widget.data?.video == null)
+                                Flexible(child: image()),
+                              if (widget.data!.video != null)
+                                MessageAttachment(
+                                  previewMedia: true,
+                                  widget.data!.video!,
+                                  constrainSize: false,
+                                ),
+                            ],
+                          ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -110,40 +111,42 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
                       height: 14,
                       width: titleWidth,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4), color: color),
+                        borderRadius: BorderRadius.circular(4),
+                        color: color,
+                      ),
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Container(
                       height: 10,
                       width: bodyWidth1,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4), color: color),
+                        borderRadius: BorderRadius.circular(4),
+                        color: color,
+                      ),
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
+                    const SizedBox(height: 5),
                     Container(
                       height: 10,
                       width: bodyWidth2,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4), color: color),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    ClipRRect(
                         borderRadius: BorderRadius.circular(4),
-                        child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                maxHeight: 180, maxWidth: 300),
-                            child: Container(
-                              color: color,
-                            ))),
+                        color: color,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxHeight: 180,
+                          maxWidth: 300,
+                        ),
+                        child: Container(color: color),
+                      ),
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -201,9 +204,9 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
                 maxLines: 2,
                 color: Theme.of(context).colorScheme.secondary,
                 overflow: TextOverflow.ellipsis,
-              )
+              ),
           ],
-        )
+        ),
       ],
     );
   }

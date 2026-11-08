@@ -7,7 +7,8 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class WebrtcAndroidScreencaptureSource implements ScreenCaptureSource {
   static Future<ScreenCaptureSource?> getCaptureSource(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     if (PlatformUtils.isAndroid) {
       final permission = await Helper.requestCapturePermission();
       if (permission == false) {
@@ -23,13 +24,16 @@ class WebrtcAndroidScreencaptureSource implements ScreenCaptureSource {
             notificationTitle: 'Screen Sharing',
             notificationText: 'Commet is sharing the screen.',
             notificationImportance: AndroidNotificationImportance.normal,
-            notificationIcon:
-                AndroidResource(name: 'notification_icon', defType: 'mipmap'),
+            notificationIcon: AndroidResource(
+              name: 'notification_icon',
+              defType: 'mipmap',
+            ),
           );
 
           if (!isRetry) {
             hasPermissions = await FlutterBackground.initialize(
-                androidConfig: androidConfig);
+              androidConfig: androidConfig,
+            );
           }
           if (hasPermissions &&
               !FlutterBackground.isBackgroundExecutionEnabled) {
@@ -37,8 +41,10 @@ class WebrtcAndroidScreencaptureSource implements ScreenCaptureSource {
           }
         } catch (e) {
           if (!isRetry) {
-            return await Future<void>.delayed(const Duration(seconds: 1),
-                () => requestBackgroundPermission(true));
+            return await Future<void>.delayed(
+              const Duration(seconds: 1),
+              () => requestBackgroundPermission(true),
+            );
           }
           Log.e('could not publish video: $e');
         }

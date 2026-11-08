@@ -24,7 +24,7 @@ enum SidePanelState {
   pinnedMessages,
   calendar,
   widgets,
-  nothing
+  nothing,
 }
 
 class RoomSidePanel extends StatefulWidget {
@@ -77,10 +77,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   Widget build(BuildContext context) {
     Widget result = buildPanelContent(context);
 
-    result = Material(
-      color: Colors.transparent,
-      child: result,
-    );
+    result = Material(color: Colors.transparent, child: result);
 
     if (widget.builder != null) {
       result = widget.builder!.call(state, result);
@@ -111,9 +108,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       case SidePanelState.calendar:
         return buildCalendar();
       case SidePanelState.nothing:
-        return SizedBox(
-          width: 0,
-        );
+        return SizedBox(width: 0);
       case SidePanelState.widgets:
         return buildWidgets();
     }
@@ -146,7 +141,8 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
           RoomQuickAccessMenuViewMobile(
             room: widget.state.currentRoom!,
             key: ValueKey(
-                "quick_access_menu_${widget.state.currentRoom!.localId}"),
+              "quick_access_menu_${widget.state.currentRoom!.localId}",
+            ),
           ),
         Flexible(
           child: Padding(
@@ -173,7 +169,8 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
                   widget.state.currentRoom!,
                   threadId: currentThreadId,
                   key: ValueKey(
-                      "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+                    "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId",
+                  ),
                 ),
                 Align(
                   alignment: Alignment.topRight,
@@ -196,17 +193,18 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   Widget buildSearch() {
     return SizedBox(
-        width: MediaQuery.of(context).desktop ? 300 : null,
-        child: RoomEventSearchWidget(
-          room: widget.state.currentRoom!,
-          onEventClicked: (eventId) {
-            EventBus.jumpToEvent.add(eventId);
-            EventBus.focusTimeline.add(null);
-          },
-          close: () => setState(() {
-            state = SidePanelState.defaultView;
-          }),
-        ));
+      width: MediaQuery.of(context).desktop ? 300 : null,
+      child: RoomEventSearchWidget(
+        room: widget.state.currentRoom!,
+        onEventClicked: (eventId) {
+          EventBus.jumpToEvent.add(eventId);
+          EventBus.focusTimeline.add(null);
+        },
+        close: () => setState(() {
+          state = SidePanelState.defaultView;
+        }),
+      ),
+    );
   }
 
   void onStartSearch(void event) {
@@ -241,26 +239,28 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   Widget buildPinnedMessages() {
     return SizedBox(
-        width: MediaQuery.of(context).desktop ? 300 : null,
-        child: Column(
-          children: [
-            if (MediaQuery.of(context).mobile)
-              RoomQuickAccessMenuViewMobile(
-                room: widget.state.currentRoom!,
-                key: ValueKey(
-                    "quick_access_menu_${widget.state.currentRoom!.localId}"),
-              ),
-            Expanded(
-              child: RoomPinnedMessagesWidget(
-                room: widget.state.currentRoom!,
-                onEventClicked: (eventId) {
-                  EventBus.jumpToEvent.add(eventId);
-                  EventBus.focusTimeline.add(null);
-                },
+      width: MediaQuery.of(context).desktop ? 300 : null,
+      child: Column(
+        children: [
+          if (MediaQuery.of(context).mobile)
+            RoomQuickAccessMenuViewMobile(
+              room: widget.state.currentRoom!,
+              key: ValueKey(
+                "quick_access_menu_${widget.state.currentRoom!.localId}",
               ),
             ),
-          ],
-        ));
+          Expanded(
+            child: RoomPinnedMessagesWidget(
+              room: widget.state.currentRoom!,
+              onEventClicked: (eventId) {
+                EventBus.jumpToEvent.add(eventId);
+                EventBus.focusTimeline.add(null);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildCalendar() {
@@ -278,35 +278,40 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
             RoomQuickAccessMenuViewMobile(
               room: widget.state.currentRoom!,
               key: ValueKey(
-                  "quick_access_menu_${widget.state.currentRoom!.localId}"),
+                "quick_access_menu_${widget.state.currentRoom!.localId}",
+              ),
             ),
-          if (MediaQuery.of(context).mobile)
-            Divider(
-              height: 2,
-            ),
-          Expanded(child: LayoutBuilder(builder: (context, constraints) {
-            var newQuery = query.copyWith(
-              size: Size(constraints.maxWidth, constraints.maxHeight),
-            );
+          if (MediaQuery.of(context).mobile) Divider(height: 2),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                var newQuery = query.copyWith(
+                  size: Size(constraints.maxWidth, constraints.maxHeight),
+                );
 
-            return Container(
-              color: Theme.of(context).colorScheme.surface,
-              child: ScaledSafeArea(
-                top: false,
-                bottom: true,
-                child: SizedBox(
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight,
-                    child: MediaQuery(
+                return Container(
+                  color: Theme.of(context).colorScheme.surface,
+                  child: ScaledSafeArea(
+                    top: false,
+                    bottom: true,
+                    child: SizedBox(
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight,
+                      child: MediaQuery(
                         data: newQuery,
                         child: CalendarWidgetView(
-                            calendar: calendar!.calendar!,
-                            watermark: false,
-                            useMobileLayout: MediaQuery.of(context).mobile,
-                            autoDisposeCalendar: false))),
-              ),
-            );
-          })),
+                          calendar: calendar!.calendar!,
+                          watermark: false,
+                          useMobileLayout: MediaQuery.of(context).mobile,
+                          autoDisposeCalendar: false,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -314,18 +319,20 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   Widget buildWidgets() {
     return SizedBox(
-        width: MediaQuery.of(context).desktop ? 250 : null,
-        child: Column(
-          children: [
-            if (MediaQuery.of(context).mobile)
-              RoomQuickAccessMenuViewMobile(
-                room: widget.state.currentRoom!,
-                key: ValueKey(
-                    "quick_access_menu_${widget.state.currentRoom!.localId}"),
+      width: MediaQuery.of(context).desktop ? 250 : null,
+      child: Column(
+        children: [
+          if (MediaQuery.of(context).mobile)
+            RoomQuickAccessMenuViewMobile(
+              room: widget.state.currentRoom!,
+              key: ValueKey(
+                "quick_access_menu_${widget.state.currentRoom!.localId}",
               ),
-            Expanded(child: RoomWidgetsView(widget.state.currentRoom!)),
-          ],
-        ));
+            ),
+          Expanded(child: RoomWidgetsView(widget.state.currentRoom!)),
+        ],
+      ),
+    );
   }
 
   void onToggleSidePanel(void event) {

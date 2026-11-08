@@ -3,15 +3,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ExpandingDropTarget<T extends Object> extends StatefulWidget {
-  const ExpandingDropTarget(
-      {this.position,
-      this.min = 70,
-      this.max = 200,
-      this.height = 30,
-      super.key,
-      this.onAcceptWithDetails,
-      this.distanceBasedHeight = true,
-      required this.onWillAcceptWithDetails});
+  const ExpandingDropTarget({
+    this.position,
+    this.min = 70,
+    this.max = 200,
+    this.height = 30,
+    super.key,
+    this.onAcceptWithDetails,
+    this.distanceBasedHeight = true,
+    required this.onWillAcceptWithDetails,
+  });
   final Offset? position;
   final double min;
   final double max;
@@ -37,8 +38,13 @@ class _ExpandingDropTargetState<T extends Object>
   }
 
   double remapRange(
-      double value, double low1, double high1, double low2, double high2,
-      {bool clamp = true}) {
+    double value,
+    double low1,
+    double high1,
+    double low2,
+    double high2, {
+    bool clamp = true,
+  }) {
     if (clamp) {
       value = value.clamp(low1, high1);
     }
@@ -67,8 +73,10 @@ class _ExpandingDropTargetState<T extends Object>
       dragPosition = widget.position;
 
       if (dragPosition != null) {
-        var dist = min((position.dy - dragPosition!.dy).abs(),
-            ((position.dy + box!.size.height) - dragPosition!.dy).abs());
+        var dist = min(
+          (position.dy - dragPosition!.dy).abs(),
+          ((position.dy + box!.size.height) - dragPosition!.dy).abs(),
+        );
 
         distance = remapRange(dist, widget.min, widget.max, 1, 0);
       } else {
@@ -104,18 +112,20 @@ class _ExpandingDropTargetState<T extends Object>
         key: key,
         height: widget.distanceBasedHeight
             ? distance == null
-                ? 0
-                : (distance! * widget.height)
+                  ? 0
+                  : (distance! * widget.height)
             : widget.height,
         width: 50,
         child: Container(
           decoration: BoxDecoration(
-              border: BoxBorder.all(
-                  color: isInside
-                      ? ColorScheme.of(context).secondary
-                      : Colors.transparent,
-                  width: 3),
-              borderRadius: BorderRadius.circular(8)),
+            border: BoxBorder.all(
+              color: isInside
+                  ? ColorScheme.of(context).secondary
+                  : Colors.transparent,
+              width: 3,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
       ),
     );

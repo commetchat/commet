@@ -28,15 +28,18 @@ class _CustomSafeAreaState extends State<CustomSafeArea> {
     var query = MediaQuery.of(context);
 
     return MediaQuery(
-        data: query.copyWith(
-            viewPadding: EdgeInsets.fromLTRB(
-                0,
-                0,
-                0,
-                isTextFieldFocused
-                    ? preferences.customOnscreenKeyboardViewOffset.value
-                    : 0)),
-        child: widget.child);
+      data: query.copyWith(
+        viewPadding: EdgeInsets.fromLTRB(
+          0,
+          0,
+          0,
+          isTextFieldFocused
+              ? preferences.customOnscreenKeyboardViewOffset.value
+              : 0,
+        ),
+      ),
+      child: widget.child,
+    );
   }
 
   void onTextFieldFocused(bool event) {

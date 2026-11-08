@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
@@ -12,10 +13,13 @@ class RoomOpenArgs {
   bool bypassSpecialRoomTypes;
   bool openInSpace;
 
-  RoomOpenArgs(this.roomId, this.clientId,
-      {this.bypassSpecialRoomTypes = false,
-      this.threadId,
-      this.openInSpace = true});
+  RoomOpenArgs(
+    this.roomId,
+    this.clientId, {
+    this.bypassSpecialRoomTypes = false,
+    this.threadId,
+    this.openInSpace = true,
+  });
 }
 
 class EventBus {
@@ -23,15 +27,22 @@ class EventBus {
   static StreamController<RoomOpenArgs> openRoom =
       StreamController<RoomOpenArgs>.broadcast();
 
-  static void doOpenRoom(String roomId,
-      {String? clientId,
-      bool bypassSpecialRoomType = false,
-      String? threadId,
-      bool openInSpace = true}) {
-    openRoom.add(RoomOpenArgs(roomId, clientId,
+  static void doOpenRoom(
+    String roomId, {
+    String? clientId,
+    bool bypassSpecialRoomType = false,
+    String? threadId,
+    bool openInSpace = true,
+  }) {
+    openRoom.add(
+      RoomOpenArgs(
+        roomId,
+        clientId,
         threadId: threadId,
         bypassSpecialRoomTypes: bypassSpecialRoomType,
-        openInSpace: openInSpace));
+        openInSpace: openInSpace,
+      ),
+    );
   }
 
   /// First string is user id, Second string is client id, third string is context room

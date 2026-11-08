@@ -17,10 +17,10 @@ class _UpdateInstalledDialogState extends State<UpdateInstalledDialog> {
   MessageEffectConfetti? confetti;
 
   String get updateInstalledContent => Intl.message(
-      "Thank you for updating! Please consider donating to support the project so we can continue to deliver great updates!",
-      desc:
-          "Content for the dialog which is shown when an update has been installed",
-      name: "updateInstalledContent");
+    "Thank you for updating! Please consider donating to support the project so we can continue to deliver great updates!",
+    desc: "Content for the dialog which is shown when an update has been installed",
+    name: "updateInstalledContent",
+  );
 
   @override
   void initState() {
@@ -41,68 +41,70 @@ class _UpdateInstalledDialogState extends State<UpdateInstalledDialog> {
       children: [
         if (confetti?.system != null)
           SizedBox(
-              width: 500,
-              height: 200,
-              child: ParticleSystemRenderer(system: confetti!.system!)),
-        SizedBox(
             width: 500,
-            child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 12,
-                    children: [
-                      tiamat.Text.label(updateInstalledContent),
-                      Material(
-                          clipBehavior: Clip.antiAlias,
-                          color: ColorScheme.of(context).surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
+            height: 200,
+            child: ParticleSystemRenderer(system: confetti!.system!),
+          ),
+        SizedBox(
+          width: 500,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                tiamat.Text.label(updateInstalledContent),
+                Material(
+                  clipBehavior: Clip.antiAlias,
+                  color: ColorScheme.of(context).surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
 
-                              widget.onDonateTapped?.call();
-                            },
-                            child: SizedBox(
-                              height: 60,
-                              child: Center(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  spacing: 8,
-                                  children: [
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.redAccent,
-                                    ),
-                                    tiamat.Text.label(
-                                        DesktopSettingsPageState.promptDonate),
-                                  ],
-                                ),
-                              ),
+                      widget.onDonateTapped?.call();
+                    },
+                    child: SizedBox(
+                      height: 60,
+                      child: Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 8,
+                          children: [
+                            Icon(Icons.favorite, color: Colors.redAccent),
+                            tiamat.Text.label(
+                              DesktopSettingsPageState.promptDonate,
                             ),
-                          )),
-                      Material(
-                          clipBehavior: Clip.antiAlias,
-                          color: ColorScheme.of(context).surfaceContainerLow,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: SizedBox(
-                              height: 40,
-                              child: Center(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  spacing: 8,
-                                  children: [
-                                    tiamat.Text(CommonStrings.promptPoliteNo),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )),
-                    ])))
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Material(
+                  clipBehavior: Clip.antiAlias,
+                  color: ColorScheme.of(context).surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: SizedBox(
+                      height: 40,
+                      child: Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 8,
+                          children: [tiamat.Text(CommonStrings.promptPoliteNo)],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

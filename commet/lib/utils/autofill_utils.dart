@@ -8,8 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
 
 class AutofillUtils {
-  static List<AutofillSearchResult> search(String string, Client client,
-      {Room? room}) {
+  static List<AutofillSearchResult> search(
+    String string,
+    Client client, {
+    Room? room,
+  }) {
     List<AutofillSearchResult>? results;
 
     var firstChar = string.characters.first;
@@ -38,21 +41,27 @@ class AutofillUtils {
       return [];
     }
 
-    var fuzzy = Fuzzy<AutofillSearchResult>(results,
-        options: FuzzyOptions(keys: [
+    var fuzzy = Fuzzy<AutofillSearchResult>(
+      results,
+      options: FuzzyOptions(
+        keys: [
           WeightedKey(
-              name: "alternate",
-              getter: (obj) {
-                return obj.alternateSearchTerm ?? "";
-              },
-              weight: 1),
+            name: "alternate",
+            getter: (obj) {
+              return obj.alternateSearchTerm ?? "";
+            },
+            weight: 1,
+          ),
           WeightedKey(
-              name: "result",
-              getter: (result) {
-                return result.result;
-              },
-              weight: 1)
-        ]));
+            name: "result",
+            getter: (result) {
+              return result.result;
+            },
+            weight: 1,
+          ),
+        ],
+      ),
+    );
 
     return fuzzy.search(string, 20).map((e) {
       return e.item;
@@ -81,14 +90,17 @@ class AutofillUtils {
             .map((i) => i.senderId)
             .toSet();
 
-        results = recentUsers.map((i) {
-          var member = room.getMemberOrFallback(i);
-          return AutofillSearchResultAvatar(
-              member.displayName,
-              member.identifier,
-              member.avatar,
-              member.defaultColor) as AutofillSearchResult;
-        }).toList(growable: true);
+        results = recentUsers
+            .map((i) {
+              var member = room.getMemberOrFallback(i);
+              return AutofillSearchResultAvatar(
+                member.displayName,
+                member.identifier,
+                member.avatar,
+                member.defaultColor,
+              ) as AutofillSearchResult;
+            })
+            .toList(growable: true);
       }
     }
 
@@ -97,15 +109,27 @@ class AutofillUtils {
         .map((e) => room.getMemberOrFallback(e))
         .toList();
 
-    results.addAll(result
-        .map((e) => AutofillSearchResultAvatar(
-                e.displayName, e.identifier, e.avatar, e.defaultColor)
-            as AutofillSearchResult)
-        .toList(growable: true));
+    results.addAll(
+      result
+          .map(
+            (e) => AutofillSearchResultAvatar(
+              e.displayName,
+              e.identifier,
+              e.avatar,
+              e.defaultColor,
+            ) as AutofillSearchResult,
+          )
+          .toList(growable: true),
+    );
 
     if (room.permissions.canMentionRoom) {
-      results.add(AutofillSearchResult("@room", "@room",
-          alternateSearchTerm: "@everyone"));
+      results.add(
+        AutofillSearchResult(
+          "@room",
+          "@room",
+          alternateSearchTerm: "@everyone",
+        ),
+      );
     }
 
     return results;
@@ -113,8 +137,9 @@ class AutofillUtils {
 
   static List<AutofillSearchResult> searchRooms(String string, Room room) {
     var rooms = List<Room>.empty(growable: true);
-    var spaces = room.client.spaces
-        .where((element) => element.containsRoom(room.identifier));
+    var spaces = room.client.spaces.where(
+      (element) => element.containsRoom(room.identifier),
+    );
     for (var space in spaces) {
       for (var room in space.rooms) {
         if (!rooms.contains(room)) {
@@ -122,26 +147,33 @@ class AutofillUtils {
         }
       }
     }
-    var fuzzy = Fuzzy<Room>(rooms,
-        options: FuzzyOptions(keys: [
+    var fuzzy = Fuzzy<Room>(
+      rooms,
+      options: FuzzyOptions(
+        keys: [
           WeightedKey(
-              name: "displayName",
-              getter: (result) {
-                return result.displayName;
-              },
-              weight: 1)
-        ]));
+            name: "displayName",
+            getter: (result) {
+              return result.displayName;
+            },
+            weight: 1,
+          ),
+        ],
+      ),
+    );
 
     return fuzzy.search(string, 20).map((e) {
       return AutofillSearchResult(e.item.displayName, e.item.identifier);
     }).toList();
   }
 
-  static List<AutofillSearchResult> searchEmoticon(String string,
-      {int limit = 20,
-      required Client client,
-      Room? room,
-      double threshold = 0.2}) {
+  static List<AutofillSearchResult> searchEmoticon(
+    String string, {
+    int limit = 20,
+    required Client client,
+    Room? room,
+    double threshold = 0.2,
+  }) {
     List<EmoticonPack>? packs;
     if (room != null) {
       var emoticons = room.getComponent<RoomEmoticonComponent>();
@@ -156,23 +188,34 @@ class AutofillUtils {
     var result = List<AutofillSearchResultEmoticon>.empty(growable: true);
 
     for (var pack in packs) {
-      var fuzzy = Fuzzy<Emoticon>(pack.emoji,
-          options: FuzzyOptions(threshold: threshold, keys: [
+      var fuzzy = Fuzzy<Emoticon>(
+        pack.emoji,
+        options: FuzzyOptions(
+          threshold: threshold,
+          keys: [
             WeightedKey(
-                name: "shortcode",
-                getter: (obj) {
-                  return obj.shortcode ?? "";
-                },
-                weight: 1)
-          ]));
+              name: "shortcode",
+              getter: (obj) {
+                return obj.shortcode ?? "";
+              },
+              weight: 1,
+            ),
+          ],
+        ),
+      );
 
       var searchResult = fuzzy.search(string, limit);
 
-      result.addAll(searchResult.map((e) {
-        return AutofillSearchResultEmoticon(
-            e.item.shortcode!, e.item.slug, e.item,
-            score: e.score);
-      }));
+      result.addAll(
+        searchResult.map((e) {
+          return AutofillSearchResultEmoticon(
+            e.item.shortcode!,
+            e.item.slug,
+            e.item,
+            score: e.score,
+          );
+        }),
+      );
 
       if (result.length >= limit) {
         break;
@@ -197,12 +240,20 @@ class AutofillSearchResultAvatar extends AutofillSearchResult {
   Color fallbackColor;
 
   AutofillSearchResultAvatar(
-      super.result, super.slug, this.image, this.fallbackColor);
+    super.result,
+    super.slug,
+    this.image,
+    this.fallbackColor,
+  );
 }
 
 class AutofillSearchResultEmoticon extends AutofillSearchResult {
   Emoticon emoticon;
   double score;
-  AutofillSearchResultEmoticon(super.result, super.slug, this.emoticon,
-      {this.score = 0});
+  AutofillSearchResultEmoticon(
+    super.result,
+    super.slug,
+    this.emoticon, {
+    this.score = 0,
+  });
 }
