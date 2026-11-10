@@ -63,9 +63,14 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     int? limit = message.data.tryGet<int>("limit");
     String? from = message.data.tryGet<String>("from");
     String? to = message.data.tryGet<String>("to");
+    String? directionStr = message.data.tryGet<String>("direction");
 
     var requestEventType = eventType;
-
+    var direction = directionStr == "b"
+        ? Direction.b
+        : directionStr == "f"
+        ? Direction.f
+        : null;
     // if the room is encrypted, all events will use m.room.encrypted type, so filtering by type would fail here.
     // remember to filter out irrelevant events once receiving the response and decrypting!
     if (runner.room!.isE2EE) {
@@ -82,6 +87,7 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
             from: from,
             to: to,
             limit: limit,
+            dir: direction,
           );
 
       chunk = result.chunk;
@@ -96,6 +102,7 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
             from: from,
             to: to,
             limit: limit,
+            dir: direction,
           );
 
       chunk = result.chunk;
@@ -108,6 +115,7 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
         from: from,
         to: to,
         limit: limit,
+        dir: direction,
       );
 
       chunk = result.chunk;
