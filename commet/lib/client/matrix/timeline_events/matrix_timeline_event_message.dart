@@ -160,6 +160,13 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   }
 
   List<Attachment>? _parseAnyAttachments() {
+    // we were hitting some weird error when trying to load
+    // attachments before the message finished sending, not sure
+    // what changed in matrix sdk to cause this but this seemed to help
+    if (event.status.isSending) {
+      return null;
+    }
+
     String filename = event.content.containsKey("filename")
         ? event.content["filename"] as String
         : event.body;
