@@ -13,6 +13,21 @@ class UnicodeEmojiBuilder implements Builder {
     ],
   };
 
+  String? getShortcode(
+    Map<String, dynamic> shortCodes,
+    Map<String, dynamic> emoji,
+  ) {
+    String hexcode = emoji["hexcode"];
+
+    if (!shortCodes.containsKey(hexcode)) return null;
+
+    String shortcode = shortCodes[hexcode] is String
+        ? shortCodes[hexcode]
+        : shortCodes[hexcode].first;
+
+    return shortcode;
+  }
+
   @override
   Future<void> build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
@@ -27,22 +42,26 @@ class UnicodeEmojiBuilder implements Builder {
 
     String shortcodesString = await File("assets/emoji_data/shortcodes/en.json")
         .readAsString();
+
+    String shortcodesJoypixels = await File(
+      "assets/emoji_data/shortcodes/en_joypixels.json",
+    ).readAsString();
+
     Map<String, dynamic> shortCodes = jsonDecode(shortcodesString);
+    Map<String, dynamic> shortCodesJoyPixels = jsonDecode(shortcodesJoypixels);
 
     for (var e in data) {
       var emoji = e as Map<String, dynamic>;
 
       if (!emoji.containsKey("group")) continue;
 
-      String hexcode = emoji["hexcode"];
-      if (!shortCodes.containsKey(hexcode)) continue;
+      String? shortcode = getShortcode(shortCodesJoyPixels, emoji);
+      shortcode ??= getShortcode(shortCodes, emoji);
+
+      if (shortcode == null) continue;
 
       int group = emoji["group"];
       String unicode = emoji["emoji"];
-
-      String shortcode = shortCodes[hexcode] is String
-          ? shortCodes[hexcode]
-          : shortCodes[hexcode].first;
 
       if (!packs.containsKey(group)) {
         packs[group] = List.empty(growable: true);
