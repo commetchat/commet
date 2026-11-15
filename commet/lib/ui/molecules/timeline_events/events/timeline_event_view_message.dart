@@ -24,6 +24,7 @@ import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layou
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
@@ -45,6 +46,7 @@ class TimelineEventViewMessage extends StatefulWidget {
     this.onDoubleTapMessage,
     this.detailed = false,
     this.previewMedia = false,
+    this.ignoreBlockStatus = false,
     required this.initialIndex,
   });
 
@@ -59,6 +61,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   final bool detailed;
   final bool isThreadTimeline;
   final bool previewMedia;
+  final bool ignoreBlockStatus;
   final Function()? onReadReceiptsTapped;
   final Function()? onDoubleTapMessage;
 
@@ -95,6 +98,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   bool hasReactions = false;
   bool isInResponse = false;
   bool showSender = false;
+  bool senderBlocked = false;
   late String eventId;
   late String currentUserIdentifier;
   late DateTime sentTime;
@@ -144,9 +148,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       viaSenderName: viaSenderName,
       senderAvatar: senderAvatar,
       showSender: showSender,
-      formattedContent: formattedContent,
+      formattedContent: senderBlocked ? null : formattedContent,
       timestamp: timestampToString(sentTime),
       edited: edited,
+      senderBlocked: senderBlocked,
       isMentioningSelf:
           mentionsRoom || mentions.contains(room!.client.self!.identifier),
       onDoubleTapMessage: widget.onDoubleTapMessage,
@@ -263,17 +268,34 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       displayId = did;
     }
 
-    var sender = room!.getMemberOrFallback(event.senderId);
+    sentTime = event.originServerTs;
+    senderId = event.senderId;
+
+    if (room != null) {
+      if (widget.ignoreBlockStatus == false) {
+        senderBlocked = room.client.isUserBlocked(event.senderId);
+
+        if (!widget.ignoreBlockStatus && senderBlocked) {
+          senderName = CommonStrings.placeholderBlockedUser;
+          senderColor = Colors.grey;
+          senderAvatar = null;
+          body = "";
+          return;
+        }
+      }
+    }
+
     eventId = event.eventId;
 
-    senderId = sender.identifier;
+    var sender = room!.getMemberOrFallback(
+      event.senderId,
+      ignoreBlockStatus: widget.ignoreBlockStatus,
+    );
     senderName = sender.displayName;
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
 
     applyPerMessageProfile(event);
-
-    sentTime = event.originServerTs;
 
     var gifs = (widget.room ?? widget.timeline?.room)?.client
         .getComponent<GifComponent>();

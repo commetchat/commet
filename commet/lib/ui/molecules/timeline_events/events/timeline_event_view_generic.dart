@@ -147,6 +147,13 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
 
   void loadStateFromEvent(TimelineEvent event) {
     var room = widget.room ?? widget.timeline?.room;
+
+    if (room?.client.isUserBlocked(event.senderId) == true) {
+      text = "Event from blocked user";
+      icon = Icons.block;
+      return;
+    }
+
     if (event is! TimelineEventGeneric) {
       text = event.plainTextBody;
       icon = Icons.question_mark;

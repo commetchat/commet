@@ -23,6 +23,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
     this.edited = false,
     this.isMentioningSelf = false,
     this.avatarSize = 32,
+    this.senderBlocked = false,
     this.avatarBuilder,
     this.showSender = true,
     this.onDoubleTapMessage,
@@ -42,6 +43,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final bool showSender;
   final bool edited;
   final bool isMentioningSelf;
+  final bool senderBlocked;
   final String? timestamp;
   final Function()? onAvatarTapped;
   final Widget Function(Widget child)? avatarBuilder;
@@ -103,25 +105,31 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                               onDoubleTap: onDoubleTapMessage,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (formattedContent != null)
-                                    RepaintBoundary(child: formattedContent!),
-                                  if (edited)
-                                    tiamat.Text.labelLow(messageEditedMarker),
-                                  if (attachments != null) attachments!,
-                                  if (sticker != null) sticker!,
-                                  if (urlPreviews != null) urlPreviews!,
-                                  if (reactions != null)
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        0,
-                                        4,
-                                        0,
-                                        0,
-                                      ),
-                                      child: reactions!,
-                                    ),
-                                ],
+                                children: senderBlocked
+                                    ? [tiamat.Text.labelLow("Content hidden")]
+                                    : [
+                                        if (formattedContent != null)
+                                          RepaintBoundary(
+                                            child: formattedContent!,
+                                          ),
+                                        if (edited)
+                                          tiamat.Text.labelLow(
+                                            messageEditedMarker,
+                                          ),
+                                        if (attachments != null) attachments!,
+                                        if (sticker != null) sticker!,
+                                        if (urlPreviews != null) urlPreviews!,
+                                        if (reactions != null)
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              0,
+                                              4,
+                                              0,
+                                              0,
+                                            ),
+                                            child: reactions!,
+                                          ),
+                                      ],
                               ),
                             ),
                           ),

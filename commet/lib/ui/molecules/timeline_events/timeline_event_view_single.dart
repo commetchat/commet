@@ -9,11 +9,13 @@ class TimelineEventViewSingle extends StatelessWidget {
   const TimelineEventViewSingle({
     required this.room,
     required this.event,
+    this.ignoreBlockStatus = false,
     super.key,
   });
 
   final TimelineEvent event;
   final Room room;
+  final bool ignoreBlockStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class TimelineEventViewSingle extends StatelessWidget {
         initialIndex: 0,
         detailed: true,
         initialEvent: event,
+        ignoreBlockStatus: ignoreBlockStatus,
         previewMedia: room.shouldPreviewMedia,
       );
     if (type == TimelineEventWidgetDisplayType.generic)

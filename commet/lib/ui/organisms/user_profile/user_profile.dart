@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
@@ -12,6 +14,7 @@ import 'package:commet/ui/atoms/inherited_offstage.dart';
 import 'package:commet/ui/molecules/image_select_dialog.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:commet/utils/picker_utils.dart';
@@ -115,6 +118,8 @@ class _UserProfileState extends State<UserProfile> {
   List<String> pronouns = const [];
   List<ProfileBadge> badges = [];
 
+  StreamSubscription? sub;
+
   @override
   void initState() {
     super.initState();
@@ -123,9 +128,39 @@ class _UserProfileState extends State<UserProfile> {
     component.getProfile(widget.userId).then((value) async {
       await stateFromProfile(value);
     });
+
+    sub = EventBus.userBlockStatusChanged.stream.listen((id) {
+      if (isBlocked) {
+        stateFromProfile(null);
+      } else {
+        component.getProfile(widget.userId).then((value) async {
+          await stateFromProfile(value);
+        });
+      }
+    });
   }
 
+  bool get isBlocked => widget.client.isUserBlocked(widget.userId);
+
   Future<void> stateFromProfile(Profile? value) async {
+    if (isBlocked) {
+      setState(() {
+        theme = Theme.of(context);
+        profile = value;
+        avatar = null;
+        banner = null;
+        displayName = CommonStrings.placeholderBlockedUser;
+        timezone = null;
+        pronouns = [];
+        presence = null;
+        bioText = null;
+      });
+
+      return;
+    }
+
+    if (value != null) {}
+
     banner = value?.banner;
     avatar = value?.avatar;
 
@@ -223,7 +258,9 @@ class _UserProfileState extends State<UserProfile> {
 
     if (profile case ProfileWithBio p) {
       if (p.hasBio || bioText != null) {
-        bio = p.buildBio(context, theme!, overrideText: bioText);
+        if (!isBlocked) {
+          bio = p.buildBio(context, theme!, overrideText: bioText);
+        }
       }
     }
 
@@ -245,7 +282,7 @@ class _UserProfileState extends State<UserProfile> {
         width: widget.width,
         doSafeArea: widget.doSafeArea,
         maxBioHeight: widget.maxBioHeight,
-        showMessageButton: widget.showMessageButton,
+        showMessageButton: widget.showMessageButton && !isBlocked,
         isSelf: widget.client.self!.identifier == profile!.identifier,
         onMessageButtonClicked: openDirectMessage,
         onSetBanner: setBanner,
@@ -260,6 +297,7 @@ class _UserProfileState extends State<UserProfile> {
         editBadges: editBadges,
         bio: bio,
         setPetName: setPetName,
+        isBlocked: isBlocked,
         currentPetName: widget.client
             .getComponent<PetNameComponent>()
             ?.getPetName(widget.userId),
@@ -275,6 +313,8 @@ class _UserProfileState extends State<UserProfile> {
         clearStatus: clearStatus,
         shareCurrentTimezone: shareTimezone,
         pronouns: pronouns,
+        blockUser: blockUser,
+        unblockUser: unblockUser,
         hasColorOverride:
             widget.client.getComponent<UserColorComponent>()?.getColor(
               profile!.identifier,
@@ -622,5 +662,17 @@ class _UserProfileState extends State<UserProfile> {
     }
 
     print("Selected badges $selectedBadges");
+  }
+
+  Future<void> blockUser() async {
+    if (true == await AdaptiveDialog.confirmation(context)) {
+      await widget.client.blockUser(widget.userId);
+    }
+  }
+
+  Future<void> unblockUser() async {
+    if (true == await AdaptiveDialog.confirmation(context)) {
+      await widget.client.unblockUser(widget.userId);
+    }
   }
 }

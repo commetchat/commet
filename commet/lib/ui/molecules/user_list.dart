@@ -67,6 +67,28 @@ class RoomMemberList extends StatefulWidget {
               });
             },
           ),
+        if (!isSelf && !room.client.isUserBlocked(userId))
+          tiamat.ContextMenuItem(
+            text: "Block",
+            icon: Icons.block,
+            color: ColorScheme.of(context).error,
+            onPressed: () async {
+              if (true == await AdaptiveDialog.confirmation(context)) {
+                room.client.blockUser(userId);
+              }
+            },
+          ),
+        if (!isSelf && room.client.isUserBlocked(userId))
+          tiamat.ContextMenuItem(
+            text: "Unblock",
+            icon: Icons.block,
+            color: ColorScheme.of(context).error,
+            onPressed: () async {
+              if (true == await AdaptiveDialog.confirmation(context)) {
+                room.client.unblockUser(userId);
+              }
+            },
+          ),
         if (room.permissions.canKick && !isSelf)
           tiamat.ContextMenuItem(
             text: "Kick",

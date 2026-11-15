@@ -8,4 +8,6 @@ abstract class Member {
   String? get avatarId;
   ImageProvider? get avatar;
   Color get defaultColor;
+
+  bool get blocked;
 }

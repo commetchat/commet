@@ -144,6 +144,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       timeline.onChange.stream.listen(onEventChanged),
       timeline.onRemove.stream.listen(onEventRemoved),
       timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged),
+      EventBus.userBlockStatusChanged.stream.listen(onUserBlockStatusChanged),
       if (receipts != null)
         receipts.onReadReceiptsUpdated.listen(onReadReceiptUpdated),
     ];
@@ -718,6 +719,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       (state as TimelineEventViewWidget).update(index);
     } else {
       Log.w("Failed to get state");
+    }
+  }
+
+  void onUserBlockStatusChanged(void event) {
+    for (int index = 0; index < timeline.events.length; index++) {
+      onEventChanged(index);
     }
   }
 }
