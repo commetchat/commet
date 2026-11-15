@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
