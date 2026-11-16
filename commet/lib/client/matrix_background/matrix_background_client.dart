@@ -326,4 +326,10 @@ class MatrixBackgroundClient implements Client {
     // TODO: implement unblockUser
     throw UnimplementedError();
   }
+
+  @override
+  List<String> blockedUsers() {
+    // TODO: implement blockedUsers
+    throw UnimplementedError();
+  }
 }

@@ -25,7 +25,7 @@ class UserPanel extends material.StatefulWidget {
   final String userId;
   final Client client;
   final Member? initialMember;
-  final Room contextRoom;
+  final Room? contextRoom;
   final bool isDirectMessage;
   final void Function()? onTap;
 
@@ -57,23 +57,29 @@ class _UserPanelState extends material.State<UserPanel> {
       displayName = CommonStrings.placeholderBlockedUser;
       color = Colors.grey;
       avatar = null;
+      detail = widget.userId;
       return;
     }
 
-    if (widget.isDirectMessage) {
-      displayName = widget.contextRoom.displayName;
-      color = widget.contextRoom.defaultColor;
-      avatar = widget.contextRoom.avatar;
-      return;
+    var member = widget.initialMember;
+
+    if (widget.contextRoom != null) {
+      if (widget.isDirectMessage) {
+        displayName = widget.contextRoom!.displayName;
+        color = widget.contextRoom!.defaultColor;
+        avatar = widget.contextRoom!.avatar;
+        return;
+      }
+
+      member =
+          widget.initialMember ??
+          widget.contextRoom!.getMemberOrFallback(widget.userId);
     }
 
-    final member =
-        widget.initialMember ??
-        widget.contextRoom.getMemberOrFallback(widget.userId);
-    displayName = member.displayName;
-    color = member.defaultColor;
-    avatar = member.avatar;
-    detail = member.detail;
+    displayName = member?.displayName ?? widget.userId;
+    color = member?.defaultColor ?? Colors.white;
+    avatar = member?.avatar;
+    detail = member?.detail;
   }
 
   @override

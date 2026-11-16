@@ -982,6 +982,10 @@ class MatrixClient extends Client {
     return _matrixClient.ignoredUsers.contains(userId);
   }
 
+  List<String> blockedUsers() {
+    return _matrixClient.ignoredUsers;
+  }
+
   @override
   Future<void> unblockUser(String userId) async {
     await _matrixClient.setAccountData(

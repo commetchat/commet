@@ -2,6 +2,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_emoji/account_emoji_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_state/account_state_tab.dart';
+import 'package:commet/ui/pages/settings/categories/account/filtering/filtering_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/preferences/preferences_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_tab.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -30,6 +31,12 @@ class SettingsCategoryAccount implements SettingsCategory {
     "Privacy",
     name: "labelSettingsTabPrivacy",
     desc: "Label for the Privacy settings page",
+  );
+
+  String get labelSettingsTabFiltering => Intl.message(
+    "Content Filtering",
+    name: "labelSettingsTabFiltering",
+    desc: "Label for the Content Filtering settings page",
   );
 
   String get labelSettingsTabSecurity => Intl.message(
@@ -93,6 +100,15 @@ class SettingsCategoryAccount implements SettingsCategory {
       icon: Icons.security,
       pageBuilder: (context) {
         return SecuritySettingsTab(
+          clientManager: Provider.of<ClientManager>(context),
+        );
+      },
+    ),
+    SettingsTab(
+      label: labelSettingsTabFiltering,
+      icon: Icons.filter_alt_rounded,
+      pageBuilder: (context) {
+        return FilteringSettingsTab(
           clientManager: Provider.of<ClientManager>(context),
         );
       },

@@ -223,4 +223,6 @@ abstract class Client {
   Future<void> unblockUser(String userId);
 
   bool isUserBlocked(String userId);
+
+  List<String> blockedUsers();
 }
