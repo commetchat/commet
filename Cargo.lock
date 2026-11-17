@@ -3546,7 +3546,7 @@ dependencies = [
 [[package]]
 name = "overlay"
 version = "0.1.0"
-source = "git+https://github.com/commetchat/overlay.git?branch=support-openvr#e1a00fff9acdb8059365cf6a0589150b9ff34e61"
+source = "git+https://github.com/commetchat/overlay.git?rev=28bb9a25206415388af8cc8a6e578de1d3bfaeae#28bb9a25206415388af8cc8a6e578de1d3bfaeae"
 dependencies = [
  "base64 0.23.1",
  "embed-file",
@@ -3564,6 +3564,7 @@ dependencies = [
  "wayland-client",
  "windows 0.58.0",
  "winit",
+ "x11rb 0.14.0",
 ]
 
 [[package]]
@@ -4926,7 +4927,7 @@ dependencies = [
  "wayland-sys",
  "web-sys",
  "windows-sys 0.61.2",
- "x11rb",
+ "x11rb 0.13.2",
 ]
 
 [[package]]
@@ -6728,7 +6729,7 @@ dependencies = [
  "web-time",
  "windows-sys 0.52.0",
  "x11-dl",
- "x11rb",
+ "x11rb 0.13.2",
  "xkbcommon-dl",
 ]
 
@@ -6921,7 +6922,18 @@ dependencies = [
  "libloading",
  "once_cell",
  "rustix 1.1.6",
- "x11rb-protocol",
+ "x11rb-protocol 0.13.2",
+]
+
+[[package]]
+name = "x11rb"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a8885a854a8bfdf87a301e53e41b17c5f8f33639903131338b997b1eb614f44"
+dependencies = [
+ "gethostname",
+ "rustix 1.1.6",
+ "x11rb-protocol 0.14.0",
 ]
 
 [[package]]
@@ -6929,6 +6941,12 @@ name = "x11rb-protocol"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ea6fc2961e4ef194dcbfe56bb845534d0dc8098940c7e5c012a258bfec6701bd"
+
+[[package]]
+name = "x11rb-protocol"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "acf4d1bc32aa46eec18caa634ec3cf4c05bfa151f12b93b510b15190f69a1ca8"
 
 [[package]]
 name = "x25519-dalek"

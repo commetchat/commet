@@ -27,6 +27,14 @@ finish-args:
 - "--talk-name=org.freedesktop.portal.Documents"
 - "--system-talk-name=org.freedesktop.NetworkManager"
 - "--env=LD_LIBRARY_PATH=/app/lib:/app/lib64"
+
+# permissions required for openvr / steamvr overlay
+- "--filesystem=xdg-config/openvr:rw"
+- "--filesystem=/opt/steamvr"
+- "--device=shm"
+- "--share=ipc"
+- "--env=VR_PATHREG_OVERRIDE=$HOME/.config/openvr/openvrpaths.vrpath"
+
 modules:
 - name: keybinder3
   buildsystem: autotools
