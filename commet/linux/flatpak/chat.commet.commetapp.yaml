@@ -33,7 +33,7 @@ finish-args:
 - "--filesystem=/opt/steamvr"
 - "--device=shm"
 - "--share=ipc"
-- "--env=VR_PATHREG_OVERRIDE=$HOME/.config/openvr/openvrpaths.vrpath"
+
 
 modules:
 - name: keybinder3
@@ -154,4 +154,5 @@ modules:
     dest-filename: commet-wrapper
     commands:
       - export TMPDIR=$XDG_RUNTIME_DIR/app/$FLATPAK_ID
+      - export VR_PATHREG_OVERRIDE=$HOME/.config/openvr/openvrpaths.vrpath
       - exec /app/commet/bundle/commet "$@"
