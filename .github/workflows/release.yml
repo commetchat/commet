@@ -35,6 +35,8 @@ jobs:
           dart run scripts/codegen.dart
 
       - name: Build Windows App
+        env:    
+          TrackFileAccess: 'false'
         run: |
           cd .\commet
           dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }}

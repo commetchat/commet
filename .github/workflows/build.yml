@@ -33,6 +33,8 @@ jobs:
           dart run scripts/codegen.dart
 
       - name: Build Windows App
+        env:    
+          TrackFileAccess: 'false'
         run: |
           cd .\commet
           flutter build windows --release --dart-define PLATFORM=windows
