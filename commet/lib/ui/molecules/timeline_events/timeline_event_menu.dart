@@ -22,6 +22,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/notification_debugger.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_event_view_single.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -128,6 +129,8 @@ class TimelineEventMenu {
     bool canCancelSend = event.status != TimelineEventStatus.synced;
     bool canFavoriteGif = false;
     bool canUnfavoriteGif = false;
+
+    bool isBlocked = timeline.client.isUserBlocked(event.senderId);
 
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
@@ -250,6 +253,23 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
+      if (isBlocked)
+        TimelineEventMenuEntry(
+          name: "Show Message",
+          icon: Icons.message,
+          action: (context) {
+            AdaptiveDialog.show(
+              context,
+              builder: (context) {
+                return TimelineEventViewSingle(
+                  room: timeline.room,
+                  event: event,
+                  ignoreBlockStatus: true,
+                );
+              },
+            );
+          },
+        ),
       if (MediaQuery.of(context).mobile) ...[
         if (canFavoriteGif)
           TimelineEventMenuEntry(

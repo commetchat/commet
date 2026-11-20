@@ -54,7 +54,9 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
       "chat.commet.custom.matrix_plain";
 
   @override
-  String get plainTextBody => stripFallback(event.plaintextBody);
+  String get plainTextBody => mx.ignoredUsers.contains(event.senderId)
+      ? "Event from blocked user"
+      : stripFallback(event.plaintextBody);
 
   String _getPlaintextBody({Timeline? timeline}) => stripFallback(
     _getRawPlaintextBody(timeline: timeline),
@@ -108,6 +110,10 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
 
   @override
   String getPlaintextBody(Timeline timeline) {
+    if (timeline.client.isUserBlocked(event.senderId)) {
+      return "Event from blocked user";
+    }
+
     var displayEvent = getDisplayEvent(timeline);
 
     return stripFallback(displayEvent.plaintextBody, timeline: timeline);

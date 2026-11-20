@@ -78,6 +78,9 @@ class EventBus {
   static StreamController<Room?> onSelectedRoomChanged =
       StreamController<Room?>.broadcast();
 
+  static StreamController<void> userBlockStatusChanged =
+      StreamController.broadcast();
+
   static StreamController<void> startSearch = StreamController.broadcast();
 
   static StreamController<void> openPinnedMessages =

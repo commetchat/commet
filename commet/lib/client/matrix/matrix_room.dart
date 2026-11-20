@@ -50,6 +50,7 @@ import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
@@ -273,6 +274,11 @@ class MatrixRoom extends Room {
         autoLoadFullRes: false,
       );
     } else if (_matrixRoom.isDirectChat) {
+      if (_client.isUserBlocked(_matrixRoom.directChatMatrixID!)) {
+        _avatar = null;
+        return;
+      }
+
       var user = _matrixRoom.unsafeGetUserFromMemoryOrFallback(
         _matrixRoom.directChatMatrixID!,
       );
@@ -815,7 +821,20 @@ class MatrixRoom extends Room {
   bool get isMembersListComplete => _matrixRoom.participantListComplete;
 
   @override
-  Member getMemberOrFallback(String id) {
+  Member getMemberOrFallback(String id, {ignoreBlockStatus = false}) {
+    if (!ignoreBlockStatus) {
+      if (_client.isUserBlocked(id)) {
+        return MatrixMember(
+          _client,
+          matrix.User(
+            id,
+            room: _matrixRoom,
+            displayName: CommonStrings.placeholderBlockedUser,
+          ),
+        );
+      }
+    }
+
     return MatrixMember(
       _client,
       _matrixRoom.unsafeGetUserFromMemoryOrFallback(id),
@@ -890,6 +909,10 @@ class MatrixRoom extends Room {
       var partner = comp!.getDirectMessagePartnerId(this);
 
       if (partner != null) {
+        if (_client.isUserBlocked(partner)) {
+          _displayName = CommonStrings.placeholderBlockedUser;
+        }
+
         var nicknames = client.getComponent<PetNameComponent>();
         if (nicknames != null) {
           var name = nicknames.getPetName(partner);

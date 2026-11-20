@@ -217,4 +217,12 @@ abstract class Client {
   T? getComponent<T extends Component>();
 
   List<T>? getAllComponents<T extends Component>();
+
+  Future<void> blockUser(String userId);
+
+  Future<void> unblockUser(String userId);
+
+  bool isUserBlocked(String userId);
+
+  List<String> blockedUsers();
 }

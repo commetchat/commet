@@ -23,6 +23,7 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/notifying_list_filter.dart';
@@ -294,6 +295,7 @@ class MatrixClient extends Client {
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
+    _handleUserIgnored(update);
     _handleComponentSync(update);
 
     _onSync.add(null);
@@ -333,6 +335,16 @@ class MatrixClient extends Client {
             }
           }
         }
+      }
+    }
+  }
+
+  void _handleUserIgnored(matrix.SyncUpdate update) {
+    var account = update.accountData;
+    if (account != null) {
+      if (account.any((i) => i.type == "m.ignored_user_list")) {
+        Log.i("User block event detected, notifying");
+        EventBus.userBlockStatusChanged.add(null);
       }
     }
   }
@@ -648,8 +660,6 @@ class MatrixClient extends Client {
     );
 
     await _updateOwnProfile();
-    // TODO: Handle refresh avatar
-    // await (self as MatrixPeer).refreshAvatar();
   }
 
   @override
@@ -949,6 +959,48 @@ class MatrixClient extends Client {
     }
 
     return joinRoom(roomId);
+  }
+
+  @override
+  Future<void> blockUser(String userId) async {
+    await _matrixClient.setAccountData(
+      _matrixClient.userID!,
+      'm.ignored_user_list',
+      {
+        'ignored_users': Map.fromEntries(
+          (_matrixClient.ignoredUsers..add(userId)).map(
+            (key) => MapEntry(key, {}),
+          ),
+        ),
+      },
+    );
+
+    EventBus.userBlockStatusChanged.add(null);
+  }
+
+  bool isUserBlocked(String userId) {
+    return _matrixClient.ignoredUsers.contains(userId);
+  }
+
+  List<String> blockedUsers() {
+    return _matrixClient.ignoredUsers;
+  }
+
+  @override
+  Future<void> unblockUser(String userId) async {
+    await _matrixClient.setAccountData(
+      _matrixClient.userID!,
+      'm.ignored_user_list',
+      {
+        'ignored_users': Map.fromEntries(
+          (_matrixClient.ignoredUsers..remove(userId)).map(
+            (key) => MapEntry(key, {}),
+          ),
+        ),
+      },
+    );
+
+    EventBus.userBlockStatusChanged.add(null);
   }
 }
 

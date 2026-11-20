@@ -237,7 +237,7 @@ abstract class Room {
 
   Future<void> banUser(String id);
 
-  Member getMemberOrFallback(String id);
+  Member getMemberOrFallback(String id, {bool ignoreBlockStatus = false});
 
   Member? getMember(String id);
 

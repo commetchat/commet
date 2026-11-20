@@ -307,7 +307,7 @@ class MatrixBackgroundRoom implements Room {
   }
 
   @override
-  Member getMemberOrFallback(String id) {
+  Member getMemberOrFallback(String id, {ignoreBlockStatus = false}) {
     throw UnimplementedError();
   }
 

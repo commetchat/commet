@@ -3,6 +3,7 @@ import 'package:commet/client/components/push_notification/android/android_notif
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
+import 'package:commet/client/components/push_notification/modifiers/censor_content_from_blocked_users.dart';
 import 'package:commet/client/components/push_notification/modifiers/linux_notification_formatting.dart';
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/modifiers/suppress_active_room.dart';
@@ -42,6 +43,7 @@ class NotificationManager {
     _notifier ??= _getNotifier(isBackgroundService: isBackgroundService);
 
     _modifiers.clear();
+    addModifier(NotificationModifierCensorBlockedUsers());
     addModifier(NotificationModifierSuppressActiveRoom());
     if (BuildConfig.ANDROID) {
       addModifier(NotificationModifierSuppressOtherActiveDevice());

@@ -82,4 +82,8 @@ class MatrixMember implements Member {
 
   @override
   int get hashCode => identifier.hashCode;
+
+  @override
+  bool get blocked =>
+      this.client.matrixClient.ignoredUsers.contains(identifier);
 }

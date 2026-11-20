@@ -53,9 +53,12 @@ class UserProfileView extends StatefulWidget {
     this.onChangeName,
     this.maxBioHeight = 200,
     this.showSource,
+    this.isBlocked = false,
     this.pronouns = const [],
     this.clearStatus,
     this.savePreviewTheme,
+    this.blockUser,
+    this.unblockUser,
     this.onMessageButtonClicked,
   });
   final ImageProvider? userAvatar;
@@ -84,6 +87,8 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function()? clearBio;
   final Future<void> Function()? clearStatus;
   final Future<void> Function()? editBadges;
+  final Future<void> Function()? blockUser;
+  final Future<void> Function()? unblockUser;
   final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
   final Widget? bio;
@@ -91,6 +96,7 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function(String?)? setPetName;
   final String? currentPetName;
   final bool hasPetName;
+  final bool isBlocked;
   final Future<void> Function()? onMessageButtonClicked;
   final Future<void> Function()? savePreviewTheme;
   final Future<void> Function(Color?)? setColorOverride;
@@ -163,6 +169,18 @@ class UserProfileViewState extends State<UserProfileView> {
     "Show Raw Profile",
     name: "promptProfileShowRawProfile",
     desc: "Show the raw data of a user profile, typically this is hidden behind developer mode",
+  );
+
+  String get promptProfileBlockUser => Intl.message(
+    "Block",
+    name: "promptProfileBlockUser",
+    desc: "Block communication from another user",
+  );
+
+  String get promptProfileUnblockUser => Intl.message(
+    "Unblock",
+    name: "promptProfileUnblockUser",
+    desc: "Unblock communication from another user",
   );
 
   bool editingColorScheme = false;
@@ -547,6 +565,7 @@ class UserProfileViewState extends State<UserProfileView> {
           onPressed: () => widget.onSetBanner?.call(),
           icon: Icons.image,
         ),
+
       if (widget.isSelf)
         profileMenuItem(
           text: promptProfileSetStatus,
@@ -661,6 +680,18 @@ class UserProfileViewState extends State<UserProfileView> {
           }
         },
       ),
+      if (!widget.isSelf && !widget.isBlocked)
+        profileMenuItem(
+          text: promptProfileBlockUser,
+          icon: Icons.block,
+          onPressed: () => widget.blockUser?.call(),
+        ),
+      if (!widget.isSelf && widget.isBlocked)
+        profileMenuItem(
+          text: promptProfileUnblockUser,
+          icon: Icons.block,
+          onPressed: () => widget.unblockUser?.call(),
+        ),
       if (preferences.developerMode.value)
         profileMenuItem(
           text: promptProfileShowRawProfile,

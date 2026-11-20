@@ -5,6 +5,8 @@ import 'package:commet/client/components/user_presence/user_presence_component.d
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
+import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -23,7 +25,7 @@ class UserPanel extends material.StatefulWidget {
   final String userId;
   final Client client;
   final Member? initialMember;
-  final Room contextRoom;
+  final Room? contextRoom;
   final bool isDirectMessage;
   final void Function()? onTap;
 
@@ -39,7 +41,7 @@ class _UserPanelState extends material.State<UserPanel> {
   TextStyle? detailStringStyle;
   late UserPresence presence;
 
-  StreamSubscription? sub;
+  List<StreamSubscription> subs = List.empty();
 
   @override
   initState() {
@@ -51,20 +53,33 @@ class _UserPanelState extends material.State<UserPanel> {
   }
 
   void getInfoFromMember() {
-    if (widget.isDirectMessage) {
-      displayName = widget.contextRoom.displayName;
-      color = widget.contextRoom.defaultColor;
-      avatar = widget.contextRoom.avatar;
+    if (widget.client.isUserBlocked(widget.userId)) {
+      displayName = CommonStrings.placeholderBlockedUser;
+      color = Colors.grey;
+      avatar = null;
+      detail = widget.userId;
       return;
     }
 
-    final member =
-        widget.initialMember ??
-        widget.contextRoom.getMemberOrFallback(widget.userId);
-    displayName = member.displayName;
-    color = member.defaultColor;
-    avatar = member.avatar;
-    detail = member.detail;
+    var member = widget.initialMember;
+
+    if (widget.contextRoom != null) {
+      if (widget.isDirectMessage) {
+        displayName = widget.contextRoom!.displayName;
+        color = widget.contextRoom!.defaultColor;
+        avatar = widget.contextRoom!.avatar;
+        return;
+      }
+
+      member =
+          widget.initialMember ??
+          widget.contextRoom!.getMemberOrFallback(widget.userId);
+    }
+
+    displayName = member?.displayName ?? widget.userId;
+    color = member?.defaultColor ?? Colors.white;
+    avatar = member?.avatar;
+    detail = member?.detail;
   }
 
   @override
@@ -76,7 +91,7 @@ class _UserPanelState extends material.State<UserPanel> {
   @override
   dispose() {
     super.dispose();
-    sub?.cancel();
+    for (var sub in subs) sub.cancel();
   }
 
   initPresence() async {
@@ -87,9 +102,16 @@ class _UserPanelState extends material.State<UserPanel> {
       return;
     }
 
-    sub = presenceComponent.onPresenceChanged
-        .where((tuple) => tuple.$1 == widget.userId)
-        .listen(onChanged);
+    subs = [
+      presenceComponent.onPresenceChanged
+          .where((tuple) => tuple.$1 == widget.userId)
+          .listen(onPresenceChanged),
+      EventBus.userBlockStatusChanged.stream.listen(
+        (_) => setState(() {
+          getInfoFromMember();
+        }),
+      ),
+    ];
 
     final p = await presenceComponent.getUserPresence(widget.userId);
 
@@ -131,7 +153,7 @@ class _UserPanelState extends material.State<UserPanel> {
     UserProfile.show(context, client: widget.client, userId: widget.userId);
   }
 
-  void onChanged((String, UserPresence) event) {
+  void onPresenceChanged((String, UserPresence) event) {
     if (mounted) {
       setState(() {
         presence = event.$2;
