@@ -586,5 +586,69 @@
         "description": "Text on a button to leave a space",
         "type": "text",
         "placeholders": {}
+    },
+    "promptHomeserver": "Homeserver",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpaceConfirmation": "Vuoi davvero abbandonare {spaceName}?",
+    "@promptLeaveSpaceConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave a space",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptLeaveRoom": "Abbandona Stanza",
+    "@promptLeaveRoom": {
+        "description": "Text on a button to leave a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveRoomConfirmation": "Vuoi davvero abbandonare {roomName}?",
+    "@promptLeaveRoomConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "notificationSettingsNotSupported": "Questo sistema non supporta le notifiche push",
+    "@notificationSettingsNotSupported": {
+        "description": "Message to display when push notifications are not supported",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperModeExplanation": "Mostra informazioni aggiuntive, utili per gli sviluppatori",
+    "@labelSettingsDeveloperModeExplanation": {
+        "description": "Explains what developer mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelStickerCompatibility": "Compatibilità con gli sticker",
+    "@labelStickerCompatibility": {
+        "description": "Header for the settings to enable sticker compatibility mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsStickerCompatibilityExplanation": "In alcuni client di matrix, l'invio di uno sticker come 'm.sticker' comporta che lo sticker non si carichi correttamente. Attivare questa impostazione invierà gli sticker come 'm.image' che permetterà loro di caricarsi correttamente",
+    "@labelSettingsStickerCompatibilityExplanation": {
+        "description": "Explains what sticker compatibility mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppGeneral": "Generale",
+    "@labelSettingsAppGeneral": {
+        "description": "Label for the App General settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAppearance": "Aspetto",
+    "@labelSettingsAppAppearance": {
+        "description": "Label for the App Appearance settings page",
+        "type": "text",
+        "placeholders": {}
     }
 }
