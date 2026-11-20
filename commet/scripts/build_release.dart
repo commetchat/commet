@@ -1,6 +1,16 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
+import 'dart:convert';
+
+Future<int> run(String command, List<String> args) async {
+  var process = await Process.start(command, args, runInShell: true);
+
+  process.stdout.transform(utf8.decoder).listen((i) => print(i));
+  process.stderr.transform(utf8.decoder).listen((i) => print(i));
+
+  return await process.exitCode;
+}
 
 String? getArg(List<String> args, String name) {
   int index = args.indexOf(name);
@@ -62,31 +72,32 @@ Future<void> main(List<String> args) async {
     print("Detail:\t\t'$buildDetail'");
   }
 
-  var process = Process.runSync("flutter", [
-    "build",
-    flutterPlatform,
-    "--build-name=$buildVersion",
-    "--release",
-    "--dart-define",
-    "BUILD_MODE=release",
-    "--dart-define",
-    "PLATFORM=$platform",
-    "--dart-define",
-    "GIT_HASH=$hash",
-    "--dart-define",
-    "VERSION_TAG=$version",
-    "--dart-define",
-    "ENABLE_GOOGLE_SERVICES=$enableGoogleServices",
-    "--dart-define",
-    "BUILD_DATE=${DateTime.now().millisecondsSinceEpoch}",
-    if (buildDetail != null) "--dart-define",
-    if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
-    if (platform == "web") "--dart-define",
-    if (platform == "web") "FLUTTER_WEB_CANVASKIT_URL=canvaskit/",
-    if (platform == "web") "--source-maps",
-  ], runInShell: true);
+  var result = await run(
+    "flutter",
+    [
+      "build",
+      flutterPlatform,
+      "--build-name=$buildVersion",
+      "--release",
+      "--dart-define",
+      "BUILD_MODE=release",
+      "--dart-define",
+      "PLATFORM=$platform",
+      "--dart-define",
+      "GIT_HASH=$hash",
+      "--dart-define",
+      "VERSION_TAG=$version",
+      "--dart-define",
+      "ENABLE_GOOGLE_SERVICES=$enableGoogleServices",
+      "--dart-define",
+      "BUILD_DATE=${DateTime.now().millisecondsSinceEpoch}",
+      if (buildDetail != null) "--dart-define",
+      if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
+      if (platform == "web") "--dart-define",
+      if (platform == "web") "FLUTTER_WEB_CANVASKIT_URL=canvaskit/",
+      if (platform == "web") "--source-maps",
+    ],
+  );
 
-  print(process.stdout);
-  print(process.stderr);
-  exit(process.exitCode);
+  exit(result);
 }
