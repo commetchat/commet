@@ -7,8 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class VoipFullscreenStreamView extends StatefulWidget {
-  const VoipFullscreenStreamView(
-      {required this.stream, required this.session, super.key});
+  const VoipFullscreenStreamView({
+    required this.stream,
+    required this.session,
+    super.key,
+  });
   final VoipStream stream;
   final VoipSession session;
 
@@ -22,8 +25,8 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
   RTCScreenShareAnnotationComponent? component;
   @override
   void initState() {
-    component =
-        widget.session.client.getComponent<RTCScreenShareAnnotationComponent>();
+    component = widget.session.client
+        .getComponent<RTCScreenShareAnnotationComponent>();
 
     annotationSession = component?.getExistingSession(widget.session);
     super.initState();
@@ -52,7 +55,10 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
 
                 if (annotationSession != null) {
                   annotationSession?.setCursorPosition(
-                      streamId: widget.stream.streamId, x: x, y: y);
+                    streamId: widget.stream.streamId,
+                    x: x,
+                    y: y,
+                  );
                 }
               },
             );
@@ -60,20 +66,24 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
         ),
         Padding(
           padding: const EdgeInsets.all(8),
-          child: Wrap(spacing: 5, children: [
-            if (component != null)
-              tiamat.CircleButton(
-                icon: Icons.mouse,
-                onPressed: () async {
-                  var session =
-                      await component?.getOrCreateSession(widget.session);
-                  setState(() {
-                    annotationSession = session;
-                  });
-                },
-              )
-          ]),
-        )
+          child: Wrap(
+            spacing: 5,
+            children: [
+              if (component != null)
+                tiamat.CircleButton(
+                  icon: Icons.mouse,
+                  onPressed: () async {
+                    var session = await component?.getOrCreateSession(
+                      widget.session,
+                    );
+                    setState(() {
+                      annotationSession = session;
+                    });
+                  },
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }

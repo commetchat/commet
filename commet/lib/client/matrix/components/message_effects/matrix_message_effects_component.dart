@@ -31,19 +31,25 @@ class MatrixMessageEffectsComponent
     var mx = client.getMatrixClient();
 
     mx.addCommand(
-        "snowfall",
-        (args, _) =>
-            sendWithMsgType(args, msgType: effectTypeSnowfall, fallback: "❄️"));
+      "snowfall",
+      (args, _) =>
+          sendWithMsgType(args, msgType: effectTypeSnowfall, fallback: "❄️"),
+    );
 
     mx.addCommand(
-        "confetti",
-        (args, _) =>
-            sendWithMsgType(args, msgType: effectTypeConfetti, fallback: "🎉"));
+      "confetti",
+      (args, _) =>
+          sendWithMsgType(args, msgType: effectTypeConfetti, fallback: "🎉"),
+    );
 
     mx.addCommand(
-        "spaceinvaders",
-        (args, _) => sendWithMsgType(args,
-            msgType: effectTypeSpaceInvaders, fallback: "👾"));
+      "spaceinvaders",
+      (args, _) => sendWithMsgType(
+        args,
+        msgType: effectTypeSpaceInvaders,
+        fallback: "👾",
+      ),
+    );
   }
 
   static const Set<String> knownEffectTypes = {
@@ -107,8 +113,11 @@ class MatrixMessageEffectsComponent
     return null;
   }
 
-  FutureOr<String?> sendWithMsgType(matrix.CommandArgs args,
-      {required String msgType, required String fallback}) async {
+  FutureOr<String?> sendWithMsgType(
+    matrix.CommandArgs args, {
+    required String msgType,
+    required String fallback,
+  }) async {
     args.room?.sendEvent({
       "msgtype": msgType,
       "body": args.msg.trim().isEmpty ? fallback : args.msg,

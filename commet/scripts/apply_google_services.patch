@@ -1,5 +1,5 @@
 diff --git a/commet/android/app/build.gradle b/commet/android/app/build.gradle
-index 7869e8c..a757560 100644
+index f05c3a9e..fc1c65bf 100644
 --- a/commet/android/app/build.gradle
 +++ b/commet/android/app/build.gradle
 @@ -1,7 +1,7 @@
@@ -12,7 +12,7 @@ index 7869e8c..a757560 100644
      id "kotlin-android"
      id "dev.flutter.flutter-gradle-plugin"
 diff --git a/commet/android/settings.gradle b/commet/android/settings.gradle
-index 308e212..4945661 100644
+index f139440b..08f505b4 100644
 --- a/commet/android/settings.gradle
 +++ b/commet/android/settings.gradle
 @@ -20,7 +20,7 @@ plugins {
@@ -22,13 +22,13 @@ index 308e212..4945661 100644
 -    // id "com.google.gms.google-services" version "4.3.10" apply false
 +    id "com.google.gms.google-services" version "4.3.10" apply false
      // END: FlutterFire Configuration
-     id "org.jetbrains.kotlin.android" version "2.1.10" apply false
+     id "org.jetbrains.kotlin.android" version "2.2.20" apply false
  }
 diff --git a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
-index 9704b92..d0e99c9 100644
+index 0c39f98f..a53c381c 100644
 --- a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
 +++ b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
-@@ -14,12 +14,12 @@ import 'package:commet/main.dart';
+@@ -15,12 +15,12 @@ import 'package:commet/main.dart';
  import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
  
  // Manage these to enable / disable firebase
@@ -48,20 +48,20 @@ index 9704b92..d0e99c9 100644
  
  Future<void> onForegroundMessage(dynamic message) async {
 diff --git a/commet/lib/config/build_config.dart b/commet/lib/config/build_config.dart
-index ea2fdad..e4eaa30 100644
+index a55c80b7..4290d95d 100644
 --- a/commet/lib/config/build_config.dart
 +++ b/commet/lib/config/build_config.dart
-@@ -20,7 +20,7 @@ class BuildConfig {
-       String.fromEnvironment('BUILD_DETAIL', defaultValue: "default");
+@@ -31,7 +31,7 @@ class BuildConfig {
  
-   static const bool ENABLE_GOOGLE_SERVICES =
--      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: false);
-+      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: true);
+   static const bool ENABLE_GOOGLE_SERVICES = bool.fromEnvironment(
+     "ENABLE_GOOGLE_SERVICES",
+-    defaultValue: false,
++    defaultValue: true,
+   );
  
    static const bool DEBUG = _buildMode == _Constants._debug;
- 
 diff --git a/commet/lib/firebase_options.dart b/commet/lib/firebase_options.dart
-index 235bb5c..e0eeee9 100644
+index 235bb5cd..e0eeee91 100644
 --- a/commet/lib/firebase_options.dart
 +++ b/commet/lib/firebase_options.dart
 @@ -1,6 +1,5 @@
@@ -78,10 +78,10 @@ index 235bb5c..e0eeee9 100644
 -
 -*/
 diff --git a/commet/pubspec.yaml b/commet/pubspec.yaml
-index 3c5334e..9cae74c 100644
+index e16377db..298f41e7 100644
 --- a/commet/pubspec.yaml
 +++ b/commet/pubspec.yaml
-@@ -99,8 +99,8 @@ dependencies:
+@@ -101,8 +101,8 @@ dependencies:
    ## ---- Putting some extra lines in here to help git with the diff
    ## ---- Probably good to keep this stuff at the bottom of the list
    ## Begin Google Services Dependencies

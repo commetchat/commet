@@ -8,8 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ExistingRoomPicker extends StatefulWidget {
-  const ExistingRoomPicker(
-      {required this.client, this.filter, this.onPicked, super.key});
+  const ExistingRoomPicker({
+    required this.client,
+    this.filter,
+    this.onPicked,
+    super.key,
+  });
 
   final Client client;
   final bool Function(SpaceChild room)? filter;
@@ -53,39 +57,47 @@ class _ExistingRoomPickerState extends State<ExistingRoomPicker> {
         filtered.addAll(allChildren.where((i) => i is SpaceChildSpace));
 
       if (types.contains(RoomType.voipRoom))
-        filtered.addAll(allChildren.where((i) {
-          if (i case SpaceChildRoom r) {
-            return r.child.getComponent<VoipRoomComponent>() != null;
-          }
-          return false;
-        }));
+        filtered.addAll(
+          allChildren.where((i) {
+            if (i case SpaceChildRoom r) {
+              return r.child.getComponent<VoipRoomComponent>() != null;
+            }
+            return false;
+          }),
+        );
 
       if (types.contains(RoomType.calendar))
-        filtered.addAll(allChildren.where((i) {
-          if (i case SpaceChildRoom r) {
-            return r.child
-                    .getComponent<MatrixCalendarRoomComponent>()
-                    ?.isCalendarRoom ==
-                true;
-          }
-          return false;
-        }));
+        filtered.addAll(
+          allChildren.where((i) {
+            if (i case SpaceChildRoom r) {
+              return r.child
+                      .getComponent<MatrixCalendarRoomComponent>()
+                      ?.isCalendarRoom ==
+                  true;
+            }
+            return false;
+          }),
+        );
 
       if (types.contains(RoomType.photoAlbum))
-        filtered.addAll(allChildren.where((i) {
-          if (i case SpaceChildRoom r) {
-            return r.child.getComponent<PhotoAlbumRoom>() != null;
-          }
-          return false;
-        }));
+        filtered.addAll(
+          allChildren.where((i) {
+            if (i case SpaceChildRoom r) {
+              return r.child.getComponent<PhotoAlbumRoom>() != null;
+            }
+            return false;
+          }),
+        );
 
       if (types.contains(RoomType.defaultRoom))
-        filtered.addAll(allChildren.where((i) {
-          if (i case SpaceChildRoom r) {
-            return r.child.isSpecialRoomType == false;
-          }
-          return false;
-        }));
+        filtered.addAll(
+          allChildren.where((i) {
+            if (i case SpaceChildRoom r) {
+              return r.child.isSpecialRoomType == false;
+            }
+            return false;
+          }),
+        );
     }
 
     setState(() {
@@ -101,37 +113,38 @@ class _ExistingRoomPickerState extends State<ExistingRoomPicker> {
         Padding(
           padding: EdgeInsetsGeometry.all(8),
           child: SegmentedButton(
-              emptySelectionAllowed: true,
-              multiSelectionEnabled: false,
-              segments: [
-                ButtonSegment(
-                  tooltip: RoomCreationStrings.labelRoomTypeSpace,
-                  value: RoomType.space,
-                  icon: Icon(Icons.spoke),
-                ),
-                ButtonSegment(
-                  tooltip: RoomCreationStrings.labelRoomTypeTextChat,
-                  value: RoomType.defaultRoom,
-                  icon: Icon(Icons.tag),
-                ),
-                ButtonSegment(
-                  tooltip: RoomCreationStrings.labelRoomTypeVoiceChat,
-                  value: RoomType.voipRoom,
-                  icon: Icon(Icons.volume_up),
-                ),
-                ButtonSegment(
-                  tooltip: RoomCreationStrings.labelRoomTypePhotoAlbum,
-                  value: RoomType.photoAlbum,
-                  icon: Icon(Icons.photo),
-                ),
-                ButtonSegment(
-                  tooltip: RoomCreationStrings.labelRoomTypeCalendar,
-                  value: RoomType.calendar,
-                  icon: Icon(Icons.calendar_month),
-                ),
-              ],
-              onSelectionChanged: setSelectedTypes,
-              selected: selectedTypes),
+            emptySelectionAllowed: true,
+            multiSelectionEnabled: false,
+            segments: [
+              ButtonSegment(
+                tooltip: RoomCreationStrings.labelRoomTypeSpace,
+                value: RoomType.space,
+                icon: Icon(Icons.spoke),
+              ),
+              ButtonSegment(
+                tooltip: RoomCreationStrings.labelRoomTypeTextChat,
+                value: RoomType.defaultRoom,
+                icon: Icon(Icons.tag),
+              ),
+              ButtonSegment(
+                tooltip: RoomCreationStrings.labelRoomTypeVoiceChat,
+                value: RoomType.voipRoom,
+                icon: Icon(Icons.volume_up),
+              ),
+              ButtonSegment(
+                tooltip: RoomCreationStrings.labelRoomTypePhotoAlbum,
+                value: RoomType.photoAlbum,
+                icon: Icon(Icons.photo),
+              ),
+              ButtonSegment(
+                tooltip: RoomCreationStrings.labelRoomTypeCalendar,
+                value: RoomType.calendar,
+                icon: Icon(Icons.calendar_month),
+              ),
+            ],
+            onSelectionChanged: setSelectedTypes,
+            selected: selectedTypes,
+          ),
         ),
         Flexible(
           child: ListView.builder(
@@ -174,15 +187,12 @@ class _ExistingRoomPickerState extends State<ExistingRoomPicker> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           tiamat.Avatar(
-                              image: avatar,
-                              placeholderText: displayName,
-                              placeholderColor: color),
-                          SizedBox(
-                            width: 8,
+                            image: avatar,
+                            placeholderText: displayName,
+                            placeholderColor: color,
                           ),
-                          Column(
-                            children: [tiamat.Text.label(displayName)],
-                          )
+                          SizedBox(width: 8),
+                          Column(children: [tiamat.Text.label(displayName)]),
                         ],
                       ),
                     ),

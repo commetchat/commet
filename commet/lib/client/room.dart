@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
@@ -12,6 +13,7 @@ import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:flutter/material.dart';
+
 import 'attachment.dart';
 import 'permissions.dart';
 
@@ -235,7 +237,7 @@ abstract class Room {
 
   Future<void> banUser(String id);
 
-  Member getMemberOrFallback(String id);
+  Member getMemberOrFallback(String id, {bool ignoreBlockStatus = false});
 
   Member? getMember(String id);
 

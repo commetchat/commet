@@ -143,8 +143,9 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
           if (loadingMorePhotos)
             ScaledSafeArea(
               child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: CircularProgressIndicator()),
+                alignment: Alignment.bottomCenter,
+                child: CircularProgressIndicator(),
+              ),
             ),
           if (widget.component.canUpload)
             ScaledSafeArea(
@@ -155,7 +156,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
                   child: Icon(Icons.add),
                 ),
               ),
-            )
+            ),
         ],
       ),
     );
@@ -176,9 +177,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       if (item.status == TimelineEventStatus.sending) {
         result = Container(
           color: scheme.surfaceContainerLow,
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
+          child: Center(child: CircularProgressIndicator()),
         );
       }
 
@@ -186,10 +185,11 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
         result = Container(
           color: scheme.surfaceContainerLow,
           child: Center(
-              child: Icon(
-            Icons.error,
-            color: Theme.of(context).colorScheme.error,
-          )),
+            child: Icon(
+              Icons.error,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
         );
       }
     }
@@ -202,20 +202,21 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
               var tl = (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline;
 
               showModalBottomSheet(
-                  showDragHandle: true,
-                  isScrollControlled: true,
-                  elevation: 0,
-                  context: context,
-                  builder: (context) => TimelineEventMenuDialog(
-                        event: event,
-                        timeline: tl,
-                        menu: TimelineEventMenu(
-                          timeline: tl,
-                          event: event,
-                          context: context,
-                          onActionFinished: () => Navigator.of(context).pop(),
-                        ),
-                      ));
+                showDragHandle: true,
+                isScrollControlled: true,
+                elevation: 0,
+                context: context,
+                builder: (context) => TimelineEventMenuDialog(
+                  event: event,
+                  timeline: tl,
+                  menu: TimelineEventMenu(
+                    timeline: tl,
+                    event: event,
+                    context: context,
+                    onActionFinished: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              );
             }
           };
 
@@ -224,10 +225,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
         key: ValueKey("photo-album-image:${item.id}"),
         fit: StackFit.expand,
         children: [
-          Image(
-            fit: BoxFit.cover,
-            image: attachment.image,
-          ),
+          Image(fit: BoxFit.cover, image: attachment.image),
           Material(
             color: Colors.transparent,
             child: InkWell(
@@ -236,7 +234,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
               },
               onLongPress: callback,
             ),
-          )
+          ),
         ],
       );
     }
@@ -246,18 +244,16 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
         key: ValueKey("photo-album-video:${item.id}"),
         fit: StackFit.expand,
         children: [
-          Image(
-            fit: BoxFit.cover,
-            image: attachment.thumbnail!,
-          ),
+          Image(fit: BoxFit.cover, image: attachment.thumbnail!),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: scheme.secondaryContainer),
+                  borderRadius: BorderRadius.circular(4),
+                  color: scheme.secondaryContainer,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Row(
@@ -285,10 +281,12 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
             child: InkWell(
               onLongPress: callback,
               onTap: () {
-                Lightbox.show(context,
-                    video: attachment.file,
-                    aspectRatio: attachment.aspectRatio,
-                    thumbnail: attachment.thumbnail);
+                Lightbox.show(
+                  context,
+                  video: attachment.file,
+                  aspectRatio: attachment.aspectRatio,
+                  thumbnail: attachment.thumbnail,
+                );
               },
             ),
           ),
@@ -299,17 +297,21 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
     if (result != null) {
       if (widget.component is MatrixPhotoAlbumRoomComponent) {
         var menu = TimelineEventMenu(
-            context: context,
-            timeline: (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline,
-            event: (item as MatrixPhoto).event);
+          context: context,
+          timeline: (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline,
+          event: (item as MatrixPhoto).event,
+        );
 
         if (MediaQuery.of(context).desktop) {
           result = tiamat.ContextMenu(
             items: (menu.primaryActions + menu.secondaryActions)
-                .map((e) => tiamat.ContextMenuItem(
+                .map(
+                  (e) => tiamat.ContextMenuItem(
                     text: e.name,
                     icon: e.icon,
-                    onPressed: () => e.action?.call(context)))
+                    onPressed: () => e.action?.call(context),
+                  ),
+                )
                 .toList(),
             child: result,
           );
@@ -331,16 +333,18 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
     late List<PickedPhoto> photos;
 
     if (PlatformUtils.isAndroid) {
-      final usePhotoPicker = await AdaptiveDialog.pickOne(context,
-          items: [true, false],
-          itemBuilder: (context, item, onTapped) => SizedBox(
-                height: 50,
-                child: tiamat.TextButton(
-                  item ? "Photos" : "Browse Files",
-                  icon: item ? Icons.add_to_photos : Icons.file_open,
-                  onTap: onTapped,
-                ),
-              ));
+      final usePhotoPicker = await AdaptiveDialog.pickOne(
+        context,
+        items: [true, false],
+        itemBuilder: (context, item, onTapped) => SizedBox(
+          height: 50,
+          child: tiamat.TextButton(
+            item ? "Photos" : "Browse Files",
+            icon: item ? Icons.add_to_photos : Icons.file_open,
+            onTap: onTapped,
+          ),
+        ),
+      );
       if (usePhotoPicker == null) {
         return;
       }
@@ -355,48 +359,64 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       }
 
       photos = files
-          .map((f) => PickedPhoto(
+          .map(
+            (f) => PickedPhoto(
               name: f.name,
               filepath: f.path,
               getBytes: () {
                 return f.readAsBytes();
-              }))
+              },
+            ),
+          )
           .toList();
     } else {
-      var files = await FilePicker.platform
-          .pickFiles(allowMultiple: true, withReadStream: true);
+      var files = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        withReadStream: true,
+      );
       if (files == null) return;
 
       photos = files.files
-          .map((e) => PickedPhoto(
-                filepath: e.path,
-                name: e.name,
-                getBytes: () async {
-                  var result = List<int>.empty(growable: true);
-                  await for (final data in e.readStream!) {
-                    print("Read ${data.length} bytes from file");
-                    result.addAll(data);
-                  }
+          .map(
+            (e) => PickedPhoto(
+              filepath: e.path,
+              name: e.name,
+              getBytes: () async {
+                var result = List<int>.empty(growable: true);
+                await for (final data in e.readStream!) {
+                  print("Read ${data.length} bytes from file");
+                  result.addAll(data);
+                }
 
-                  print("Read all ${result.length} bytes");
+                print("Read all ${result.length} bytes");
 
-                  return Uint8List.fromList(result);
-                },
-              ))
+                return Uint8List.fromList(result);
+              },
+            ),
+          )
           .toList();
     }
 
-    AdaptiveDialog.show(context,
-        builder: (_) => PhotosAlbumUploadView(photos, widget.component));
+    AdaptiveDialog.show(
+      context,
+      builder: (_) => PhotosAlbumUploadView(photos, widget.component),
+    );
   }
 
   void onFileDropped(DropDoneDetails event) {
     var f = event.files
-        .map((e) => PickedPhoto(
-            filepath: e.path, name: e.name, getBytes: () => e.readAsBytes()))
+        .map(
+          (e) => PickedPhoto(
+            filepath: e.path,
+            name: e.name,
+            getBytes: () => e.readAsBytes(),
+          ),
+        )
         .toList();
-    AdaptiveDialog.show(context,
-        builder: (_) => PhotosAlbumUploadView(f, widget.component));
+    AdaptiveDialog.show(
+      context,
+      builder: (_) => PhotosAlbumUploadView(f, widget.component),
+    );
   }
 
   void onChanged(Photo event) {

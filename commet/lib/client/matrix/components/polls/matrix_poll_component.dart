@@ -38,9 +38,7 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
 
   @override
   List<PollAnswer> getAllowedPollAnswers(TimelineEvent event) {
-    return _parse(event)
-        .pollStartContent
-        .answers
+    return _parse(event).pollStartContent.answers
         .map((i) => PollAnswer(i.id, i.mText))
         .toList();
   }
@@ -52,13 +50,16 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
 
   @override
   Map<String, Set<String>> getPollResponses(
-      Timeline timeline, TimelineEvent event) {
+    Timeline timeline,
+    TimelineEvent event,
+  ) {
     Map<String, Set<String>> responses = {};
 
     var mxEvent = (event as MatrixTimelineEvent).event;
 
-    var mxResponses =
-        mxEvent.getPollResponses((timeline as MatrixTimeline).matrixTimeline!);
+    var mxResponses = mxEvent.getPollResponses(
+      (timeline as MatrixTimeline).matrixTimeline!,
+    );
 
     for (var userId in mxResponses.keys) {
       for (var answer in mxResponses[userId]!) {
@@ -79,7 +80,10 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
 
   @override
   Future<void> setAnswer(
-      TimelineEvent<Client> event, Room room, List<PollAnswer> answers) async {
+    TimelineEvent<Client> event,
+    Room room,
+    List<PollAnswer> answers,
+  ) async {
     var mxEvent = (event as MatrixTimelineEvent).event;
     await mxEvent.answerPoll(answers.map((i) => i.id).toList());
   }
@@ -92,30 +96,37 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
       return true;
     }
 
-    return mxEvent
-        .getPollHasBeenEnded((timeline as MatrixTimeline).matrixTimeline!);
+    return mxEvent.getPollHasBeenEnded(
+      (timeline as MatrixTimeline).matrixTimeline!,
+    );
   }
 
   @override
   bool isFinished(TimelineEvent<Client> event, Timeline timeline) {
     var mxEvent = (event as MatrixTimelineEvent).event;
 
-    return mxEvent
-        .getPollHasBeenEnded((timeline as MatrixTimeline).matrixTimeline!);
+    return mxEvent.getPollHasBeenEnded(
+      (timeline as MatrixTimeline).matrixTimeline!,
+    );
   }
 
   @override
   Future<void> createPoll(Room room, PollCreateArgs args) async {
     await (room as MatrixRoom).matrixRoom.startPoll(
-        question: args.question,
-        answers: args.options
-            .map((i) => matrix.PollAnswer(
-                id: RandomUtils.getRandomString(10), mText: i))
-            .toList(),
-        kind: args.publicAnswers
-            ? matrix.PollKind.disclosed
-            : matrix.PollKind.undisclosed,
-        maxSelections: args.multiAnswer ? args.options.length : 1);
+      question: args.question,
+      answers: args.options
+          .map(
+            (i) => matrix.PollAnswer(
+              id: RandomUtils.getRandomString(10),
+              mText: i,
+            ),
+          )
+          .toList(),
+      kind: args.publicAnswers
+          ? matrix.PollKind.disclosed
+          : matrix.PollKind.undisclosed,
+      maxSelections: args.multiAnswer ? args.options.length : 1,
+    );
   }
 
   @override

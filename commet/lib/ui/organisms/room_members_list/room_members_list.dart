@@ -17,7 +17,8 @@ class _RoomMembersListWidgetState extends State<RoomMembersListWidget> {
   late bool isDirectMessage;
   @override
   void initState() {
-    isDirectMessage = widget.room.client
+    isDirectMessage =
+        widget.room.client
             .getComponent<DirectMessagesComponent>()
             ?.isRoomDirectMessage(widget.room) ??
         false;
@@ -34,13 +35,13 @@ class _RoomMembersListWidgetState extends State<RoomMembersListWidget> {
           child: SizedBox(
             width: MediaQuery.of(context).desktop
                 ? isDirectMessage
-                    ? 300
-                    : 200
+                      ? 300
+                      : 200
                 : null,
             child: RoomMemberList(
-                key: ValueKey(
-                    "room-participant-list-key-${widget.room.localId}"),
-                widget.room),
+              key: ValueKey("room-participant-list-key-${widget.room.localId}"),
+              widget.room,
+            ),
           ),
         ),
       ],

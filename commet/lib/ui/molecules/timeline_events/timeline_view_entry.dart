@@ -31,21 +31,22 @@ import 'package:tiamat/atoms/text.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewEntry extends StatefulWidget {
-  const TimelineViewEntry(
-      {required this.timeline,
-      required this.initialIndex,
-      this.onEventHovered,
-      this.setEditingEvent,
-      this.setReplyingEvent,
-      this.jumpToEvent,
-      this.showDetailed = false,
-      this.singleEvent = false,
-      this.isThreadTimeline = false,
-      this.previewMedia = false,
-      this.lastReadEventId,
-      this.highlightedEventId,
-      this.canCollapse = false,
-      super.key});
+  const TimelineViewEntry({
+    required this.timeline,
+    required this.initialIndex,
+    this.onEventHovered,
+    this.setEditingEvent,
+    this.setReplyingEvent,
+    this.jumpToEvent,
+    this.showDetailed = false,
+    this.singleEvent = false,
+    this.isThreadTimeline = false,
+    this.previewMedia = false,
+    this.lastReadEventId,
+    this.highlightedEventId,
+    this.canCollapse = false,
+    super.key,
+  });
   final Timeline timeline;
   final int initialIndex;
   final Function(String eventId)? onEventHovered;
@@ -80,10 +81,7 @@ enum TimelineEventWidgetDisplayType {
   hidden,
 }
 
-enum TimelineEventWidgetCollapseType {
-  root,
-  child,
-}
+enum TimelineEventWidgetCollapseType { root, child }
 
 class TimelineViewEntryState extends State<TimelineViewEntry>
     implements TimelineEventViewWidget, SelectableEventViewWidget {
@@ -100,6 +98,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool isThreadReply = false;
   bool highlighted = false;
   bool redacted = false;
+  bool senderIsBlocked = false;
 
   TimelineEventWidgetCollapseType? collapse = null;
 
@@ -116,17 +115,22 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   List<String> readReceipts = [];
 
-  String get labelTimelineNewMessagesMarker => Intl.message("New messages",
-      desc: "Text that is shown below the last read message",
-      name: "labelTimelineNewMessagesMarker");
+  String get labelTimelineNewMessagesMarker => Intl.message(
+    "New messages",
+    desc: "Text that is shown below the last read message",
+    name: "labelTimelineNewMessagesMarker",
+  );
 
   @override
   void initState() {
     threads = widget.timeline.room.client.getComponent<ThreadsComponent>();
     polls = widget.timeline.client.getComponent<PollComponent>();
 
-    isThreadReply = threads?.isEventInResponseToThread(
-            widget.timeline.events[widget.initialIndex], widget.timeline) ??
+    isThreadReply =
+        threads?.isEventInResponseToThread(
+          widget.timeline.events[widget.initialIndex],
+          widget.timeline,
+        ) ??
         false;
 
     loadState(widget.initialIndex);
@@ -136,6 +140,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   void loadState(int eventIndex) {
     var event = widget.timeline.events[eventIndex];
     redacted = widget.timeline.isEventRedacted(event);
+
+    senderIsBlocked = widget.timeline.client.isUserBlocked(event.senderId);
 
     var receipts = widget.timeline.room
         .getComponent<ReadReceiptComponent>()
@@ -197,14 +203,16 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool isEventTypeCollapsible(TimelineEventWidgetDisplayType eventType) {
     const collapsibleTypes = [
       TimelineEventWidgetDisplayType.generic,
-      TimelineEventWidgetDisplayType.hidden
+      TimelineEventWidgetDisplayType.hidden,
     ];
 
     return collapsibleTypes.contains(eventType);
   }
 
-  static TimelineEventWidgetDisplayType eventToDisplayType(TimelineEvent event,
-      {PollComponent? polls}) {
+  static TimelineEventWidgetDisplayType eventToDisplayType(
+    TimelineEvent event, {
+    PollComponent? polls,
+  }) {
     if (event is TimelineEventMessage ||
         event is TimelineEventSticker ||
         event is TimelineEventEncrypted) {
@@ -241,7 +249,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (widget.isThreadTimeline) {
       if (threads?.isHeadOfThread(
-              widget.timeline.events[index], widget.timeline) ==
+            widget.timeline.events[index],
+            widget.timeline,
+          ) ==
           true) {
         return true;
       }
@@ -268,7 +278,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     if (widget.timeline.events[index].originServerTs
             .difference(widget.timeline.events[offsetIndex].originServerTs)
             .inHours >
-        2) return true;
+        2)
+      return true;
 
     return false;
   }
@@ -302,7 +313,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (collapse != null &&
         preferences.showStateEvents.value == false &&
-        preferences.developerMode.value == false) return Container();
+        preferences.developerMode.value == false)
+      return Container();
 
     var result = buildEvent();
 
@@ -359,11 +371,15 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                   canCollapse: false,
                   highlightedEventId: widget.highlightedEventId,
                   onEventHovered: widget.onEventHovered,
-                )
+                ),
             ],
-          )
+          ),
         ],
       );
+    }
+
+    if (result != null && senderIsBlocked) {
+      result = Opacity(opacity: 0.5, child: result);
     }
 
     if (result == null) {
@@ -372,10 +388,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (status == TimelineEventStatus.sending ||
         status == TimelineEventStatus.error) {
-      result = Opacity(
-        opacity: 0.5,
-        child: result,
-      );
+      result = Opacity(opacity: 0.5, child: result);
     }
 
     if (status == TimelineEventStatus.error) {
@@ -411,23 +424,24 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           }
 
           showModalBottomSheet(
-              showDragHandle: true,
-              isScrollControlled: true,
-              elevation: 0,
-              context: context,
-              builder: (context) => TimelineEventMenuDialog(
-                    event: event,
-                    timeline: widget.timeline,
-                    menu: TimelineEventMenu(
-                      timeline: widget.timeline,
-                      isThreadTimeline: widget.isThreadTimeline,
-                      event: event,
-                      context: context,
-                      setEditingEvent: widget.setEditingEvent,
-                      setReplyingEvent: widget.setReplyingEvent,
-                      onActionFinished: () => Navigator.of(context).pop(),
-                    ),
-                  ));
+            showDragHandle: true,
+            isScrollControlled: true,
+            elevation: 0,
+            context: context,
+            builder: (context) => TimelineEventMenuDialog(
+              event: event,
+              timeline: widget.timeline,
+              menu: TimelineEventMenu(
+                timeline: widget.timeline,
+                isThreadTimeline: widget.isThreadTimeline,
+                event: event,
+                context: context,
+                setEditingEvent: widget.setEditingEvent,
+                setReplyingEvent: widget.setReplyingEvent,
+                onActionFinished: () => Navigator.of(context).pop(),
+              ),
+            ),
+          );
         },
         child: result,
       );
@@ -437,73 +451,84 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       var event = widget.timeline.tryGetEvent(eventId);
       if (event != null) {
         var menu = TimelineEventMenu(
-            timeline: widget.timeline,
-            event: event,
-            context: context,
-            setEditingEvent: widget.setEditingEvent,
-            setReplyingEvent: widget.setReplyingEvent);
-        result = AdaptiveContextMenu(items: [
-          if (menu.addReactionAction != null)
-            ContextMenuItem(
-              text: "Add Reaction",
-              customBuilder: (context, onClick, {closeMenu}) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    for (var i = 0;
+          timeline: widget.timeline,
+          event: event,
+          context: context,
+          setEditingEvent: widget.setEditingEvent,
+          setReplyingEvent: widget.setReplyingEvent,
+        );
+        result = AdaptiveContextMenu(
+          items: [
+            if (menu.addReactionAction != null)
+              ContextMenuItem(
+                text: "Add Reaction",
+                customBuilder: (context, onClick, {closeMenu}) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      for (
+                        var i = 0;
                         i < 3 && i < menu.recentReactions.length;
-                        i++)
-                      InkWell(
+                        i++
+                      )
+                        InkWell(
                           onTap: () {
-                            widget.timeline.room
-                                .addReaction(event, menu.recentReactions[i]);
+                            widget.timeline.room.addReaction(
+                              event,
+                              menu.recentReactions[i],
+                            );
                             onClick();
                           },
                           child: SizedBox(
-                              height: 30,
-                              width: 30,
-                              child: EmojiWidget(menu.recentReactions[i]))),
-                    tiamat.IconButton(
-                      icon: Icons.add_reaction,
-                      size: 24,
-                      onPressed: () {
-                        onClick();
+                            height: 30,
+                            width: 30,
+                            child: EmojiWidget(menu.recentReactions[i]),
+                          ),
+                        ),
+                      tiamat.IconButton(
+                        icon: Icons.add_reaction,
+                        size: 24,
+                        onPressed: () {
+                          onClick();
 
-                        AdaptiveDialog.show(
-                          context,
-                          builder: (newContext) {
-                            return SizedBox(
+                          AdaptiveDialog.show(
+                            context,
+                            builder: (newContext) {
+                              return SizedBox(
                                 width: 500,
                                 height: 500,
                                 child: menu
-                                    .addReactionAction!.secondaryMenuBuilder!
-                                    .call(
-                                  newContext,
-                                  () {
-                                    Navigator.of(newContext).pop();
-                                  },
-                                ));
-                          },
-                        );
-                        menu.addReactionAction?.action?.call(context);
-                      },
-                    )
-                  ],
+                                    .addReactionAction!
+                                    .secondaryMenuBuilder!
+                                    .call(newContext, () {
+                                      Navigator.of(newContext).pop();
+                                    }),
+                              );
+                            },
+                          );
+                          menu.addReactionAction?.action?.call(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          for (var i in menu.primaryActions)
-            ContextMenuItem(
+            for (var i in menu.primaryActions)
+              ContextMenuItem(
                 text: i.name,
                 icon: i.icon,
-                onPressed: () => i.action?.call(context)),
-          for (var i in menu.secondaryActions)
-            ContextMenuItem(
+                onPressed: () => i.action?.call(context),
+              ),
+            for (var i in menu.secondaryActions)
+              ContextMenuItem(
                 text: i.name,
                 icon: i.icon,
-                onPressed: () => i.action?.call(context))
-        ], child: result);
+                onPressed: () => i.action?.call(context),
+              ),
+          ],
+          child: result,
+        );
       }
     }
 
@@ -517,10 +542,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     if (highlighted) {
       result = Container(
         decoration: BoxDecoration(
-            border: Border(
-                left: BorderSide(
-                    color: Theme.of(context).colorScheme.primary, width: 3)),
-            color: Theme.of(context).colorScheme.surfaceContainer),
+          border: Border(
+            left: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 3,
+            ),
+          ),
+          color: Theme.of(context).colorScheme.surfaceContainer,
+        ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: result,
@@ -533,21 +562,23 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         alignment: Alignment.topRight,
         children: [
           CompositedTransformTarget(
-              link: timelineLayerLink!, child: const SizedBox()),
-          result
+            link: timelineLayerLink!,
+            child: const SizedBox(),
+          ),
+          result,
         ],
       );
     }
 
     if (showUnreadMarker) {
-      result = Column(children: [
-        buildNewMessagesMarker(),
-        result,
-      ]);
+      result = Column(children: [buildNewMessagesMarker(), result]);
     } else {
       if (showDateSeperator) {
         result = Column(
-          children: [TimelineEventDateTimeMarker(time: time), result],
+          children: [
+            TimelineEventDateTimeMarker(time: time),
+            result,
+          ],
         );
       }
     }
@@ -562,15 +593,12 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-              child: Divider(
-            color: color,
-            thickness: 1.0,
-          )),
+          Expanded(child: Divider(color: color, thickness: 1.0)),
           DecoratedBox(
             decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(12)),
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
               child: tiamat.Text(
@@ -580,11 +608,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
               ),
             ),
           ),
-          Expanded(
-              child: Divider(
-            color: color,
-            thickness: 1.0,
-          )),
+          Expanded(child: Divider(color: color, thickness: 1.0)),
         ],
       ),
     );
@@ -603,17 +627,18 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (_widgetType == TimelineEventWidgetDisplayType.message)
       return TimelineEventViewMessage(
-          key: eventKey,
-          timeline: widget.timeline,
-          isThreadTimeline: widget.isThreadTimeline,
-          detailed: widget.showDetailed || selected,
-          onReadReceiptsTapped: onReadReceiptsTapped,
-          readReceipts: readReceipts,
-          overrideShowSender:
-              widget.singleEvent || showDateSeperator || showUnreadMarker,
-          jumpToEvent: widget.jumpToEvent,
-          previewMedia: widget.previewMedia,
-          initialIndex: widget.initialIndex);
+        key: eventKey,
+        timeline: widget.timeline,
+        isThreadTimeline: widget.isThreadTimeline,
+        detailed: widget.showDetailed || selected,
+        onReadReceiptsTapped: onReadReceiptsTapped,
+        readReceipts: readReceipts,
+        overrideShowSender:
+            widget.singleEvent || showDateSeperator || showUnreadMarker,
+        jumpToEvent: widget.jumpToEvent,
+        previewMedia: widget.previewMedia,
+        initialIndex: widget.initialIndex,
+      );
 
     if (_widgetType == TimelineEventWidgetDisplayType.generic &&
         (preferences.showStateEvents.value || preferences.developerMode.value))
@@ -659,9 +684,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
             onReadReceiptsTapped: onReadReceiptsTapped,
             readReceipts: readReceipts,
           )
-        : Container(
-            key: eventKey,
-          );
+        : Container(key: eventKey);
   }
 
   @override
@@ -690,16 +713,23 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   }
 
   onReadReceiptsTapped() {
-    AdaptiveDialog.show(context, title: "Read Receipts", builder: (context) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: readReceipts
-            .map((i) => UserPanel(
-                userId: i,
-                client: widget.timeline.client,
-                contextRoom: widget.timeline.room))
-            .toList(),
-      );
-    });
+    AdaptiveDialog.show(
+      context,
+      title: "Read Receipts",
+      builder: (context) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: readReceipts
+              .map(
+                (i) => UserPanel(
+                  userId: i,
+                  client: widget.timeline.client,
+                  contextRoom: widget.timeline.room,
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
   }
 }

@@ -17,7 +17,7 @@ class SpaceSidebarEntry extends SidebarEntry {
   Space space;
 
   SpaceSidebarEntry(this.space, {required String order})
-      : super(space.localId, order);
+    : super(space.localId, order);
 }
 
 class SpaceGroupSidebarEntry extends SidebarEntry {
@@ -25,7 +25,7 @@ class SpaceGroupSidebarEntry extends SidebarEntry {
   List<SpaceSidebarEntry> spaces;
 
   SpaceGroupSidebarEntry(this.groupId, this.spaces, {required String order})
-      : super(groupId, order);
+    : super(groupId, order);
 }
 
 class StringOrderGenerator {

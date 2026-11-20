@@ -3,8 +3,10 @@ import 'package:commet/client/components/push_notification/notification_content.
 
 class NotificationModifierDoNotDisturb implements NotificationModifier {
   @override
-  Future<NotificationContent?> process(NotificationContent content,
-      {Function(String reason)? onNotificationRejected}) async {
+  Future<NotificationContent?> process(
+    NotificationContent content, {
+    Function(String reason)? onNotificationRejected,
+  }) async {
     return null;
   }
 }

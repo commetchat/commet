@@ -18,7 +18,9 @@ class MatrixInAppWebViewWidgetTransceiver implements WidgetTransceiver {
   InAppWebViewController controller;
   MatrixInAppWebViewWidgetTransceiver(this.controller) {
     controller.addJavaScriptHandler(
-        handlerName: "widget_handler", callback: onJsCallback);
+      handlerName: "widget_handler",
+      callback: onJsCallback,
+    );
   }
 
   onJsCallback(List<dynamic> arguments) async {
@@ -59,7 +61,8 @@ class MatrixInAppWebViewWidgetTransceiver implements WidgetTransceiver {
 
     Log.i("Sending message id: $id");
 
-    var script = """
+    var script =
+        """
     var data = sessionStorage.getItem('${id}');
     window.onMessagePolyfill(data);
     sessionStorage.removeItem('${id}');

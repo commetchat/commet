@@ -9,8 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SingleInvitationComponentIncomingView extends StatefulWidget {
-  const SingleInvitationComponentIncomingView(this.component,
-      {super.key, this.showCurrentUserId = false});
+  const SingleInvitationComponentIncomingView(
+    this.component, {
+    super.key,
+    this.showCurrentUserId = false,
+  });
   final InvitationComponent component;
   final bool showCurrentUserId;
 
@@ -22,15 +25,17 @@ class SingleInvitationComponentIncomingView extends StatefulWidget {
 class _SingleInvitationComponentIncomingViewState
     extends State<SingleInvitationComponentIncomingView> {
   String labelInvitationsForUser(String user) => Intl.message(
-      "Invitations for $user",
-      desc:
-          "Label for the list of incoming invitations, specifying which user these invitations are intended for",
-      args: [user],
-      name: "labelInvitationsForUser");
+    "Invitations for $user",
+    desc: "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+    args: [user],
+    name: "labelInvitationsForUser",
+  );
 
-  String get labelInvitations => Intl.message("Invitations",
-      desc: "Label for the list of incoming invitations",
-      name: "labelInvitations");
+  String get labelInvitations => Intl.message(
+    "Invitations",
+    desc: "Label for the list of incoming invitations",
+    name: "labelInvitations",
+  );
 
   StreamSubscription? sub;
 
@@ -55,33 +60,37 @@ class _SingleInvitationComponentIncomingViewState
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
       child: tiamat.Panel(
-          mode: tiamat.TileType.surfaceContainer,
-          header: widget.showCurrentUserId
-              ? labelInvitationsForUser(
-                  widget.component.client.self!.displayName)
-              : labelInvitations,
-          child: Column(
-            children: [
-              for (var invite in widget.component.invitations)
-                InvitationDisplay(
-                  invite,
-                  acceptInvitation: (invitation) =>
-                      acceptInvitation(widget.component, invitation),
-                  rejectInvitation: (invitation) =>
-                      rejectInvitation(widget.component, invitation),
-                )
-            ],
-          )),
+        mode: tiamat.TileType.surfaceContainer,
+        header: widget.showCurrentUserId
+            ? labelInvitationsForUser(widget.component.client.self!.displayName)
+            : labelInvitations,
+        child: Column(
+          children: [
+            for (var invite in widget.component.invitations)
+              InvitationDisplay(
+                invite,
+                acceptInvitation: (invitation) =>
+                    acceptInvitation(widget.component, invitation),
+                rejectInvitation: (invitation) =>
+                    rejectInvitation(widget.component, invitation),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
   Future<void> acceptInvitation(
-      InvitationComponent<Client> comp, Invitation invite) async {
+    InvitationComponent<Client> comp,
+    Invitation invite,
+  ) async {
     await comp.acceptInvitation(invite);
   }
 
   Future<void> rejectInvitation(
-      InvitationComponent<Client> comp, Invitation invite) async {
+    InvitationComponent<Client> comp,
+    Invitation invite,
+  ) async {
     await comp.rejectInvitation(invite);
   }
 }

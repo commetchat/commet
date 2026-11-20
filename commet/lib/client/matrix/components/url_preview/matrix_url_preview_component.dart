@@ -27,7 +27,9 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
   @override
   Future<UrlPreviewData?> getPreview(
-      Timeline timeline, TimelineEvent event) async {
+    Timeline timeline,
+    TimelineEvent event,
+  ) async {
     if (event is! TimelineEventMessage) {
       return null;
     }
@@ -36,7 +38,8 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     if (room.isE2EE && preferences.urlPreviewInE2EEChat.value == false) {
       Log.i(
-          "Not getting url preview because chat is encrypted and its not enabled");
+        "Not getting url preview because chat is encrypted and its not enabled",
+      );
       return null;
     }
 
@@ -99,7 +102,9 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
   @override
   bool shouldGetPreviewDataForTimelineEvent(
-      Timeline timeline, TimelineEvent event) {
+    Timeline timeline,
+    TimelineEvent event,
+  ) {
     if (event is! TimelineEventMessage) {
       return false;
     }
@@ -140,8 +145,10 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
     var data = null;
 
     try {
-      data =
-          await fetchPreviewData((room as MatrixRoom).matrixRoom.client, uri);
+      data = await fetchPreviewData(
+        (room as MatrixRoom).matrixRoom.client,
+        uri,
+      );
     } catch (_) {
       return null;
     }
@@ -154,12 +161,16 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
   }
 
   Future<UrlPreviewData?> fetchPreviewData(
-      matrix.Client client, Uri url) async {
+    matrix.Client client,
+    Uri url,
+  ) async {
     late Map<String, Object?> response;
     try {
       response = await client.request(
-          matrix.RequestType.GET, await getRequestPath(),
-          query: {"url": url.toString()});
+        matrix.RequestType.GET,
+        await getRequestPath(),
+        query: {"url": url.toString()},
+      );
     } catch (e, s) {
       if (e is MatrixException) {
         if (e.error == MatrixError.M_UNRECOGNIZED) {
@@ -226,12 +237,14 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
       var uri = Uri.parse(video);
 
       if (uri.scheme == "https") {
-        videoAttachment = VideoAttachment(WebFileProvider(uri),
-            width: videoWidth?.toDouble(),
-            height: videoHeight?.toDouble(),
-            streamUrl: uri,
-            thumbnail: image,
-            mimeType: videoType);
+        videoAttachment = VideoAttachment(
+          WebFileProvider(uri),
+          width: videoWidth?.toDouble(),
+          height: videoHeight?.toDouble(),
+          streamUrl: uri,
+          thumbnail: image,
+          mimeType: videoType,
+        );
       }
     }
 
@@ -239,12 +252,14 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
       description = description.replaceAll("\n", "    ");
     }
 
-    return UrlPreviewData(url,
-        siteName: siteName,
-        title: title,
-        image: image,
-        video: videoAttachment,
-        type: destinationType,
-        description: description);
+    return UrlPreviewData(
+      url,
+      siteName: siteName,
+      title: title,
+      image: image,
+      video: videoAttachment,
+      type: destinationType,
+      description: description,
+    );
   }
 }

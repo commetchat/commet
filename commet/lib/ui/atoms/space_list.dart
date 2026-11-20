@@ -15,12 +15,14 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
-  const SpaceList(this.space,
-      {this.onRoomSelected,
-      this.isTopLevel = true,
-      this.currentDepth = 0,
-      this.maxDepth = 5,
-      super.key});
+  const SpaceList(
+    this.space, {
+    this.onRoomSelected,
+    this.isTopLevel = true,
+    this.currentDepth = 0,
+    this.maxDepth = 5,
+    super.key,
+  });
   final Function(Room room, {bool bypassSpecialRoomType})? onRoomSelected;
 
   final bool isTopLevel;
@@ -43,8 +45,11 @@ class _SpaceListState extends State<SpaceList> {
   late List<StreamSubscription> subs;
 
   Room? selectedRoom;
-  String get labelRoomsList => Intl.message("Rooms",
-      desc: "Header label for the list of rooms", name: "labelRoomsList");
+  String get labelRoomsList => Intl.message(
+    "Rooms",
+    desc: "Header label for the list of rooms",
+    name: "labelRoomsList",
+  );
 
   @override
   void initState() {
@@ -52,12 +57,15 @@ class _SpaceListState extends State<SpaceList> {
     previews = widget.space.childPreviews;
 
     subs = [
-      widget.space.onChildRoomPreviewAdded
-          .listen((_) => onPreviewListChanged()),
-      widget.space.onChildRoomPreviewsUpdated
-          .listen((_) => onPreviewListChanged()),
-      widget.space.onChildRoomPreviewRemoved
-          .listen((_) => onPreviewListChanged()),
+      widget.space.onChildRoomPreviewAdded.listen(
+        (_) => onPreviewListChanged(),
+      ),
+      widget.space.onChildRoomPreviewsUpdated.listen(
+        (_) => onPreviewListChanged(),
+      ),
+      widget.space.onChildRoomPreviewRemoved.listen(
+        (_) => onPreviewListChanged(),
+      ),
       EventBus.onSelectedRoomChanged.stream.listen(onRoomSelected),
       widget.space.onUpdate.listen(onSpaceUpdated),
       widget.space.onChildSpaceAdded.listen(onSpaceUpdated),
@@ -118,12 +126,14 @@ class _SpaceListState extends State<SpaceList> {
 
   Widget roomsList() {
     if (widget.isTopLevel) {
-      return tiamat.TextButtonExpander(labelRoomsList,
-          childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-          initiallyExpanded: true,
-          iconColor: Theme.of(context).colorScheme.secondary,
-          textColor: Theme.of(context).colorScheme.secondary,
-          children: [buildRoomsList()]);
+      return tiamat.TextButtonExpander(
+        labelRoomsList,
+        childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+        initiallyExpanded: true,
+        iconColor: Theme.of(context).colorScheme.secondary,
+        textColor: Theme.of(context).colorScheme.secondary,
+        children: [buildRoomsList()],
+      );
     } else {
       return buildRoomsList();
     }
@@ -147,16 +157,15 @@ class _SpaceListState extends State<SpaceList> {
   }
 
   Widget buildPreviewChild(RoomPreview preview) {
-    return RoomPreviewTextButton(
-      preview,
-      onTap: joinRoomWithConfirmation,
-    );
+    return RoomPreviewTextButton(preview, onTap: joinRoomWithConfirmation);
   }
 
   Future<void> joinRoomWithConfirmation(RoomPreview preview) async {
-    if (await AdaptiveDialog.confirmation(context,
-            prompt:
-                "Are you sure you want to join the room '${preview.displayName}' ?") ==
+    if (await AdaptiveDialog.confirmation(
+          context,
+          prompt:
+              "Are you sure you want to join the room '${preview.displayName}' ?",
+        ) ==
         true) {
       Room room = await widget.space.client.joinRoomFromPreview(preview);
       await widget.onRoomSelected?.call(room);
@@ -178,24 +187,26 @@ class _SpaceListState extends State<SpaceList> {
                     widget.space.removeChild(child);
                   }
                 },
-              )
+              ),
           ],
-          child: tiamat.TextButtonExpander(child.child.displayName,
-              initiallyExpanded: true,
-              childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-              iconColor: Theme.of(context).colorScheme.secondary,
-              textColor: Theme.of(context).colorScheme.secondary,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                  child: SpaceList(
-                    child.child,
-                    isTopLevel: false,
-                    currentDepth: widget.currentDepth + 1,
-                    onRoomSelected: widget.onRoomSelected,
-                  ),
-                )
-              ]),
+          child: tiamat.TextButtonExpander(
+            child.child.displayName,
+            initiallyExpanded: true,
+            childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+            iconColor: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.secondary,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                child: SpaceList(
+                  child.child,
+                  isTopLevel: false,
+                  currentDepth: widget.currentDepth + 1,
+                  onRoomSelected: widget.onRoomSelected,
+                ),
+              ),
+            ],
+          ),
         );
       } else {
         return tiamat.TextButton(widget.space.displayName);

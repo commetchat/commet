@@ -21,41 +21,53 @@ class SettingsCategorySpace implements SettingsCategory {
   SettingsCategorySpace(this.space);
   Space space;
 
-  String get labelSpaceSettingsGeneral => Intl.message("General",
-      name: "labelSpaceSettingsGeneral",
-      desc: "Label for general space settings");
+  String get labelSpaceSettingsGeneral => Intl.message(
+    "General",
+    name: "labelSpaceSettingsGeneral",
+    desc: "Label for general space settings",
+  );
 
-  String get labelSpaceAppearanceSettings => Intl.message("Appearance",
-      name: "labelSpaceAppearanceSettings",
-      desc: "Label for space appearance settings");
+  String get labelSpaceAppearanceSettings => Intl.message(
+    "Appearance",
+    name: "labelSpaceAppearanceSettings",
+    desc: "Label for space appearance settings",
+  );
 
-  String get labelSpaceEmoticonSettings => Intl.message("Emoticons",
-      name: "labelSpaceEmoticonSettings",
-      desc: "Label for space emoticon settings");
+  String get labelSpaceEmoticonSettings => Intl.message(
+    "Emoticons",
+    name: "labelSpaceEmoticonSettings",
+    desc: "Label for space emoticon settings",
+  );
 
-  String get labelSpacePermissionSettings => Intl.message("Permissions",
-      name: "labelSpacePermissionSettings",
-      desc: "Label for space permission settings");
+  String get labelSpacePermissionSettings => Intl.message(
+    "Permissions",
+    name: "labelSpacePermissionSettings",
+    desc: "Label for space permission settings",
+  );
 
-  String get labelSpaceDeveloperSettings => Intl.message("Developer",
-      name: "labelSpaceDeveloperSettings",
-      desc: "Label for space developer settings");
+  String get labelSpaceDeveloperSettings => Intl.message(
+    "Developer",
+    name: "labelSpaceDeveloperSettings",
+    desc: "Label for space developer settings",
+  );
 
-  String get labelSettingsCategorySpace => Intl.message("Space Settings",
-      name: "labelSettingsCategorySpace",
-      desc: "Label for the overall space settings category");
+  String get labelSettingsCategorySpace => Intl.message(
+    "Space Settings",
+    name: "labelSettingsCategorySpace",
+    desc: "Label for the overall space settings category",
+  );
 
   String get labelSpaceSettingsSecurity => Intl.message(
-        "Security",
-        name: "labelSpaceSettingsSecurity",
-        desc: "Label for space security settings",
-      );
+    "Security",
+    name: "labelSpaceSettingsSecurity",
+    desc: "Label for space security settings",
+  );
 
   String get labelSpaceSettingsMembers => Intl.message(
-        "Members",
-        name: "labelSpaceSettingsMembers",
-        desc: "Label for space member settings",
-      );
+    "Members",
+    name: "labelSpaceSettingsMembers",
+    desc: "Label for space member settings",
+  );
 
   @override
   String get title => labelSettingsCategorySpace;
@@ -64,25 +76,23 @@ class SettingsCategorySpace implements SettingsCategory {
   List<SettingsTab> get tabs => getTabs();
 
   List<SettingsTab> getTabs() {
-    SpaceEmoticonComponent? emoticons =
-        space.getComponent<SpaceEmoticonComponent>();
+    SpaceEmoticonComponent? emoticons = space
+        .getComponent<SpaceEmoticonComponent>();
     return List.from([
       SettingsTab(
-          label: labelSpaceSettingsGeneral,
-          icon: Icons.settings,
-          pageBuilder: (context) {
-            return SpaceGeneralSettingsPage(
-              space: space,
-            );
-          }),
+        label: labelSpaceSettingsGeneral,
+        icon: Icons.settings,
+        pageBuilder: (context) {
+          return SpaceGeneralSettingsPage(space: space);
+        },
+      ),
       SettingsTab(
-          label: labelSpaceAppearanceSettings,
-          icon: Icons.style,
-          pageBuilder: (context) {
-            return SpaceAppearanceSettingsPage(
-              space: space,
-            );
-          }),
+        label: labelSpaceAppearanceSettings,
+        icon: Icons.style,
+        pageBuilder: (context) {
+          return SpaceAppearanceSettingsPage(space: space);
+        },
+      ),
       if (space case MatrixSpace s)
         SettingsTab(
           label: labelSpaceSettingsSecurity,
@@ -90,45 +100,56 @@ class SettingsCategorySpace implements SettingsCategory {
           makeScrollable: false,
           pageBuilder: (context) {
             return RoomSecuritySettingsPage(
-                showEncryptionToggle: false,
-                room: MatrixRoom(space.client as MatrixClient, s.matrixRoom,
-                    s.matrixRoom.client));
+              showEncryptionToggle: false,
+              room: MatrixRoom(
+                space.client as MatrixClient,
+                s.matrixRoom,
+                s.matrixRoom.client,
+              ),
+            );
           },
         ),
       if (emoticons != null &&
           (space.permissions.canEditRoomEmoticons ||
               emoticons.ownedPacks.isNotEmpty))
         SettingsTab(
-            label: labelSpaceEmoticonSettings,
-            icon: Icons.emoji_emotions,
-            pageBuilder: (context) {
-              return SpaceEmojiPackSettings(space);
-            }),
+          label: labelSpaceEmoticonSettings,
+          icon: Icons.emoji_emotions,
+          pageBuilder: (context) {
+            return SpaceEmojiPackSettings(space);
+          },
+        ),
       if (space is MatrixSpace)
         SettingsTab(
-            label: labelSpacePermissionSettings,
-            icon: Icons.admin_panel_settings,
-            makeScrollable: false,
-            pageBuilder: (context) {
-              return MatrixRoomPermissionsPage(
-                  (space as MatrixSpace).matrixRoom);
-            }),
+          label: labelSpacePermissionSettings,
+          icon: Icons.admin_panel_settings,
+          makeScrollable: false,
+          pageBuilder: (context) {
+            return MatrixRoomPermissionsPage((space as MatrixSpace).matrixRoom);
+          },
+        ),
       if (preferences.developerMode.value)
         SettingsTab(
-            label: labelSpaceDeveloperSettings,
-            icon: Icons.code,
-            makeScrollable: true,
-            pageBuilder: (context) {
-              return SpaceDeveloperSettingsView(space);
-            }),
+          label: labelSpaceDeveloperSettings,
+          icon: Icons.code,
+          makeScrollable: true,
+          pageBuilder: (context) {
+            return SpaceDeveloperSettingsView(space);
+          },
+        ),
       if (space case MatrixSpace s)
         SettingsTab(
           label: labelSpaceSettingsMembers,
           icon: Icons.people,
           makeScrollable: false,
           pageBuilder: (context) {
-            return RoomMemberList(MatrixRoom(space.client as MatrixClient,
-                s.matrixRoom, s.matrixRoom.client));
+            return RoomMemberList(
+              MatrixRoom(
+                space.client as MatrixClient,
+                s.matrixRoom,
+                s.matrixRoom.client,
+              ),
+            );
           },
         ),
     ]);

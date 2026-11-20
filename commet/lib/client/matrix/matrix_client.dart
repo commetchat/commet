@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/auth.dart';
@@ -22,13 +23,16 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/notifying_list_filter.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
+
 import 'dart:convert';
+
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -39,6 +43,7 @@ import 'package:flutter_vodozemac/flutter_vodozemac.dart' as vodozemac;
 import '../../ui/atoms/code_block.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
+
 import 'package:vodozemac/vodozemac.dart' as vod;
 
 class MatrixClient extends Client {
@@ -97,10 +102,11 @@ class MatrixClient extends Client {
       },
       onFilterParamsChanged: [
         _matrixClient.onSync.stream.where((sync) {
-          return sync.rooms?.join?.values.any((i) =>
-                  i.accountData?.any((i) => i.type == "m.tag") == true) ==
+          return sync.rooms?.join?.values.any(
+                (i) => i.accountData?.any((i) => i.type == "m.tag") == true,
+              ) ==
               true;
-        })
+        }),
       ],
     );
 
@@ -166,24 +172,23 @@ class MatrixClient extends Client {
       StoredStreamController<ClientConnectionStatusUpdate>();
 
   static String get matrixClientOlmMissingMessage => Intl.message(
-        "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
-        name: "matrixClientOlmMissingMessage",
-        desc:
-            "Text that explains to the user that libolm dependency is not found",
-      );
+    "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
+    name: "matrixClientOlmMissingMessage",
+    desc: "Text that explains to the user that libolm dependency is not found",
+  );
 
   static String get matrixClientVodozemacMissingMessage => Intl.message(
-        "vodozemac is not installed or was not found. End to End Encryption will not be available until this is resolved",
-        name: "matrixClientVodozemacMissingMessage",
-        desc:
-            "Text that explains to the user that vodozemac dependency is not found",
-      );
+    "vodozemac is not installed or was not found. End to End Encryption will not be available until this is resolved",
+    name: "matrixClientVodozemacMissingMessage",
+    desc:
+        "Text that explains to the user that vodozemac dependency is not found",
+  );
 
   static String get matrixClientEncryptionWarningTitle => Intl.message(
-        "Encryption Warning",
-        name: "matrixClientEncryptionWarningTitle",
-        desc: "Title of a warning about encryption",
-      );
+    "Encryption Warning",
+    name: "matrixClientEncryptionWarningTitle",
+    desc: "Title of a warning about encryption",
+  );
 
   static Future<void> loadFromDB(
     ClientManager manager, {
@@ -201,33 +206,30 @@ class MatrixClient extends Client {
           var client = await MatrixClient.create(clientName);
           manager.addClient(client);
           futures.add(
-            Diagnostics.general.timeAsync(
-              "Initializing client $clientName",
-              () async {
-                try {
-                  await client.init(
-                    true,
-                    isBackgroundService: isBackgroundService,
-                  );
-                } catch (error, trace) {
-                  Log.onError(
-                    error,
-                    trace,
-                    content: "Unable to load client $clientName from database",
-                  );
+            Diagnostics.general.timeAsync("Initializing client $clientName", () async {
+              try {
+                await client.init(
+                  true,
+                  isBackgroundService: isBackgroundService,
+                );
+              } catch (error, trace) {
+                Log.onError(
+                  error,
+                  trace,
+                  content: "Unable to load client $clientName from database",
+                );
 
-                  client.self = ErrorProfile();
-                  manager.alertManager.addAlert(
-                    Alert(
-                      AlertType.warning,
-                      messageGetter: () =>
-                          "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
-                      titleGetter: () => "Unable to load account",
-                    ),
-                  );
-                }
-              },
-            ),
+                client.self = ErrorProfile();
+                manager.alertManager.addAlert(
+                  Alert(
+                    AlertType.warning,
+                    messageGetter: () =>
+                        "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
+                    titleGetter: () => "Unable to load account",
+                  ),
+                );
+              }
+            }),
           );
         }
       }
@@ -256,11 +258,11 @@ class MatrixClient extends Client {
 
   static matrix.NativeImplementations get nativeImplementations =>
       BuildConfig.WEB
-          ? const matrix.NativeImplementationsDummy()
-          : matrix.NativeImplementationsIsolate(
-              compute,
-              vodozemacInit: vodozemac.init,
-            );
+      ? const matrix.NativeImplementationsDummy()
+      : matrix.NativeImplementationsIsolate(
+          compute,
+          vodozemacInit: vodozemac.init,
+        );
   @override
   Future<void> init(
     bool loadingFromCache, {
@@ -293,6 +295,7 @@ class MatrixClient extends Client {
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
+    _handleUserIgnored(update);
     _handleComponentSync(update);
 
     _onSync.add(null);
@@ -332,6 +335,16 @@ class MatrixClient extends Client {
             }
           }
         }
+      }
+    }
+  }
+
+  void _handleUserIgnored(matrix.SyncUpdate update) {
+    var account = update.accountData;
+    if (account != null) {
+      if (account.any((i) => i.type == "m.ignored_user_list")) {
+        Log.i("User block event detected, notifying");
+        EventBus.userBlockStatusChanged.add(null);
       }
     }
   }
@@ -393,20 +406,23 @@ class MatrixClient extends Client {
       var data = await _matrixClient.database.getUserProfile(id);
       if (data != null) {
         self = MatrixProfile(
-            this,
-            matrix.Profile(
-              userId: id,
-              displayName: data.displayname,
-              avatarUrl: data.avatarUrl,
-            ));
+          this,
+          matrix.Profile(
+            userId: id,
+            displayName: data.displayname,
+            avatarUrl: data.avatarUrl,
+          ),
+        );
 
         // Update own profile, but lets not wait for it before continuing
         _matrixClient.getProfileFromUserId(id).then((profile) {
           self = MatrixProfile(this, profile);
         });
       } else {
-        self = MatrixProfile(this,
-            await _matrixClient.getProfileFromUserId(_matrixClient.userID!));
+        self = MatrixProfile(
+          this,
+          await _matrixClient.getProfileFromUserId(_matrixClient.userID!),
+        );
       }
     }
   }
@@ -459,8 +475,8 @@ class MatrixClient extends Client {
       powerLevelAdditions = {
         "events": {
           "org.matrix.msc3401.call": 0,
-          "org.matrix.msc3401.call.member": 0
-        }
+          "org.matrix.msc3401.call.member": 0,
+        },
       };
     }
 
@@ -510,21 +526,25 @@ class MatrixClient extends Client {
         ...initialState,
         for (var i in restricted.spaces)
           matrix.StateEvent(
-              stateKey: i,
-              type: matrix.EventTypes.SpaceParent,
-              content: {
-                "canonical": true,
-                "via": [
-                  if (self?.identifier.domain != null) self?.identifier.domain
-                ]
-              }),
-        matrix.StateEvent(content: {
-          "join_rule": "restricted",
-          "allow": [
-            for (var i in restricted.spaces)
-              {"room_id": i, "type": "m.room_membership"},
-          ]
-        }, type: matrix.EventTypes.RoomJoinRules)
+            stateKey: i,
+            type: matrix.EventTypes.SpaceParent,
+            content: {
+              "canonical": true,
+              "via": [
+                if (self?.identifier.domain != null) self?.identifier.domain,
+              ],
+            },
+          ),
+        matrix.StateEvent(
+          content: {
+            "join_rule": "restricted",
+            "allow": [
+              for (var i in restricted.spaces)
+                {"room_id": i, "type": "m.room_membership"},
+            ],
+          },
+          type: matrix.EventTypes.RoomJoinRules,
+        ),
       ];
     }
 
@@ -556,10 +576,14 @@ class MatrixClient extends Client {
           "events": <String, dynamic>{
             ...?currentPerms["events"] as Map<String, dynamic>?,
             ...?powerLevelAdditions["events"] as Map<String, dynamic>?,
-          }
+          },
         };
         _matrixClient.setRoomStateWithKey(
-            id, matrix.EventTypes.RoomPowerLevels, "", newPerms);
+          id,
+          matrix.EventTypes.RoomPowerLevels,
+          "",
+          newPerms,
+        );
       }
     }
 
@@ -631,12 +655,11 @@ class MatrixClient extends Client {
 
   @override
   Future<void> setAvatar(Uint8List bytes, String mimeType) async {
-    await _matrixClient.setAvatar(matrix.MatrixImageFile(
-        bytes: bytes, name: "avatar", mimeType: mimeType));
+    await _matrixClient.setAvatar(
+      matrix.MatrixImageFile(bytes: bytes, name: "avatar", mimeType: mimeType),
+    );
 
     await _updateOwnProfile();
-    // TODO: Handle refresh avatar
-    // await (self as MatrixPeer).refreshAvatar();
   }
 
   @override
@@ -779,7 +802,8 @@ class MatrixClient extends Client {
   void onSyncStatusChanged(matrix.SyncStatusUpdate event) {
     ClientConnectionStatus value = ClientConnectionStatus.unknown;
 
-    var connected = _matrixClient.onSync.value != null &&
+    var connected =
+        _matrixClient.onSync.value != null &&
         event.status != matrix.SyncStatus.error &&
         _matrixClient.prevBatch != null;
 
@@ -911,8 +935,9 @@ class MatrixClient extends Client {
     var data = await matrixClient.getWellknown();
     Log.i(data);
 
-    var prop =
-        data.additionalProperties.tryGetMap<String, dynamic>("io.element.e2ee");
+    var prop = data.additionalProperties.tryGetMap<String, dynamic>(
+      "io.element.e2ee",
+    );
 
     var value = prop?.tryGet<bool>("force_disable");
 
@@ -934,6 +959,48 @@ class MatrixClient extends Client {
     }
 
     return joinRoom(roomId);
+  }
+
+  @override
+  Future<void> blockUser(String userId) async {
+    await _matrixClient.setAccountData(
+      _matrixClient.userID!,
+      'm.ignored_user_list',
+      {
+        'ignored_users': Map.fromEntries(
+          (_matrixClient.ignoredUsers..add(userId)).map(
+            (key) => MapEntry(key, {}),
+          ),
+        ),
+      },
+    );
+
+    EventBus.userBlockStatusChanged.add(null);
+  }
+
+  bool isUserBlocked(String userId) {
+    return _matrixClient.ignoredUsers.contains(userId);
+  }
+
+  List<String> blockedUsers() {
+    return _matrixClient.ignoredUsers;
+  }
+
+  @override
+  Future<void> unblockUser(String userId) async {
+    await _matrixClient.setAccountData(
+      _matrixClient.userID!,
+      'm.ignored_user_list',
+      {
+        'ignored_users': Map.fromEntries(
+          (_matrixClient.ignoredUsers..remove(userId)).map(
+            (key) => MapEntry(key, {}),
+          ),
+        ),
+      },
+    );
+
+    EventBus.userBlockStatusChanged.add(null);
   }
 }
 

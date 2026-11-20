@@ -31,14 +31,15 @@ class GenericRoomPreview implements RoomPreview {
 
   RoomType? type;
 
-  @override
-  GenericRoomPreview(this.roomId,
-      {this.avatar,
-      required this.displayName,
-      required this.type,
-      this.numMembers,
-      this.visibility,
-      this.topic});
+  GenericRoomPreview(
+    this.roomId, {
+    this.avatar,
+    required this.displayName,
+    required this.type,
+    this.numMembers,
+    this.visibility,
+    this.topic,
+  });
 
   @override
   Color get color => Colors.grey;

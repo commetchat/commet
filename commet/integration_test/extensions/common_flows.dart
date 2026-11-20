@@ -16,8 +16,10 @@ extension CommonFlows on WidgetTester {
       const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
   String get username =>
       const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
-  String get password => const String.fromEnvironment('USER1_PW',
-      defaultValue: "AliceInWonderland");
+  String get password => const String.fromEnvironment(
+    'USER1_PW',
+    defaultValue: "AliceInWonderland",
+  );
 
   String get userTwoName =>
       const String.fromEnvironment('USER2_NAME', defaultValue: "bob");
@@ -81,8 +83,11 @@ extension CommonFlows on WidgetTester {
 
     await pumpAndSettle();
 
-    await waitFor(() => app.clientManager.isLoggedIn(),
-        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await waitFor(
+      () => app.clientManager.isLoggedIn(),
+      timeout: const Duration(seconds: 5),
+      skipPumpAndSettle: true,
+    );
     expect(app.clientManager.isLoggedIn(), equals(true));
   }
 
@@ -104,8 +109,11 @@ extension CommonFlows on WidgetTester {
 
     await pumpAndSettle();
 
-    await waitFor(() => app.clientManager.isLoggedIn(),
-        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await waitFor(
+      () => app.clientManager.isLoggedIn(),
+      timeout: const Duration(seconds: 5),
+      skipPumpAndSettle: true,
+    );
     expect(app.clientManager.isLoggedIn(), equals(true));
   }
 
@@ -137,8 +145,11 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<void> openSettings(App app) async {
-    await dragUntilVisible(find.byKey(SideNavigationBar.settingsKey),
-        find.byType(SideNavigationBar), const Offset(0, 20));
+    await dragUntilVisible(
+      find.byKey(SideNavigationBar.settingsKey),
+      find.byType(SideNavigationBar),
+      const Offset(0, 20),
+    );
 
     await tap(find.byKey(SideNavigationBar.settingsKey));
 

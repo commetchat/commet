@@ -11,20 +11,21 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceGroupWidget extends StatefulWidget {
-  const SpaceGroupWidget(
-      {required this.spaces,
-      this.onSelected,
-      required this.folderId,
-      this.width = 44,
-      this.onDragEnd,
-      this.onDragCompleted,
-      this.onDragStarted,
-      this.onDragUpdate,
-      this.dragPosition,
-      this.initiallyOpen = false,
-      this.onExpansionStateChanged,
-      this.shouldShowAvatarForSpace,
-      super.key});
+  const SpaceGroupWidget({
+    required this.spaces,
+    this.onSelected,
+    required this.folderId,
+    this.width = 44,
+    this.onDragEnd,
+    this.onDragCompleted,
+    this.onDragStarted,
+    this.onDragUpdate,
+    this.dragPosition,
+    this.initiallyOpen = false,
+    this.onExpansionStateChanged,
+    this.shouldShowAvatarForSpace,
+    super.key,
+  });
   final List<SpaceSidebarEntry> spaces;
   final double width;
   final String folderId;
@@ -162,8 +163,9 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                 child: AnimatedContainer(
                   alignment: AlignmentGeometry.topLeft,
                   decoration: BoxDecoration(
-                      color: ColorScheme.of(context).surfaceContainerHigh,
-                      borderRadius: radius),
+                    color: ColorScheme.of(context).surfaceContainerHigh,
+                    borderRadius: radius,
+                  ),
                   height: expanded ? expandedHeight : unexpandedHeight,
                   clipBehavior: Clip.hardEdge,
                   duration: animationDuration,
@@ -172,18 +174,19 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                     opacity: expanded ? 1.0 : 0,
                     duration: animationDuration,
                     child: ClipRRect(
-                        borderRadius: radius,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: GestureDetector(
-                            onTap: toggleExpansion,
-                            child: SizedBox(
-                              width: widget.width,
-                              height: widget.width - shrink,
-                              child: Icon(Icons.folder),
-                            ),
+                      borderRadius: radius,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: GestureDetector(
+                          onTap: toggleExpansion,
+                          child: SizedBox(
+                            width: widget.width,
+                            height: widget.width - shrink,
+                            child: Icon(Icons.folder),
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -216,18 +219,19 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
                   ),
                 ),
               Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: AnimatedScale(
-                      scale: (expanded || highlightNotificationCount == 0)
-                          ? 0.0
-                          : 1.0,
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeOutExpo,
-                      child: NotificationBadge(highlightNotificationCount),
-                    ),
-                  )),
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: AnimatedScale(
+                    scale: (expanded || highlightNotificationCount == 0)
+                        ? 0.0
+                        : 1.0,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeOutExpo,
+                    child: NotificationBadge(highlightNotificationCount),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -269,126 +273,132 @@ class _SpaceGroupWidgetState extends State<SpaceGroupWidget> {
     }
 
     return AnimatedPositioned(
+      duration: animationDuration,
+      curve: curve,
+      top: top,
+      left: left,
+      child: AnimatedScale(
+        scale: scale,
+        alignment: Alignment.center,
         duration: animationDuration,
         curve: curve,
-        top: top,
-        left: left,
-        child: AnimatedScale(
-          scale: scale,
-          alignment: Alignment.center,
-          duration: animationDuration,
-          curve: curve,
-          child: LongPressDraggable<SidebarEntryDrag>(
-            onDragCompleted: widget.onDragCompleted,
-            onDragEnd: widget.onDragEnd,
-            onDragUpdate: widget.onDragUpdate,
-            onDragStarted: widget.onDragStarted,
-            data: SidebarEntryDrag(space, i, currentFolder: widget.folderId),
-            feedback: Opacity(
-              opacity: 0.5,
-              child: SizedBox(
+        child: LongPressDraggable<SidebarEntryDrag>(
+          onDragCompleted: widget.onDragCompleted,
+          onDragEnd: widget.onDragEnd,
+          onDragUpdate: widget.onDragUpdate,
+          onDragStarted: widget.onDragStarted,
+          data: SidebarEntryDrag(space, i, currentFolder: widget.folderId),
+          feedback: Opacity(
+            opacity: 0.5,
+            child: SizedBox(
+              width: widget.width,
+              height: widget.width,
+              child: SpaceSelectorState.buildSpaceIcon(
+                displayName: space.space.displayName,
                 width: widget.width,
-                height: widget.width,
-                child: SpaceSelectorState.buildSpaceIcon(
-                    displayName: space.space.displayName,
-                    width: widget.width,
-                    space: space.space,
-                    placeholderColor: space.space.color,
-                    showAvatarForSpace: false,
-                    avatar: space.space.avatar),
+                space: space.space,
+                placeholderColor: space.space.color,
+                showAvatarForSpace: false,
+                avatar: space.space.avatar,
               ),
-            ),
-            childWhenDragging: Opacity(
-              opacity: 0.2,
-              child: SizedBox(
-                width: widget.width,
-                height: widget.width,
-                child: SpaceSelectorState.buildSpaceIcon(
-                    displayName: space.space.displayName,
-                    width: widget.width,
-                    space: space.space,
-                    placeholderColor: space.space.color,
-                    showAvatarForSpace: false,
-                    avatar: space.space.avatar),
-              ),
-            ),
-            child: Column(
-              children: [
-                if (dragPosition != null && expanded)
-                  SizedBox(
-                    height: dragDropAreaSize,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                      child: ExpandingDropTarget<SidebarEntryDrag>(
-                        height: dragDropAreaSize,
-                        distanceBasedHeight: false,
-                        onWillAcceptWithDetails: (p0) {
-                          if (p0 case SidebarEntryDrag data) {
-                            return data.entry is SpaceSidebarEntry;
-                          }
-
-                          return false;
-                        },
-                        onAcceptWithDetails: (p0) {
-                          if (p0 is DragTargetDetails) {
-                            if (p0.data case SidebarEntryDrag data) {
-                              if (data.entry case SpaceSidebarEntry space) {
-                                var component = space.space.client
-                                    .getComponent<SidebarEntriesComponent>();
-
-                                int index = adjustIndex(i, space.space.localId);
-
-                                print(
-                                    "Adding ${space.space.displayName} to folder at index: $i");
-                                component!.addToFolder(
-                                    space.space, widget.folderId, index);
-
-                                component.save();
-                              }
-                            }
-                          }
-
-                          //handleSpaceOrderDropped(p0, index);
-                        },
-                        position: dragPosition,
-                      ),
-                    ),
-                  ),
-                tiamat.Tooltip(
-                  text: space.space.displayName,
-                  preferredDirection: AxisDirection.right,
-                  child: SizedBox(
-                    width: size,
-                    height: size,
-                    child: SpaceSelectorState.buildSpaceIcon(
-                        displayName: space.space.displayName,
-                        width: widget.width,
-                        space: space.space,
-                        placeholderColor: space.space.color,
-                        notificationCount: space.space.notificationCount,
-                        onUpdate: space.space.onUpdate,
-                        highlightedNotificationCount:
-                            space.space.highlightedNotificationCount,
-                        onSelected: widget.onSelected,
-                        userAvatar: space.space.client.self?.avatar,
-                        userColor: space.space.client.self?.defaultColor,
-                        userDisplayName: space.space.client.self?.displayName,
-                        showAvatarForSpace: widget.shouldShowAvatarForSpace
-                                ?.call(space.space) ??
-                            false,
-                        avatar: space.space.avatar),
-                  ),
-                ),
-              ],
             ),
           ),
-        ));
+          childWhenDragging: Opacity(
+            opacity: 0.2,
+            child: SizedBox(
+              width: widget.width,
+              height: widget.width,
+              child: SpaceSelectorState.buildSpaceIcon(
+                displayName: space.space.displayName,
+                width: widget.width,
+                space: space.space,
+                placeholderColor: space.space.color,
+                showAvatarForSpace: false,
+                avatar: space.space.avatar,
+              ),
+            ),
+          ),
+          child: Column(
+            children: [
+              if (dragPosition != null && expanded)
+                SizedBox(
+                  height: dragDropAreaSize,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                    child: ExpandingDropTarget<SidebarEntryDrag>(
+                      height: dragDropAreaSize,
+                      distanceBasedHeight: false,
+                      onWillAcceptWithDetails: (p0) {
+                        if (p0 case SidebarEntryDrag data) {
+                          return data.entry is SpaceSidebarEntry;
+                        }
+
+                        return false;
+                      },
+                      onAcceptWithDetails: (p0) {
+                        if (p0 is DragTargetDetails) {
+                          if (p0.data case SidebarEntryDrag data) {
+                            if (data.entry case SpaceSidebarEntry space) {
+                              var component = space.space.client
+                                  .getComponent<SidebarEntriesComponent>();
+
+                              int index = adjustIndex(i, space.space.localId);
+
+                              print(
+                                "Adding ${space.space.displayName} to folder at index: $i",
+                              );
+                              component!.addToFolder(
+                                space.space,
+                                widget.folderId,
+                                index,
+                              );
+
+                              component.save();
+                            }
+                          }
+                        }
+
+                        //handleSpaceOrderDropped(p0, index);
+                      },
+                      position: dragPosition,
+                    ),
+                  ),
+                ),
+              tiamat.Tooltip(
+                text: space.space.displayName,
+                preferredDirection: AxisDirection.right,
+                child: SizedBox(
+                  width: size,
+                  height: size,
+                  child: SpaceSelectorState.buildSpaceIcon(
+                    displayName: space.space.displayName,
+                    width: widget.width,
+                    space: space.space,
+                    placeholderColor: space.space.color,
+                    notificationCount: space.space.notificationCount,
+                    onUpdate: space.space.onUpdate,
+                    highlightedNotificationCount:
+                        space.space.highlightedNotificationCount,
+                    onSelected: widget.onSelected,
+                    userAvatar: space.space.client.self?.avatar,
+                    userColor: space.space.client.self?.defaultColor,
+                    userDisplayName: space.space.client.self?.displayName,
+                    showAvatarForSpace:
+                        widget.shouldShowAvatarForSpace?.call(space.space) ??
+                        false,
+                    avatar: space.space.avatar,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   int adjustIndex(int targetIndex, String id) {
-    int currentIndex = entries.indexWhere(
-      (element) => element.id == id,
-    );
+    int currentIndex = entries.indexWhere((element) => element.id == id);
 
     if (currentIndex == -1) return targetIndex;
 

@@ -6,8 +6,11 @@ import 'package:flutter/widgets.dart';
 import '../../../../../molecules/account_selector.dart';
 
 class AccountStateTab extends StatefulWidget {
-  const AccountStateTab(
-      {required this.clientManager, this.selectedClientIndex = 0, super.key});
+  const AccountStateTab({
+    required this.clientManager,
+    this.selectedClientIndex = 0,
+    super.key,
+  });
   final ClientManager clientManager;
   final int selectedClientIndex;
   @override
@@ -36,7 +39,7 @@ class _AccountStateTabState extends State<AccountStateTab> {
               });
             },
           ),
-        selectedClient!.buildDebugInfo()
+        selectedClient!.buildDebugInfo(),
       ],
     );
   }

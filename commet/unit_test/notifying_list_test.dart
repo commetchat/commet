@@ -1,5 +1,5 @@
 import 'package:commet/utils/notifying_list.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() async {
   NotifyingList<int> list = NotifyingList.empty(growable: true, sync: true);
@@ -16,21 +16,13 @@ void main() async {
     listUpdatedCalled = false;
   }
 
-  list.onAdd.listen(
-    (event) => addedCalled = true,
-  );
+  list.onAdd.listen((event) => addedCalled = true);
 
-  list.onItemUpdated.listen(
-    (event) => itemUpdatedCalled = true,
-  );
+  list.onItemUpdated.listen((event) => itemUpdatedCalled = true);
 
-  list.onListUpdated.listen(
-    (event) => listUpdatedCalled = true,
-  );
+  list.onListUpdated.listen((event) => listUpdatedCalled = true);
 
-  list.onRemove.listen(
-    (event) => removedCalled = true,
-  );
+  list.onRemove.listen((event) => removedCalled = true);
 
   test("Add", () {
     resetFlags();

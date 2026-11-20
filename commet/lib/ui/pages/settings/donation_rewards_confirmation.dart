@@ -15,12 +15,13 @@ import 'package:starfield/renderer/particle_system_renderer.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DonationRewardsConfirmation extends StatefulWidget {
-  const DonationRewardsConfirmation(
-      {required this.client,
-      required this.identifier,
-      required this.since,
-      required this.didOpenDonationWindow,
-      super.key});
+  const DonationRewardsConfirmation({
+    required this.client,
+    required this.identifier,
+    required this.since,
+    required this.didOpenDonationWindow,
+    super.key,
+  });
   final Client client;
   final SecretClientIdentifier identifier;
   final DateTime? since;
@@ -32,7 +33,8 @@ class DonationRewardsConfirmation extends StatefulWidget {
 }
 
 class _DonationRewardsConfirmationState
-    extends State<DonationRewardsConfirmation> with WidgetsBindingObserver {
+    extends State<DonationRewardsConfirmation>
+    with WidgetsBindingObserver {
   late DonationAwardsClient awards;
   List<DonationAward>? receivedAwards;
   EcsParticleSystem? particles;
@@ -41,8 +43,10 @@ class _DonationRewardsConfirmationState
 
   @override
   void initState() {
-    awards =
-        DonationAwardsClient(BuildConfig.donationRewardsApiHost, widget.client);
+    awards = DonationAwardsClient(
+      BuildConfig.donationRewardsApiHost,
+      widget.client,
+    );
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -104,10 +108,7 @@ class _DonationRewardsConfirmationState
   }
 
   Future<void> checkConfirmation() async {
-    var result = await awards.getAwards(
-      widget.identifier,
-      since: widget.since,
-    );
+    var result = await awards.getAwards(widget.identifier, since: widget.since);
     if (result != null) {
       if (result.isNotEmpty) {
         doConfetti();
@@ -120,34 +121,35 @@ class _DonationRewardsConfirmationState
     }
   }
 
-  String get titleConfirmingDonation => Intl.message("Confirming Donation",
-      name: "titleConfirmingDonation",
-      desc:
-          "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation");
+  String get titleConfirmingDonation => Intl.message(
+    "Confirming Donation",
+    name: "titleConfirmingDonation",
+    desc: "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+  );
 
   String get labelDonationInstructions => Intl.message(
-      "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received.",
-      name: "labelDonationInstructions",
-      desc:
-          "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating");
+    "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received.",
+    name: "labelDonationInstructions",
+    desc: "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+  );
 
   String get labelDonationConfirmationSucceeded => Intl.message(
-      "Thank you for your generous donation!",
-      name: "labelDonationConfirmationSucceeded",
-      desc:
-          "Text that is shown when the donation flow was successful, and the donation has been confirmed");
+    "Thank you for your generous donation!",
+    name: "labelDonationConfirmationSucceeded",
+    desc: "Text that is shown when the donation flow was successful, and the donation has been confirmed",
+  );
 
   String get labelDonationConfirmationFailed => Intl.message(
-      "Could not find any donations :( Please consider donating to support development of Commet!",
-      name: "labelDonationConfirmationFailed",
-      desc:
-          "Text that is shown when the donation flow was failed, and the no donation was found");
+    "Could not find any donations :( Please consider donating to support development of Commet!",
+    name: "labelDonationConfirmationFailed",
+    desc: "Text that is shown when the donation flow was failed, and the no donation was found",
+  );
 
   String get labelConfirmCancelDonationConfirmation => Intl.message(
-      "Are you sure you want to dismiss without accepting any award?",
-      name: "labelConfirmCancelDonationConfirmation",
-      desc:
-          "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished");
+    "Are you sure you want to dismiss without accepting any award?",
+    name: "labelConfirmCancelDonationConfirmation",
+    desc: "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -160,38 +162,41 @@ class _DonationRewardsConfirmationState
               WidgetsBinding.instance.lifecycleState ==
                   AppLifecycleState.resumed)
             SizedBox(
-                width: 800,
-                height: 500,
-                child: ParticleSystemRenderer(system: particles!)),
+              width: 800,
+              height: 500,
+              child: ParticleSystemRenderer(system: particles!),
+            ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  titleConfirmingDonation,
-                  style: TextTheme.of(context).headlineSmall,
-                ),
-                if (widget.didOpenDonationWindow)
-                  tiamat.Text.labelLow(labelDonationInstructions),
-              ]),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    titleConfirmingDonation,
+                    style: TextTheme.of(context).headlineSmall,
+                  ),
+                  if (widget.didOpenDonationWindow)
+                    tiamat.Text.labelLow(labelDonationInstructions),
+                ],
+              ),
               Column(
                 children: [
                   if (receivedAwards == null)
                     SizedBox(
                       height: 200,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: Center(child: CircularProgressIndicator()),
                     ),
                   if (receivedAwards?.isNotEmpty == true)
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                          spacing: 10,
-                          children: receivedAwards!
-                              .map((i) => buildAward(i))
-                              .toList()),
+                        spacing: 10,
+                        children: receivedAwards!
+                            .map((i) => buildAward(i))
+                            .toList(),
+                      ),
                     ),
                   if (receivedAwards?.isEmpty == true)
                     tiamat.Text.labelLow(labelDonationConfirmationFailed),
@@ -199,8 +204,9 @@ class _DonationRewardsConfirmationState
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: tiamat.Text.labelLow(
-                          labelDonationConfirmationSucceeded),
-                    )
+                        labelDonationConfirmationSucceeded,
+                      ),
+                    ),
                 ],
               ),
               Column(
@@ -211,38 +217,41 @@ class _DonationRewardsConfirmationState
                     IgnorePointer(
                       ignoring: acceptLoading,
                       child: tiamat.Button(
-                          text: CommonStrings.promptAccept,
-                          isLoading: acceptLoading,
-                          onTap: () async {
-                            setState(() {
-                              acceptLoading = true;
-                            });
+                        text: CommonStrings.promptAccept,
+                        isLoading: acceptLoading,
+                        onTap: () async {
+                          setState(() {
+                            acceptLoading = true;
+                          });
 
-                            preferences.clearRunningDonationCheckFlow();
+                          preferences.clearRunningDonationCheckFlow();
 
-                            await widget.client
-                                .getComponent<DonationAwardsComponent>()
-                                ?.acceptAwards(receivedAwards!
-                                    .map((i) => i.data)
-                                    .toList());
+                          await widget.client
+                              .getComponent<DonationAwardsComponent>()
+                              ?.acceptAwards(
+                                receivedAwards!.map((i) => i.data).toList(),
+                              );
 
-                            Navigator.of(context).pop();
-                          }),
+                          Navigator.of(context).pop();
+                        },
+                      ),
                     ),
                   tiamat.Button.secondary(
-                      text: CommonStrings.promptDismiss,
-                      onTap: () async {
-                        if (receivedAwards?.isEmpty == true ||
-                            await AdaptiveDialog.confirmation(context,
-                                    prompt:
-                                        labelConfirmCancelDonationConfirmation) ==
-                                true) {
-                          preferences.clearRunningDonationCheckFlow();
-                          Navigator.of(context).pop();
-                        }
-                      })
+                    text: CommonStrings.promptDismiss,
+                    onTap: () async {
+                      if (receivedAwards?.isEmpty == true ||
+                          await AdaptiveDialog.confirmation(
+                                context,
+                                prompt: labelConfirmCancelDonationConfirmation,
+                              ) ==
+                              true) {
+                        preferences.clearRunningDonationCheckFlow();
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ],
@@ -253,8 +262,9 @@ class _DonationRewardsConfirmationState
   Widget buildAward(DonationAward i) {
     return Container(
       decoration: BoxDecoration(
-          color: ColorScheme.of(context).surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(8)),
+        color: ColorScheme.of(context).surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -262,7 +272,7 @@ class _DonationRewardsConfirmationState
           spacing: 12,
           children: [
             SizedBox(height: 64, width: 64, child: Image(image: i.image)),
-            tiamat.Text.largeTitle(i.title)
+            tiamat.Text.largeTitle(i.title),
           ],
         ),
       ),

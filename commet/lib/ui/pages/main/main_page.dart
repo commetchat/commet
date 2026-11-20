@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
@@ -39,11 +40,13 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage(this.clientManager,
-      {super.key,
-      this.initialClientId,
-      this.initialRoom,
-      this.wasLoggedInAtStartup = false});
+  const MainPage(
+    this.clientManager, {
+    super.key,
+    this.initialClientId,
+    this.initialRoom,
+    this.wasLoggedInAtStartup = false,
+  });
   final ClientManager clientManager;
   final String? initialRoom;
   final String? initialClientId;
@@ -53,11 +56,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => MainPageState();
 }
 
-enum MainPageSubView {
-  space,
-  home,
-  rooms,
-}
+enum MainPageSubView { space, home, rooms }
 
 class MainPageState extends State<MainPage> {
   Space? _currentSpace;
@@ -91,13 +90,17 @@ class MainPageState extends State<MainPage> {
 
   VoipSession? get currentCall => currentRoom == null
       ? null
-      : widget.clientManager.callManager
-          .getCallInRoom(currentRoom!.client, currentRoom!.identifier);
+      : widget.clientManager.callManager.getCallInRoom(
+          currentRoom!.client,
+          currentRoom!.identifier,
+        );
 
-  String get updateInstalledTitle => Intl.message("Update Installed",
-      desc:
-          "Title for the dialog which is shown when an update has been installed",
-      name: "updateInstalledTitle");
+  String get updateInstalledTitle => Intl.message(
+    "Update Installed",
+    desc:
+        "Title for the dialog which is shown when an update has been installed",
+    name: "updateInstalledTitle",
+  );
 
   @override
   void initState() {
@@ -106,7 +109,8 @@ class MainPageState extends State<MainPage> {
     Client? client;
     if (preferences.filterClient.value != null) {
       filterClient = clientManager.clients.firstWhereOrNull(
-          (i) => i.identifier == preferences.filterClient.value);
+        (i) => i.identifier == preferences.filterClient.value,
+      );
     }
 
     if (widget.initialClientId != null) {
@@ -130,45 +134,58 @@ class MainPageState extends State<MainPage> {
     }
 
     var allFavoriteRooms = NotifyingListCombiner(
-        clientManager.clients.map((i) => i.favoriteRooms).toList());
+      clientManager.clients.map((i) => i.favoriteRooms).toList(),
+    );
 
-    favoriteRooms = NotifyingListFilter(allFavoriteRooms, where: (item) {
-      if (filterClient == null) return true;
-      return item.client == filterClient;
-    }, onFilterParamsChanged: [onFilterClientChanged.stream]);
+    favoriteRooms = NotifyingListFilter(
+      allFavoriteRooms,
+      where: (item) {
+        if (filterClient == null) return true;
+        return item.client == filterClient;
+      },
+      onFilterParamsChanged: [onFilterClientChanged.stream],
+    );
 
     directMessages = NotifyingListFilter(
-        clientManager.directMessages.directMessageRooms, where: (item) {
-      if (item.isFavorite) return false;
+      clientManager.directMessages.directMessageRooms,
+      where: (item) {
+        if (item.isFavorite) return false;
 
-      if (filterClient == null) return true;
-      return item.client == filterClient;
-    }, onFilterParamsChanged: [
-      onFilterClientChanged.stream,
-      allFavoriteRooms.onListUpdated,
-    ]);
+        if (filterClient == null) return true;
+        return item.client == filterClient;
+      },
+      onFilterParamsChanged: [
+        onFilterClientChanged.stream,
+        allFavoriteRooms.onListUpdated,
+      ],
+    );
 
-    singleRooms = NotifyingListFilter(clientManager.rooms, where: (item) {
-      if (filterClient != null) {
-        if (item.client != filterClient) return false;
-      }
-      var dms = item.client.getComponent<DirectMessagesComponent>();
+    singleRooms = NotifyingListFilter(
+      clientManager.rooms,
+      where: (item) {
+        if (filterClient != null) {
+          if (item.client != filterClient) return false;
+        }
+        var dms = item.client.getComponent<DirectMessagesComponent>();
 
-      if (dms?.isRoomDirectMessage(item) != false) {
-        return false;
-      }
+        if (dms?.isRoomDirectMessage(item) != false) {
+          return false;
+        }
 
-      if (item.client.spaces
-          .any((space) => space.containsRoom(item.identifier))) {
-        return false;
-      }
+        if (item.client.spaces.any(
+          (space) => space.containsRoom(item.identifier),
+        )) {
+          return false;
+        }
 
-      return true;
-    }, onFilterParamsChanged: [
-      onFilterClientChanged.stream,
-      clientManager.onSpaceUpdated.stream,
-      clientManager.rooms.onListUpdated
-    ]);
+        return true;
+      },
+      onFilterParamsChanged: [
+        onFilterClientChanged.stream,
+        clientManager.onSpaceUpdated.stream,
+        clientManager.rooms.onListUpdated,
+      ],
+    );
 
     ServicesBinding.instance.keyboard.addHandler(_onKeyPressed);
 
@@ -176,10 +193,13 @@ class MainPageState extends State<MainPage> {
     //   setState(() {});
     // });
 
-    onCallStartedSubscription =
-        clientManager.callManager.currentSessions.onListUpdated.listen((event) {
-      setState(() {});
-    });
+    onCallStartedSubscription = clientManager
+        .callManager
+        .currentSessions
+        .onListUpdated
+        .listen((event) {
+          setState(() {});
+        });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
 
@@ -192,8 +212,9 @@ class MainPageState extends State<MainPage> {
 
     EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);
 
-    onClientRemovedSubscription =
-        clientManager.onClientRemoved.stream.listen(onClientRemoved);
+    onClientRemovedSubscription = clientManager.onClientRemoved.stream.listen(
+      onClientRemoved,
+    );
 
     onClientAddedSubscription = clientManager.onClientAdded.stream.listen((_) {
       if (mounted) setState(() {});
@@ -428,8 +449,9 @@ class MainPageState extends State<MainPage> {
 
     if (room != null) {
       if (preferences.automaticallyOpenSpace.value && args.openInSpace) {
-        var spacesWithRoom =
-            client.spaces.where((element) => element.containsRoom(roomId));
+        var spacesWithRoom = client.spaces.where(
+          (element) => element.containsRoom(roomId),
+        );
 
         if (spacesWithRoom.isNotEmpty) {
           selectSpace(spacesWithRoom.first);
@@ -438,19 +460,26 @@ class MainPageState extends State<MainPage> {
 
       selectRoom(room, bypassSpecialRoomType: bypassSpecialRoomType);
     } else {
-      GetOrCreateRoom.show(client, context,
-          pickExisting: false,
-          showAllRoomTypes: false,
-          initialRoomAddress: originalId);
+      GetOrCreateRoom.show(
+        client,
+        context,
+        pickExisting: false,
+        showAllRoomTypes: false,
+        initialRoomAddress: originalId,
+      );
     }
   }
 
   Future<void> askSwitchAccount(
-      Client newClient, (String, String?) strings) async {
-    var confirm = await AdaptiveDialog.confirmation(context,
-        prompt:
-            "You tried to open a room for another account (${newClient.self?.identifier}), would you like to switch?",
-        title: "Switch Account");
+    Client newClient,
+    (String, String?) strings,
+  ) async {
+    var confirm = await AdaptiveDialog.confirmation(
+      context,
+      prompt:
+          "You tried to open a room for another account (${newClient.self?.identifier}), would you like to switch?",
+      title: "Switch Account",
+    );
     if (confirm != true) return;
 
     EventBus.setFilterClient.add(newClient);
@@ -461,12 +490,13 @@ class MainPageState extends State<MainPage> {
   void navigateRoomSettings() {
     if (currentRoom != null) {
       NavigationUtils.navigateTo(
-          context,
-          RoomSettingsPage(
-            room: currentRoom!,
-            contextSpace: currentSpace,
-            onLeaveRoom: clearRoomSelection,
-          ));
+        context,
+        RoomSettingsPage(
+          room: currentRoom!,
+          contextSpace: currentSpace,
+          onLeaveRoom: clearRoomSelection,
+        ),
+      );
     }
   }
 
@@ -485,23 +515,23 @@ class MainPageState extends State<MainPage> {
     if (donationCheck != null) {
       var client = clientManager.getClient(donationCheck.$1);
 
-      Log.i(
-        "Resuming donation flow for user: ${client?.self?.identifier}",
-      );
+      Log.i("Resuming donation flow for user: ${client?.self?.identifier}");
 
       if (client != null) {
         var secret = await client
             .getComponent<DonationAwardsComponent>()
             ?.getClientSecret();
         if (secret != null) {
-          AdaptiveDialog.show(context,
-              builder: (context) => DonationRewardsConfirmation(
-                    client: client,
-                    identifier: secret,
-                    didOpenDonationWindow: true,
-                    since: donationCheck.$2,
-                  ),
-              dismissible: false);
+          AdaptiveDialog.show(
+            context,
+            builder: (context) => DonationRewardsConfirmation(
+              client: client,
+              identifier: secret,
+              didOpenDonationWindow: true,
+              since: donationCheck.$2,
+            ),
+            dismissible: false,
+          );
         }
       }
     }
@@ -518,24 +548,28 @@ class MainPageState extends State<MainPage> {
     final invitation = client.getComponent<InvitationComponent>();
     if (invitation == null) return;
 
-    AdaptiveDialog.show(context,
-        builder: (context) => SendInvitationWidget(
-              client!,
-              invitation,
-              showSuggestions: false,
-              onUserPicked: (userId) async {
-                final confirm = await AdaptiveDialog.confirmation(context,
-                    prompt: "Are you sure you want to invite $userId to chat?",
-                    title: "Invitation");
-                if (confirm != true) {
-                  return;
-                }
+    AdaptiveDialog.show(
+      context,
+      builder: (context) => SendInvitationWidget(
+        client!,
+        invitation,
+        showSuggestions: false,
+        onUserPicked: (userId) async {
+          final confirm = await AdaptiveDialog.confirmation(
+            context,
+            prompt: "Are you sure you want to invite $userId to chat?",
+            title: "Invitation",
+          );
+          if (confirm != true) {
+            return;
+          }
 
-                var comp = client!.getComponent<DirectMessagesComponent>();
-                await comp?.createDirectMessage(userId);
-              },
-            ),
-        title: "Start Direct Message");
+          var comp = client!.getComponent<DirectMessagesComponent>();
+          await comp?.createDirectMessage(userId);
+        },
+      ),
+      title: "Start Direct Message",
+    );
   }
 
   bool _onKeyPressed(KeyEvent event) {

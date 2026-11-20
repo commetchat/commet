@@ -6,7 +6,9 @@ import 'package:flutter/widgets.dart';
 
 abstract class UrlPreviewComponent<T extends Client> implements Component<T> {
   bool shouldGetPreviewDataForTimelineEvent(
-      Timeline timeline, TimelineEvent event);
+    Timeline timeline,
+    TimelineEvent event,
+  );
 
   bool shouldGetPreviewsInRoom(Room room);
 
@@ -20,15 +22,13 @@ abstract class UrlPreviewComponent<T extends Client> implements Component<T> {
   // Instead of storing null, which is a bit confusing as if the cache returns null, does that mean we have
   // nothing cached, or the result was invalid? maybe this is dumb but it was the simplest way
   // to prevent weird ui glitches when failed fetches kept getting retried.
-  static UrlPreviewData invalidPreviewData =
-      UrlPreviewData(Uri.new(), title: "Unable to get url preview ");
+  static UrlPreviewData invalidPreviewData = UrlPreviewData(
+    Uri.new(),
+    title: "Unable to get url preview ",
+  );
 }
 
-enum UrlDestinationType {
-  page,
-  video,
-  image,
-}
+enum UrlDestinationType { page, video, image }
 
 class UrlPreviewData {
   final Uri uri;

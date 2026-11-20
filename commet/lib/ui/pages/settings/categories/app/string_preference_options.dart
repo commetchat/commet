@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class StringPreferenceOptionsPicker extends StatefulWidget {
-  const StringPreferenceOptionsPicker(
-      {required this.preference,
-      required this.title,
-      this.description,
-      this.onChanged,
-      required this.options,
-      super.key});
+  const StringPreferenceOptionsPicker({
+    required this.preference,
+    required this.title,
+    this.description,
+    this.onChanged,
+    required this.options,
+    super.key,
+  });
 
   final StringPreference preference;
   final Function(bool)? onChanged;
@@ -30,10 +31,12 @@ class _StringPreferenceOptionsPickerState
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: ColorScheme.of(context).surfaceContainer.withAlpha(100),
-          border: BoxBorder.all(
-              color: ColorScheme.of(context).secondary.withAlpha(20)),
-          borderRadius: BorderRadius.circular(8)),
+        color: ColorScheme.of(context).surfaceContainer.withAlpha(100),
+        border: BoxBorder.all(
+          color: ColorScheme.of(context).secondary.withAlpha(20),
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -42,23 +45,22 @@ class _StringPreferenceOptionsPickerState
             tiamat.Text(widget.title),
             if (widget.description != null)
               tiamat.Text.labelLow(widget.description!),
-            SizedBox(
-              height: 8,
-            ),
+            SizedBox(height: 8),
             tiamat.DropdownSelector(
-                color: ColorScheme.of(context).surfaceContainerLow,
-                items: widget.options,
-                itemBuilder: (item) {
-                  return tiamat.Text(item);
-                },
-                onItemSelected: (item) {
-                  setState(() {
-                    if (item != null) {
-                      widget.preference.set(item);
-                    }
-                  });
-                },
-                value: widget.preference.value)
+              color: ColorScheme.of(context).surfaceContainerLow,
+              items: widget.options,
+              itemBuilder: (item) {
+                return tiamat.Text(item);
+              },
+              onItemSelected: (item) {
+                setState(() {
+                  if (item != null) {
+                    widget.preference.set(item);
+                  }
+                });
+              },
+              value: widget.preference.value,
+            ),
           ],
         ),
       ),

@@ -24,8 +24,9 @@ class _TextScaleChangerState extends State<TextScaleChanger> {
     }
 
     return MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(preferences.textScale.value)),
-        child: widget.child);
+      data: MediaQuery.of(context)
+          .copyWith(textScaler: TextScaler.linear(preferences.textScale.value)),
+      child: widget.child,
+    );
   }
 }

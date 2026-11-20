@@ -6,9 +6,10 @@ class SettingsTab {
   final IconData? icon;
   final bool makeScrollable;
 
-  SettingsTab(
-      {required this.label,
-      required this.pageBuilder,
-      this.icon,
-      this.makeScrollable = true});
+  SettingsTab({
+    required this.label,
+    required this.pageBuilder,
+    this.icon,
+    this.makeScrollable = true,
+  });
 }

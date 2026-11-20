@@ -11,8 +11,9 @@ class DotIndicator extends StatelessWidget {
       height: 10,
       child: DecoratedBox(
         decoration: BoxDecoration(
-            color: color ?? Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(5)),
+          color: color ?? Theme.of(context).colorScheme.secondary,
+          borderRadius: BorderRadius.circular(5),
+        ),
       ),
     );
   }

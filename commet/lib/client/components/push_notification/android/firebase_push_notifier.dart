@@ -55,10 +55,12 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
           return;
         }
 
-        NotificationManager.notify(ErrorNotificationContent(
-          title: "Unknown Notification Data",
-          content: jsonEncode(data),
-        ));
+        NotificationManager.notify(
+          ErrorNotificationContent(
+            title: "Unknown Notification Data",
+            content: jsonEncode(data),
+          ),
+        );
       }
 
       return;
@@ -68,9 +70,12 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   } catch (e, s) {
     Log.e("An error occured while processing unified push background message");
     Log.onError(e, s);
-    NotificationManager.notify(ErrorNotificationContent(
+    NotificationManager.notify(
+      ErrorNotificationContent(
         title: "An error occurred while processing notifications",
-        content: "${e} \n\n ${s}"));
+        content: "${e} \n\n ${s}",
+      ),
+    );
   }
 }
 
@@ -98,7 +103,8 @@ class FirebasePushNotifier implements Notifier {
     await notifier.init();
 
     await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
     Log.i("Initialized App");
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {

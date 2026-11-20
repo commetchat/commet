@@ -11,7 +11,7 @@ class CacheFileProvider implements FileProvider {
   CacheFileProvider(this.fileIdentifier, this.getter);
 
   CacheFileProvider.thumbnail(String fileId, this.getter)
-      : fileIdentifier = "thumbnail_$fileId";
+    : fileIdentifier = "thumbnail_$fileId";
 
   @override
   Future<Uri?> resolve({String? savePath}) async {

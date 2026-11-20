@@ -11,10 +11,13 @@ class AppSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsPage(showDonateButton: true, settings: [
-      if (clientManager!.clients.isNotEmpty) SettingsCategoryAccount(),
-      SettingsCategoryApp(),
-      SettingsCategoryAbout(),
-    ]);
+    return SettingsPage(
+      showDonateButton: true,
+      settings: [
+        if (clientManager!.clients.isNotEmpty) SettingsCategoryAccount(),
+        SettingsCategoryApp(),
+        SettingsCategoryAbout(),
+      ],
+    );
   }
 }

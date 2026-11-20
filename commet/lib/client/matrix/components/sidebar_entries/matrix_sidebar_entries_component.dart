@@ -18,7 +18,7 @@ class MatrixSidebarEntryData {
   Map<String, dynamic> toJson() {
     return {
       if (folderId != null) "group": folderId,
-      if (order != null) "order": order
+      if (order != null) "order": order,
     };
   }
 }
@@ -134,8 +134,10 @@ class MatrixSidebarEntriesComponent
         order = orderGen.get(space.localId);
       }
 
-      data[space.identifier] =
-          MatrixSidebarEntryData(order: order, folderId: folder);
+      data[space.identifier] = MatrixSidebarEntryData(
+        order: order,
+        folderId: folder,
+      );
     }
 
     var spaceData = Map<String, dynamic>.new();
@@ -158,26 +160,35 @@ class MatrixSidebarEntriesComponent
       if (groupData.isNotEmpty) "groups": groupData,
     };
 
-    client.matrixClient
-        .setAccountData(client.matrixClient.userID!, key, result);
+    client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      key,
+      result,
+    );
   }
 
   @override
   List<SidebarEntry> getEntries() {
     var spaces = client.spaces
-        .where((i) =>
-            i.isTopLevel && spaceToFolder.containsKey(i.identifier) == false)
+        .where(
+          (i) =>
+              i.isTopLevel && spaceToFolder.containsKey(i.identifier) == false,
+        )
         .map((i) => SpaceSidebarEntry(i, order: getOrder(i)))
         .toList();
 
-    var spacesInFolders = client.spaces
-        .where((i) => spaceToFolder.containsKey(i.identifier) && i.isTopLevel);
+    var spacesInFolders = client.spaces.where(
+      (i) => spaceToFolder.containsKey(i.identifier) && i.isTopLevel,
+    );
 
     Map<String, SpaceGroupSidebarEntry> folders = {};
 
     for (var value in spaceToFolder.values) {
-      folders[value] = SpaceGroupSidebarEntry(value, List.empty(growable: true),
-          order: getGroupOrder(value));
+      folders[value] = SpaceGroupSidebarEntry(
+        value,
+        List.empty(growable: true),
+        order: getGroupOrder(value),
+      );
     }
 
     for (var space in spacesInFolders) {
@@ -188,9 +199,9 @@ class MatrixSidebarEntriesComponent
         order.set(space.localId, RandomUtils.getRandomString(10));
       }
 
-      folders[folder]!
-          .spaces
-          .add(SpaceSidebarEntry(space, order: order.get(space.localId)!));
+      folders[folder]!.spaces.add(
+        SpaceSidebarEntry(space, order: order.get(space.localId)!),
+      );
     }
 
     return [...spaces, ...folders.values];

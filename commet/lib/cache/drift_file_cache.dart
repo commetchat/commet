@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
@@ -46,10 +47,11 @@ class DriftFileCache implements FileCache {
     var cutoffTime = now.subtract(const Duration(days: 5));
     var timeMs = cutoffTime.millisecondsSinceEpoch;
 
-    var removeFiles = await (db.select(db.fileCacheEntry)
-          ..where(
-              (tbl) => tbl.lastAccessedTimestamp.isSmallerThanValue(timeMs)))
-        .get();
+    var removeFiles =
+        await (db.select(db.fileCacheEntry)..where(
+              (tbl) => tbl.lastAccessedTimestamp.isSmallerThanValue(timeMs),
+            ))
+            .get();
 
     var allFiles = await (db.select(db.fileCacheEntry).get());
 
@@ -60,9 +62,9 @@ class DriftFileCache implements FileCache {
     }
 
     var removedIds = removeFiles.map((e) => e.id).toList();
-    await (db.delete(db.fileCacheEntry)
-          ..where((tbl) => tbl.id.isIn(removedIds)))
-        .go();
+    await (db.delete(
+      db.fileCacheEntry,
+    )..where((tbl) => tbl.id.isIn(removedIds))).go();
   }
 
   Future<void> _cleanFile(FileCacheEntryData entry) async {
@@ -81,7 +83,9 @@ class DriftFileCache implements FileCache {
 
   @override
   Future<Uri> fetchFile(
-      String identifier, Future<Uint8List> Function() getter) async {
+    String identifier,
+    Future<Uint8List> Function() getter,
+  ) async {
     var existing = await getFile(identifier);
     if (existing != null) return existing;
 
@@ -94,9 +98,10 @@ class DriftFileCache implements FileCache {
     await file.writeAsBytes(bytes);
 
     var entry = FileCacheEntryCompanion.insert(
-        id: identifier,
-        path: path,
-        lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch);
+      id: identifier,
+      path: path,
+      lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch,
+    );
     final db = await get();
     await db.into(db.fileCacheEntry).insertOnConflictUpdate(entry);
 
@@ -111,8 +116,13 @@ class DriftFileCache implements FileCache {
     if (entry == null) return null;
     //var lastAccess = DateTime.fromMillisecondsSinceEpoch(entry!.lastAccessedTimestamp).toLocal().toString();
     final db = await get();
-    db.into(db.fileCacheEntry).insertOnConflictUpdate(entry.copyWith(
-        lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch));
+    db
+        .into(db.fileCacheEntry)
+        .insertOnConflictUpdate(
+          entry.copyWith(
+            lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch,
+          ),
+        );
 
     var file = File(entry.path);
 
@@ -127,8 +137,9 @@ class DriftFileCache implements FileCache {
     // if the file exists in the database but not on disk, we should remove it from db
     var exists = await File(file.path).exists();
     if (!exists)
-      (db.delete(db.fileCacheEntry)..where((tbl) => tbl.id.equals(file.id)))
-          .go();
+      (db.delete(
+        db.fileCacheEntry,
+      )..where((tbl) => tbl.id.equals(file.id))).go();
 
     return exists;
   }
@@ -162,9 +173,10 @@ class DriftFileCache implements FileCache {
     await file.writeAsBytes(bytes);
 
     var entry = FileCacheEntryCompanion.insert(
-        id: identifier,
-        path: path,
-        lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch);
+      id: identifier,
+      path: path,
+      lastAccessedTimestamp: DateTime.now().millisecondsSinceEpoch,
+    );
 
     await db.into(db.fileCacheEntry).insertOnConflictUpdate(entry);
 
@@ -188,9 +200,11 @@ class DriftFileCache implements FileCache {
 
   Future<String> generateTempFilePath() async {
     var path = "";
-    for (path = await newPath();
-        await File(path).exists();
-        path = await newPath()) {}
+    for (
+      path = await newPath();
+      await File(path).exists();
+      path = await newPath()
+    ) {}
 
     return path;
   }

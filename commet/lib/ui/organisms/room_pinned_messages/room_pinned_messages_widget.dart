@@ -7,8 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomPinnedMessagesWidget extends StatefulWidget {
-  const RoomPinnedMessagesWidget(
-      {required this.room, this.onEventClicked, super.key});
+  const RoomPinnedMessagesWidget({
+    required this.room,
+    this.onEventClicked,
+    super.key,
+  });
   final Room room;
   final void Function(String eventId)? onEventClicked;
 
@@ -20,10 +23,11 @@ class RoomPinnedMessagesWidget extends StatefulWidget {
 class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
   List<TimelineEvent>? events;
 
-  String get noPinnedMessages => Intl.message("No messages have been pinned!",
-      desc:
-          "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
-      name: "noPinnedMessages");
+  String get noPinnedMessages => Intl.message(
+    "No messages have been pinned!",
+    desc: "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    name: "noPinnedMessages",
+  );
 
   @override
   void initState() {
@@ -36,12 +40,14 @@ class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
   Widget build(BuildContext context) {
     if (events == null) {
       return const tiamat.Tile(
-          child: Center(child: CircularProgressIndicator()));
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (events!.isEmpty) {
       return tiamat.Tile(
-          child: Center(child: tiamat.Text.label(noPinnedMessages)));
+        child: Center(child: tiamat.Text.label(noPinnedMessages)),
+      );
     }
 
     return tiamat.Tile.low(
@@ -58,16 +64,18 @@ class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Material(
-                        borderRadius: BorderRadius.circular(8),
-                        child: InkWell(
-                          onTap: () =>
-                              widget.onEventClicked?.call(data.eventId),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: TimelineEventViewSingle(
-                                room: widget.room, event: data),
+                      borderRadius: BorderRadius.circular(8),
+                      child: InkWell(
+                        onTap: () => widget.onEventClicked?.call(data.eventId),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: TimelineEventViewSingle(
+                            room: widget.room,
+                            event: data,
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -83,7 +91,8 @@ class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
     var eventIds = comp.getPinnedMessages();
 
     var allEvents = await Future.wait<TimelineEvent?>(
-        eventIds.map((id) => widget.room.getEvent(id)));
+      eventIds.map((id) => widget.room.getEvent(id)),
+    );
 
     setState(() {
       events = List<TimelineEvent>.from(allEvents.where((e) => e != null));

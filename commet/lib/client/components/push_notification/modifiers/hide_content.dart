@@ -4,14 +4,16 @@ import 'package:intl/intl.dart';
 
 class NotificationModifierHideContent implements NotificationModifier {
   String get notificationModifiersPrivacyEnhanced => Intl.message(
-      "Sent a message",
-      name: "notificationModifiersPrivacyEnhanced",
-      desc:
-          "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.");
+    "Sent a message",
+    name: "notificationModifiersPrivacyEnhanced",
+    desc: "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+  );
 
   @override
-  Future<NotificationContent?> process(NotificationContent content,
-      {Function(String reason)? onNotificationRejected}) async {
+  Future<NotificationContent?> process(
+    NotificationContent content, {
+    Function(String reason)? onNotificationRejected,
+  }) async {
     content.content = "A Notification was received";
 
     if (content is MessageNotificationContent) {

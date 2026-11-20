@@ -24,16 +24,16 @@ class AttachmentProcessor extends StatefulWidget {
 
 class _AttachmentProcessorState extends State<AttachmentProcessor> {
   String get promptAttachmentProcessingSendOriginal => Intl.message(
-      "Send Original",
-      name: "promptAttachmentProcessingSendOriginal",
-      desc:
-          "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata");
+    "Send Original",
+    name: "promptAttachmentProcessingSendOriginal",
+    desc: "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+  );
 
   String get labelImageContainsLocationInfo => Intl.message(
-      "Warning: This image contains location metadata",
-      name: "labelImageContainsLocationInfo",
-      desc:
-          "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata");
+    "Warning: This image contains location metadata",
+    name: "labelImageContainsLocationInfo",
+    desc: "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+  );
 
   Map<String, IfdTag>? exifData;
   late IconData icon;
@@ -128,8 +128,9 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ConstrainedBox(
-                          constraints:
-                              BoxConstraints.loose(const Size(500, 500)),
+                          constraints: BoxConstraints.loose(
+                            const Size(500, 500),
+                          ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: FilePreview(
@@ -155,7 +156,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
               ),
             ),
           ),
-          if (processing) const CircularProgressIndicator()
+          if (processing) const CircularProgressIndicator(),
         ],
       ),
     );
@@ -179,16 +180,13 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   Widget buildMetadataDisplay() {
     return Column(
       children: [
-        if (containsGpsData) tiamat.Text.error(labelImageContainsLocationInfo)
+        if (containsGpsData) tiamat.Text.error(labelImageContainsLocationInfo),
       ],
     );
   }
 
   Widget buildConfirmButton() {
-    return tiamat.Button(
-      text: "Add File",
-      onTap: submit,
-    );
+    return tiamat.Button(text: "Add File", onTap: submit);
   }
 
   void submit() async {
@@ -252,10 +250,11 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
       }
 
       return PendingFileAttachment(
-          name: name,
-          data: processedData,
-          size: processedData.lengthInBytes,
-          mimeType: mime);
+        name: name,
+        data: processedData,
+        size: processedData.lengthInBytes,
+        mimeType: mime,
+      );
     }, widget.attachment);
   }
 

@@ -10,27 +10,26 @@ class SpaceDeveloperSettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: [jsonDump(context)].map<Widget>((e) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-        child: ClipRRect(borderRadius: BorderRadius.circular(10), child: e),
-      );
-    }).toList());
+      children: [jsonDump(context)].map<Widget>((e) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+          child: ClipRRect(borderRadius: BorderRadius.circular(10), child: e),
+        );
+      }).toList(),
+    );
   }
 
   Widget jsonDump(BuildContext context) {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Room State"),
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      collapsedBackgroundColor:
-          Theme.of(context).colorScheme.surfaceContainerLow,
+      collapsedBackgroundColor: Theme.of(context)
+          .colorScheme
+          .surfaceContainerLow,
       children: [
         SelectionArea(
-          child: Codeblock(
-            language: "json",
-            text: space.developerInfo,
-          ),
-        )
+          child: Codeblock(language: "json", text: space.developerInfo),
+        ),
       ],
     );
   }

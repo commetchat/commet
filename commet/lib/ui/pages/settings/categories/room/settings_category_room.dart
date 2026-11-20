@@ -21,52 +21,52 @@ class SettingsCategoryRoom implements SettingsCategory {
   Space? contextSpace;
 
   String get labelRoomSettingsGeneral => Intl.message(
-        "General",
-        name: "labelRoomSettingsGeneral",
-        desc: "Label for general room settings",
-      );
+    "General",
+    name: "labelRoomSettingsGeneral",
+    desc: "Label for general room settings",
+  );
 
   String get labelRoomSettingsAppearance => Intl.message(
-        "Appearance",
-        name: "labelRoomSettingsAppearance",
-        desc: "Label for room appearance settings",
-      );
+    "Appearance",
+    name: "labelRoomSettingsAppearance",
+    desc: "Label for room appearance settings",
+  );
 
   String get labelRoomSettingsSecurity => Intl.message(
-        "Security",
-        name: "labelRoomSettingsSecurity",
-        desc: "Label for room security settings",
-      );
+    "Security",
+    name: "labelRoomSettingsSecurity",
+    desc: "Label for room security settings",
+  );
 
   String get labelRoomSettingsEmoticons => Intl.message(
-        "Emoticons",
-        name: "labelRoomSettingsEmoticons",
-        desc: "Label for room Emoticon settings",
-      );
+    "Emoticons",
+    name: "labelRoomSettingsEmoticons",
+    desc: "Label for room Emoticon settings",
+  );
 
   String get labelRoomSettingsDeveloper => Intl.message(
-        "Developer",
-        name: "labelRoomSettingsDeveloper",
-        desc: "Label for room developer settings",
-      );
+    "Developer",
+    name: "labelRoomSettingsDeveloper",
+    desc: "Label for room developer settings",
+  );
 
   String get labelRoomSettingsCategory => Intl.message(
-        "Room Settings",
-        name: "labelRoomSettingsCategory",
-        desc: "Label for the overall settings category of a room",
-      );
+    "Room Settings",
+    name: "labelRoomSettingsCategory",
+    desc: "Label for the overall settings category of a room",
+  );
 
   String get labelRoomSettingsPermissions => Intl.message(
-        "Permissions",
-        name: "labelRoomSettingsPermissions",
-        desc: "Label for room permission settings",
-      );
+    "Permissions",
+    name: "labelRoomSettingsPermissions",
+    desc: "Label for room permission settings",
+  );
 
   String get labelRoomSettingsCalendar => Intl.message(
-        "Calendar",
-        name: "labelRoomSettingsCalendar",
-        desc: "Label for room calendar settings",
-      );
+    "Calendar",
+    name: "labelRoomSettingsCalendar",
+    desc: "Label for room calendar settings",
+  );
 
   @override
   String get title => labelRoomSettingsCategory;
@@ -75,8 +75,8 @@ class SettingsCategoryRoom implements SettingsCategory {
   List<SettingsTab> get tabs => getTabs();
 
   List<SettingsTab> getTabs() {
-    RoomEmoticonComponent? emoticons =
-        room.getComponent<RoomEmoticonComponent>();
+    RoomEmoticonComponent? emoticons = room
+        .getComponent<RoomEmoticonComponent>();
 
     CalendarRoom? calendar = room.getComponent<CalendarRoom>();
 

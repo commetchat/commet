@@ -25,28 +25,26 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
   MatrixSSOLoginFlow({this.id, required this.name, this.icon, this.brand});
 
   factory MatrixSSOLoginFlow.fromJson(
-          MatrixClient client, Map<String, dynamic> json) =>
-      MatrixSSOLoginFlow(
-        id: json['id'],
-        name: json['name'],
-        icon: json['icon'] != null
-            ? getLoginFlowImage(
-                Uri.parse(
-                  json['icon'],
-                ),
-                client,
-              )
-            : null,
-        brand: json['brand'],
-      );
+    MatrixClient client,
+    Map<String, dynamic> json,
+  ) => MatrixSSOLoginFlow(
+    id: json['id'],
+    name: json['name'],
+    icon: json['icon'] != null
+        ? getLoginFlowImage(Uri.parse(json['icon']), client)
+        : null,
+    brand: json['brand'],
+  );
 
   static NetworkImage getLoginFlowImage(Uri mxc, MatrixClient client) {
     var path =
         '_matrix/media/v3/thumbnail/${Uri.encodeComponent(mxc.authority)}/${Uri.encodeComponent(mxc.pathSegments.first)}';
 
     var server = client.getMatrixClient().baseUri!;
-    var request =
-        server.replace(path: path, query: "width=96&height=96&method=crop");
+    var request = server.replace(
+      path: path,
+      query: "width=96&height=96&method=crop",
+    );
     return NetworkImage(request.toString());
   }
 
@@ -54,7 +52,8 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
   Future<LoginResult> submit(Client client) async {
     if (client is! MatrixClient) {
       return LoginResultError(
-          "Attemted to login with the wrong type of client");
+        "Attemted to login with the wrong type of client",
+      );
     }
 
     try {
@@ -83,21 +82,17 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       );
 
       final result = await FlutterWebAuth2.authenticate(
-          url: url.toString(),
-          callbackUrlScheme: callbackScheme,
-          options: FlutterWebAuth2Options(
-            useWebview: false,
-          ));
+        url: url.toString(),
+        callbackUrlScheme: callbackScheme,
+        options: FlutterWebAuth2Options(useWebview: false),
+      );
 
       var token = Uri.parse(result).queryParameters['loginToken'];
       if (token?.isEmpty ?? false) {
         return LoginResultFailed();
       }
 
-      var login = await mx.login(
-        matrix.LoginType.mLoginToken,
-        token: token,
-      );
+      var login = await mx.login(matrix.LoginType.mLoginToken, token: token);
 
       if (login.accessToken.isNotEmpty) {
         return LoginResultSuccess();

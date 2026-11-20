@@ -11,8 +11,10 @@ class MatrixCapabilityAlwaysOnScreen implements MatrixWidgetCapability {
 
   static const String name = "m.always_on_screen";
 
-  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(name,
-      (runner, type, key) => MatrixCapabilityAlwaysOnScreen(runner: runner));
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
+    name,
+    (runner, type, key) => MatrixCapabilityAlwaysOnScreen(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";

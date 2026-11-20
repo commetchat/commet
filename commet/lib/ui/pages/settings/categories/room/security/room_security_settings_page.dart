@@ -29,15 +29,17 @@ class _RoomSecuritySettingsPageState extends State<RoomSecuritySettingsPage> {
   late bool isE2EEEnabled;
   late RoomVisibility visibility;
 
-  String get promptEnableEncryptionRoomSettings =>
-      Intl.message("Enable Encryption",
-          name: "promptEnableEncryptionRoomSettings",
-          desc: "Short prompt to enable encryption for a room");
+  String get promptEnableEncryptionRoomSettings => Intl.message(
+    "Enable Encryption",
+    name: "promptEnableEncryptionRoomSettings",
+    desc: "Short prompt to enable encryption for a room",
+  );
 
-  String get encryptionCannotBeDisabledExplanationRoomSettings =>
-      Intl.message("If enabled, encryption cannot be disabled later",
-          name: "encryptionCannotBeDisabledExplanationRoomSettings",
-          desc: "Explains that encryption cannot be disabled once enabled");
+  String get encryptionCannotBeDisabledExplanationRoomSettings => Intl.message(
+    "If enabled, encryption cannot be disabled later",
+    name: "encryptionCannotBeDisabledExplanationRoomSettings",
+    desc: "Explains that encryption cannot be disabled once enabled",
+  );
 
   @override
   void initState() {
@@ -67,14 +69,15 @@ class _RoomSecuritySettingsPageState extends State<RoomSecuritySettingsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  tiamat.Text.labelEmphasised(
-                      promptEnableEncryptionRoomSettings),
-                  tiamat.Text.labelLow(
-                      encryptionCannotBeDisabledExplanationRoomSettings)
-                ]),
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                tiamat.Text.labelEmphasised(promptEnableEncryptionRoomSettings),
+                tiamat.Text.labelLow(
+                  encryptionCannotBeDisabledExplanationRoomSettings,
+                ),
+              ],
+            ),
             IgnorePointer(
               ignoring: isE2EEEnabled || !widget.room.permissions.canEnableE2EE,
               child: tiamat.Switch(
@@ -87,7 +90,7 @@ class _RoomSecuritySettingsPageState extends State<RoomSecuritySettingsPage> {
                   });
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -116,8 +119,11 @@ class _RoomSecuritySettingsPageState extends State<RoomSecuritySettingsPage> {
               }
 
               if (spaces.isEmpty) {
-                var parents = widget.room.client.spaces.where((i) => i.subspaces
-                    .any((i) => i.identifier == widget.room.identifier));
+                var parents = widget.room.client.spaces.where(
+                  (i) => i.subspaces.any(
+                    (i) => i.identifier == widget.room.identifier,
+                  ),
+                );
 
                 for (var p in parents) {
                   spaces.add(p.identifier);
@@ -144,7 +150,9 @@ class _RoomSecuritySettingsPageState extends State<RoomSecuritySettingsPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: RoomFieldVisibility.buildRoomVisibility(
-                            widget.room.client, item),
+                          widget.room.client,
+                          item,
+                        ),
                       ),
                     ),
                   );
@@ -162,7 +170,9 @@ class _RoomSecuritySettingsPageState extends State<RoomSecuritySettingsPage> {
               }
             },
             child: RoomFieldVisibility.buildRoomVisibility(
-                widget.room.client, visibility),
+              widget.room.client,
+              visibility,
+            ),
           ),
         ),
       ),

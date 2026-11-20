@@ -24,8 +24,7 @@ dependencies:
 
 dev_dependencies:
   build_runner:
-  widgetbook_generator: ^3.1.0
-  widgetbook:
+
 
 flutter:
   uses-material-design: true

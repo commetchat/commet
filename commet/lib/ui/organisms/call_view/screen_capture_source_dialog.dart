@@ -7,8 +7,11 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ScreenCaptureSourceDialog extends StatefulWidget {
-  const ScreenCaptureSourceDialog(this.sources, this.onThumbnailChanged,
-      {super.key});
+  const ScreenCaptureSourceDialog(
+    this.sources,
+    this.onThumbnailChanged, {
+    super.key,
+  });
   final List<DesktopCapturerSource> sources;
   final Stream<DesktopCapturerSource> onThumbnailChanged;
 
@@ -23,10 +26,12 @@ class _ScreenCaptureSourceDialogState extends State<ScreenCaptureSourceDialog> {
 
   @override
   void initState() {
-    this.screenSources =
-        widget.sources.where((i) => i.type == SourceType.Screen).toList();
-    this.windowSources =
-        widget.sources.where((i) => i.type == SourceType.Window).toList();
+    this.screenSources = widget.sources
+        .where((i) => i.type == SourceType.Screen)
+        .toList();
+    this.windowSources = widget.sources
+        .where((i) => i.type == SourceType.Window)
+        .toList();
 
     super.initState();
   }
@@ -59,9 +64,7 @@ class _ScreenCaptureSourceDialogState extends State<ScreenCaptureSourceDialog> {
                   );
                 },
               ),
-              SizedBox(
-                height: 32,
-              )
+              SizedBox(height: 32),
             ],
             if (screenSources.isNotEmpty) ...[
               tiamat.Text.largeTitle("Screens:"),
@@ -82,7 +85,7 @@ class _ScreenCaptureSourceDialogState extends State<ScreenCaptureSourceDialog> {
                   );
                 },
               ),
-            ]
+            ],
           ],
         ),
       ),

@@ -8,12 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MiniProfileView extends StatefulWidget {
-  const MiniProfileView(
-      {required this.client,
-      required this.userId,
-      this.initialProfile,
-      this.onTap,
-      super.key});
+  const MiniProfileView({
+    required this.client,
+    required this.userId,
+    this.initialProfile,
+    this.onTap,
+    super.key,
+  });
   final Client client;
   final String userId;
   final Profile? initialProfile;
@@ -36,9 +37,11 @@ class _MiniProfileViewState extends State<MiniProfileView> {
       widget.client
           .getComponent<UserProfileComponent>()!
           .getProfile(widget.userId)
-          .then((value) => setState(() {
-                profile = value;
-              }));
+          .then(
+            (value) => setState(() {
+              profile = value;
+            }),
+          );
     } else {
       profile = widget.initialProfile;
     }
@@ -82,8 +85,9 @@ class _MiniProfileViewState extends State<MiniProfileView> {
                                 height: 12,
                                 width: (random * 50) + 50,
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: shimmerColor),
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: shimmerColor,
+                                ),
                               ),
                         profile != null
                             ? tiamat.Text.labelLow(profile!.identifier)
@@ -93,8 +97,9 @@ class _MiniProfileViewState extends State<MiniProfileView> {
                                   height: 8,
                                   width: (random * 10) + 100,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: shimmerColor),
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: shimmerColor,
+                                  ),
                                 ),
                               ),
                       ],

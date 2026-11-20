@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'dart:ui' as ui;
+
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
 import 'package:flutter/material.dart';
 
@@ -17,20 +18,27 @@ class MessageEffectEyes implements MessageEffectParticles {
   @override
   Future<void> init() async {
     var data = await ImmutableBuffer.fromAsset(
-        "assets/images/effects/particles/fluent-emoji-eyes.webp");
+      "assets/images/effects/particles/fluent-emoji-eyes.webp",
+    );
     var codec = await ui.instantiateImageCodecFromBuffer(data);
     var sprite = ParticleSprite();
 
     await sprite.init(
-        codec: codec,
-        spriteSheet: SpriteSheetInfo(
-            frames: 49,
-            frameWidth: 128,
-            frameHeight: 128,
-            framesPerSecond: 30));
+      codec: codec,
+      spriteSheet: SpriteSheetInfo(
+        frames: 49,
+        frameWidth: 128,
+        frameHeight: 128,
+        framesPerSecond: 30,
+      ),
+    );
 
     system = ParticleSystemEyes(
-        sprite: sprite, spriteSize: 0.4, gravity: -10, height: 500);
+      sprite: sprite,
+      spriteSize: 0.4,
+      gravity: -10,
+      height: 500,
+    );
     system!.setSize(numParticles);
   }
 

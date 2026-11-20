@@ -14,50 +14,59 @@ class UnicodeEmojis {
   static Future<List<UnicodeEmoticonPack>> load() async {
     packs = List.from([
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_0],
-          getLocalisedName: () => "Smileys",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_0",
-          icon: Icons.emoji_emotions),
+        dataPacks: [UnicodeEmojiGroups.GROUP_0],
+        getLocalisedName: () => "Smileys",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_0",
+        icon: Icons.emoji_emotions,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_1],
-          getLocalisedName: () => "People",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_1",
-          icon: Icons.emoji_people),
+        dataPacks: [UnicodeEmojiGroups.GROUP_1],
+        getLocalisedName: () => "People",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_1",
+        icon: Icons.emoji_people,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_3],
-          getLocalisedName: () => "Animals & Nature",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_3",
-          icon: Icons.emoji_nature_rounded),
+        dataPacks: [UnicodeEmojiGroups.GROUP_3],
+        getLocalisedName: () => "Animals & Nature",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_3",
+        icon: Icons.emoji_nature_rounded,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_4],
-          getLocalisedName: () => "Food & Drink",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_4",
-          icon: Icons.emoji_food_beverage),
+        dataPacks: [UnicodeEmojiGroups.GROUP_4],
+        getLocalisedName: () => "Food & Drink",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_4",
+        icon: Icons.emoji_food_beverage,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_5],
-          getLocalisedName: () => "Travel & Places",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_5",
-          icon: Icons.emoji_transportation),
+        dataPacks: [UnicodeEmojiGroups.GROUP_5],
+        getLocalisedName: () => "Travel & Places",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_5",
+        icon: Icons.emoji_transportation,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_6],
-          getLocalisedName: () => "Activities",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_6",
-          icon: Icons.emoji_events),
+        dataPacks: [UnicodeEmojiGroups.GROUP_6],
+        getLocalisedName: () => "Activities",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_6",
+        icon: Icons.emoji_events,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_7],
-          getLocalisedName: () => "Objects",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_7",
-          icon: Icons.emoji_objects),
+        dataPacks: [UnicodeEmojiGroups.GROUP_7],
+        getLocalisedName: () => "Objects",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_7",
+        icon: Icons.emoji_objects,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_8],
-          getLocalisedName: () => "Symbols",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_8",
-          icon: Icons.emoji_symbols),
+        dataPacks: [UnicodeEmojiGroups.GROUP_8],
+        getLocalisedName: () => "Symbols",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_8",
+        icon: Icons.emoji_symbols,
+      ),
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_9],
-          getLocalisedName: () => "Flags",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_9",
-          icon: Icons.emoji_flags),
+        dataPacks: [UnicodeEmojiGroups.GROUP_9],
+        getLocalisedName: () => "Flags",
+        identifier: "chat.commet.commetapp.internal_emoticons.group_9",
+        icon: Icons.emoji_flags,
+      ),
     ]);
 
     for (var pack in packs!) {
@@ -71,8 +80,9 @@ class UnicodeEmojis {
 
   static Future<void> loadShortcodeData() async {
     if (shortcodeData == null) {
-      var data =
-          await rootBundle.loadString('assets/emoji_data/shortcodes/en.json');
+      var data = await rootBundle.loadString(
+        'assets/emoji_data/shortcodes/en.json',
+      );
 
       shortcodeData = jsonDecode(data) as Map<String, dynamic>;
     }
@@ -132,21 +142,25 @@ class UnicodeEmoticonPack implements EmoticonPack {
 
   final String Function() getLocalisedName;
 
-  UnicodeEmoticonPack(
-      {required this.getLocalisedName,
-      required this.dataPacks,
-      required this.identifier,
-      this.icon,
-      this.image});
+  UnicodeEmoticonPack({
+    required this.getLocalisedName,
+    required this.dataPacks,
+    required this.identifier,
+    this.icon,
+    this.image,
+  });
 
   Future<void> load() async {
     _emoji = List.empty(growable: true);
 
     for (var pack in dataPacks) {
       var emoji = List.generate(
-          pack.length,
-          (index) => UnicodeEmoticon(pack[index].unicode,
-              shortcode: pack[index].shortcode));
+        pack.length,
+        (index) => UnicodeEmoticon(
+          pack[index].unicode,
+          shortcode: pack[index].shortcode,
+        ),
+      );
 
       _emoji!.addAll(emoji);
     }
@@ -192,29 +206,34 @@ class UnicodeEmoticonPack implements EmoticonPack {
   EmoticonUsage get usage => EmoticonUsage.emoji;
 
   @override
-  Future<void> addEmoticon(
-      {required String slug,
-      String? shortcode,
-      required Uint8List data,
-      String? mimeType,
-      EmoticonUsage? usage}) {
+  Future<void> addEmoticon({
+    required String slug,
+    String? shortcode,
+    required Uint8List data,
+    String? mimeType,
+    EmoticonUsage? usage,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> updateEmoticon(
-      {String? slug,
-      String? shortcode,
-      Uint8List? data,
-      String? mimeType,
-      EmoticonUsage? usage,
-      required Emoticon previous}) {
+  Future<void> updateEmoticon({
+    String? slug,
+    String? shortcode,
+    Uint8List? data,
+    String? mimeType,
+    EmoticonUsage? usage,
+    required Emoticon previous,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> updatePack(
-      {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
+  Future<void> updatePack({
+    EmoticonUsage? usage,
+    String? name,
+    Uint8List? imageData,
+  }) {
     throw UnimplementedError();
   }
 
@@ -250,14 +269,11 @@ class UnicodeEmoticon extends Emoticon {
 
   static final _u200D = String.fromCharCode(0x200D);
 
-  static final _uFE0Fg = RegExp(
-    r'\uFE0F',
-    unicode: true,
-  );
+  static final _uFE0Fg = RegExp(r'\uFE0F', unicode: true);
 
   static String emojiToUnicode(String rawText) => toCodePoint(
-        !rawText.contains(_u200D) ? rawText.replaceAll(_uFE0Fg, '') : rawText,
-      );
+    !rawText.contains(_u200D) ? rawText.replaceAll(_uFE0Fg, '') : rawText,
+  );
 
   static String toCodePoint(String input, {String sep = '-'}) {
     var r = [], c = 0, p = 0, i = 0;
@@ -265,7 +281,8 @@ class UnicodeEmoticon extends Emoticon {
       c = input.codeUnitAt(i++);
       if (p != 0) {
         r.add(
-            (0x10000 + ((p - 0xD800) << 10) + (c - 0xDC00)).toRadixString(16));
+          (0x10000 + ((p - 0xD800) << 10) + (c - 0xDC00)).toRadixString(16),
+        );
         p = 0;
       } else if (0xD800 <= c && c <= 0xDBFF) {
         p = c;

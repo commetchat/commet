@@ -47,7 +47,9 @@ class ClientConnectionStatusTask extends BackgroundTaskWithOptionalProgress {
   }
 
   ClientConnectionStatusTask(
-      this.client, ClientConnectionStatusUpdate initialStatus) {
+    this.client,
+    ClientConnectionStatusUpdate initialStatus,
+  ) {
     sub = client.connectionStatusChanged.stream.listen(onStatusUpdate);
     onStatusUpdate(initialStatus);
   }

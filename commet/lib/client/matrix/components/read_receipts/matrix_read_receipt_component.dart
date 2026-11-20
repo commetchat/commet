@@ -37,7 +37,9 @@ class MatrixReadReceiptComponent
   @override
   bool? get usePublicReadReceiptsForRoom {
     var publicReadReceiptsForRoom = room
-        .matrixRoom.roomAccountData[publicReadReceiptsKey]?.content["enabled"];
+        .matrixRoom
+        .roomAccountData[publicReadReceiptsKey]
+        ?.content["enabled"];
     return publicReadReceiptsForRoom is bool ? publicReadReceiptsForRoom : null;
   }
 

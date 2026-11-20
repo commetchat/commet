@@ -5,14 +5,7 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-enum VoipState {
-  incoming,
-  connecting,
-  connected,
-  unknown,
-  outgoing,
-  ended,
-}
+enum VoipState { incoming, connecting, connected, unknown, outgoing, ended }
 
 abstract class ScreenCaptureSource {}
 
@@ -47,8 +40,10 @@ abstract class VoipSession {
 
   List<VoipStream> get streams;
 
-  Future<void> acceptCall(
-      {bool withMicrophone = false, bool withCamera = false});
+  Future<void> acceptCall({
+    bool withMicrophone = false,
+    bool withCamera = false,
+  });
 
   Future<void> declineCall();
 

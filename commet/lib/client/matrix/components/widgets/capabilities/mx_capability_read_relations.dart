@@ -14,9 +14,9 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc3869.read_relations";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) =>
-          MatrixCapabilityReadEventRelations(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityReadEventRelations(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -50,8 +50,9 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
 
     if (capabilities.canWidgetReadEvent(event) == false) {
       return message.createResponseError(
-          message:
-              "Rejected: Cannot read type of requested event: ${event.eventId} (${event.type})");
+        message:
+            "Rejected: Cannot read type of requested event: ${event.eventId} (${event.type})",
+      );
     }
 
     var relType = message.data.tryGet<String>("rel_type");
@@ -62,9 +63,14 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     int? limit = message.data.tryGet<int>("limit");
     String? from = message.data.tryGet<String>("from");
     String? to = message.data.tryGet<String>("to");
+    String? directionStr = message.data.tryGet<String>("direction");
 
     var requestEventType = eventType;
-
+    var direction = directionStr == "b"
+        ? Direction.b
+        : directionStr == "f"
+        ? Direction.f
+        : null;
     // if the room is encrypted, all events will use m.room.encrypted type, so filtering by type would fail here.
     // remember to filter out irrelevant events once receiving the response and decrypting!
     if (runner.room!.isE2EE) {
@@ -74,8 +80,15 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     if (requestEventType != null && relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelTypeAndEventType(
-              runner.room!.identifier, eventId, relType, requestEventType,
-              from: from, to: to, limit: limit);
+            runner.room!.identifier,
+            eventId,
+            relType,
+            requestEventType,
+            from: from,
+            to: to,
+            limit: limit,
+            dir: direction,
+          );
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
@@ -83,16 +96,27 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     } else if (relType != null) {
       var result = await runner.room!.matrixRoom.client
           .getRelatingEventsWithRelType(
-              runner.room!.identifier, eventId, relType,
-              from: from, to: to, limit: limit);
+            runner.room!.identifier,
+            eventId,
+            relType,
+            from: from,
+            to: to,
+            limit: limit,
+            dir: direction,
+          );
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
       nextBatch = result.nextBatch;
     } else {
       var result = await runner.room!.matrixRoom.client.getRelatingEvents(
-          runner.room!.identifier, eventId,
-          from: from, to: to, limit: limit);
+        runner.room!.identifier,
+        eventId,
+        from: from,
+        to: to,
+        limit: limit,
+        dir: direction,
+      );
 
       chunk = result.chunk;
       prevBatch = result.prevBatch;
@@ -102,8 +126,10 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     if (runner.room!.isE2EE) {
       for (var i = 0; i < chunk.length; i++) {
         try {
-          var ev =
-              matrix.Event.fromMatrixEvent(chunk[i], runner.room!.matrixRoom);
+          var ev = matrix.Event.fromMatrixEvent(
+            chunk[i],
+            runner.room!.matrixRoom,
+          );
           chunk[i] = await runner.room!.matrixRoom.client.encryption!
               .decryptRoomEvent(ev);
         } catch (_) {}
@@ -115,21 +141,25 @@ class MatrixCapabilityReadEventRelations implements MatrixWidgetCapability {
     }
 
     var allowedEvents = chunk.where((i) => capabilities.canWidgetReadEvent(i));
-    var response = message.createResponseObject(response: {
-      "next_batch": nextBatch,
-      "prev_batch": prevBatch,
-      "chunk": allowedEvents
-          .map((i) => {
+    var response = message.createResponseObject(
+      response: {
+        "next_batch": nextBatch,
+        "prev_batch": prevBatch,
+        "chunk": allowedEvents
+            .map(
+              (i) => {
                 "content": i.content,
                 "sender": i.senderId,
                 if (i.stateKey != null) "state_key": i.stateKey!,
                 "type": i.type,
                 "event_id": i.eventId,
                 "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-                "room_id": runner.room!.identifier
-              })
-          .toList()
-    });
+                "room_id": runner.room!.identifier,
+              },
+            )
+            .toList(),
+      },
+    );
     return response;
   }
 

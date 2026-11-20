@@ -43,15 +43,16 @@ class _UserPanelSettingsState extends State<UserPanelSettings> {
       child: Row(
         children: [
           SizedBox(
-              width: height,
-              height: height,
-              child: tiamat.IconButton(
-                icon: Icons.settings,
-                size: iconHeight,
-                onPressed: () {
-                  NavigationUtils.navigateTo(context, const AppSettingsPage());
-                },
-              ))
+            width: height,
+            height: height,
+            child: tiamat.IconButton(
+              icon: Icons.settings,
+              size: iconHeight,
+              onPressed: () {
+                NavigationUtils.navigateTo(context, const AppSettingsPage());
+              },
+            ),
+          ),
         ],
       ),
     );

@@ -1,0 +1,2 @@
+What's Changed:
+- Updated Flutter SDK and Matrix SDK

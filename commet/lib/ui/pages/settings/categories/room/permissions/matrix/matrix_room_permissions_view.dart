@@ -9,13 +9,18 @@ import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixRoomPermissionsView extends StatefulWidget {
-  const MatrixRoomPermissionsView(this.permissions, this.powerLevels,
-      {super.key, this.setPermissions, this.canEdit = false});
+  const MatrixRoomPermissionsView(
+    this.permissions,
+    this.powerLevels, {
+    super.key,
+    this.setPermissions,
+    this.canEdit = false,
+  });
   final List<MatrixRoomPermissionEntry> permissions;
   final List<MatrixRoomRoleEntry> powerLevels;
   final bool canEdit;
   final Future<void> Function(List<MatrixRoomPermissionEntry> permissions)?
-      setPermissions;
+  setPermissions;
 
   @override
   State<MatrixRoomPermissionsView> createState() =>
@@ -70,45 +75,44 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ReorderableList(
-          itemBuilder: (context, index) {
-            var key = Key('$index');
-            var enabled =
-                widget.canEdit && entries[index] is MatrixRoomPermissionEntry;
-            if (BuildConfig.MOBILE) {
-              return ReorderableDelayedDragStartListener(
-                key: key,
-                enabled: enabled,
-                index: index,
-                child: itemBuilder(context, index),
-              );
-            } else {
-              return ReorderableDragStartListener(
-                key: key,
-                enabled: enabled,
-                index: index,
-                child: itemBuilder(context, index),
-              );
-            }
-          },
-          onReorderStart: (index) => HapticFeedback.mediumImpact(),
-          proxyDecorator: (child, index, animation) {
-            return AnimatedBuilder(
-              animation: animation,
-              builder: (BuildContext context, Widget? child) {
-                final double animValue =
-                    Curves.easeOut.transform(animation.value);
-                final double scale = lerpDouble(1, 1.03, animValue)!;
-                return Transform.scale(
-                  scale: scale,
-                  child: child,
-                );
-              },
-              child: child,
+        itemBuilder: (context, index) {
+          var key = Key('$index');
+          var enabled =
+              widget.canEdit && entries[index] is MatrixRoomPermissionEntry;
+          if (BuildConfig.MOBILE) {
+            return ReorderableDelayedDragStartListener(
+              key: key,
+              enabled: enabled,
+              index: index,
+              child: itemBuilder(context, index),
             );
-          },
-          shrinkWrap: true,
-          itemCount: entries.length,
-          onReorder: onReorder),
+          } else {
+            return ReorderableDragStartListener(
+              key: key,
+              enabled: enabled,
+              index: index,
+              child: itemBuilder(context, index),
+            );
+          }
+        },
+        onReorderStart: (index) => HapticFeedback.mediumImpact(),
+        proxyDecorator: (child, index, animation) {
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (BuildContext context, Widget? child) {
+              final double animValue = Curves.easeOut.transform(
+                animation.value,
+              );
+              final double scale = lerpDouble(1, 1.03, animValue)!;
+              return Transform.scale(scale: scale, child: child);
+            },
+            child: child,
+          );
+        },
+        shrinkWrap: true,
+        itemCount: entries.length,
+        onReorder: onReorder,
+      ),
       floatingActionButton: isEdited
           ? FloatingActionButton(
               child: isLoading
@@ -120,7 +124,8 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
                       ),
                     )
                   : const Icon(Icons.check),
-              onPressed: () => applySettings())
+              onPressed: () => applySettings(),
+            )
           : null,
     );
   }
@@ -178,7 +183,7 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 tiamat.Text.labelEmphasised(item.title),
-                                tiamat.Text.labelLow(item.description)
+                                tiamat.Text.labelLow(item.description),
                               ],
                             ),
                           ),
@@ -204,7 +209,7 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
                       ),
                       tiamat.Text.tiny(item.powerLevel.toString()),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

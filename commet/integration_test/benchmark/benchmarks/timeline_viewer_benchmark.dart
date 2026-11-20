@@ -11,12 +11,12 @@ void main() {
 
   testWidgets('Timeline Viewer Test', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MaterialApp(
-      theme: ThemeDark.theme,
-      home: const Scaffold(
-        body: BenchmarkTimelineViewer(),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeDark.theme,
+        home: const Scaffold(body: BenchmarkTimelineViewer()),
       ),
-    ));
+    );
 
     await tester.pump(const Duration(seconds: 1));
 
@@ -25,18 +25,15 @@ void main() {
 
     var reportKey = 'TimelineViewer Scrolling';
 
-    await binding.traceAction(
-      () async {
-        // Scroll until the item to be found appears.
-        await tester.scrollUntilVisible(
-          itemFinder,
-          50.0,
-          maxScrolls: 10000,
-          scrollable: listFinder,
-        );
-      },
-      reportKey: reportKey,
-    );
+    await binding.traceAction(() async {
+      // Scroll until the item to be found appears.
+      await tester.scrollUntilVisible(
+        itemFinder,
+        50.0,
+        maxScrolls: 10000,
+        scrollable: listFinder,
+      );
+    }, reportKey: reportKey);
 
     binding.reportData?[reportKey]["extra_values"] = [
       {
@@ -58,7 +55,7 @@ void main() {
         "name": "$reportKey - Timeline Event Message Url Preview Build Count",
         "value": BenchmarkValues.numTimelineUrlPreviewBuilt,
         "unit": "Builds",
-      }
+      },
     ];
   });
 }

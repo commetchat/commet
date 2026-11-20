@@ -89,4 +89,7 @@ class MatrixBackgroundMember implements Member {
   String? get avatarId => event?.content.containsKey("avatar_url") == true
       ? event?.content["avatar_url"] as String?
       : null;
+
+  @override
+  bool get blocked => false;
 }

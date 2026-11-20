@@ -37,8 +37,6 @@ class _BackgroundTaskViewContainerState
       return Container();
     }
 
-    return FloatingTile(
-      child: BackgroundTaskView(backgroundTaskManager),
-    );
+    return FloatingTile(child: BackgroundTaskView(backgroundTaskManager));
   }
 }

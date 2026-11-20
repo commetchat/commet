@@ -9,14 +9,15 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
   const OutsourceShortcutSettingsPage({super.key});
 
   String get labelSystemKeyboardShortcutsOutsourceDescription => Intl.message(
-        "In your current environment, keyboard shortcuts must be configured in your system settings.",
-        name: "labelSystemKeyboardShortcutsOutsourceDescription",
-      );
+    "In your current environment, keyboard shortcuts must be configured in your system settings.",
+    name: "labelSystemKeyboardShortcutsOutsourceDescription",
+  );
 
-  String get promptSystemKeyboardShortcutsMoreInfo => Intl.message("More Info",
-      name: "promptSystemKeyboardShortcutsMoreInfo",
-      desc:
-          "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup");
+  String get promptSystemKeyboardShortcutsMoreInfo => Intl.message(
+    "More Info",
+    name: "promptSystemKeyboardShortcutsMoreInfo",
+    desc: "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +28,13 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
         spacing: 20,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          tiamat.Text(
-            labelSystemKeyboardShortcutsOutsourceDescription,
-          ),
+          tiamat.Text(labelSystemKeyboardShortcutsOutsourceDescription),
           tiamat.Button.secondary(
             text: promptSystemKeyboardShortcutsMoreInfo,
             onTap: () => LinkUtils.open(
-                Uri.parse("https://commet.chat/info/keyboard-shortcuts")),
-          )
+              Uri.parse("https://commet.chat/info/keyboard-shortcuts"),
+            ),
+          ),
         ],
       ),
     );

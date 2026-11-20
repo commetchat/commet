@@ -23,8 +23,9 @@ class MatrixUserPresenceComponent
 
     client.matrixClient.onSync.stream.listen(onSync);
     lastSeen = InMemoryCache(
-        maxRetention: Duration(minutes: 2),
-        pollFrequency: Duration(seconds: 100));
+      maxRetention: Duration(minutes: 2),
+      pollFrequency: Duration(seconds: 100),
+    );
     lastSeen.onRemove.listen(onLastSeenRemoved);
 
     UserPresenceLifecycleWatcher().init();
@@ -95,7 +96,9 @@ class MatrixUserPresenceComponent
 
     if (presence.statusMsg != null) {
       message = UserPresenceMessage(
-          presence.statusMsg!, PresenceMessageType.userCustom);
+        presence.statusMsg!,
+        PresenceMessageType.userCustom,
+      );
     }
 
     return UserPresence(status, message: message);
@@ -109,21 +112,25 @@ class MatrixUserPresenceComponent
   Stream<(String, UserPresence)> get onPresenceChanged => _controller.stream;
 
   @override
-  Future<void> setStatus(UserPresenceStatus status,
-      {String? message, bool clearMessage = false}) async {
+  Future<void> setStatus(
+    UserPresenceStatus status, {
+    String? message,
+    bool clearMessage = false,
+  }) async {
     final self = client.self!.identifier;
 
     final current = await client.matrixClient.getPresence(self);
 
     await client.matrixClient.setPresence(
-        self,
-        statusMsg: clearMessage ? null : message ?? current.statusMsg,
-        switch (status) {
-          UserPresenceStatus.offline => PresenceType.offline,
-          UserPresenceStatus.unknown => PresenceType.offline,
-          UserPresenceStatus.online => PresenceType.online,
-          UserPresenceStatus.unavailable => PresenceType.unavailable,
-        });
+      self,
+      statusMsg: clearMessage ? null : message ?? current.statusMsg,
+      switch (status) {
+        UserPresenceStatus.offline => PresenceType.offline,
+        UserPresenceStatus.unknown => PresenceType.offline,
+        UserPresenceStatus.online => PresenceType.online,
+        UserPresenceStatus.unavailable => PresenceType.unavailable,
+      },
+    );
   }
 
   void onSync(SyncUpdate event) {
@@ -175,8 +182,10 @@ class MatrixUserPresenceComponent
         var value = entry.value as Map<String, dynamic>;
 
         if (value.containsKey("ts")) {
-          sawUser(entry.key,
-              DateTime.fromMicrosecondsSinceEpoch((value["ts"] as int) * 1000));
+          sawUser(
+            entry.key,
+            DateTime.fromMicrosecondsSinceEpoch((value["ts"] as int) * 1000),
+          );
         }
       }
     }
@@ -191,8 +200,10 @@ class MatrixUserPresenceComponent
   }
 
   void sawUser(String id, DateTime timestamp) async {
-    final presence = await client.matrixClient
-        .fetchCurrentPresence(id, fetchOnlyFromCached: true);
+    final presence = await client.matrixClient.fetchCurrentPresence(
+      id,
+      fetchOnlyFromCached: true,
+    );
 
     if (presence.presence != PresenceType.offline ||
         presence.statusMsg != null) {
@@ -215,8 +226,10 @@ class MatrixUserPresenceComponent
   }
 
   void onLastSeenRemoved(String event) async {
-    final presence = await client.matrixClient
-        .fetchCurrentPresence(event, fetchOnlyFromCached: true);
+    final presence = await client.matrixClient.fetchCurrentPresence(
+      event,
+      fetchOnlyFromCached: true,
+    );
     if (presence.presence == PresenceType.offline) {
       _controller.add((event, UserPresence(UserPresenceStatus.offline)));
     }

@@ -11,7 +11,7 @@ class Mime {
     "image/png",
     "image/gif",
     "image/bmp",
-    "image/webp"
+    "image/webp",
   };
 
   static const imageTypes = {
@@ -22,10 +22,7 @@ class Mime {
     "image/bmp",
   };
 
-  static const gifTypes = {
-    "image/gif",
-    "image/webp",
-  };
+  static const gifTypes = {"image/gif", "image/webp"};
 
   static const playableAudioTypes = {
     "audio/x-wav",
@@ -43,7 +40,7 @@ class Mime {
     "video/mp4",
     "video/mpeg",
     "video/webm",
-    "video/quicktime"
+    "video/quicktime",
   };
 
   static const videoStreamTypes = {"application/vnd.apple.mpegurl"};
@@ -52,7 +49,7 @@ class Mime {
     "application/x-7z-compressed",
     "application/x-bzip",
     "application/x-bzip2",
-    "application/gzip"
+    "application/gzip",
   };
 
   static const extensionToMime = {
@@ -61,7 +58,7 @@ class Mime {
     "png": "image/png",
     "gif": "image/gif",
     "webp": "image/webp",
-    "bmp": "image/bmp"
+    "bmp": "image/bmp",
   };
 
   static String? fromExtenstion(String extension) {

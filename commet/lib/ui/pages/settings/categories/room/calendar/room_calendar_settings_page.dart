@@ -78,8 +78,9 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child:
-                          buildSyncEntry(syncedCalendarUrls[remoteCalendarId]!),
+                      child: buildSyncEntry(
+                        syncedCalendarUrls[remoteCalendarId]!,
+                      ),
                     ),
                   ],
                 ),
@@ -97,45 +98,49 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
                   width: 50,
                   child: tiamat.IconButton(
                     icon: Icons.add,
-                    onPressed: () => AdaptiveDialog.pickOne(
-                      context,
-                      title: "Sync Calendar Source",
-                      items: [
-                        //  CalendarSource.room,
-                        CalendarSource.ical,
-                      ],
-                      itemBuilder: (context, item, callback) {
-                        var text = switch (item) {
-                          CalendarSource.ical => "Calendar Url",
-                          CalendarSource.room => "Room",
-                        };
+                    onPressed: () =>
+                        AdaptiveDialog.pickOne(
+                          context,
+                          title: "Sync Calendar Source",
+                          items: [
+                            //  CalendarSource.room,
+                            CalendarSource.ical,
+                          ],
+                          itemBuilder: (context, item, callback) {
+                            var text = switch (item) {
+                              CalendarSource.ical => "Calendar Url",
+                              CalendarSource.room => "Room",
+                            };
 
-                        var icon = switch (item) {
-                          CalendarSource.ical => Icons.calendar_month,
-                          CalendarSource.room => Icons.tag,
-                        };
-                        return SizedBox(
-                          height: 50,
-                          child: tiamat.TextButton(
-                            text,
-                            icon: icon,
-                            onTap: callback,
-                          ),
-                        );
-                      },
-                    ).then((type) {
-                      switch (type) {
-                        case CalendarSource.ical:
-                          AdaptiveDialog.show(context,
-                              builder: (context) => AddRemoteCalendarDialog(
-                                  widget.calendarComponent));
-                        case CalendarSource.room:
-                          // TODO: Handle this case.
-                          throw UnimplementedError();
-                        case _:
-                          break;
-                      }
-                    }),
+                            var icon = switch (item) {
+                              CalendarSource.ical => Icons.calendar_month,
+                              CalendarSource.room => Icons.tag,
+                            };
+                            return SizedBox(
+                              height: 50,
+                              child: tiamat.TextButton(
+                                text,
+                                icon: icon,
+                                onTap: callback,
+                              ),
+                            );
+                          },
+                        ).then((type) {
+                          switch (type) {
+                            case CalendarSource.ical:
+                              AdaptiveDialog.show(
+                                context,
+                                builder: (context) => AddRemoteCalendarDialog(
+                                  widget.calendarComponent,
+                                ),
+                              );
+                            case CalendarSource.room:
+                              // TODO: Handle this case.
+                              throw UnimplementedError();
+                            case _:
+                              break;
+                          }
+                        }),
                   ),
                 ),
                 if (syncedCalendarUrls.isNotEmpty)
@@ -175,28 +180,30 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
     };
 
     var entryStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
-          color: Theme.of(context).colorScheme.secondary,
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-        );
+      color: Theme.of(context).colorScheme.secondary,
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+    );
 
     return RichText(
-      text: TextSpan(children: [
-        TextSpan(text: description),
-        TextSpan(text: " as ", style: entryStyle),
-        TextSpan(
-          text: switch (calendar.syncType) {
-            CalendarSyncType.events => "Events",
-            CalendarSyncType.unavailability => "Unavailability",
-          },
-        ),
-        if (calendar.overrideEventName != null)
-          TextSpan(text: " with name ", style: entryStyle),
-        if (calendar.overrideEventName != null)
-          TextSpan(text: "'${calendar.overrideEventName!}'"),
-        if (preferences.developerMode.value)
-          TextSpan(text: " (${calendar.id})", style: entryStyle)
-      ]),
+      text: TextSpan(
+        children: [
+          TextSpan(text: description),
+          TextSpan(text: " as ", style: entryStyle),
+          TextSpan(
+            text: switch (calendar.syncType) {
+              CalendarSyncType.events => "Events",
+              CalendarSyncType.unavailability => "Unavailability",
+            },
+          ),
+          if (calendar.overrideEventName != null)
+            TextSpan(text: " with name ", style: entryStyle),
+          if (calendar.overrideEventName != null)
+            TextSpan(text: "'${calendar.overrideEventName!}'"),
+          if (preferences.developerMode.value)
+            TextSpan(text: " (${calendar.id})", style: entryStyle),
+        ],
+      ),
     );
   }
 }

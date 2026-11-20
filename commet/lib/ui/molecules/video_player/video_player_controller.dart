@@ -45,16 +45,17 @@ class VideoPlayerController {
 
   Stream<DownloadProgress> get onDownloadProgressed => _downloadProgress.stream;
 
-  void attach(
-      {required Future<void> Function() pause,
-      required Future<void> Function() play,
-      required Future<void> Function() replay,
-      required Future<Duration> Function() getLength,
-      required Future<Size?> Function() getSize,
-      required Future<double> Function() getVolume,
-      Future<Uint8List?> Function()? screenshot,
-      required Future<void> Function(Duration percent) seekTo,
-      required Future<void> Function(double volume) setVolume}) {
+  void attach({
+    required Future<void> Function() pause,
+    required Future<void> Function() play,
+    required Future<void> Function() replay,
+    required Future<Duration> Function() getLength,
+    required Future<Size?> Function() getSize,
+    required Future<double> Function() getVolume,
+    Future<Uint8List?> Function()? screenshot,
+    required Future<void> Function(Duration percent) seekTo,
+    required Future<void> Function(double volume) setVolume,
+  }) {
     _onPause = pause;
     _onPlay = play;
     _onReplay = replay;

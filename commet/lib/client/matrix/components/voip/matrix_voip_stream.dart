@@ -129,7 +129,9 @@ class MatrixVoipStream implements VoipStream {
 
     if (fit == BoxFit.contain) {
       return AspectRatio(
-          aspectRatio: aspectRatio ?? 1, child: RTCVideoView(renderer!));
+        aspectRatio: aspectRatio ?? 1,
+        child: RTCVideoView(renderer!),
+      );
     } else {
       if (renderer!.textureId != null) {
         return RTCVideoView(

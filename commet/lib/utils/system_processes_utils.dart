@@ -11,8 +11,13 @@ class SystemProcessesUtils {
     }
 
     if (BuildConfig.IS_FLATPAK) {
-      var result = await Process.run(
-          "flatpak-spawn", ["--host", "ps", "-e", "-o", "pid,command"]);
+      var result = await Process.run("flatpak-spawn", [
+        "--host",
+        "ps",
+        "-e",
+        "-o",
+        "pid,command",
+      ]);
       return parseLinuxPS(result.stdout);
     }
 
@@ -37,8 +42,11 @@ class SystemProcessesUtils {
       }
 
       Log.i("Spawning subprocess: ${name} ${args}");
-      var result =
-          await Process.start("flatpak-spawn", ["--host", name, ...args]);
+      var result = await Process.start("flatpak-spawn", [
+        "--host",
+        name,
+        ...args,
+      ]);
 
       return result;
     }
@@ -49,12 +57,17 @@ class SystemProcessesUtils {
   }
 
   static Future<ProcessResult> runSubprocess(
-      String name, List<String> args) async {
+    String name,
+    List<String> args,
+  ) async {
     Log.i("Spawning subprocess: ${name} ${args}");
 
     if (BuildConfig.IS_FLATPAK) {
-      var result =
-          await Process.run("flatpak-spawn", ["--host", name, ...args]);
+      var result = await Process.run("flatpak-spawn", [
+        "--host",
+        name,
+        ...args,
+      ]);
       return result;
     }
 
@@ -96,6 +109,9 @@ class ProcessInfo {
   final String command;
   final List<String> args;
 
-  ProcessInfo(
-      {required this.processId, required this.command, this.args = const []});
+  ProcessInfo({
+    required this.processId,
+    required this.command,
+    this.args = const [],
+  });
 }

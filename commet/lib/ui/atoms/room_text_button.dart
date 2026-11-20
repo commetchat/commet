@@ -36,29 +36,38 @@ class RoomTextButton extends StatefulWidget {
   State<RoomTextButton> createState() => _RoomTextButtonState();
 
   static List<ContextMenuItem> createRoomContextMenuItems(
-      BuildContext context, Room room) {
+    BuildContext context,
+    Room room,
+  ) {
     var voipRoom = room.getComponent<VoipRoomComponent>();
     return [
       ContextMenuItem(
-          text: "Mark as Read",
-          icon: Icons.visibility,
-          onPressed: () => room.markAsRead()),
+        text: "Mark as Read",
+        icon: Icons.visibility,
+        onPressed: () => room.markAsRead(),
+      ),
       if (!room.isFavorite)
         ContextMenuItem(
-            text: "Set as Favorite",
-            icon: Icons.favorite,
-            onPressed: () => room.setAsFavorite(true)),
+          text: "Set as Favorite",
+          icon: Icons.favorite,
+          onPressed: () => room.setAsFavorite(true),
+        ),
       if (room.isFavorite)
         ContextMenuItem(
-            text: "Unfavorite",
-            icon: Icons.heart_broken_outlined,
-            onPressed: () => room.setAsFavorite(false)),
+          text: "Unfavorite",
+          icon: Icons.heart_broken_outlined,
+          onPressed: () => room.setAsFavorite(false),
+        ),
       if (room.isSpecialRoomType)
         ContextMenuItem(
-            text: "Open as Text Chat",
-            icon: Icons.tag,
-            onPressed: () => EventBus.doOpenRoom(room.identifier,
-                clientId: room.client.identifier, bypassSpecialRoomType: true)),
+          text: "Open as Text Chat",
+          icon: Icons.tag,
+          onPressed: () => EventBus.doOpenRoom(
+            room.identifier,
+            clientId: room.client.identifier,
+            bypassSpecialRoomType: true,
+          ),
+        ),
       if (voipRoom != null && preferences.developerMode.value)
         ContextMenuItem(
           text: "Clear Membership Status",
@@ -66,15 +75,12 @@ class RoomTextButton extends StatefulWidget {
           onPressed: () => voipRoom.clearAllCallMembershipStatus(),
         ),
       ContextMenuItem(
-          text: "Settings",
-          icon: Icons.settings,
-          onPressed: () {
-            NavigationUtils.navigateTo(
-                context,
-                RoomSettingsPage(
-                  room: room,
-                ));
-          }),
+        text: "Settings",
+        icon: Icons.settings,
+        onPressed: () {
+          NavigationUtils.navigateTo(context, RoomSettingsPage(room: room));
+        },
+      ),
     ];
   }
 }
@@ -132,7 +138,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
   void sortActivities() {
     activitySessions?.sort(
-        (a, b) => (a.thirdparty ? 1 : 0).compareTo(b.thirdparty ? 1 : 0));
+      (a, b) => (a.thirdparty ? 1 : 0).compareTo(b.thirdparty ? 1 : 0),
+    );
   }
 
   @override
@@ -173,25 +180,27 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     bool showRoomIcons = preferences.showRoomAvatars.value;
     bool useGenericIcons = preferences.usePlaceholderRoomAvatars.value;
 
-    bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
+    bool shouldShowDefaultIcon =
+        (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
     String displayName = widget.room.displayName;
 
     Color? avatarPlaceholderColor =
         (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                (!showRoomIcons && useGenericIcons)
-            ? widget.room.defaultColor
-            : null;
+            (!showRoomIcons && useGenericIcons)
+        ? widget.room.defaultColor
+        : null;
 
     String? avatarPlaceholderText =
         (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                (!showRoomIcons && useGenericIcons)
-            ? widget.room.displayName
-            : null;
+            (!showRoomIcons && useGenericIcons)
+        ? widget.room.displayName
+        : null;
 
-    bool startsWithEmoji =
-        TextUtils.isEmoji(widget.room.displayName.characters.first);
+    bool startsWithEmoji = TextUtils.isEmoji(
+      widget.room.displayName.characters.first,
+    );
 
     if (startsWithEmoji && widget.room.avatar == null) {
       shouldShowDefaultIcon = false;
@@ -230,9 +239,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         footer: widget.room.displayHighlightedNotificationCount > 0
             ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
             : widget.room.displayNotificationCount > 0
-                ? const Padding(
-                    padding: EdgeInsets.all(2.0), child: DotIndicator())
-                : null,
+            ? const Padding(padding: EdgeInsets.all(2.0), child: DotIndicator())
+            : null,
       ),
     );
 
@@ -260,12 +268,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
           child: Column(
             spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var activity in sessions)
-                buildActivity(
-                  activity,
-                ),
-            ],
+            children: [for (var activity in sessions) buildActivity(activity)],
           ),
         ),
       ],
@@ -285,8 +288,9 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-            color: ColorScheme.of(context).surfaceTint.withAlpha(10),
-            borderRadius: BorderRadius.circular(8)),
+          color: ColorScheme.of(context).surfaceTint.withAlpha(10),
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -303,20 +307,20 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                       spacing: 8,
                       children: [
                         SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: activity.icon.build(context)),
+                          height: 20,
+                          width: 20,
+                          child: activity.icon.build(context),
+                        ),
                         tiamat.Text.labelLow(activity.name),
                       ],
                     ),
                   ),
-                if (activity.thirdparty)
-                  tiamat.Seperator(
-                    padding: 2,
-                  ),
+                if (activity.thirdparty) tiamat.Seperator(padding: 2),
                 for (var participant in activity.participants)
-                  buildCallMember(participant,
-                      showActivityIcons: activity.thirdparty == false),
+                  buildCallMember(
+                    participant,
+                    showActivityIcons: activity.thirdparty == false,
+                  ),
               ],
             ),
           ),
@@ -374,9 +378,11 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                 child: Row(
                   children: [
-                    for (var i in activitySessions!.where((i) =>
-                        i.thirdparty == true &&
-                        i.participants.contains(identifier)))
+                    for (var i in activitySessions!.where(
+                      (i) =>
+                          i.thirdparty == true &&
+                          i.participants.contains(identifier),
+                    ))
                       ClipRRect(
                         borderRadius: BorderRadiusGeometry.circular(4),
                         child: Material(
@@ -386,12 +392,13 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                                 ? null
                                 : () => onWidgetTapped(i),
                             child: SizedBox(
-                                height: 30,
-                                width: 30,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: i.icon.build(context),
-                                )),
+                              height: 30,
+                              width: 30,
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: i.icon.build(context),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -404,8 +411,9 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   }
 
   Widget buildEvent(MatrixCalendarEventState event) {
-    var color =
-        calendarRoom!.calendar!.config.getColorFromUser(event.senderId!);
+    var color = calendarRoom!.calendar!.config.getColorFromUser(
+      event.senderId!,
+    );
 
     return TinyPill(
       event.data.title,
@@ -428,11 +436,16 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
 
     if (isInActivity == false) {
-      var confirm = await AdaptiveDialog.confirmation(context,
-          prompt: "Open **${activity.associatedWidget!.name}**?");
+      var confirm = await AdaptiveDialog.confirmation(
+        context,
+        prompt: "Open **${activity.associatedWidget!.name}**?",
+      );
       if (confirm == true) {
         WidgetComponent.runWidget(
-            widget.room, context, activity.associatedWidget!);
+          widget.room,
+          context,
+          activity.associatedWidget!,
+        );
       }
     } else {
       Log.i("Already has a widget in for this session");

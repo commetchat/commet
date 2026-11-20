@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
@@ -80,11 +79,11 @@ class UnifiedPushNotifier implements Notifier {
     return notifier.requestPermission();
   }
 
-  void onNewEndpoint(String endpoint, String instance) async {
+  void onNewEndpoint(PushEndpoint endpoint, String instance) async {
     print("Got new endpoint: $instance");
-    await preferences.unifiedPushEndpoint.set(endpoint);
+    await preferences.unifiedPushEndpoint.set(endpoint.url);
     await PushNotificationComponent.updateAllPushers();
-    onEndpointChanged.add(endpoint);
+    onEndpointChanged.add(endpoint.url);
   }
 
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
@@ -100,10 +99,12 @@ class UnifiedPushNotifier implements Notifier {
             return;
           }
 
-          NotificationManager.notify(ErrorNotificationContent(
-            title: "Unknown Notification Data",
-            content: jsonEncode(message),
-          ));
+          NotificationManager.notify(
+            ErrorNotificationContent(
+              title: "Unknown Notification Data",
+              content: jsonEncode(message),
+            ),
+          );
         }
 
         return;
@@ -112,17 +113,21 @@ class UnifiedPushNotifier implements Notifier {
       notificationManager.handleMessage(message);
     } catch (e, s) {
       Log.e(
-          "An error occured while processing unified push background message");
+        "An error occured while processing unified push background message",
+      );
       Log.onError(e, s);
-      NotificationManager.notify(ErrorNotificationContent(
+      NotificationManager.notify(
+        ErrorNotificationContent(
           title: "An error occurred while processing notifications",
-          content: "${e} \n\n ${s}"));
+          content: "${e} \n\n ${s}",
+        ),
+      );
     }
   }
 
-  void onMessage(Uint8List message, String instance) async {
+  void onMessage(PushMessage message, String instance) async {
     Log.i("Received unified push message! $instance");
-    var data = utf8.decode(message);
+    var data = utf8.decode(message.content);
 
     EventBus.onReceivedPushNotificationData.add(data);
 

@@ -28,17 +28,19 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
     mx.onLoginStateChanged.stream
         .where((event) => event == matrix.LoginState.loggedIn)
         .listen((event) async {
-      if (mx.accountDataLoading != null) {
-        await mx.accountDataLoading;
-      }
+          if (mx.accountDataLoading != null) {
+            await mx.accountDataLoading;
+          }
 
-      onStateChangedController.add(null);
-    });
+          onStateChangedController.add(null);
+        });
 
     mx.onSync.stream.where((e) => e.accountData != null).listen((update) {
-      if (update.accountData?.any((e) =>
-              e.type == "im.ponies.user_emotes" ||
-              e.type == "im.ponies.emote_rooms") ==
+      if (update.accountData?.any(
+            (e) =>
+                e.type == "im.ponies.user_emotes" ||
+                e.type == "im.ponies.emote_rooms",
+          ) ==
           true) {
         onStateChangedController.add(null);
       }
@@ -58,7 +60,10 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
   @override
   Future<void> setState(String packKey, Map<String, dynamic> content) {
     return client.getMatrixClient().setAccountData(
-        client.getMatrixClient().userID!, "im.ponies.user_emotes", content);
+      client.getMatrixClient().userID!,
+      "im.ponies.user_emotes",
+      content,
+    );
   }
 
   @override
@@ -84,12 +89,14 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
     var mx = room.client;
 
     mx.onRoomState.stream
-        .where((event) =>
-            event.roomId == room.id &&
-            event.state.type == MatrixEmoticonComponent.roomEmotesStateKey)
+        .where(
+          (event) =>
+              event.roomId == room.id &&
+              event.state.type == MatrixEmoticonComponent.roomEmotesStateKey,
+        )
         .listen((event) {
-      onStateChangedController.add(null);
-    });
+          onStateChangedController.add(null);
+        });
 
     onStateChangedController.add(null);
   }
@@ -99,8 +106,9 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
     if (!room.states.containsKey(MatrixEmoticonComponent.roomEmotesStateKey))
       return {};
 
-    var state = (room.states[MatrixEmoticonComponent.roomEmotesStateKey]
-        as Map<String, matrix.StrippedStateEvent>);
+    var state =
+        (room.states[MatrixEmoticonComponent.roomEmotesStateKey]
+            as Map<String, matrix.StrippedStateEvent>);
 
     var result = <String, dynamic>{};
 
@@ -121,7 +129,11 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
   @override
   Future<void> setState(String packKey, Map<String, dynamic> content) async {
     var event = await room.client.setRoomStateWithKey(
-        room.id, MatrixEmoticonComponent.roomEmotesStateKey, packKey, content);
+      room.id,
+      MatrixEmoticonComponent.roomEmotesStateKey,
+      packKey,
+      content,
+    );
 
     var result = await room.getEventById(event);
     room.states[MatrixEmoticonComponent.roomEmotesStateKey]![packKey] = result!;

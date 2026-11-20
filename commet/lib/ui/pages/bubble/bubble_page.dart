@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/atoms/room_header.dart';
@@ -9,8 +10,12 @@ import 'package:tiamat/tiamat.dart';
 import 'package:flutter/material.dart' as material;
 
 class BubblePage extends StatefulWidget {
-  const BubblePage(this.clientManager,
-      {super.key, this.initialClientId, this.initialRoom});
+  const BubblePage(
+    this.clientManager, {
+    super.key,
+    this.initialClientId,
+    this.initialRoom,
+  });
   final ClientManager clientManager;
   final String? initialRoom;
   final String? initialClientId;
@@ -62,16 +67,15 @@ class BubblePageState extends State<BubblePage> {
                         caulkBorderBottom: true,
                         child: SizedBox(
                           height: 50,
-                          child: RoomHeader(
-                            currentRoom!,
-                          ),
+                          child: RoomHeader(currentRoom!),
                         ),
                       ),
                       Flexible(
                         child: Chat(
                           currentRoom!,
                           key: ValueKey(
-                              "room-timeline-key-${currentRoom!.localId}"),
+                            "room-timeline-key-${currentRoom!.localId}",
+                          ),
                           isBubble: true,
                         ),
                       ),

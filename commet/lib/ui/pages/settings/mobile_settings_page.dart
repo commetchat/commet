@@ -10,12 +10,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../navigation/navigation_utils.dart';
 
 class MobileSettingsPage extends StatefulWidget {
-  const MobileSettingsPage(
-      {required this.settings,
-      this.buttons,
-      this.onDonateButtonTapped,
-      this.showDonateButton = false,
-      super.key});
+  const MobileSettingsPage({
+    required this.settings,
+    this.buttons,
+    this.onDonateButtonTapped,
+    this.showDonateButton = false,
+    super.key,
+  });
   final List<SettingsButton>? buttons;
   final List<SettingsCategory> settings;
   final bool showDonateButton;
@@ -48,83 +49,93 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: CircleButton(
-                        radius: 25,
-                        icon: m.Icons.arrow_back,
-                        onPressed: () => Navigator.of(context).pop(),
-                      )),
+                    alignment: Alignment.centerLeft,
+                    child: CircleButton(
+                      radius: 25,
+                      icon: m.Icons.arrow_back,
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
                 ),
                 Flexible(
-                  child: ListView(children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: tabs.length,
-                      itemBuilder: (context, categoryIndex) {
-                        return m.Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: m.Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (categoryIndex != 0) const tiamat.Seperator(),
-                              if (tabs[categoryIndex].title != null)
-                                tiamat.Text.labelLow(
-                                  tabs[categoryIndex].title!,
-                                ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: tabs[categoryIndex].tabs.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, tabIndex) {
-                                  return button(
-                                    label: tabs[categoryIndex]
-                                        .tabs[tabIndex]
-                                        .label,
-                                    icon:
-                                        tabs[categoryIndex].tabs[tabIndex].icon,
-                                    onTap: () {
-                                      setState(() {
-                                        NavigationUtils.navigateTo(
-                                            context,
-                                            SettingsSubPage(
-                                                makeScrollable:
-                                                    tabs[categoryIndex]
-                                                        .tabs[tabIndex]
-                                                        .makeScrollable,
-                                                builder: tabs[categoryIndex]
-                                                    .tabs[tabIndex]
-                                                    .pageBuilder));
-                                      });
-                                    },
-                                  );
-                                },
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    if (widget.buttons != null) const Seperator(),
-                    if (widget.buttons != null)
+                  child: ListView(
+                    children: [
                       ListView.builder(
                         shrinkWrap: true,
-                        itemCount: widget.buttons!.length,
-                        itemBuilder: (context, index) {
-                          var b = widget.buttons![index];
-                          return button(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: tabs.length,
+                        itemBuilder: (context, categoryIndex) {
+                          return m.Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: m.Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (categoryIndex != 0)
+                                  const tiamat.Seperator(),
+                                if (tabs[categoryIndex].title != null)
+                                  tiamat.Text.labelLow(
+                                    tabs[categoryIndex].title!,
+                                  ),
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: tabs[categoryIndex].tabs.length,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, tabIndex) {
+                                    return button(
+                                      label: tabs[categoryIndex]
+                                          .tabs[tabIndex]
+                                          .label,
+                                      icon: tabs[categoryIndex]
+                                          .tabs[tabIndex]
+                                          .icon,
+                                      onTap: () {
+                                        setState(() {
+                                          NavigationUtils.navigateTo(
+                                            context,
+                                            SettingsSubPage(
+                                              makeScrollable:
+                                                  tabs[categoryIndex]
+                                                      .tabs[tabIndex]
+                                                      .makeScrollable,
+                                              builder: tabs[categoryIndex]
+                                                  .tabs[tabIndex]
+                                                  .pageBuilder,
+                                            ),
+                                          );
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      if (widget.buttons != null) const Seperator(),
+                      if (widget.buttons != null)
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: widget.buttons!.length,
+                          itemBuilder: (context, index) {
+                            var b = widget.buttons![index];
+                            return button(
                               label: b.label,
                               icon: b.icon,
                               color: b.color,
-                              onTap: b.onPress);
-                        },
-                      )
-                  ]),
+                              onTap: b.onPress,
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ),
                 if (widget.showDonateButton)
-                  DesktopSettingsPageState.buildDonateButton(context,
-                      onTap: () => widget.onDonateButtonTapped?.call(context))
+                  DesktopSettingsPageState.buildDonateButton(
+                    context,
+                    onTap: () => widget.onDonateButtonTapped?.call(context),
+                  ),
               ],
             ),
           ),
@@ -133,28 +144,33 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
     );
   }
 
-  Widget button(
-      {required String label,
-      IconData? icon,
-      bool highlighted = false,
-      Color? color,
-      Function()? onTap}) {
+  Widget button({
+    required String label,
+    IconData? icon,
+    bool highlighted = false,
+    Color? color,
+    Function()? onTap,
+  }) {
     return SizedBox(
-        height: 40,
-        child: TextButton(
-          label,
-          icon: icon,
-          highlighted: highlighted,
-          onTap: onTap,
-          textColor: color,
-          iconColor: color,
-        ));
+      height: 40,
+      child: TextButton(
+        label,
+        icon: icon,
+        highlighted: highlighted,
+        onTap: onTap,
+        textColor: color,
+        iconColor: color,
+      ),
+    );
   }
 }
 
 class SettingsSubPage extends StatelessWidget {
-  const SettingsSubPage(
-      {required this.builder, super.key, this.makeScrollable = true});
+  const SettingsSubPage({
+    required this.builder,
+    super.key,
+    this.makeScrollable = true,
+  });
   final Widget Function(BuildContext) builder;
   final bool makeScrollable;
   @override
@@ -168,12 +184,7 @@ class SettingsSubPage extends StatelessWidget {
               children: [
                 if (makeScrollable)
                   ListView(
-                    children: [
-                      const SizedBox(
-                        height: 70,
-                      ),
-                      builder(context)
-                    ],
+                    children: [const SizedBox(height: 70), builder(context)],
                   ),
                 if (!makeScrollable)
                   m.Padding(
@@ -187,7 +198,7 @@ class SettingsSubPage extends StatelessWidget {
                     icon: m.Icons.arrow_back,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                )
+                ),
               ],
             ),
           ),

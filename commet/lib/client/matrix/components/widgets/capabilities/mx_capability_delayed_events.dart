@@ -16,8 +16,10 @@ class MatrixCapabilitySendDelayedEvent implements MatrixWidgetCapability {
 
   static const String name = "org.matrix.msc4157.send.delayed_event";
 
-  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(name,
-      (runner, type, key) => MatrixCapabilitySendDelayedEvent(runner: runner));
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
+    name,
+    (runner, type, key) => MatrixCapabilitySendDelayedEvent(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -50,9 +52,9 @@ class MatrixCapabilityUpdateDelayedEvent implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc4157.update_delayed_event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) =>
-          MatrixCapabilityUpdateDelayedEvent(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityUpdateDelayedEvent(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -81,10 +83,11 @@ class MatrixCapabilityUpdateDelayedEvent implements MatrixWidgetCapability {
       throw UnsupportedError("Invalid request");
 
     final result = await runner.room!.matrixRoom.client.request(
-        RequestType.POST,
-        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
-        contentType: "application/json",
-        data: jsonEncode({"action": action}));
+      RequestType.POST,
+      "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
+      contentType: "application/json",
+      data: jsonEncode({"action": action}),
+    );
 
     Log.i("Got result from delayed event update ${result}");
 

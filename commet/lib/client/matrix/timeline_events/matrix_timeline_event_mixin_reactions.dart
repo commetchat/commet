@@ -25,7 +25,9 @@ mixin MatrixTimelineEventReactions on MatrixTimelineEvent
     var mxTimeline = tl.matrixTimeline!;
 
     return matrixEvent.hasAggregatedEvents(
-        mxTimeline, matrix.RelationshipTypes.reaction);
+      mxTimeline,
+      matrix.RelationshipTypes.reaction,
+    );
   }
 
   @override
@@ -40,7 +42,10 @@ mixin MatrixTimelineEventReactions on MatrixTimelineEvent
     }
     var mxTimeline = tl.matrixTimeline!;
     if (!matrixEvent.hasAggregatedEvents(
-        mxTimeline, matrix.RelationshipTypes.reaction)) return {};
+      mxTimeline,
+      matrix.RelationshipTypes.reaction,
+    ))
+      return {};
 
     var reactions = <Emoticon, Set<String>>{};
 
@@ -48,8 +53,10 @@ mixin MatrixTimelineEventReactions on MatrixTimelineEvent
         .aggregatedEvents(mxTimeline, matrix.RelationshipTypes.reaction)
         .toList();
 
-    events.sort((eventA, eventB) =>
-        eventA.originServerTs.compareTo(eventB.originServerTs));
+    events.sort(
+      (eventA, eventB) =>
+          eventA.originServerTs.compareTo(eventB.originServerTs),
+    );
 
     for (var event in events) {
       var emoji = getEmoticonFromReactionEvent(event, mxTimeline);
@@ -64,15 +71,20 @@ mixin MatrixTimelineEventReactions on MatrixTimelineEvent
   }
 
   Emoticon getEmoticonFromReactionEvent(
-      matrix.Event event, matrix.Timeline timeline) {
+    matrix.Event event,
+    matrix.Timeline timeline,
+  ) {
     var content = event.content["m.relates_to"] as Map<String, Object?>;
     var key = content['key'] as String;
 
     if (key.startsWith("mxc://")) {
-      return MatrixEmoticon(Uri.parse(key), timeline.room.client,
-          shortcode: event.content.tryGet("shortcode") ?? "",
-          packUsage: EmoticonUsage.all,
-          usage: EmoticonUsage.all);
+      return MatrixEmoticon(
+        Uri.parse(key),
+        timeline.room.client,
+        shortcode: event.content.tryGet("shortcode") ?? "",
+        packUsage: EmoticonUsage.all,
+        usage: EmoticonUsage.all,
+      );
     }
 
     return UnicodeEmoticon(key, shortcode: content['shortcode'] as String?);

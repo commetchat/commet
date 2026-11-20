@@ -82,27 +82,31 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
     final String secret = RandomUtils.getRandomString(50); // "secret_password";
 
     tx = MatrixRemoteHttpWidgetTransceiver(
-        secret: secret,
-        widgetUrl: url,
-        hostIp: hostName,
-        info: info,
-        server: server,
-        allowRemoteConnection: allowRemoteConnection,
-        useHttps: useInsecureHttp == false,
-        onClientConnected: handleInitialConnection);
+      secret: secret,
+      widgetUrl: url,
+      hostIp: hostName,
+      info: info,
+      server: server,
+      allowRemoteConnection: allowRemoteConnection,
+      useHttps: useInsecureHttp == false,
+      onClientConnected: handleInitialConnection,
+    );
 
     messageTransport = MatrixWidgetTransport(tx);
 
     eventHandler = MatrixWidgetMessageHandler(runner: this);
-    capabilities =
-        MatrixWidgetCapabilitiesManager(runner: this, context: context);
+    capabilities = MatrixWidgetCapabilitiesManager(
+      runner: this,
+      context: context,
+    );
 
     if (launchBrowser) {
       var url = Uri(
-          scheme: "http",
-          host: hostName,
-          port: server.port,
-          queryParameters: {"token": secret});
+        scheme: "http",
+        host: hostName,
+        port: server.port,
+        queryParameters: {"token": secret},
+      );
 
       Log.i("Launching browser with url: $url");
 
@@ -138,7 +142,8 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
 
         if (selectedBrowser == null) {
           throw Exception(
-              "Could not find any installed chromium browser to run widget");
+            "Could not find any installed chromium browser to run widget",
+          );
         }
 
         var command = selectedBrowser;
@@ -148,7 +153,7 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
           '--no-default-browser-check',
           '--disable-background-networking',
           '--disable-component-update',
-          '--user-data-dir=${temp}'
+          '--user-data-dir=${temp}',
         ];
 
         if (BuildConfig.IS_FLATPAK) {
@@ -187,14 +192,18 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
   }
 
   void showConnectionInfo(
-      String secret, String hostName, BuildContext context) async {
+    String secret,
+    String hostName,
+    BuildContext context,
+  ) async {
     Log.i("Current IP: $hostName");
 
     var url = Uri(
-        scheme: useInsecureHttp ? "http" : "https",
-        host: hostName,
-        port: server.port,
-        queryParameters: {"token": secret});
+      scheme: useInsecureHttp ? "http" : "https",
+      host: hostName,
+      port: server.port,
+      queryParameters: {"token": secret},
+    );
 
     Log.i("Url: ${url.toString()}");
 
@@ -206,23 +215,26 @@ class MatrixUserWidgetRemoteHttpRunner implements MatrixWidgetRunner {
             ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(8),
               child: SizedBox(
-                  height: 300,
-                  width: 300,
-                  child: PrettyQrView.data(
-                    data: url.toString(),
-                    errorCorrectLevel: QrErrorCorrectLevel.H,
-                    decoration: const PrettyQrDecoration(
-                        image: const PrettyQrDecorationImage(
-                          scale: 0.20,
-                          padding: EdgeInsetsGeometry.all(40),
-                          filterQuality: FilterQuality.medium,
-                          image: AssetImage(
-                              'assets/images/app_icon/app_icon_transparent_cropped.png'),
-                        ),
-                        quietZone: PrettyQrQuietZone.standard,
-                        shape: PrettyQrSmoothSymbol(color: Colors.white),
-                        background: Colors.black),
-                  )),
+                height: 300,
+                width: 300,
+                child: PrettyQrView.data(
+                  data: url.toString(),
+                  errorCorrectLevel: QrErrorCorrectLevel.H,
+                  decoration: const PrettyQrDecoration(
+                    image: const PrettyQrDecorationImage(
+                      scale: 0.20,
+                      padding: EdgeInsetsGeometry.all(40),
+                      filterQuality: FilterQuality.medium,
+                      image: AssetImage(
+                        'assets/images/app_icon/app_icon_transparent_cropped.png',
+                      ),
+                    ),
+                    quietZone: PrettyQrQuietZone.standard,
+                    shape: PrettyQrSmoothSymbol(color: Colors.white),
+                    background: Colors.black,
+                  ),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum SetupMenuState {
-  canProgress,
-  cannotProgress,
-}
+enum SetupMenuState { canProgress, cannotProgress }
 
 abstract class SetupMenu {
   Widget builder(BuildContext context);

@@ -93,8 +93,9 @@ class BackgroundNotificationsManager {
     var roomId = data["room_id"] as String;
     var eventId = data["event_id"] as String;
 
-    var client =
-        clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+    var client = clientManager!.clients.firstWhere(
+      (element) => element.hasRoom(roomId),
+    );
 
     Log.i("Found client: ${client.identifier}");
     var room = client.getRoom(roomId);
@@ -105,9 +106,10 @@ class BackgroundNotificationsManager {
 
     Log.i("Got user: $user  ($user)");
 
-    bool isDirectMessage = client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(room) ??
+    bool isDirectMessage =
+        client.getComponent<DirectMessagesComponent>()?.isRoomDirectMessage(
+          room,
+        ) ??
         false;
 
     if (event is TimelineEventEncrypted) {
@@ -119,16 +121,17 @@ class BackgroundNotificationsManager {
         event is TimelineEventSticker ||
         event is TimelineEventEncrypted) {
       var content = MessageNotificationContent(
-          senderName: user.displayName,
-          senderId: user.identifier,
-          roomName: room.displayName,
-          content: event.plainTextBody,
-          eventId: eventId,
-          roomId: room.identifier,
-          clientId: client.identifier,
-          senderImage: user.avatar,
-          roomImage: room.avatar,
-          isDirectMessage: isDirectMessage);
+        senderName: user.displayName,
+        senderId: user.identifier,
+        roomName: room.displayName,
+        content: event.plainTextBody,
+        eventId: eventId,
+        roomId: room.identifier,
+        clientId: client.identifier,
+        senderImage: user.avatar,
+        roomImage: room.avatar,
+        isDirectMessage: isDirectMessage,
+      );
 
       await NotificationManager.notify(content);
     }

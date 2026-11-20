@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class BooleanToggle extends StatefulWidget {
-  const BooleanToggle(
-      {required this.setValue,
-      required this.getValue,
-      required this.title,
-      this.description,
-      this.onChanged,
-      super.key});
+  const BooleanToggle({
+    required this.setValue,
+    required this.getValue,
+    required this.title,
+    this.description,
+    this.onChanged,
+    super.key,
+  });
 
   final Future<void> Function(bool) setValue;
   final bool Function() getValue;
@@ -45,7 +46,7 @@ class _BooleanToggleState extends State<BooleanToggle> {
               children: [
                 tiamat.Text.labelEmphasised(widget.title),
                 if (widget.description != null)
-                  tiamat.Text.labelLow(widget.description!)
+                  tiamat.Text.labelLow(widget.description!),
               ],
             ),
           ),
@@ -71,7 +72,7 @@ class _BooleanToggleState extends State<BooleanToggle> {
                 widget.onChanged?.call(value);
               },
             ),
-          )
+          ),
         ],
       ),
     );

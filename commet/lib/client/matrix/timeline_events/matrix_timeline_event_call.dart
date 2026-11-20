@@ -9,29 +9,33 @@ class MatrixTimelineEventCall extends MatrixTimelineEvent
     implements TimelineEventGeneric {
   MatrixTimelineEventCall(super.event, {required super.client});
 
-  String messageUserAnsweredCall(String user) =>
-      Intl.message("$user answered the call",
-          desc: "Message body for when a user answers a call",
-          args: [user],
-          name: "messageUserAnsweredCall");
+  String messageUserAnsweredCall(String user) => Intl.message(
+    "$user answered the call",
+    desc: "Message body for when a user answers a call",
+    args: [user],
+    name: "messageUserAnsweredCall",
+  );
 
-  String messageUserHangupCall(String user) =>
-      Intl.message("$user ended the call",
-          desc: "Message body for when a user hangs up a call",
-          args: [user],
-          name: "messageUserHangupCall");
+  String messageUserHangupCall(String user) => Intl.message(
+    "$user ended the call",
+    desc: "Message body for when a user hangs up a call",
+    args: [user],
+    name: "messageUserHangupCall",
+  );
 
-  String messageUserRejectCall(String user) =>
-      Intl.message("$user rejected the call",
-          desc: "Message body for when a user rejects a call",
-          args: [user],
-          name: "messageUserRejectCall");
+  String messageUserRejectCall(String user) => Intl.message(
+    "$user rejected the call",
+    desc: "Message body for when a user rejects a call",
+    args: [user],
+    name: "messageUserRejectCall",
+  );
 
-  String messageUserInviteCall(String user) =>
-      Intl.message("$user started a call",
-          desc: "Message body for when a user starts a call",
-          args: [user],
-          name: "messageUserInviteCall");
+  String messageUserInviteCall(String user) => Intl.message(
+    "$user started a call",
+    desc: "Message body for when a user starts a call",
+    args: [user],
+    name: "messageUserInviteCall",
+  );
 
   @override
   IconData get icon {

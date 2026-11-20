@@ -4,12 +4,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/room.dart';
 
 class ReadIndicator extends StatelessWidget {
-  const ReadIndicator(
-      {required this.room,
-      required this.users,
-      this.spacing = 6,
-      this.onTap,
-      super.key});
+  const ReadIndicator({
+    required this.room,
+    required this.users,
+    this.spacing = 6,
+    this.onTap,
+    super.key,
+  });
   final Room room;
   final Function()? onTap;
   final Iterable<String> users;
@@ -23,20 +24,21 @@ class ReadIndicator extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            InkWell(
-              onTap: onTap,
-              child: Stack(
-                children: [
-                  for (int i = 0; i < users.length && i < maxItems; i++)
-                    buildEntry(i, context, fade: diff > 0),
-                ],
-              ),
-            )
-          ]),
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: onTap,
+            child: Stack(
+              children: [
+                for (int i = 0; i < users.length && i < maxItems; i++)
+                  buildEntry(i, context, fade: diff > 0),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -48,9 +50,10 @@ class ReadIndicator extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(index.toDouble() * spacing, 0, 0, 0),
         child: tiamat.Avatar(
           border: BoxBorder.all(
-              color: ColorScheme.of(context).surfaceContainerLow,
-              width: 2,
-              strokeAlign: 0.5),
+            color: ColorScheme.of(context).surfaceContainerLow,
+            width: 2,
+            strokeAlign: 0.5,
+          ),
           radius: 8,
           image: member.avatar,
           placeholderColor: member.defaultColor,

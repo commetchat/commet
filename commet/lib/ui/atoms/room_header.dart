@@ -14,8 +14,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/client.dart';
 
 class RoomHeader extends StatefulWidget {
-  const RoomHeader(this.room,
-      {super.key, this.onTap, this.onBurgerMenuTap, this.menu});
+  const RoomHeader(
+    this.room, {
+    super.key,
+    this.onTap,
+    this.onBurgerMenuTap,
+    this.menu,
+  });
   final Room room;
   final Widget? menu;
   final Function()? onTap;
@@ -90,7 +95,8 @@ class _RoomHeaderState extends State<RoomHeader> {
     bool showRoomIcons = preferences.showRoomAvatars.value;
     bool useGenericIcons = preferences.usePlaceholderRoomAvatars.value;
 
-    bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
+    bool shouldShowDefaultIcon =
+        (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
     IconData defaultIcon = widget.room.icon;
 
@@ -100,13 +106,7 @@ class _RoomHeaderState extends State<RoomHeader> {
 
     if (shouldShowDefaultIcon) {
       iconPadding = EdgeInsets.fromLTRB(0, 0, 4, 0);
-      iconWidget = Opacity(
-        opacity: 0.5,
-        child: m.Icon(
-          defaultIcon,
-          size: 20,
-        ),
-      );
+      iconWidget = Opacity(opacity: 0.5, child: m.Icon(defaultIcon, size: 20));
     } else {
       iconPadding = EdgeInsets.fromLTRB(4, 0, 8, 0);
       iconWidget = tiamat.Avatar(
@@ -116,26 +116,27 @@ class _RoomHeaderState extends State<RoomHeader> {
             : null,
         placeholderText:
             (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                    (!showRoomIcons && useGenericIcons)
-                ? widget.room.displayName
-                : "",
+                (!showRoomIcons && useGenericIcons)
+            ? widget.room.displayName
+            : "",
         placeholderColor:
             (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                    (!showRoomIcons && useGenericIcons)
-                ? widget.room.defaultColor
-                : m.Colors.grey,
+                (!showRoomIcons && useGenericIcons)
+            ? widget.room.defaultColor
+            : m.Colors.grey,
       );
     }
     return HeaderView(
-        showBurger: MediaQuery.of(context).mobile,
-        iconWidget: iconWidget,
-        text: widget.room.displayName,
-        iconPadding: iconPadding,
-        topic: widget.room.topic,
-        onTap: widget.onTap,
-        onBurgerMenuTap: widget.onBurgerMenuTap,
-        menu: widget.menu,
-        status: status);
+      showBurger: MediaQuery.of(context).mobile,
+      iconWidget: iconWidget,
+      text: widget.room.displayName,
+      iconPadding: iconPadding,
+      topic: widget.room.topic,
+      onTap: widget.onTap,
+      onBurgerMenuTap: widget.onBurgerMenuTap,
+      menu: widget.menu,
+      status: status,
+    );
   }
 }
 
@@ -180,13 +181,15 @@ class HeaderView extends StatelessWidget {
                   children: [
                     if (showBurger)
                       Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                          child: HeaderBurger(
-                            onTap: onBurgerMenuTap,
-                            highlightColor: m.Colors.red.shade600,
-                            notificationColor:
-                                m.Theme.of(context).colorScheme.onSurface,
-                          )),
+                        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                        child: HeaderBurger(
+                          onTap: onBurgerMenuTap,
+                          highlightColor: m.Colors.red.shade600,
+                          notificationColor: m.Theme.of(context)
+                              .colorScheme
+                              .onSurface,
+                        ),
+                      ),
                     if (iconWidget != null)
                       Padding(
                         padding: iconPadding ?? EdgeInsets.zero,
@@ -197,7 +200,9 @@ class HeaderView extends StatelessWidget {
                               iconWidget!,
                               if (status != null)
                                 UserPanelView.createPresenceIcon(
-                                    context, status!),
+                                  context,
+                                  status!,
+                                ),
                             ],
                           ),
                         ),
@@ -210,13 +215,12 @@ class HeaderView extends StatelessWidget {
                           children: [
                             m.Text(
                               text,
-                              style: m.Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
+                              style: m.Theme.of(context).textTheme.titleSmall!
                                   .copyWith(
-                                      color: m.TextTheme.of(context)
-                                          .bodyMedium!
-                                          .color),
+                                    color: m.TextTheme.of(context)
+                                        .bodyMedium!
+                                        .color,
+                                  ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -232,15 +236,15 @@ class HeaderView extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                              )
+                              ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-              if (menu != null) menu!
+              if (menu != null) menu!,
             ],
           ),
         ),
@@ -250,11 +254,12 @@ class HeaderView extends StatelessWidget {
 }
 
 class HeaderBurger extends StatefulWidget {
-  const HeaderBurger(
-      {required this.highlightColor,
-      required this.notificationColor,
-      this.onTap,
-      super.key});
+  const HeaderBurger({
+    required this.highlightColor,
+    required this.notificationColor,
+    this.onTap,
+    super.key,
+  });
   final Function()? onTap;
   final Color highlightColor;
   final Color notificationColor;
@@ -275,8 +280,9 @@ class _HeaderBurgerState extends State<HeaderBurger> {
     super.initState();
     color = widget.notificationColor;
     subs = [
-      clientManager!.directMessages.highlightedRoomsList.onListUpdated
-          .listen((_) => updateState()),
+      clientManager!.directMessages.highlightedRoomsList.onListUpdated.listen(
+        (_) => updateState(),
+      ),
       clientManager!.onSpaceUpdated.stream.listen((_) => updateState()),
     ];
 
@@ -327,12 +333,13 @@ class _HeaderBurgerState extends State<HeaderBurger> {
             onPressed: widget.onTap,
           ),
           AnimatedScale(
-              scale: highlightedNotificationCount + notificationCount > 0
-                  ? 1.0
-                  : 0.0,
-              duration: m.Durations.medium4,
-              curve: Curves.easeOutCubic,
-              child: createNotificationIcon(context)),
+            scale: highlightedNotificationCount + notificationCount > 0
+                ? 1.0
+                : 0.0,
+            duration: m.Durations.medium4,
+            curve: Curves.easeOutCubic,
+            child: createNotificationIcon(context),
+          ),
         ],
       ),
     );
@@ -348,14 +355,12 @@ class _HeaderBurgerState extends State<HeaderBurger> {
         color: color,
         shape: BoxShape.circle,
         border: Border.all(
-            width: 3,
-            strokeAlign: BorderSide.strokeAlignOutside,
-            color: backgroundColor),
+          width: 3,
+          strokeAlign: BorderSide.strokeAlignOutside,
+          color: backgroundColor,
+        ),
       ),
-      child: SizedBox(
-        width: 8,
-        height: 8,
-      ),
+      child: SizedBox(width: 8, height: 8),
     );
   }
 }

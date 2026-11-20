@@ -11,15 +11,22 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
   String eventType;
   String? eventKey;
 
-  MatrixCapabilitySendToDeviceEvent(
-      {required this.runner, required this.eventType, this.eventKey});
+  MatrixCapabilitySendToDeviceEvent({
+    required this.runner,
+    required this.eventType,
+    this.eventKey,
+  });
 
   static String name = "org.matrix.msc3819.send.to_device";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) => MatrixCapabilitySendToDeviceEvent(
-          runner: runner, eventType: type!, eventKey: key));
+    name,
+    (runner, type, key) => MatrixCapabilitySendToDeviceEvent(
+      runner: runner,
+      eventType: type!,
+      eventKey: key,
+    ),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -71,12 +78,18 @@ class MatrixCapabilitySendToDeviceEvent implements MatrixWidgetCapability {
     if (encrypted) {
       for (var user in map.entries) {
         for (var device in user.value.entries) {
-          final deviceKey = runner.client.matrixClient.userDeviceKeys[user.key]
+          final deviceKey = runner
+              .client
+              .matrixClient
+              .userDeviceKeys[user.key]
               ?.deviceKeys[device.key];
 
           if (deviceKey != null) {
-            await runner.client.matrixClient
-                .sendToDeviceEncrypted([deviceKey], eventType, device.value);
+            await runner.client.matrixClient.sendToDeviceEncrypted(
+              [deviceKey],
+              eventType,
+              device.value,
+            );
           }
         }
       }

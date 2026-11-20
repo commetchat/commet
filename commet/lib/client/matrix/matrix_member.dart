@@ -12,11 +12,14 @@ class MatrixMember implements Member {
 
   @override
   ImageProvider<Object>? get avatar => matrixUser.avatarUrl != null
-      ? MatrixMxcImage(matrixUser.avatarUrl!, client.matrixClient,
+      ? MatrixMxcImage(
+          matrixUser.avatarUrl!,
+          client.matrixClient,
           doThumbnail: true,
           autoLoadFullRes: false,
           doFullres: false,
-          thumbnailHeight: 86)
+          thumbnailHeight: 86,
+        )
       : null;
 
   @override
@@ -79,4 +82,8 @@ class MatrixMember implements Member {
 
   @override
   int get hashCode => identifier.hashCode;
+
+  @override
+  bool get blocked =>
+      this.client.matrixClient.ignoredUsers.contains(identifier);
 }

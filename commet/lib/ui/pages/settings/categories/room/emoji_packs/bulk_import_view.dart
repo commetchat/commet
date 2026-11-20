@@ -16,8 +16,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class EmoticonBulkImportDialog extends StatefulWidget {
   const EmoticonBulkImportDialog({super.key, this.importPack});
-  final Function(String name, int avatarIndex, List<String> names,
-      List<Uint8List> imageDatas)? importPack;
+  final Function(
+    String name,
+    int avatarIndex,
+    List<String> names,
+    List<Uint8List> imageDatas,
+  )?
+  importPack;
 
   @override
   State<EmoticonBulkImportDialog> createState() =>
@@ -132,17 +137,21 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
   Future<void> loadSignalPack(Uri uri) async {
     var client = SignalStickerClient(
-        host: preferences.proxyUrl.value, rootPath: "/proxy/signal");
+      host: preferences.proxyUrl.value,
+      rootPath: "/proxy/signal",
+    );
 
     var packInfo = client.getPackFromUri(uri);
     var pack = await client.getPack(packInfo!);
     _packNameEditor.text = pack!.name;
 
-    names = ensureNoConflictingNames(pack.stickers
-        .map((e) => e.emoji)
-        .toList()
-        .map((e) => UnicodeEmojis.findShortcode(e)!)
-        .toList());
+    names = ensureNoConflictingNames(
+      pack.stickers
+          .map((e) => e.emoji)
+          .toList()
+          .map((e) => UnicodeEmojis.findShortcode(e)!)
+          .toList(),
+    );
     datas = List.generate(names!.length, (index) => null);
     images = List.generate(names!.length, (index) => null);
 
@@ -173,15 +182,19 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   }
 
   Future<void> pickFolder() async {
-    var files = await FilePicker.platform
-        .pickFiles(type: FileType.image, withData: true, allowMultiple: true);
+    var files = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      withData: true,
+      allowMultiple: true,
+    );
 
     setState(() {
       reset();
       datas = files!.files.map((e) => e.bytes!).toList();
       images = files.files.map((e) => Image.memory(e.bytes!).image).toList();
-      names =
-          files.files.map((e) => p.basenameWithoutExtension(e.name)).toList();
+      names = files.files
+          .map((e) => p.basenameWithoutExtension(e.name))
+          .toList();
       avatarIndex = 0;
       _controller.text = "";
     });
@@ -189,10 +202,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bool loadingFinished = images?.any(
-          (element) => element == null,
-        ) ==
-        false;
+    bool loadingFinished = images?.any((element) => element == null) == false;
     return ConstrainedBox(
       constraints: const BoxConstraints.expand(width: 800, height: 800),
       child: Column(
@@ -201,11 +211,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
         children: [
           sourceSelection(),
           if (loading)
-            const Expanded(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
           if (loading == false && names != null)
             Flexible(
               child: Padding(
@@ -213,11 +219,12 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: MasonryGridView.extent(
-                      itemCount: names!.length,
-                      maxCrossAxisExtent: 200,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      itemBuilder: entryBuilder),
+                    itemCount: names!.length,
+                    maxCrossAxisExtent: 200,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    itemBuilder: entryBuilder,
+                  ),
                 ),
               ),
             ),
@@ -230,14 +237,19 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                 text: "Import ${names!.length} Emoticons!",
                 onTap: () {
                   if (canCreatePack()) {
-                    var finalNames =
-                        names!.mapIndexed((e, i) => getFinalName(i)).toList();
-                    widget.importPack?.call(_packNameEditor.text, avatarIndex!,
-                        finalNames, datas!.map((e) => e!).toList());
+                    var finalNames = names!
+                        .mapIndexed((e, i) => getFinalName(i))
+                        .toList();
+                    widget.importPack?.call(
+                      _packNameEditor.text,
+                      avatarIndex!,
+                      finalNames,
+                      datas!.map((e) => e!).toList(),
+                    );
                   }
                 },
               ),
-            )
+            ),
         ],
       ),
     );
@@ -258,13 +270,8 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
             Padding(
               padding: const EdgeInsets.all(8),
               child: avatarIndex != null && images?[avatarIndex!] != null
-                  ? tiamat.Avatar(
-                      image: images![avatarIndex!],
-                      radius: 50,
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                  ? tiamat.Avatar(image: images![avatarIndex!], radius: 50)
+                  : const Center(child: CircularProgressIndicator()),
             ),
             Flexible(
               child: Column(
@@ -289,9 +296,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                           maxLines: 1,
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+                      const SizedBox(width: 10),
                       Flexible(
                         child: tiamat.TextInput(
                           controller: _overrideNameEditor,
@@ -312,53 +317,52 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
   Widget sourceSelection() {
     return Panel(
-        header: "Select pack source",
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            tiamat.TextInput(
-              placeholder: "Enter URL",
-              controller: _controller,
-              maxLines: 1,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      header: "Select pack source",
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tiamat.TextInput(
+            placeholder: "Enter URL",
+            controller: _controller,
+            maxLines: 1,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Flexible(
+                child: tiamat.Text.labelLow("Supports: sgnl:// and signal.art"),
+              ),
+              Flexible(
+                child: tiamat.Text.labelLow(
+                  "Request will be proxied via ${preferences.proxyUrl.value}",
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Flexible(
-                    child: tiamat.Text.labelLow(
-                        "Supports: sgnl:// and signal.art")),
-                Flexible(
-                  child: tiamat.Text.labelLow(
-                      "Request will be proxied via ${preferences.proxyUrl.value}"),
+                const SizedBox(
+                  width: 100,
+                  height: 10,
+                  child: tiamat.Seperator(),
+                ),
+                tiamat.Text.labelLow(CommonStrings.labelOr),
+                const SizedBox(
+                  width: 100,
+                  height: 10,
+                  child: tiamat.Seperator(),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 100,
-                    height: 10,
-                    child: tiamat.Seperator(),
-                  ),
-                  tiamat.Text.labelLow(CommonStrings.labelOr),
-                  const SizedBox(
-                    width: 100,
-                    height: 10,
-                    child: tiamat.Seperator(),
-                  ),
-                ],
-              ),
-            ),
-            tiamat.Button(
-              text: "Select Files",
-              onTap: pickFolder,
-            ),
-          ],
-        ));
+          ),
+          tiamat.Button(text: "Select Files", onTap: pickFolder),
+        ],
+      ),
+    );
   }
 
   Widget entryBuilder(BuildContext context, int index) {
@@ -370,7 +374,9 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-          color: background, borderRadius: BorderRadius.circular(5)),
+        color: background,
+        borderRadius: BorderRadius.circular(5),
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: ConstrainedBox(
@@ -383,13 +389,14 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                       fit: BoxFit.fill,
                       image: images![index]!,
                     ),
-                    tiamat.Text.tiny(getFinalName(index))
+                    tiamat.Text.tiny(getFinalName(index)),
                   ],
                 )
               : const SizedBox(
                   width: 15,
                   height: 15,
-                  child: Center(child: CircularProgressIndicator())),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
         ),
       ),
     );

@@ -31,13 +31,7 @@ class ClientConnectionStatusUpdate {
 
 enum ClientConnectionStatus { unknown, connected, connecting, disconnected }
 
-enum RoomType {
-  defaultRoom,
-  photoAlbum,
-  space,
-  voipRoom,
-  calendar;
-}
+enum RoomType { defaultRoom, photoAlbum, space, voipRoom, calendar }
 
 extension ToIcon on RoomType {
   IconData get icon {
@@ -145,7 +139,7 @@ abstract class Client {
   NotifyingListFilter<Room> get favoriteRooms;
 
   StoredStreamController<ClientConnectionStatusUpdate>
-      get connectionStatusChanged;
+  get connectionStatusChanged;
 
   Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
 
@@ -223,4 +217,12 @@ abstract class Client {
   T? getComponent<T extends Component>();
 
   List<T>? getAllComponents<T extends Component>();
+
+  Future<void> blockUser(String userId);
+
+  Future<void> unblockUser(String userId);
+
+  bool isUserBlocked(String userId);
+
+  List<String> blockedUsers();
 }

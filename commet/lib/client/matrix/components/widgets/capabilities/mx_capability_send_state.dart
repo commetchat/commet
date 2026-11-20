@@ -21,15 +21,22 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
   String eventType;
   String? eventKey;
 
-  MatrixCapabilitySendStateEvent(
-      {required this.runner, required this.eventType, this.eventKey});
+  MatrixCapabilitySendStateEvent({
+    required this.runner,
+    required this.eventType,
+    this.eventKey,
+  });
 
   static String name = "org.matrix.msc2762.send.state_event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) => MatrixCapabilitySendStateEvent(
-          runner: runner, eventType: type!, eventKey: key));
+    name,
+    (runner, type, key) => MatrixCapabilitySendStateEvent(
+      runner: runner,
+      eventType: type!,
+      eventKey: key,
+    ),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -110,48 +117,51 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
       throw Exception("Request denied");
     }
 
-    final result = await runner.room!.matrixRoom.client.request(RequestType.PUT,
-        "/client/v3/rooms/${Uri.encodeComponent(runner.room!.matrixRoom.id)}/state/${Uri.encodeComponent(eventType)}/${Uri.encodeComponent(key!)}",
-        contentType: "application/json",
-        data: jsonEncode(content),
-        query: {
-          if (delay != null) "org.matrix.msc4140.delay": delay.toString()
-        });
+    final result = await runner.room!.matrixRoom.client.request(
+      RequestType.PUT,
+      "/client/v3/rooms/${Uri.encodeComponent(runner.room!.matrixRoom.id)}/state/${Uri.encodeComponent(eventType)}/${Uri.encodeComponent(key!)}",
+      contentType: "application/json",
+      data: jsonEncode(content),
+      query: {if (delay != null) "org.matrix.msc4140.delay": delay.toString()},
+    );
 
     if (delay != null) {
-      runner.messageTransport.send(runner.eventHandler
-          .generateToWidgetEvent(action: "send_event", data: {
-        "content": content,
-        "sender": runner.client.self!.identifier,
-        "state_key": key,
-        "type": eventType,
-        "event_id": result,
-        "origin_server_ts": DateTime.now().millisecondsSinceEpoch,
-        "room_id": runner.room!.identifier
-      }));
+      runner.messageTransport.send(
+        runner.eventHandler.generateToWidgetEvent(
+          action: "send_event",
+          data: {
+            "content": content,
+            "sender": runner.client.self!.identifier,
+            "state_key": key,
+            "type": eventType,
+            "event_id": result,
+            "origin_server_ts": DateTime.now().millisecondsSinceEpoch,
+            "room_id": runner.room!.identifier,
+          },
+        ),
+      );
     }
 
     if (delay != null) {
-      Log.i(
-        "Got delayed event result: ${result}",
+      Log.i("Got delayed event result: ${result}");
+      return message.createResponseObject(
+        response: {
+          "room_id": runner.room!.identifier,
+          "delay_id": result["delay_id"],
+        },
       );
-      return message.createResponseObject(response: {
-        "room_id": runner.room!.identifier,
-        "delay_id": result["delay_id"]
-      });
     }
 
     return message.createResponseObject(
-        response: {"room_id": runner.room!.identifier, "event_id": result});
+      response: {"room_id": runner.room!.identifier, "event_id": result},
+    );
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        cleanUpCallMemberships();
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      cleanUpCallMemberships();
+    });
   }
 
   Future<void> cleanUpCallMemberships() async {
@@ -170,8 +180,12 @@ class MatrixCapabilitySendStateEvent implements MatrixWidgetCapability {
         if (current == null) return;
 
         if (current.content.isNotEmpty) {
-          await runner.client.matrixClient
-              .setRoomStateWithKey(runner.room!.identifier, type, key, {});
+          await runner.client.matrixClient.setRoomStateWithKey(
+            runner.room!.identifier,
+            type,
+            key,
+            {},
+          );
         }
       }
     }

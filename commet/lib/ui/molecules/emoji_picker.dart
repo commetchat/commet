@@ -10,18 +10,20 @@ import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 
 class EmojiPicker extends StatefulWidget {
-  EmojiPicker(this.packs,
-      {super.key,
-      this.size = BuildConfig.MOBILE ? 48 : 42,
-      this.onEmoticonPressed,
-      this.packButtonSize = BuildConfig.MOBILE ? 48 : 42,
-      this.onlyEmoji = false,
-      this.onlyStickers = false,
-      this.staggered = false,
-      this.searchDelegate,
-      this.focus,
-      this.preferredTooltipDirection = AxisDirection.right,
-      this.packListAxis = Axis.vertical});
+  EmojiPicker(
+    this.packs, {
+    super.key,
+    this.size = BuildConfig.MOBILE ? 48 : 42,
+    this.onEmoticonPressed,
+    this.packButtonSize = BuildConfig.MOBILE ? 48 : 42,
+    this.onlyEmoji = false,
+    this.onlyStickers = false,
+    this.staggered = false,
+    this.searchDelegate,
+    this.focus,
+    this.preferredTooltipDirection = AxisDirection.right,
+    this.packListAxis = Axis.vertical,
+  });
   final void Function(Emoticon emoticon)? onEmoticonPressed;
   final List<EmoticonPack> packs;
   final double size;
@@ -32,7 +34,7 @@ class EmojiPicker extends StatefulWidget {
   final bool onlyStickers;
   final bool onlyEmoji;
   final List<AutofillSearchResultEmoticon> Function(String text)?
-      searchDelegate;
+  searchDelegate;
   final AxisDirection preferredTooltipDirection;
 
   @override
@@ -113,10 +115,11 @@ class _EmojiPickerState extends State<EmojiPicker> {
   @override
   Widget build(BuildContext context) {
     return Material(
-        color: Colors.transparent,
-        child: widget.packListAxis == Axis.vertical
-            ? buildWithVerticalList(context)
-            : buildWithHorizontalList(context));
+      color: Colors.transparent,
+      child: widget.packListAxis == Axis.vertical
+          ? buildWithVerticalList(context)
+          : buildWithHorizontalList(context),
+    );
   }
 
   Row buildWithVerticalList(BuildContext context) {
@@ -130,8 +133,8 @@ class _EmojiPickerState extends State<EmojiPicker> {
             child: SizedBox(
               width: widget.packButtonSize,
               child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(context)
+                    .copyWith(scrollbars: false),
                 child: ListView.builder(
                   itemCount: widget.packs.length,
                   padding: EdgeInsets.all(0),
@@ -162,8 +165,8 @@ class _EmojiPickerState extends State<EmojiPicker> {
             child: ConstrainedBox(
               constraints: BoxConstraints(maxHeight: widget.packButtonSize),
               child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(context)
+                    .copyWith(scrollbars: false),
                 child: ListView.builder(
                   padding: EdgeInsets.all(0),
                   scrollDirection: Axis.horizontal,
@@ -204,8 +207,9 @@ class _EmojiPickerState extends State<EmojiPicker> {
 
   Expanded buildEmojiList() {
     return Expanded(
-        key: key,
-        child: LayoutBuilder(builder: (context, constraints) {
+      key: key,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
           var count = (constraints.maxWidth / widget.size).toInt();
           if (count != crossAxisCount) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -220,12 +224,13 @@ class _EmojiPickerState extends State<EmojiPicker> {
             slivers: [
               if (widget.searchDelegate != null)
                 SliverList(
-                    delegate: SliverChildListDelegate([
-                  SizedBox(
+                  delegate: SliverChildListDelegate([
+                    SizedBox(
                       height: searchBarSize,
                       child: Container(
-                        color:
-                            Theme.of(context).colorScheme.surfaceContainerLow,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerLow,
                         child: Center(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -235,27 +240,33 @@ class _EmojiPickerState extends State<EmojiPicker> {
                               controller: textController,
                               onChanged: onSearchTextChanged,
                               decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: CommonStrings.promptSearch,
-                                  icon: Icon(Icons.search)),
+                                border: InputBorder.none,
+                                hintText: CommonStrings.promptSearch,
+                                icon: Icon(Icons.search),
+                              ),
                             ),
                           ),
                         ),
-                      ))
-                ])),
+                      ),
+                    ),
+                  ]),
+                ),
               if (searchResults?.isEmpty == true)
                 SliverList(
-                    delegate: SliverChildListDelegate([
-                  SizedBox(
-                    height: 50,
-                    child: Center(
-                        child: tiamat.Text.labelLow("No results found :(")),
-                  ),
-                ])),
+                  delegate: SliverChildListDelegate([
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: tiamat.Text.labelLow("No results found :("),
+                      ),
+                    ),
+                  ]),
+                ),
               if (searchResults?.isNotEmpty == true)
                 SliverGrid.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount),
+                    crossAxisCount: crossAxisCount,
+                  ),
                   itemCount: searchResults!.length,
                   itemBuilder: (context, index) {
                     var emote = searchResults![index].emoticon;
@@ -265,46 +276,50 @@ class _EmojiPickerState extends State<EmojiPicker> {
               if (searchResults == null)
                 for (var pack in widget.packs) ...[
                   SliverList(
-                      delegate: SliverChildListDelegate([
-                    SizedBox(
-                      height: headerSize,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Align(
+                    delegate: SliverChildListDelegate([
+                      SizedBox(
+                        height: headerSize,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Align(
                             alignment: AlignmentGeometry.centerLeft,
-                            child: Text(pack.displayName)),
+                            child: Text(pack.displayName),
+                          ),
+                        ),
                       ),
-                    ),
-                  ])),
+                    ]),
+                  ),
                   SliverGrid.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount),
+                      crossAxisCount: crossAxisCount,
+                    ),
                     itemCount: getEmoticonList(pack).length,
                     itemBuilder: (context, index) {
                       var emote = getEmoticonList(pack)[index];
                       return buildEmoticon(emote);
                     },
-                  )
+                  ),
                 ],
             ],
           );
-        }));
+        },
+      ),
+    );
   }
 
   Widget buildEmoticon(Emoticon emoticon) {
     return SizedBox(
-        width: widget.size,
-        height: widget.size,
-        child: InkWell(
-            borderRadius: BorderRadius.circular(3),
-            onTap: () => widget.onEmoticonPressed?.call(emoticon),
-            mouseCursor: SystemMouseCursors.click,
-            child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Center(
-                    child: EmojiWidget(
-                  emoticon,
-                  height: widget.size,
-                )))));
+      width: widget.size,
+      height: widget.size,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(3),
+        onTap: () => widget.onEmoticonPressed?.call(emoticon),
+        mouseCursor: SystemMouseCursors.click,
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Center(child: EmojiWidget(emoticon, height: widget.size)),
+        ),
+      ),
+    );
   }
 }

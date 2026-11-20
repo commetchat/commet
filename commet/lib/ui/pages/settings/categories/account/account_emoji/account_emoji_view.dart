@@ -37,8 +37,9 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
         tiamat.Panel(
           header: "Favorite Packs",
           mode: tiamat.TileType.surfaceContainerLow,
-          child:
-              Column(children: globalPacks.map((e) => packSummary(e)).toList()),
+          child: Column(
+            children: globalPacks.map((e) => packSummary(e)).toList(),
+          ),
         ),
       ],
     );
@@ -70,9 +71,11 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       tiamat.Text.labelEmphasised(pack.displayName),
-                      tiamat.Text.labelLow(preferences.developerMode.value
-                          ? "${pack.ownerDisplayName} - (${pack.ownerId})"
-                          : pack.ownerDisplayName),
+                      tiamat.Text.labelLow(
+                        preferences.developerMode.value
+                            ? "${pack.ownerDisplayName} - (${pack.ownerId})"
+                            : pack.ownerDisplayName,
+                      ),
                     ],
                   ),
                 ),
@@ -85,7 +88,7 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
                 icon: Icons.heart_broken,
                 onPressed: () => pack.markAsGlobal(false),
               ),
-            )
+            ),
           ],
         ),
       ),

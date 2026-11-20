@@ -39,59 +39,68 @@ class RoomQuickAccessMenu {
 
     // Dont show widgets in Voip room. If the widget uses MatrixRTC,
     // it seems to interfere with the ongoing call...
-    final bool hasWidgets = isVoipRoom == false &&
+    final bool hasWidgets =
+        isVoipRoom == false &&
         room.client.getComponent<WidgetComponent>() != null;
 
     actions = [
       if (invitation != null)
         RoomQuickAccessMenuEntry(
-            name: "Invite",
-            action: (context) => AdaptiveDialog.show(context,
-                builder: (context) => SendInvitationWidget(
-                      room.client,
-                      invitation,
-                      roomId: room.identifier,
-                      displayName: room.displayName,
-                      existingMembers: room.memberIds,
-                    ),
-                title: "Invite"),
-            icon: Icons.person_add),
+          name: "Invite",
+          action: (context) => AdaptiveDialog.show(
+            context,
+            builder: (context) => SendInvitationWidget(
+              room.client,
+              invitation,
+              roomId: room.identifier,
+              displayName: room.displayName,
+              existingMembers: room.memberIds,
+            ),
+            title: "Invite",
+          ),
+          icon: Icons.person_add,
+        ),
       if (canCall)
         RoomQuickAccessMenuEntry(
-            name: "Call",
-            action: (context) =>
-                calls.startCall(room.identifier, CallType.voice),
-            icon: Icons.call),
+          name: "Call",
+          action: (context) => calls.startCall(room.identifier, CallType.voice),
+          icon: Icons.call,
+        ),
       if (preferences.hideRoomSidePanel.value == false ||
           MediaQuery.of(context).mobile) ...[
         if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
           RoomQuickAccessMenuEntry(
-              name: "Calendar",
-              action: (context) => EventBus.openCalendar.add(null),
-              icon: Icons.calendar_month),
+            name: "Calendar",
+            action: (context) => EventBus.openCalendar.add(null),
+            icon: Icons.calendar_month,
+          ),
         if (supportsPinnedMessages)
           RoomQuickAccessMenuEntry(
-              name: "Pinned Messages",
-              action: (context) => EventBus.openPinnedMessages.add(null),
-              icon: Icons.push_pin),
+            name: "Pinned Messages",
+            action: (context) => EventBus.openPinnedMessages.add(null),
+            icon: Icons.push_pin,
+          ),
         if (canSearch)
           RoomQuickAccessMenuEntry(
-              name: CommonStrings.promptSearch,
-              action: (context) => EventBus.startSearch.add(null),
-              icon: Icons.search),
+            name: CommonStrings.promptSearch,
+            action: (context) => EventBus.startSearch.add(null),
+            icon: Icons.search,
+          ),
         if (hasWidgets && !PlatformUtils.isWeb)
           RoomQuickAccessMenuEntry(
-              name: "Widgets",
-              action: (context) => EventBus.openWidgets.add(null),
-              icon: Icons.widgets),
+            name: "Widgets",
+            action: (context) => EventBus.openWidgets.add(null),
+            icon: Icons.widgets,
+          ),
       ],
       if (MediaQuery.of(context).desktop)
         RoomQuickAccessMenuEntry(
-            name: "Toggle Panel",
-            action: (context) => EventBus.toggleRoomSidePanel.add(null),
-            icon: preferences.hideRoomSidePanel.value
-                ? Icons.chevron_left
-                : Icons.chevron_right),
+          name: "Toggle Panel",
+          action: (context) => EventBus.toggleRoomSidePanel.add(null),
+          icon: preferences.hideRoomSidePanel.value
+              ? Icons.chevron_left
+              : Icons.chevron_right,
+        ),
     ];
   }
 }
@@ -101,6 +110,9 @@ class RoomQuickAccessMenuEntry {
   final Function(BuildContext context)? action;
   final IconData icon;
 
-  RoomQuickAccessMenuEntry(
-      {required this.name, required this.action, required this.icon});
+  RoomQuickAccessMenuEntry({
+    required this.name,
+    required this.action,
+    required this.icon,
+  });
 }

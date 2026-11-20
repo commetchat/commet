@@ -18,15 +18,18 @@ class RoomQuickAccessMenuViewMobile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: menu.actions
-              .map((e) => AspectRatio(
-                    aspectRatio: 1,
-                    child: SizedBox(
-                        child: tiamat.IconButton(
+              .map(
+                (e) => AspectRatio(
+                  aspectRatio: 1,
+                  child: SizedBox(
+                    child: tiamat.IconButton(
                       icon: e.icon,
                       size: 20,
                       onPressed: () => e.action?.call(context),
-                    )),
-                  ))
+                    ),
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),

@@ -4,6 +4,7 @@
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/inherited_offstage.dart';
 import 'package:flutter/material.dart';
+
 import 'dart:core';
 
 import 'package:tiamat/config/config.dart';
@@ -38,14 +39,15 @@ class OverlappingPanels extends StatefulWidget {
 
   final double threshold = 0.2;
 
-  const OverlappingPanels(
-      {this.left,
-      required this.main,
-      this.right,
-      this.restWidth = 40,
-      this.onSideChange,
-      this.onDragStart,
-      super.key});
+  const OverlappingPanels({
+    this.left,
+    required this.main,
+    this.right,
+    this.restWidth = 40,
+    this.onSideChange,
+    this.onDragStart,
+    super.key,
+  });
 
   static OverlappingPanelsState? of(BuildContext context) {
     return context.findAncestorStateOfType<OverlappingPanelsState>();
@@ -71,21 +73,26 @@ class OverlappingPanelsState extends State<OverlappingPanels>
     final mediaWidth =
         MediaQuery.of(context).size.width / preferences.appScale.value;
     final animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (widget.onSideChange != null) {
-          widget.onSideChange!(translate == 0
-              ? RevealSide.main
-              : (translate > 0 ? RevealSide.left : RevealSide.right));
+          widget.onSideChange!(
+            translate == 0
+                ? RevealSide.main
+                : (translate > 0 ? RevealSide.left : RevealSide.right),
+          );
         }
         animationController.dispose();
       }
     });
 
     var percent = -translate / mediaWidth;
-    bool crossedThreshold = percent.abs() > widget.threshold &&
+    bool crossedThreshold =
+        percent.abs() > widget.threshold &&
         percent.abs() < 1 - widget.threshold;
 
     if (crossedThreshold) {
@@ -118,13 +125,17 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   }
 
   void revealLeftPanel(
-      double mediaWidth, AnimationController animationController) {
+    double mediaWidth,
+    AnimationController animationController,
+  ) {
     currentSide = RevealSide.left;
     _setTranslateMultiplier(mediaWidth, 1, animationController);
   }
 
   void revealRightPanel(
-      double mediaWidth, AnimationController animationController) {
+    double mediaWidth,
+    AnimationController animationController,
+  ) {
     currentSide = RevealSide.right;
     _setTranslateMultiplier(mediaWidth, -1, animationController);
   }
@@ -132,8 +143,8 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   void revealMainPanel(AnimationController animationController) {
     currentSide = RevealSide.main;
     final animation = Tween<double>(begin: translate, end: 0).animate(
-        CurvedAnimation(
-            parent: animationController, curve: Curves.easeOutExpo));
+      CurvedAnimation(parent: animationController, curve: Curves.easeOutExpo),
+    );
 
     animation.addListener(() {
       setState(() {
@@ -142,14 +153,18 @@ class OverlappingPanelsState extends State<OverlappingPanels>
     });
   }
 
-  void _setTranslateMultiplier(double mediaWidth, int multiplier,
-      AnimationController animationController) {
+  void _setTranslateMultiplier(
+    double mediaWidth,
+    int multiplier,
+    AnimationController animationController,
+  ) {
     final goal = _calculateGoal(mediaWidth, multiplier);
 
     final Tween<double> tween = Tween(begin: translate, end: goal);
 
-    final animation = tween.animate(CurvedAnimation(
-        parent: animationController, curve: Curves.easeOutExpo));
+    final animation = tween.animate(
+      CurvedAnimation(parent: animationController, curve: Curves.easeOutExpo),
+    );
 
     animation.addListener(() {
       setState(() {
@@ -162,7 +177,9 @@ class OverlappingPanelsState extends State<OverlappingPanels>
     final mediaWidth =
         MediaQuery.of(context).size.width / preferences.appScale.value;
     final animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
     switch (direction) {
       case RevealSide.left:
@@ -194,65 +211,65 @@ class OverlappingPanelsState extends State<OverlappingPanels>
     double borderRadius = 20;
 
     return GestureDetector(
-        onHorizontalDragStart: (details) {
-          widget.onDragStart?.call();
-        },
-        onHorizontalDragUpdate: (details) {
-          onTranslate(details.delta.dx);
-        },
-        onHorizontalDragEnd: (details) {
-          _onApplyTranslation();
-        },
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, widget.restWidth + 3, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(borderRadius),
-                    bottomRight: Radius.circular(borderRadius)),
-                child: InheritedOffstage(
-                  offstage: translate <= 0,
-                  child: Offstage(
-                    offstage: translate <= 0,
-                    child: widget.left,
-                  ),
-                ),
+      onHorizontalDragStart: (details) {
+        widget.onDragStart?.call();
+      },
+      onHorizontalDragUpdate: (details) {
+        onTranslate(details.delta.dx);
+      },
+      onHorizontalDragEnd: (details) {
+        _onApplyTranslation();
+      },
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, widget.restWidth + 3, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(borderRadius),
+                bottomRight: Radius.circular(borderRadius),
+              ),
+              child: InheritedOffstage(
+                offstage: translate <= 0,
+                child: Offstage(offstage: translate <= 0, child: widget.left),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(widget.restWidth + 3, 0, 0, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(borderRadius),
-                    bottomLeft: Radius.circular(borderRadius)),
-                child: InheritedOffstage(
-                  offstage: translate >= 0,
-                  child: Offstage(
-                    offstage: translate >= 0,
-                    child: widget.right,
-                  ),
-                ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(widget.restWidth + 3, 0, 0, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(borderRadius),
+                bottomLeft: Radius.circular(borderRadius),
+              ),
+              child: InheritedOffstage(
+                offstage: translate >= 0,
+                child: Offstage(offstage: translate >= 0, child: widget.right),
               ),
             ),
-            Transform.translate(
-              offset: Offset(translate, 0),
-              child: Container(
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                          (translate.abs() * 0.1).clamp(0, 20)),
-                      boxShadow: Theme.of(context)
-                              .extension<ShadowSettings>()
-                              ?.shadows ??
-                          [
-                            BoxShadow(
-                                color: Colors.black.withAlpha(30),
-                                blurRadius: 20)
-                          ]),
-                  child: widget.main),
-            )
-          ],
-        ));
+          ),
+          Transform.translate(
+            offset: Offset(translate, 0),
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(
+                  (translate.abs() * 0.1).clamp(0, 20),
+                ),
+                boxShadow:
+                    Theme.of(context).extension<ShadowSettings>()?.shadows ??
+                    [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(30),
+                        blurRadius: 20,
+                      ),
+                    ],
+              ),
+              child: widget.main,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

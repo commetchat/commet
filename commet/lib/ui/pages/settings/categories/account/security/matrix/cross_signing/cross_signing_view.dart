@@ -11,17 +11,19 @@ import 'package:matrix/encryption.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixCrossSigningView extends StatefulWidget {
-  const MatrixCrossSigningView(this.state,
-      {super.key,
-      this.onSetNewSsss,
-      this.onAskSetupCrossSigning,
-      this.recoveryKey,
-      this.onAskSetupOnlineBackup,
-      this.useExistingKeys,
-      this.wipeSsss,
-      this.wipeExistingBackup,
-      this.openExistingSsss,
-      this.wipeCrossSigning});
+  const MatrixCrossSigningView(
+    this.state, {
+    super.key,
+    this.onSetNewSsss,
+    this.onAskSetupCrossSigning,
+    this.recoveryKey,
+    this.onAskSetupOnlineBackup,
+    this.useExistingKeys,
+    this.wipeSsss,
+    this.wipeExistingBackup,
+    this.openExistingSsss,
+    this.wipeCrossSigning,
+  });
   final BootstrapState state;
 
   final Function(String?)? onSetNewSsss;
@@ -50,162 +52,196 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
 
   bool isActionLoading = false;
 
-  String get promptWipeMatrixKeys => Intl.message("Wipe Keys",
-      desc: "Text on the button to wipe matrix encryption keys",
-      name: "promptWipeMatrixKeys");
+  String get promptWipeMatrixKeys => Intl.message(
+    "Wipe Keys",
+    desc: "Text on the button to wipe matrix encryption keys",
+    name: "promptWipeMatrixKeys",
+  );
 
-  String get promptAbortWipingMatrixKeys => Intl.message("Wait, No!",
-      desc: "Text on the button which aborts wiping matrix encryption keys",
-      name: "promptAbortWipingMatrixKeys");
+  String get promptAbortWipingMatrixKeys => Intl.message(
+    "Wait, No!",
+    desc: "Text on the button which aborts wiping matrix encryption keys",
+    name: "promptAbortWipingMatrixKeys",
+  );
 
-  String get promptGenerateMatrixRecoveryKey => Intl.message("Generate Key",
-      desc: "Button text to generate a recovery key",
-      name: "promptGenerateMatrixRecoveryKey");
+  String get promptGenerateMatrixRecoveryKey => Intl.message(
+    "Generate Key",
+    desc: "Button text to generate a recovery key",
+    name: "promptGenerateMatrixRecoveryKey",
+  );
 
   String get labelMatrixRecoveryKeyCreateExplanation => Intl.message(
-      "We need to set a security key, which can be used to access message history. We can either generate a key for you, or you can choose your own security phrase",
-      desc:
-          "Explains what the matrix recovery key does, and that it can be generated or user input",
-      name: "labelMatrixRecoveryKeyCreateExplanation");
+    "We need to set a security key, which can be used to access message history. We can either generate a key for you, or you can choose your own security phrase",
+    desc: "Explains what the matrix recovery key does, and that it can be generated or user input",
+    name: "labelMatrixRecoveryKeyCreateExplanation",
+  );
 
-  String get promptSetMatrixPassphrase => Intl.message("Set Phrase",
-      desc: "Button text to set a passphrase",
-      name: "promptSetMatrixPassphrase");
+  String get promptSetMatrixPassphrase => Intl.message(
+    "Set Phrase",
+    desc: "Button text to set a passphrase",
+    name: "promptSetMatrixPassphrase",
+  );
 
-  String get promptUseExistingMatrixKeys => Intl.message("Use Existing Keys",
-      desc: "Button text to opt to use existing keys",
-      name: "promptUseExistingMatrixKeys");
+  String get promptUseExistingMatrixKeys => Intl.message(
+    "Use Existing Keys",
+    desc: "Button text to opt to use existing keys",
+    name: "promptUseExistingMatrixKeys",
+  );
 
-  String get promptCreateNewMatrixKeys => Intl.message("No, create new keys",
-      desc: "Button text to opt to create new keys",
-      name: "promptCreateNewMatrixKeys");
+  String get promptCreateNewMatrixKeys => Intl.message(
+    "No, create new keys",
+    desc: "Button text to opt to create new keys",
+    name: "promptCreateNewMatrixKeys",
+  );
 
-  String get promptWipeMatrixBackup => Intl.message("Wipe backup",
-      desc: "Button text to wipe the matrix message backup",
-      name: "promptWipeMatrixBackup");
+  String get promptWipeMatrixBackup => Intl.message(
+    "Wipe backup",
+    desc: "Button text to wipe the matrix message backup",
+    name: "promptWipeMatrixBackup",
+  );
 
-  String get promptEnableMatrixBackup => Intl.message("Enable backup",
-      desc: "Button text to enable to encrypted message backup",
-      name: "promptEnableMatrixBackup");
+  String get promptEnableMatrixBackup => Intl.message(
+    "Enable backup",
+    desc: "Button text to enable to encrypted message backup",
+    name: "promptEnableMatrixBackup",
+  );
 
   String get labelExistingMatrixKeysFound => Intl.message(
-      "Existing signing keys have been found!",
-      desc:
-          "Text that is shown when the user is setting up cross signing, but has existing keys",
-      name: "labelExistingMatrixKeysFound");
+    "Existing signing keys have been found!",
+    desc: "Text that is shown when the user is setting up cross signing, but has existing keys",
+    name: "labelExistingMatrixKeysFound",
+  );
 
   String get labelAskUseExistingMatrixKeys => Intl.message(
-      "Would you like to use the existing keys?",
-      desc:
-          "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
-      name: "labelAskUseExistingMatrixKeys");
+    "Would you like to use the existing keys?",
+    desc: "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    name: "labelAskUseExistingMatrixKeys",
+  );
 
   String get labelMatrixRecoveryKeyExplanation => Intl.message(
-      "This is your recovery key. You can use it to verify your session if you lose access to all other sessions. Keep it somewhere secure!",
-      desc: "Gives a brief description about the function on the recovery key",
-      name: "labelMatrixRecoveryKeyExplanation");
+    "This is your recovery key. You can use it to verify your session if you lose access to all other sessions. Keep it somewhere secure!",
+    desc: "Gives a brief description about the function on the recovery key",
+    name: "labelMatrixRecoveryKeyExplanation",
+  );
 
   String get labelMatrixRecoveryKeyPromptExplanation => Intl.message(
-      "To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.",
-      name: "labelMatrixRecoveryKeyPromptExplanation",
-      desc:
-          "Shown when a user is attempting to recover their old messages, explains that they need the recovery key");
+    "To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.",
+    name: "labelMatrixRecoveryKeyPromptExplanation",
+    desc: "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+  );
 
-  String get promptMatrixRecoveryKeyInput => Intl.message("Recovery key",
-      desc: "Placeholder text for the recovery key input box",
-      name: "promptMatrixRecoveryKeyInput");
+  String get promptMatrixRecoveryKeyInput => Intl.message(
+    "Recovery key",
+    desc: "Placeholder text for the recovery key input box",
+    name: "promptMatrixRecoveryKeyInput",
+  );
 
-  String get promptConfirmWipingCrossSigningKeys =>
-      Intl.message("Are you sure you want to wipe your cross signing keys?",
-          desc: "Asks the user if they are sure they want to wipe the keys",
-          name: "promptConfirmWipingCrossSigningKeys");
+  String get promptConfirmWipingCrossSigningKeys => Intl.message(
+    "Are you sure you want to wipe your cross signing keys?",
+    desc: "Asks the user if they are sure they want to wipe the keys",
+    name: "promptConfirmWipingCrossSigningKeys",
+  );
 
   String get labelMatrixSecurityPhraseShouldNotBePassword => Intl.message(
-      "Your security phrase should be different to your account password",
-      desc: "Tells the user to not use their password as their security phrase",
-      name: "labelMatrixSecurityPhraseShouldNotBePassword");
+    "Your security phrase should be different to your account password",
+    desc: "Tells the user to not use their password as their security phrase",
+    name: "labelMatrixSecurityPhraseShouldNotBePassword",
+  );
 
   String get errorMatrixPassphraseMustContainUpperAndLowercase => Intl.message(
-      "Passphrase must contain atleast 1 Uppercase and 1 Lowercase letter",
-      desc: "Explains constraints of recovery passphrase",
-      name: "errorMatrixPassphraseMustContainUpperAndLowercase");
+    "Passphrase must contain atleast 1 Uppercase and 1 Lowercase letter",
+    desc: "Explains constraints of recovery passphrase",
+    name: "errorMatrixPassphraseMustContainUpperAndLowercase",
+  );
 
-  String get errorMatrixPassphraseMustContainNumber =>
-      Intl.message("Passphrase must contain atleast 1 number",
-          desc: "Explains constraints of recovery passphrase",
-          name: "errorMatrixPassphraseMustContainNumber");
+  String get errorMatrixPassphraseMustContainNumber => Intl.message(
+    "Passphrase must contain atleast 1 number",
+    desc: "Explains constraints of recovery passphrase",
+    name: "errorMatrixPassphraseMustContainNumber",
+  );
 
-  String get errorMatrixPassphraseMustContainSymbol =>
-      Intl.message("Passphrase must contain atleast 1 symbol",
-          desc: "Explains constraints of recovery passphrase",
-          name: "errorMatrixPassphraseMustContainSymbol");
+  String get errorMatrixPassphraseMustContainSymbol => Intl.message(
+    "Passphrase must contain atleast 1 symbol",
+    desc: "Explains constraints of recovery passphrase",
+    name: "errorMatrixPassphraseMustContainSymbol",
+  );
 
-  String get erroMatrixPassphraseMustBeLonger =>
-      Intl.message("Passphrase must be atleast 10 characters long",
-          desc: "Explains constraints of recovery passphrase",
-          name: "erroMatrixPassphraseMustBeLonger");
+  String get erroMatrixPassphraseMustBeLonger => Intl.message(
+    "Passphrase must be atleast 10 characters long",
+    desc: "Explains constraints of recovery passphrase",
+    name: "erroMatrixPassphraseMustBeLonger",
+  );
 
-  String get labelMatrixConfirmSecurityPhrase =>
-      Intl.message("Confirm security phrase:",
-          desc: "Prompts the user to input their passphrase again",
-          name: "labelMatrixConfirmSecurityPhrase");
+  String get labelMatrixConfirmSecurityPhrase => Intl.message(
+    "Confirm security phrase:",
+    desc: "Prompts the user to input their passphrase again",
+    name: "labelMatrixConfirmSecurityPhrase",
+  );
 
-  String get placeholderMatrixConfirmSecurityPhrase =>
-      Intl.message("Confirm security phrase",
-          desc: "Placeholder text for the confirm passphrase text input",
-          name: "placeholderMatrixConfirmSecurityPhrase");
+  String get placeholderMatrixConfirmSecurityPhrase => Intl.message(
+    "Confirm security phrase",
+    desc: "Placeholder text for the confirm passphrase text input",
+    name: "placeholderMatrixConfirmSecurityPhrase",
+  );
 
   String get errorMatrixPassphrasesDontMatch => Intl.message(
-      "Passphrases do not match",
-      desc:
-          "Error when the user enters passphrase twice and the two dont match",
-      name: "errorMatrixPassphrasesDontMatch");
+    "Passphrases do not match",
+    desc: "Error when the user enters passphrase twice and the two dont match",
+    name: "errorMatrixPassphrasesDontMatch",
+  );
 
-  String get labelMatrixPromptPassphrase => Intl.message("Security phrase:",
-      desc: "Prompt the user to enter passphrase",
-      name: "labelMatrixPromptPassphrase");
+  String get labelMatrixPromptPassphrase => Intl.message(
+    "Security phrase:",
+    desc: "Prompt the user to enter passphrase",
+    name: "labelMatrixPromptPassphrase",
+  );
 
-  String get placeholderMatrixEnterSecutiyPhrase =>
-      Intl.message("Security phrase",
-          desc: "Placeholder text for the passphrase text box",
-          name: "placeholderMatrixEnterSecutiyPhrase");
+  String get placeholderMatrixEnterSecutiyPhrase => Intl.message(
+    "Security phrase",
+    desc: "Placeholder text for the passphrase text box",
+    name: "placeholderMatrixEnterSecutiyPhrase",
+  );
 
-  String get labelMatrixExistingMessageBackupFound =>
-      Intl.message("Existing backup found!",
-          desc: "Message to explain that existing backup has been found",
-          name: "labelMatrixExistingMessageBackupFound");
+  String get labelMatrixExistingMessageBackupFound => Intl.message(
+    "Existing backup found!",
+    desc: "Message to explain that existing backup has been found",
+    name: "labelMatrixExistingMessageBackupFound",
+  );
 
   String get labelMatrixAskWipeBackupToContinue => Intl.message(
-      "If you are changing your cross signing keys, you will need to wipe your existing backup... Continue?",
-      desc:
-          "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
-      name: "labelMatrixAskWipeBackupToContinue");
+    "If you are changing your cross signing keys, you will need to wipe your existing backup... Continue?",
+    desc: "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+    name: "labelMatrixAskWipeBackupToContinue",
+  );
 
   String get labelMatrixWarnResetKeysIsPermanent => Intl.message(
-      "Resetting your keys is permanent, and will result in a loss of your chat history backup. You almost definitely dont want to do this!",
-      desc:
-          "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
-      name: "labelMatrixWarnResetKeysIsPermanent");
+    "Resetting your keys is permanent, and will result in a loss of your chat history backup. You almost definitely dont want to do this!",
+    desc: "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+    name: "labelMatrixWarnResetKeysIsPermanent",
+  );
 
-  String get labelMatrixAskEnableMessageBackup =>
-      Intl.message("Would you like to enable online key backup?",
-          desc: "Asks the user if they want to enable online backup",
-          name: "labelMatrixAskEnableMessageBackup");
+  String get labelMatrixAskEnableMessageBackup => Intl.message(
+    "Would you like to enable online key backup?",
+    desc: "Asks the user if they want to enable online backup",
+    name: "labelMatrixAskEnableMessageBackup",
+  );
 
   String get labelMatrixExplainOnlineKeyBackup => Intl.message(
-      "Online key backup will allow you to retreive message history in the event that you lose access to all your sessions",
-      desc: "Explains what the message backup does",
-      name: "labelMatrixExplainOnlineKeyBackup");
+    "Online key backup will allow you to retreive message history in the event that you lose access to all your sessions",
+    desc: "Explains what the message backup does",
+    name: "labelMatrixExplainOnlineKeyBackup",
+  );
 
   @override
   void initState() {
     passphraseController.addListener(() {
       setState(() {
         passphraseValidity = TextUtils.isValidPassword(
-            passphraseController.text,
-            forceDigits: true,
-            forceLength: 10,
-            forceSpecialCharacter: true);
+          passphraseController.text,
+          forceDigits: true,
+          forceLength: 10,
+          forceSpecialCharacter: true,
+        );
       });
     });
 
@@ -294,43 +330,48 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                 child: m.Padding(
                   padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
                   child: m.Center(
-                      child: Text(
-                    widget.recoveryKey!,
-                    style: const TextStyle(
+                    child: Text(
+                      widget.recoveryKey!,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontFamily: "Code",
-                        fontFeatures: [FontFeature.disable("calt")]),
-                  )),
+                        fontFeatures: [FontFeature.disable("calt")],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
             tiamat.Button(
-                text: copyBackupCodeText,
-                onTap: () {
-                  services.Clipboard.setData(
-                      services.ClipboardData(text: widget.recoveryKey!));
-                  setState(() {
-                    copyBackupCodeText = CommonStrings.promptCopyComplete;
-                  });
-                }),
+              text: copyBackupCodeText,
+              onTap: () {
+                services.Clipboard.setData(
+                  services.ClipboardData(text: widget.recoveryKey!),
+                );
+                setState(() {
+                  copyBackupCodeText = CommonStrings.promptCopyComplete;
+                });
+              },
+            ),
           ],
         ),
         tiamat.Button.secondary(
-            text: CommonStrings.promptConfirm,
-            isLoading: isActionLoading,
-            onTap: () async {
-              setState(() {
-                isActionLoading = true;
-              });
+          text: CommonStrings.promptConfirm,
+          isLoading: isActionLoading,
+          onTap: () async {
+            setState(() {
+              isActionLoading = true;
+            });
 
-              await ErrorUtils.tryRun(context, () async {
-                await widget.onAskSetupCrossSigning?.call();
-              });
+            await ErrorUtils.tryRun(context, () async {
+              await widget.onAskSetupCrossSigning?.call();
+            });
 
-              setState(() {
-                isActionLoading = false;
-              });
-            })
+            setState(() {
+              isActionLoading = false;
+            });
+          },
+        ),
       ],
     );
   }
@@ -351,30 +392,29 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                 placeholder: promptMatrixRecoveryKeyInput,
                 controller: keyInputController,
                 obscureText: true,
-              )
+              ),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           tiamat.Button(
-              text: CommonStrings.promptConfirm,
-              isLoading: isActionLoading,
-              onTap: () async {
-                setState(() {
-                  isActionLoading = true;
-                });
+            text: CommonStrings.promptConfirm,
+            isLoading: isActionLoading,
+            onTap: () async {
+              setState(() {
+                isActionLoading = true;
+              });
 
-                await Future.delayed(Duration(milliseconds: 300));
+              await Future.delayed(Duration(milliseconds: 300));
 
-                await ErrorUtils.tryRun(context, () async {
-                  await widget.openExistingSsss?.call(keyInputController.text);
-                });
+              await ErrorUtils.tryRun(context, () async {
+                await widget.openExistingSsss?.call(keyInputController.text);
+              });
 
-                setState(() {
-                  isActionLoading = false;
-                });
-              })
+              setState(() {
+                isActionLoading = false;
+              });
+            },
+          ),
         ],
       ),
     );
@@ -392,14 +432,10 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.label(promptConfirmWipingCrossSigningKeys),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
             ],
           ),
-          const SizedBox(
-            height: 50,
-          ),
+          const SizedBox(height: 50),
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -409,15 +445,15 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                   onTap: () => widget.wipeCrossSigning?.call(true),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               SizedBox(
-                  child: tiamat.Button.secondary(
-                      text: promptAbortWipingMatrixKeys,
-                      onTap: () => widget.wipeCrossSigning?.call(false)))
+                child: tiamat.Button.secondary(
+                  text: promptAbortWipingMatrixKeys,
+                  onTap: () => widget.wipeCrossSigning?.call(false),
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -425,110 +461,102 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
 
   Widget askNewSsss() {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          tiamat.Text.body(labelMatrixRecoveryKeyCreateExplanation),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 40,
-                child: tiamat.Button(
-                  text: promptGenerateMatrixRecoveryKey,
-                  onTap: () => widget.onSetNewSsss?.call(null),
-                ),
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        tiamat.Text.body(labelMatrixRecoveryKeyCreateExplanation),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 40,
+              child: tiamat.Button(
+                text: promptGenerateMatrixRecoveryKey,
+                onTap: () => widget.onSetNewSsss?.call(null),
               ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                width: 100,
-                height: 10,
-                child: tiamat.Seperator(),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(width: 100, height: 10, child: tiamat.Seperator()),
+            tiamat.Text.labelLow(CommonStrings.labelOr),
+            const SizedBox(width: 100, height: 10, child: tiamat.Seperator()),
+          ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Text.label(
+                labelMatrixSecurityPhraseShouldNotBePassword,
               ),
-              tiamat.Text.labelLow(CommonStrings.labelOr),
-              const SizedBox(
-                width: 100,
-                height: 10,
-                child: tiamat.Seperator(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+              child: tiamat.Text.labelLow(labelMatrixPromptPassphrase),
+            ),
+            tiamat.TextInput(
+              controller: passphraseController,
+              placeholder: placeholderMatrixEnterSecutiyPhrase,
+              obscureText: true,
+            ),
+            if (passphraseValidity == NewPasswordResult.noMixedCase)
+              tiamat.Text.error(
+                errorMatrixPassphraseMustContainUpperAndLowercase,
               ),
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: tiamat.Text.label(
-                    labelMatrixSecurityPhraseShouldNotBePassword),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                child: tiamat.Text.labelLow(labelMatrixPromptPassphrase),
-              ),
-              tiamat.TextInput(
-                controller: passphraseController,
-                placeholder: placeholderMatrixEnterSecutiyPhrase,
-                obscureText: true,
-              ),
-              if (passphraseValidity == NewPasswordResult.noMixedCase)
-                tiamat.Text.error(
-                    errorMatrixPassphraseMustContainUpperAndLowercase),
-              if (passphraseValidity == NewPasswordResult.noNumbers)
-                tiamat.Text.error(errorMatrixPassphraseMustContainNumber),
-              if (passphraseValidity == NewPasswordResult.noSymbols)
-                tiamat.Text.error(errorMatrixPassphraseMustContainSymbol),
-              if (passphraseValidity == NewPasswordResult.tooShort)
-                tiamat.Text.error(erroMatrixPassphraseMustBeLonger),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
-                child: tiamat.Text.labelLow(labelMatrixConfirmSecurityPhrase),
-              ),
-              tiamat.TextInput(
-                controller: passphraseConfirmController,
-                obscureText: true,
-                placeholder: placeholderMatrixConfirmSecurityPhrase,
-              ),
-              if (passphrasesMatch == false)
-                tiamat.Text.error(errorMatrixPassphrasesDontMatch),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      child: tiamat.Button(
-                        text: promptSetMatrixPassphrase,
-                        onTap: () {
-                          if (passphraseValidity == NewPasswordResult.valid &&
-                              passphrasesMatch == true) {
-                            widget.onSetNewSsss
-                                ?.call(passphraseController.text);
-                          }
-                        },
-                      ),
+            if (passphraseValidity == NewPasswordResult.noNumbers)
+              tiamat.Text.error(errorMatrixPassphraseMustContainNumber),
+            if (passphraseValidity == NewPasswordResult.noSymbols)
+              tiamat.Text.error(errorMatrixPassphraseMustContainSymbol),
+            if (passphraseValidity == NewPasswordResult.tooShort)
+              tiamat.Text.error(erroMatrixPassphraseMustBeLonger),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+              child: tiamat.Text.labelLow(labelMatrixConfirmSecurityPhrase),
+            ),
+            tiamat.TextInput(
+              controller: passphraseConfirmController,
+              obscureText: true,
+              placeholder: placeholderMatrixConfirmSecurityPhrase,
+            ),
+            if (passphrasesMatch == false)
+              tiamat.Text.error(errorMatrixPassphrasesDontMatch),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 40,
+                    child: tiamat.Button(
+                      text: promptSetMatrixPassphrase,
+                      onTap: () {
+                        if (passphraseValidity == NewPasswordResult.valid &&
+                            passphrasesMatch == true) {
+                          widget.onSetNewSsss?.call(passphraseController.text);
+                        }
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ]);
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget loading() {
     return const m.SizedBox(
       width: 500,
       height: 200,
-      child: Center(
-        child: m.CircularProgressIndicator(),
-      ),
+      child: Center(child: m.CircularProgressIndicator()),
     );
   }
 
@@ -544,15 +572,11 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.label(labelExistingMatrixKeysFound),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               tiamat.Text.label(labelAskUseExistingMatrixKeys),
             ],
           ),
-          const SizedBox(
-            height: 50,
-          ),
+          const SizedBox(height: 50),
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -562,15 +586,15 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                   onTap: () => widget.useExistingKeys?.call(true),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               SizedBox(
-                  child: tiamat.Button.secondary(
-                      text: promptCreateNewMatrixKeys,
-                      onTap: () => widget.useExistingKeys?.call(false)))
+                child: tiamat.Button.secondary(
+                  text: promptCreateNewMatrixKeys,
+                  onTap: () => widget.useExistingKeys?.call(false),
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -584,27 +608,23 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             tiamat.Text.label(labelAskUseExistingMatrixKeys),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             tiamat.Text.label(labelMatrixWarnResetKeysIsPermanent),
           ],
         ),
-        const SizedBox(
-          height: 50,
-        ),
+        const SizedBox(height: 50),
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-                width: 200,
-                child: tiamat.Button(
-                    text: promptUseExistingMatrixKeys,
-                    onTap: () => widget.wipeSsss?.call(false))),
-            const SizedBox(
-              height: 10,
+              width: 200,
+              child: tiamat.Button(
+                text: promptUseExistingMatrixKeys,
+                onTap: () => widget.wipeSsss?.call(false),
+              ),
             ),
+            const SizedBox(height: 10),
             SizedBox(
               width: 200,
               child: tiamat.Button.danger(
@@ -613,7 +633,7 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
               ),
             ),
           ],
-        )
+        ),
       ],
     );
   }
@@ -626,15 +646,11 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             tiamat.Text.label(labelMatrixAskEnableMessageBackup),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             tiamat.Text.label(labelMatrixExplainOnlineKeyBackup),
           ],
         ),
-        const SizedBox(
-          height: 50,
-        ),
+        const SizedBox(height: 50),
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -646,62 +662,62 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                 onTap: () => widget.onAskSetupOnlineBackup?.call(true),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             SizedBox(
-                width: 200,
-                child: tiamat.Button.secondary(
-                    text: CommonStrings.promptPoliteNo,
-                    onTap: () => widget.onAskSetupOnlineBackup?.call(false)))
+              width: 200,
+              child: tiamat.Button.secondary(
+                text: CommonStrings.promptPoliteNo,
+                onTap: () => widget.onAskSetupOnlineBackup?.call(false),
+              ),
+            ),
           ],
-        )
+        ),
       ],
     );
   }
 
   Widget done(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const m.Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(
-                child: m.Icon(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const m.Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: m.Icon(
               m.Icons.verified_user_rounded,
               color: m.Colors.green,
               size: 100,
-            )),
+            ),
           ),
-          tiamat.Button.success(
-            text: CommonStrings.promptDone,
-            onTap: () => m.Navigator.pop(context),
-          )
-        ]);
+        ),
+        tiamat.Button.success(
+          text: CommonStrings.promptDone,
+          onTap: () => m.Navigator.pop(context),
+        ),
+      ],
+    );
   }
 
   Widget error(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const m.Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(
-                child: m.Icon(
-              m.Icons.error,
-              color: m.Colors.red,
-              size: 100,
-            )),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const m.Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: m.Icon(m.Icons.error, color: m.Colors.red, size: 100),
           ),
-          tiamat.Button.secondary(
-            text: CommonStrings.promptBack,
-            onTap: () => m.Navigator.pop(context),
-          )
-        ]);
+        ),
+        tiamat.Button.secondary(
+          text: CommonStrings.promptBack,
+          onTap: () => m.Navigator.pop(context),
+        ),
+      ],
+    );
   }
 
   Widget askWipeOnlineKeybackup() {
@@ -712,15 +728,11 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             tiamat.Text.label(labelMatrixExistingMessageBackupFound),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             tiamat.Text.label(labelMatrixAskWipeBackupToContinue),
           ],
         ),
-        const SizedBox(
-          height: 50,
-        ),
+        const SizedBox(height: 50),
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -732,16 +744,16 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                 onTap: () => widget.wipeExistingBackup?.call(true),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             SizedBox(
-                width: 200,
-                child: tiamat.Button.secondary(
-                    text: CommonStrings.promptPoliteNo,
-                    onTap: () => widget.wipeExistingBackup?.call(false)))
+              width: 200,
+              child: tiamat.Button.secondary(
+                text: CommonStrings.promptPoliteNo,
+                onTap: () => widget.wipeExistingBackup?.call(false),
+              ),
+            ),
           ],
-        )
+        ),
       ],
     );
   }

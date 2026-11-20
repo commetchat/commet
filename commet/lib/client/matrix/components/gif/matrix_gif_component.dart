@@ -33,8 +33,12 @@ class MatrixFavoriteGif implements FavoriteGif {
   @override
   ImageProvider<Object> get image {
     var url = data.tryGet<String>("url");
-    return MatrixMxcImage(Uri.parse(url!), client.matrixClient,
-        doThumbnail: false, doFullres: true);
+    return MatrixMxcImage(
+      Uri.parse(url!),
+      client.matrixClient,
+      doThumbnail: false,
+      doFullres: true,
+    );
   }
 
   @override
@@ -69,7 +73,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     if (!preferences.tenorGifSearchEnabled.value) return [];
 
     var uri = Uri.https(
-        preferences.proxyUrl.value, "/proxy/klipy/api/v2/search", {"q": query});
+      preferences.proxyUrl.value,
+      "/proxy/klipy/api/v2/search",
+      {"q": query},
+    );
 
     // var uri =
     //     Uri.http("localhost:8788", "/proxy/klipy/api/v2/search", {"q": query});
@@ -92,15 +99,21 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
   @override
   Future<TimelineEvent?> sendGif(
-      Room room, GifSearchResult gif, TimelineEvent? inReplyTo) async {
+    Room room,
+    GifSearchResult gif,
+    TimelineEvent? inReplyTo,
+  ) async {
     var matrixRoom = (room as MatrixRoom).matrixRoom;
     var response = await matrixRoom.client.httpClient.get(gif.fullResUrl);
     if (response.statusCode == 200) {
       var data = response.bodyBytes;
 
       matrix.Event? replyingTo;
-      var uri = await matrixRoom.client
-          .uploadContent(data, filename: "sticker", contentType: gif.mimeType);
+      var uri = await matrixRoom.client.uploadContent(
+        data,
+        filename: "sticker",
+        contentType: gif.mimeType,
+      );
 
       var content = {
         "body": gif.fullResUrl.pathSegments.last,
@@ -112,24 +125,28 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
           "chat.commet.animated": true,
           "w": gif.x.toInt(),
           "h": gif.y.toInt(),
-          "mimetype": gif.mimeType
-        }
+          "mimetype": gif.mimeType,
+        },
       };
 
       if (inReplyTo != null) {
         replyingTo = await matrixRoom.getEventById(inReplyTo.eventId);
       }
 
-      var id = await matrixRoom.sendEvent(content,
-          type: preferences.stickerCompatibilityMode.value
-              ? matrix.EventTypes.Message
-              : matrix.EventTypes.Sticker,
-          inReplyTo: replyingTo);
+      var id = await matrixRoom.sendEvent(
+        content,
+        type: preferences.stickerCompatibilityMode.value
+            ? matrix.EventTypes.Message
+            : matrix.EventTypes.Sticker,
+        inReplyTo: replyingTo,
+      );
 
       if (id != null) {
         var event = await matrixRoom.getEventById(id);
-        return room.convertEvent(event!,
-            timeline: (room.timeline as MatrixTimeline).matrixTimeline);
+        return room.convertEvent(
+          event!,
+          timeline: (room.timeline as MatrixTimeline).matrixTimeline,
+        );
       }
     }
 
@@ -165,18 +182,21 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     List<dynamic> dimensions = fullRes['dims']! as List<dynamic>;
 
     return GifSearchResult(
-        convertUrl(preview['url']),
-        convertUrl(fullRes['url']),
-        (dimensions[0] as int).roundToDouble(),
-        (dimensions[1] as int).roundToDouble(),
-        mimeType);
+      convertUrl(preview['url']),
+      convertUrl(fullRes['url']),
+      (dimensions[0] as int).roundToDouble(),
+      (dimensions[1] as int).roundToDouble(),
+      mimeType,
+    );
   }
 
   Uri convertUrl(String url) {
     var uri = Uri.parse(url);
 
-    var proxyUri =
-        Uri.https(preferences.proxyUrl.value, "/proxy/klipy/media${uri.path}");
+    var proxyUri = Uri.https(
+      preferences.proxyUrl.value,
+      "/proxy/klipy/media${uri.path}",
+    );
 
     // proxyUri = Uri.http("localhost:8788", "/proxy/klipy/media${uri.path}");
 
@@ -187,7 +207,8 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
   bool isGif(TimelineEvent<Client> ev) {
     final event = (ev as MatrixTimelineEvent).event;
 
-    bool isSticker = event.type == "m.sticker" ||
+    bool isSticker =
+        event.type == "m.sticker" ||
         (event.type == "m.room.message" &&
             event.content["chat.commet.type"] == "chat.commet.sticker");
 
@@ -195,7 +216,8 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
     var info = event.content.tryGetMap("info");
 
-    bool isAnimated = event.attachmentMimetype == "image/gif" ||
+    bool isAnimated =
+        event.attachmentMimetype == "image/gif" ||
         info?["chat.commet.animated"] == true;
 
     bool isGif = isSticker && isGifMimeType && isAnimated;
@@ -210,7 +232,8 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     var body = event.content.tryGet<String>("body");
     var url = event.content.tryGet<String>("url");
 
-    var favorites = client.matrixClient.accountData[favoritesKey]?.content
+    var favorites =
+        client.matrixClient.accountData[favoritesKey]?.content
             .tryGetList<Map<String, dynamic>>("favorites") ??
         List<Map<String, dynamic>>.empty();
 
@@ -219,21 +242,21 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     }
 
     final newFavorites = List.from(favorites, growable: true);
-    newFavorites.add({
-      "info": info,
-      "body": body,
-      "url": url,
-    });
+    newFavorites.add({"info": info, "body": body, "url": url});
 
     print(newFavorites);
 
     await client.matrixClient.setAccountData(
-        client.matrixClient.userID!, favoritesKey, {"favorites": newFavorites});
+      client.matrixClient.userID!,
+      favoritesKey,
+      {"favorites": newFavorites},
+    );
   }
 
   @override
   bool isFavoriteGif(TimelineEvent<Client> ev) {
-    var favorites = client.matrixClient.accountData[favoritesKey]?.content
+    var favorites =
+        client.matrixClient.accountData[favoritesKey]?.content
             .tryGetList<Map<String, dynamic>>("favorites") ??
         List<Map<String, dynamic>>.empty();
 
@@ -258,7 +281,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
   @override
   Future<TimelineEvent<Client>?> sendFavoriteGif(
-      Room room, FavoriteGif gif, TimelineEvent<Client>? inReplyTo) async {
+    Room room,
+    FavoriteGif gif,
+    TimelineEvent<Client>? inReplyTo,
+  ) async {
     var fav = gif as MatrixFavoriteGif;
     matrix.Event? replyingTo;
     var matrixRoom = (room as MatrixRoom).matrixRoom;
@@ -269,23 +295,27 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
       if (preferences.stickerCompatibilityMode.value) "msgtype": "m.image",
       if (preferences.stickerCompatibilityMode.value)
         "chat.commet.type": "chat.commet.sticker",
-      "info": fav.data["info"]
+      "info": fav.data["info"],
     };
 
     if (inReplyTo != null) {
       replyingTo = await matrixRoom.getEventById(inReplyTo.eventId);
     }
 
-    var id = await matrixRoom.sendEvent(content,
-        type: preferences.stickerCompatibilityMode.value
-            ? matrix.EventTypes.Message
-            : matrix.EventTypes.Sticker,
-        inReplyTo: replyingTo);
+    var id = await matrixRoom.sendEvent(
+      content,
+      type: preferences.stickerCompatibilityMode.value
+          ? matrix.EventTypes.Message
+          : matrix.EventTypes.Sticker,
+      inReplyTo: replyingTo,
+    );
 
     if (id != null) {
       var event = await matrixRoom.getEventById(id);
-      return room.convertEvent(event!,
-          timeline: (room.timeline as MatrixTimeline).matrixTimeline);
+      return room.convertEvent(
+        event!,
+        timeline: (room.timeline as MatrixTimeline).matrixTimeline,
+      );
     }
 
     return null;
@@ -296,17 +326,23 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     final event = (ev as MatrixTimelineEvent).event;
     var url = event.content.tryGet<String>("url");
 
-    var favorites = client.matrixClient.accountData[favoritesKey]?.content
+    var favorites =
+        client.matrixClient.accountData[favoritesKey]?.content
             .tryGetList<Map<String, dynamic>>("favorites") ??
         List<Map<String, dynamic>>.empty();
 
-    var newFavorites =
-        List<Map<String, dynamic>>.from(favorites, growable: true);
+    var newFavorites = List<Map<String, dynamic>>.from(
+      favorites,
+      growable: true,
+    );
 
     newFavorites.removeWhere((i) => i["url"] == url);
 
     await client.matrixClient.setAccountData(
-        client.matrixClient.userID!, favoritesKey, {"favorites": newFavorites});
+      client.matrixClient.userID!,
+      favoritesKey,
+      {"favorites": newFavorites},
+    );
   }
 
   void _onSync(matrix.SyncUpdate event) {
@@ -317,16 +353,22 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
   @override
   Future<void> removeFavorite(FavoriteGif gif) async {
-    var favorites = client.matrixClient.accountData[favoritesKey]?.content
+    var favorites =
+        client.matrixClient.accountData[favoritesKey]?.content
             .tryGetList<Map<String, dynamic>>("favorites") ??
         List<Map<String, dynamic>>.empty();
 
-    var newFavorites =
-        List<Map<String, dynamic>>.from(favorites, growable: true);
+    var newFavorites = List<Map<String, dynamic>>.from(
+      favorites,
+      growable: true,
+    );
 
     newFavorites.removeWhere((i) => i["url"] == gif.url);
 
     await client.matrixClient.setAccountData(
-        client.matrixClient.userID!, favoritesKey, {"favorites": newFavorites});
+      client.matrixClient.userID!,
+      favoritesKey,
+      {"favorites": newFavorites},
+    );
   }
 }

@@ -9,15 +9,16 @@ enum MatrixCrossSigningMode {
   enableBackup,
   restoreBackup,
   resetCrossSigning,
-  crossSigningOnly
+  crossSigningOnly,
 }
 
 class MatrixCrossSigningPage extends StatefulWidget {
-  const MatrixCrossSigningPage(
-      {required this.client,
-      this.mode = MatrixCrossSigningMode.standard,
-      super.key,
-      this.onComplete});
+  const MatrixCrossSigningPage({
+    required this.client,
+    this.mode = MatrixCrossSigningMode.standard,
+    super.key,
+    this.onComplete,
+  });
   final MatrixClient client;
   final MatrixCrossSigningMode mode;
   final Function()? onComplete;
@@ -73,8 +74,9 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
         await bootstrapper?.openExistingSsss();
 
         if (bootstrapper!.encryption.crossSigning.enabled) {
-          await bootstrapper?.client.encryption!.crossSigning
-              .selfSign(keyOrPassphrase: key);
+          await bootstrapper?.client.encryption!.crossSigning.selfSign(
+            keyOrPassphrase: key,
+          );
         }
       },
       wipeCrossSigning: (wipe) {

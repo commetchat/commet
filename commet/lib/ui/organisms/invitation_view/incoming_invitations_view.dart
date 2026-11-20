@@ -33,7 +33,7 @@ class _IncomingInvitationsWidgetState extends State<IncomingInvitationsWidget> {
             SingleInvitationComponentIncomingView(
               comp,
               showCurrentUserId: widget.manager.clients.length > 1,
-            )
+            ),
       ],
     );
   }

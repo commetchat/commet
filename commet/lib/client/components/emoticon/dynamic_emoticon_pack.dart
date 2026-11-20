@@ -16,12 +16,13 @@ class DynamicEmoticonPack implements EmoticonPack {
   });
 
   @override
-  Future<void> addEmoticon(
-      {required String slug,
-      String? shortcode,
-      required Uint8List data,
-      String? mimeType,
-      EmoticonUsage usage = EmoticonUsage.emoji}) {
+  Future<void> addEmoticon({
+    required String slug,
+    String? shortcode,
+    required Uint8List data,
+    String? mimeType,
+    EmoticonUsage usage = EmoticonUsage.emoji,
+  }) {
     throw UnimplementedError();
   }
 
@@ -90,19 +91,23 @@ class DynamicEmoticonPack implements EmoticonPack {
   List<Emoticon> get stickers => emoticons.where((i) => i.isSticker).toList();
 
   @override
-  Future<void> updateEmoticon(
-      {String? slug,
-      String? shortcode,
-      Uint8List? data,
-      String? mimeType,
-      EmoticonUsage? usage,
-      required Emoticon previous}) {
+  Future<void> updateEmoticon({
+    String? slug,
+    String? shortcode,
+    Uint8List? data,
+    String? mimeType,
+    EmoticonUsage? usage,
+    required Emoticon previous,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> updatePack(
-      {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
+  Future<void> updatePack({
+    EmoticonUsage? usage,
+    String? name,
+    Uint8List? imageData,
+  }) {
     throw UnimplementedError();
   }
 

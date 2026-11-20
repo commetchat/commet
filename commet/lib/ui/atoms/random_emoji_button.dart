@@ -4,11 +4,16 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
+
 import 'dart:ui' as ui;
 
 class RandomEmojiButton extends StatefulWidget {
-  const RandomEmojiButton(
-      {this.size = 20, this.toggled = false, this.onTap, super.key});
+  const RandomEmojiButton({
+    this.size = 20,
+    this.toggled = false,
+    this.onTap,
+    super.key,
+  });
   final double size;
   final Function()? onTap;
   final bool toggled;
@@ -31,8 +36,12 @@ class _RandomEmojiButtonState extends State<RandomEmojiButton> {
       lightness = ui.clampDouble(hsl.lightness, 0.7, 1);
     }
 
-    color =
-        HSLColor.fromAHSL(1.0, hsl.hue, hsl.saturation, lightness).toColor();
+    color = HSLColor.fromAHSL(
+      1.0,
+      hsl.hue,
+      hsl.saturation,
+      lightness,
+    ).toColor();
 
     bool showColor = hovered || widget.toggled;
 
@@ -68,7 +77,9 @@ class _RandomEmojiButtonState extends State<RandomEmojiButton> {
               duration: Duration(milliseconds: 100),
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                    color, showColor ? BlendMode.dst : (BlendMode.modulate)),
+                  color,
+                  showColor ? BlendMode.dst : (BlendMode.modulate),
+                ),
                 child: ColorFiltered(
                   colorFilter: contrast(showColor ? 0 : 0.3),
                   child: ColorFiltered(

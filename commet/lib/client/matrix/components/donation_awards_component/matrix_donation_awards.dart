@@ -30,7 +30,9 @@ class MatrixDonationAwardsComponent
         if (validateSecret(secret)) {
           Log.i("Re-using existing secret");
           return SecretClientIdentifier(
-              clientSecret: secret, encryptedHash: encrypted_hash);
+            clientSecret: secret,
+            encryptedHash: encrypted_hash,
+          );
         }
       }
     } else {
@@ -42,15 +44,21 @@ class MatrixDonationAwardsComponent
       Log.i("Generated Secret: $secret");
       Log.i("Generated id hash: $encryptedIdHash");
 
-      await client.matrixClient.setAccountData(client.matrixClient.userID!,
-          secretKey, {"secret": secret, "encrypted_id_hash": encryptedIdHash});
+      await client.matrixClient.setAccountData(
+        client.matrixClient.userID!,
+        secretKey,
+        {"secret": secret, "encrypted_id_hash": encryptedIdHash},
+      );
 
       return SecretClientIdentifier(
-          clientSecret: secret, encryptedHash: encryptedIdHash);
+        clientSecret: secret,
+        encryptedHash: encryptedIdHash,
+      );
     }
 
     Log.e(
-        "Failed to get client secret, one already exists, but it is not valid");
+      "Failed to get client secret, one already exists, but it is not valid",
+    );
 
     return null;
   }
@@ -77,16 +85,21 @@ class MatrixDonationAwardsComponent
 
     final secretKey = await algorithm.newSecretKeyFromBytes(secretBytes);
 
-    var userIdHash =
-        sha256.convert(AsciiEncoder().convert(client.matrixClient.userID!));
+    var userIdHash = sha256.convert(
+      AsciiEncoder().convert(client.matrixClient.userID!),
+    );
 
     Log.i(
-        "Hash: ${TextUtils.toHexString(Uint8List.fromList(userIdHash.bytes))}");
+      "Hash: ${TextUtils.toHexString(Uint8List.fromList(userIdHash.bytes))}",
+    );
 
     var nonce = await algorithm.newNonce();
 
-    final encrypted = await algorithm.encrypt(userIdHash.bytes,
-        secretKey: secretKey, nonce: nonce);
+    final encrypted = await algorithm.encrypt(
+      userIdHash.bytes,
+      secretKey: secretKey,
+      nonce: nonce,
+    );
 
     final bytes = Uint8List.fromList(encrypted.cipherText);
 
@@ -95,7 +108,8 @@ class MatrixDonationAwardsComponent
     Log.i("Ciphertext: ${bytes}");
 
     final encryptedUserIdHash = TextUtils.toHexString(
-        Uint8List.fromList(bytes + Uint8List.fromList(encrypted.mac.bytes)));
+      Uint8List.fromList(bytes + Uint8List.fromList(encrypted.mac.bytes)),
+    );
 
     final iv = TextUtils.toHexString(Uint8List.fromList(nonce));
 
@@ -108,8 +122,11 @@ class MatrixDonationAwardsComponent
       var id = award["signed"]["id"] as String;
       var sender = award["signed"]["sender"] as String;
 
-      await client.matrixClient.setAccountData(client.matrixClient.userID!,
-          "chat.commet.profile_badge.${id}${sender}", award);
+      await client.matrixClient.setAccountData(
+        client.matrixClient.userID!,
+        "chat.commet.profile_badge.${id}${sender}",
+        award,
+      );
     }
   }
 }

@@ -30,16 +30,12 @@ class _RoomGeneralSettingsPageState extends State<RoomGeneralSettingsPage> {
           pushRule: pushRule,
           onPushRuleChanged: setPushRule,
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         RoomGeneralChatPrivacySettings(widget.room),
         if (widget.room is MatrixRoom) ...[
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           MatrixRoomAddressSettings((widget.room as MatrixRoom).matrixRoom),
-        ]
+        ],
       ],
     );
   }

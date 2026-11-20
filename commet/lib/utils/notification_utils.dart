@@ -5,8 +5,9 @@ class NotificationUtils {
     var highlightedNotificationCount = 0;
     var notificationCount = 0;
 
-    var topLevelSpaces =
-        clientManager!.spaces.where((e) => e.isTopLevel).toList();
+    var topLevelSpaces = clientManager!.spaces
+        .where((e) => e.isTopLevel)
+        .toList();
 
     for (var i in topLevelSpaces) {
       highlightedNotificationCount += i.displayHighlightedNotificationCount;

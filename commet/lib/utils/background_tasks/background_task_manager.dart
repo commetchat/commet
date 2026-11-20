@@ -16,8 +16,9 @@ class BackgroundTaskManager {
 
   void addTask(BackgroundTask task) {
     tasks.add(task);
-    subscriptions[task] =
-        task.statusChanged.listen((_) => onStatusChanged(task));
+    subscriptions[task] = task.statusChanged.listen(
+      (_) => onStatusChanged(task),
+    );
   }
 
   void onStatusChanged(BackgroundTask task) {
@@ -67,8 +68,12 @@ class AsyncTask implements BackgroundTask {
   @override
   BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
-  AsyncTask(Future<BackgroundTaskStatus> Function() func, this.label,
-      {this.action, this.isActionReady}) {
+  AsyncTask(
+    Future<BackgroundTaskStatus> Function() func,
+    this.label, {
+    this.action,
+    this.isActionReady,
+  }) {
     doAsyncFunc(func);
   }
 

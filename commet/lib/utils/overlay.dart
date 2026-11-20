@@ -24,27 +24,27 @@ class VoipOverlay {
 
     var exe = Platform.resolvedExecutable;
 
-    var process = await Process.start(exe, [
-      '--overlay',
-    ]);
+    var process = await Process.start(exe, ['--overlay']);
 
     var runner = MatrixUserWidgetSubprocessRunner(
-        process: process,
-        room: room as MatrixRoom,
-        context: context,
-        widgetId: widgetId,
-        hidden: true,
-        privileged: true,
-        info: MatrixUserWidgetInfo(
-            id: widgetId,
-            name: "Overlay",
-            stateKey: "",
-            url: "",
-            type: widgetId,
-            icon: ImageOrIcon(icon: Icons.screen_share),
-            roomId: room.identifier,
-            event: StrippedStateEvent(type: "", content: {}, senderId: "")),
-        client: room.client as MatrixClient);
+      process: process,
+      room: room as MatrixRoom,
+      context: context,
+      widgetId: widgetId,
+      hidden: true,
+      privileged: true,
+      info: MatrixUserWidgetInfo(
+        id: widgetId,
+        name: "Overlay",
+        stateKey: "",
+        url: "",
+        type: widgetId,
+        icon: ImageOrIcon(icon: Icons.screen_share),
+        roomId: room.identifier,
+        event: StrippedStateEvent(type: "", content: {}, senderId: ""),
+      ),
+      client: room.client as MatrixClient,
+    );
 
     (component as MatrixWidgetComponent).registerRunner(runner);
 

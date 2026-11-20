@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
@@ -51,27 +52,34 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
 
   String? endpoint;
 
-  String get unifiedPushExplainer => Intl.message("""
+  String get unifiedPushExplainer => Intl.message(
+    """
 # Unified Push
 This version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). 
 
 If you already have a Unified Push compatible distributor app installed, you can configure it below
 """,
-      name: "unifiedPushExplainer",
-      desc: "Explains the need for unified push. Supports markdown");
+    name: "unifiedPushExplainer",
+    desc: "Explains the need for unified push. Supports markdown",
+  );
 
-  String get labelEnableUnifiedPush => Intl.message("Enable Unified Push",
-      name: "labelEnableUnifiedPush",
-      desc: "Label for the toggle to enable Unified Push");
+  String get labelEnableUnifiedPush => Intl.message(
+    "Enable Unified Push",
+    name: "labelEnableUnifiedPush",
+    desc: "Label for the toggle to enable Unified Push",
+  );
 
-  String get labelEnableUnifiedPushEndpoint => Intl.message("Endpoint",
-      name: "labelEnableUnifiedPushEndpoint",
-      desc: "Label for the Unified Push endpoint");
+  String get labelEnableUnifiedPushEndpoint => Intl.message(
+    "Endpoint",
+    name: "labelEnableUnifiedPushEndpoint",
+    desc: "Label for the Unified Push endpoint",
+  );
 
   String get labelUnifiedPushNoEndpointFound => Intl.message(
-      "No endpoint found, something went wrong :(",
-      name: "labelUnifiedPushNoEndpointFound",
-      desc: "Message for when a unified push endpoint could not be registered");
+    "No endpoint found, something went wrong :(",
+    name: "labelUnifiedPushNoEndpointFound",
+    desc: "Message for when a unified push endpoint could not be registered",
+  );
 
   @override
   void initState() {
@@ -128,7 +136,9 @@ If you already have a Unified Push compatible distributor app installed, you can
         ),
         if (unifiedPushEnabled)
           Align(
-              alignment: Alignment.centerLeft, child: buildUnifiedPushDetails())
+            alignment: Alignment.centerLeft,
+            child: buildUnifiedPushDetails(),
+          ),
       ],
     );
   }
@@ -145,7 +155,8 @@ If you already have a Unified Push compatible distributor app installed, you can
         children: [
           tiamat.Text.label(labelEnableUnifiedPushEndpoint + ":"),
           tiamat.Text.labelLow(
-              endpoint == null ? labelUnifiedPushNoEndpointFound : endpoint!),
+            endpoint == null ? labelUnifiedPushNoEndpointFound : endpoint!,
+          ),
         ],
       ),
     );
@@ -162,7 +173,13 @@ If you already have a Unified Push compatible distributor app installed, you can
     await notifier?.init();
 
     if (mounted) {
-      UnifiedPush.registerAppWithDialog(context);
+      UnifiedPush.tryUseCurrentOrDefaultDistributor().then((success) {
+        if (success) {
+          UnifiedPush.register();
+        } else {
+          Log.w("Failed to register unified push");
+        }
+      });
     }
 
     setState(() {

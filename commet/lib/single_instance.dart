@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'dart:typed_data';
+
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:dart_ipc/dart_ipc.dart';
+
 import 'dart:convert';
 
 import 'package:window_manager/window_manager.dart';
@@ -34,7 +36,8 @@ class SingleInstance {
         if (PlatformUtils.isLinux) {
           if (e.osError?.errorCode == 111) {
             Log.i(
-                "Socket exists but did not respond, the main instance either closed or crashed, so it should be fine to remove the socket");
+              "Socket exists but did not respond, the main instance either closed or crashed, so it should be fine to remove the socket",
+            );
             await File(path).delete();
             return false;
           }
@@ -66,17 +69,21 @@ class SingleInstance {
   static void handleSocket(Socket socket, ServerSocket serverSocket) {
     socket.write(jsonEncode({"type": "hello"}));
 
-    socket.listen((data) {
-      try {
-        handleSocketMessageReceived(data);
-      } catch (e, s) {
-        Log.onError(e, s);
-      }
-    }, onDone: () {
-      print("Client Done");
-    }, onError: (e) {
-      print("Client Error: $e");
-    });
+    socket.listen(
+      (data) {
+        try {
+          handleSocketMessageReceived(data);
+        } catch (e, s) {
+          Log.onError(e, s);
+        }
+      },
+      onDone: () {
+        print("Client Done");
+      },
+      onError: (e) {
+        print("Client Error: $e");
+      },
+    );
   }
 
   static void handleSocketMessageReceived(Uint8List data) {

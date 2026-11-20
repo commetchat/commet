@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class BooleanPreferenceToggle extends StatefulWidget {
-  const BooleanPreferenceToggle(
-      {required this.preference,
-      required this.title,
-      this.description,
-      this.onChanged,
-      super.key});
+  const BooleanPreferenceToggle({
+    required this.preference,
+    required this.title,
+    this.description,
+    this.onChanged,
+    super.key,
+  });
   final BoolPreference preference;
   final Function(bool)? onChanged;
 
@@ -41,11 +42,12 @@ class _BooleanPreferenceToggleState extends State<BooleanPreferenceToggle> {
 }
 
 class NullableBooleanPreferenceToggle extends StatefulWidget {
-  const NullableBooleanPreferenceToggle(
-      {required this.preference,
-      required this.title,
-      this.description,
-      super.key});
+  const NullableBooleanPreferenceToggle({
+    required this.preference,
+    required this.title,
+    this.description,
+    super.key,
+  });
   final NullableBoolPreference preference;
 
   final String title;
@@ -74,7 +76,7 @@ class _NullableBooleanPreferenceToggleState
             children: [
               tiamat.Text.labelEmphasised(widget.title),
               if (widget.description != null)
-                tiamat.Text.labelLow(widget.description!)
+                tiamat.Text.labelLow(widget.description!),
             ],
           ),
         ),
@@ -87,7 +89,7 @@ class _NullableBooleanPreferenceToggleState
               setState(() {});
             },
           ),
-        )
+        ),
       ],
     );
   }

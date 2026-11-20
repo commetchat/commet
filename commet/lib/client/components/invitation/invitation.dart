@@ -7,12 +7,13 @@ class Invitation {
   Color? color;
   ImageProvider? avatar;
 
-  Invitation(
-      {required this.roomId,
-      this.displayName,
-      this.color,
-      this.avatar,
-      this.senderId});
+  Invitation({
+    required this.roomId,
+    this.displayName,
+    this.color,
+    this.avatar,
+    this.senderId,
+  });
 
   @override
   bool operator ==(Object other) {

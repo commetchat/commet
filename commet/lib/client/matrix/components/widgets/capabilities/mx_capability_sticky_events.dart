@@ -11,8 +11,10 @@ class MatrixCapabilitySendStickyEvent implements MatrixWidgetCapability {
 
   static const String name = "org.matrix.msc4407.send.sticky_event";
 
-  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(name,
-      (runner, type, key) => MatrixCapabilitySendStickyEvent(runner: runner));
+  static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
+    name,
+    (runner, type, key) => MatrixCapabilitySendStickyEvent(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -45,9 +47,9 @@ class MatrixCapabilityReceiveStickyEvent implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc4407.receive.sticky_event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) =>
-          MatrixCapabilityReceiveStickyEvent(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityReceiveStickyEvent(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";

@@ -38,7 +38,8 @@ class _NotifierDebugViewState extends State<NotifierDebugView> {
           PushNotificationComponentDebugView(
             component!,
             key: ValueKey(
-                "push_notification_debug_view:${component!.client.identifier}"),
+              "push_notification_debug_view:${component!.client.identifier}",
+            ),
           ),
       ],
     );

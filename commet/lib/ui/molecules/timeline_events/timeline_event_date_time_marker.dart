@@ -17,10 +17,7 @@ class TimelineEventDateTimeMarker extends StatelessWidget {
           Expanded(
             child: Opacity(
               opacity: 0.1,
-              child: Divider(
-                height: 1,
-                color: color,
-              ),
+              child: Divider(height: 1, color: color),
             ),
           ),
           Padding(
@@ -33,10 +30,7 @@ class TimelineEventDateTimeMarker extends StatelessWidget {
           Expanded(
             child: Opacity(
               opacity: 0.1,
-              child: Divider(
-                height: 1,
-                color: color,
-              ),
+              child: Divider(height: 1, color: color),
             ),
           ),
         ],

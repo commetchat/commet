@@ -7,12 +7,16 @@ abstract class RTCScreenShareAnnotationComponent<T extends Client>
   Future<RTCScreenShareAnnotationSession> createSession(VoipSession session);
 
   Future<RTCScreenShareAnnotationSession> getOrCreateSession(
-      VoipSession session);
+    VoipSession session,
+  );
 
   RTCScreenShareAnnotationSession? getExistingSession(VoipSession session);
 }
 
 abstract class RTCScreenShareAnnotationSession {
-  void setCursorPosition(
-      {required String streamId, required double x, required double y});
+  void setCursorPosition({
+    required String streamId,
+    required double x,
+    required double y,
+  });
 }

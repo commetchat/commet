@@ -61,18 +61,20 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     if (loading) {
       return const SizedBox(
         height: 500,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
     return Column(
       children: [
         if (homeserverHasTurnServer == false)
-          AlertView(Alert(AlertType.warning,
+          AlertView(
+            Alert(
+              AlertType.warning,
               messageGetter: () =>
                   "Your homeserver (${widget.client.getMatrixClient().homeserver}) does not have a TURN server configured",
-              titleGetter: () => "TURN Error")),
+              titleGetter: () => "TURN Error",
+            ),
+          ),
         tiamat.Panel(
           mode: tiamat.TileType.surfaceContainerLow,
           header: "TURN Server (Homeserver Configuration)",
@@ -83,7 +85,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
               testTurnServer(),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -99,7 +101,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
             onTap: testTurn,
           ),
         ),
-        if (connection != null) showTestConnectionInfo()
+        if (connection != null) showTestConnectionInfo(),
       ],
     );
   }
@@ -112,7 +114,8 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
         tiamat.Text.labelLow("username: ${credentials!.username}"),
         tiamat.Text.labelLow("password: ${"•" * credentials!.password.length}"),
         const tiamat.Seperator(),
-        for (var item in credentials!.uris) tiamat.Text.labelLow(item)
+        for (var item in credentials!.uris)
+          tiamat.Text.labelLow(item.toString()),
       ],
     );
   }
@@ -132,10 +135,14 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
                   child: tiamat.Panel(
                     mode: tiamat.TileType.surfaceContainerLow,
                     header: "Connecting with config:",
-                    child: tiamat.Text.tiny(const JsonEncoder.withIndent('  ')
-                        .convert(connectionConfiguration!)
-                        .replaceAll(credentials?.password ?? "",
-                            "•" * (credentials?.password.length ?? 0))),
+                    child: tiamat.Text.tiny(
+                      const JsonEncoder.withIndent('  ')
+                          .convert(connectionConfiguration!)
+                          .replaceAll(
+                            credentials?.password ?? "",
+                            "•" * (credentials?.password.length ?? 0),
+                          ),
+                    ),
                   ),
                 ),
               if (foundCandidates.isNotEmpty)
@@ -143,33 +150,38 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
                   header: "Candidates",
                   mode: tiamat.TileType.surfaceContainerLowest,
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var candidate in foundCandidates)
-                          Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: tiamat.Text.label(
-                                  candidate.candidate ?? "ERROR")),
-                        if (gatheringState ==
-                            webrtc.RTCIceGatheringState
-                                .RTCIceGatheringStateGathering)
-                          const Align(
-                            alignment: Alignment.topCenter,
-                            child: CircularProgressIndicator(),
-                          )
-                      ]),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (var candidate in foundCandidates)
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: tiamat.Text.label(
+                            candidate.candidate ?? "ERROR",
+                          ),
+                        ),
+                      if (gatheringState ==
+                          webrtc
+                              .RTCIceGatheringState
+                              .RTCIceGatheringStateGathering)
+                        const Align(
+                          alignment: Alignment.topCenter,
+                          child: CircularProgressIndicator(),
+                        ),
+                    ],
+                  ),
                 ),
               if (description != null)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: tiamat.Panel(
-                      header: "Offer",
-                      mode: tiamat.TileType.surfaceContainerLowest,
-                      child: tiamat.Text.tiny(description!.sdp ?? "")),
-                )
+                    header: "Offer",
+                    mode: tiamat.TileType.surfaceContainerLowest,
+                    child: tiamat.Text.tiny(description!.sdp ?? ""),
+                  ),
+                ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -183,7 +195,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
             {
               'username': credentials!.username,
               'credential': credentials!.password,
-              'urls': List.from(credentials!.uris)
+              'urls': List.from(credentials!.uris),
             },
           ];
 
@@ -205,7 +217,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
       'audio': {
         'echoCancellation': true,
         'noiseSuppression': true,
-        'autoGainControl': false
+        'autoGainControl': false,
       },
       'video': false,
     };
@@ -213,8 +225,9 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     connection!.onIceCandidate = onIceCandidate;
     connection!.onIceGatheringState = onIceGatheringState;
 
-    var media =
-        await webrtc.navigator.mediaDevices.getUserMedia(mediaConstraints);
+    var media = await webrtc.navigator.mediaDevices.getUserMedia(
+      mediaConstraints,
+    );
     for (var track in media.getTracks()) {
       await connection!.addTrack(track, media);
     }

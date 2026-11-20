@@ -18,16 +18,18 @@ import 'package:http/http.dart' as http;
 class UpdateChecker {
   static bool foundUpdate = false;
 
-  static String get labelUpdateAvailable => Intl.message("Update Available",
-      name: "labelUpdateAvailable",
-      desc: "Label for the the info popup when an update is available");
+  static String get labelUpdateAvailable => Intl.message(
+    "Update Available",
+    name: "labelUpdateAvailable",
+    desc: "Label for the the info popup when an update is available",
+  );
 
   static String descriptionUpdateAvailable(String version) => Intl.message(
-      "There is a newer version of Commet available: ${version}",
-      name: "descriptionUpdateAvailable",
-      args: [version],
-      desc:
-          "describes the update, showing the version code for the available update");
+    "There is a newer version of Commet available: ${version}",
+    name: "descriptionUpdateAvailable",
+    args: [version],
+    desc: "describes the update, showing the version code for the available update",
+  );
 
   static Future<void> checkForUpdates() async {
     if (foundUpdate) return;
@@ -43,7 +45,8 @@ class UpdateChecker {
     const key = "chat.commet.published_version";
 
     var url = Uri.parse(
-        "https://data.commet.chat/_matrix/federation/v1/query/profile?user_id=@updates:data.commet.chat");
+      "https://data.commet.chat/_matrix/federation/v1/query/profile?user_id=@updates:data.commet.chat",
+    );
 
     var response = await http.get(url);
 
@@ -65,13 +68,18 @@ class UpdateChecker {
       Log.i("Supports auto update: $canAutoUpdate");
       if (time.isAfter(BuildConfig.BUILD_DATE)) {
         var tag = fields[key];
-        clientManager!.alertManager.addAlert(Alert(AlertType.info,
+        clientManager!.alertManager.addAlert(
+          Alert(
+            AlertType.info,
             messageGetter: () => descriptionUpdateAvailable(tag),
             titleGetter: () => labelUpdateAvailable,
-            action: (context) => doUpdateAction(context, canAutoUpdate)));
+            action: (context) => doUpdateAction(context, canAutoUpdate),
+          ),
+        );
       } else {
         Log.i(
-            "Found an update, but it's build date is not after the current build, current: ${BuildConfig.BUILD_DATE.toString()} remote: ${time.toString()}");
+          "Found an update, but it's build date is not after the current build, current: ${BuildConfig.BUILD_DATE.toString()} remote: ${time.toString()}",
+        );
       }
 
       return;
@@ -103,8 +111,10 @@ class UpdateChecker {
     }
 
     if (PlatformUtils.isLinux) {
-      LinkUtils.open(Uri.parse("https://commet.chat/install/linux/"),
-          context: context);
+      LinkUtils.open(
+        Uri.parse("https://commet.chat/install/linux/"),
+        context: context,
+      );
     }
   }
 
@@ -113,14 +123,19 @@ class UpdateChecker {
 
     var installPath = path.dirname(exe);
 
-    var installerPath =
-        path.join(installPath, "installer", "commet-installer.exe");
+    var installerPath = path.join(
+      installPath,
+      "installer",
+      "commet-installer.exe",
+    );
 
     Log.i("Installed at: $installerPath");
 
     if (await File(installerPath).exists() && canAutoUpdate) {
-      var confirmation = await AdaptiveDialog.confirmation(context,
-          prompt: "Would you like to run the update installer?");
+      var confirmation = await AdaptiveDialog.confirmation(
+        context,
+        prompt: "Would you like to run the update installer?",
+      );
 
       if (confirmation == true) {
         await ErrorUtils.tryRun(context, () async {
@@ -130,13 +145,7 @@ class UpdateChecker {
             await client.close();
           }
 
-          Process.run(
-              installerPath,
-              [
-                "--command",
-                "update",
-              ],
-              runInShell: true);
+          Process.run(installerPath, ["--command", "update"], runInShell: true);
 
           // TODO: not this
           await Future.delayed(Duration(seconds: 1));
@@ -148,7 +157,9 @@ class UpdateChecker {
       if (confirmation == null) return;
     }
 
-    LinkUtils.open(Uri.parse("https://commet.chat/install/windows/"),
-        context: context);
+    LinkUtils.open(
+      Uri.parse("https://commet.chat/install/windows/"),
+      context: context,
+    );
   }
 }

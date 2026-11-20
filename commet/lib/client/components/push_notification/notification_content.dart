@@ -15,10 +15,11 @@ class NotificationContent {
   String content;
   NotificationPriority priority;
 
-  NotificationContent(
-      {required this.title,
-      required this.content,
-      this.priority = NotificationPriority.normal});
+  NotificationContent({
+    required this.title,
+    required this.content,
+    this.priority = NotificationPriority.normal,
+  });
 }
 
 class ErrorNotificationContent extends NotificationContent {
@@ -26,8 +27,10 @@ class ErrorNotificationContent extends NotificationContent {
 }
 
 class GenericRoomInviteNotificationContent extends NotificationContent {
-  GenericRoomInviteNotificationContent(
-      {required super.title, required super.content});
+  GenericRoomInviteNotificationContent({
+    required super.title,
+    required super.content,
+  });
 }
 
 class MessageNotificationContent extends NotificationContent {
@@ -67,23 +70,27 @@ class MessageNotificationContent extends NotificationContent {
   }) : super(title: senderName);
 
   static String notificationSenderViaProfile(
-          String profileName, String sender) =>
-      Intl.message("$profileName via $sender",
-          name: "notificationSenderViaProfile",
-          desc:
-              "Sender of a notification for a message which was sent with a per message profile",
-          args: [profileName, sender]);
+    String profileName,
+    String sender,
+  ) => Intl.message(
+    "$profileName via $sender",
+    name: "notificationSenderViaProfile",
+    desc: "Sender of a notification for a message which was sent with a per message profile",
+    args: [profileName, sender],
+  );
 
   static Future<MessageNotificationContent?> fromEvent(
-      TimelineEvent msg, Room room) async {
+    TimelineEvent msg,
+    Room room,
+  ) async {
     var user = await room.fetchMember(msg.senderId);
 
     var senderName = user.displayName;
     var senderImage = user.avatar;
 
     if (msg is TimelineEventFeaturePerMessageProfile) {
-      var profile =
-          (msg as TimelineEventFeaturePerMessageProfile).getPerMessageProfile();
+      var profile = (msg as TimelineEventFeaturePerMessageProfile)
+          .getPerMessageProfile();
 
       if (profile != null) {
         if (profile.avatar != null || profile.clearAvatar) {
@@ -91,8 +98,10 @@ class MessageNotificationContent extends NotificationContent {
         }
 
         if (profile.hasDisplayName) {
-          senderName =
-              notificationSenderViaProfile(profile.displayName!, senderName);
+          senderName = notificationSenderViaProfile(
+            profile.displayName!,
+            senderName,
+          );
         }
       }
     }
@@ -110,14 +119,15 @@ class MessageNotificationContent extends NotificationContent {
         eventId: msg.eventId,
         attachedImage:
             msg.attachments?.whereType<ImageAttachment>().firstOrNull?.image ??
-                msg.attachments
-                    ?.whereType<VideoAttachment>()
-                    .firstOrNull
-                    ?.thumbnail,
+            msg.attachments
+                ?.whereType<VideoAttachment>()
+                .firstOrNull
+                ?.thumbnail,
         formatType: msg.bodyFormat,
         formattedContent: msg.formattedBody,
         room: room,
-        isDirectMessage: room.client
+        isDirectMessage:
+            room.client
                 .getComponent<DirectMessagesComponent>()
                 ?.isRoomDirectMessage(room) ??
             false,
@@ -139,7 +149,8 @@ class MessageNotificationContent extends NotificationContent {
         formattedContent: "",
         room: room,
         formatType: "chat.commet.custom.matrix_plain",
-        isDirectMessage: room.client
+        isDirectMessage:
+            room.client
                 .getComponent<DirectMessagesComponent>()
                 ?.isRoomDirectMessage(room) ??
             false,

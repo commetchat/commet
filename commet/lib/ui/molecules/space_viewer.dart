@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 import '../../client/client.dart';
 
 class SpaceViewer extends StatefulWidget {
-  const SpaceViewer(
-    this.space, {
-    super.key,
-    this.onRoomSelected,
-  });
+  const SpaceViewer(this.space, {super.key, this.onRoomSelected});
   final Space space;
   final void Function(Room, {bool bypassSpecialRoomType})? onRoomSelected;
 
@@ -22,11 +18,9 @@ class _SpaceViewerState extends State<SpaceViewer> {
     return Material(
       color: Colors.transparent,
       child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SpaceList(
-            widget.space,
-            onRoomSelected: widget.onRoomSelected,
-          )),
+        padding: const EdgeInsets.all(8.0),
+        child: SpaceList(widget.space, onRoomSelected: widget.onRoomSelected),
+      ),
     );
   }
 }

@@ -42,7 +42,7 @@ class _SpaceAppearanceSettingsPageState
   Widget build(BuildContext context) {
     bool canEditBanner =
         widget.space.getComponent<SpaceBannerComponent>()?.canEditBanner ==
-            true;
+        true;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,19 +60,18 @@ class _SpaceAppearanceSettingsPageState
           canEditTopic: widget.space.permissions.canEditTopic,
           canEditAvatar: widget.space.permissions.canEditAvatar,
         ),
-        SizedBox(
-          height: 12,
-        ),
+        SizedBox(height: 12),
         if (canEditBanner) tiamat.Text.labelLow("Set Banner:"),
         if (canEditBanner)
           ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(12),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerLow,
-                  image: image != null
-                      ? DecorationImage(image: image!, fit: BoxFit.cover)
-                      : null),
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                image: image != null
+                    ? DecorationImage(image: image!, fit: BoxFit.cover)
+                    : null,
+              ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -98,8 +97,10 @@ class _SpaceAppearanceSettingsPageState
                       return;
                     }
 
-                    var result = await PickerUtils.pickImageAndCrop(context,
-                        aspectRatio: 16 / 9);
+                    var result = await PickerUtils.pickImageAndCrop(
+                      context,
+                      aspectRatio: 16 / 9,
+                    );
 
                     if (result != null) {
                       setState(() {
@@ -109,9 +110,7 @@ class _SpaceAppearanceSettingsPageState
 
                       await widget.space
                           .getComponent<SpaceBannerComponent>()
-                          ?.setBanner(
-                            result,
-                          );
+                          ?.setBanner(result);
 
                       setState(() {
                         uploading = false;
@@ -125,15 +124,17 @@ class _SpaceAppearanceSettingsPageState
                     child: uploading
                         ? Center(
                             child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: CircularProgressIndicator()))
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
                         : null,
                   ),
                 ),
               ),
             ),
-          )
+          ),
       ],
     );
   }

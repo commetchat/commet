@@ -24,8 +24,10 @@ class MatrixEncryptedRoomEventSearchSession extends EventSearchSession {
   List<TimelineEvent<Client>> results = List.empty(growable: true);
 
   @override
-  Stream<List<TimelineEvent<Client>>> startSearch(String searchTerm,
-      {String? nextBatch}) async* {
+  Stream<List<TimelineEvent<Client>>> startSearch(
+    String searchTerm, {
+    String? nextBatch,
+  }) async* {
     currentSearchTerm = searchTerm.toLowerCase();
 
     if (nextBatch == null) {
@@ -37,9 +39,10 @@ class MatrixEncryptedRoomEventSearchSession extends EventSearchSession {
     var params = MatrixSearchParameters.parse(searchTerm);
 
     var search = timeline.matrixTimeline!.startSearch(
-        searchTerm: searchTerm,
-        searchFunc: (ev) => searchFunc(params, ev),
-        prevBatch: nextBatch);
+      searchTerm: searchTerm,
+      searchFunc: (ev) => searchFunc(params, ev),
+      prevBatch: nextBatch,
+    );
 
     await for (final chunk in search) {
       var result = chunk.$1
@@ -63,7 +66,8 @@ class MatrixEncryptedRoomEventSearchSession extends EventSearchSession {
       result.sort((a, b) => b.originServerTs.compareTo(a.originServerTs));
 
       results.addAll(
-          result.where((i) => !results.any((e) => i.eventId == e.eventId)));
+        result.where((i) => !results.any((e) => i.eventId == e.eventId)),
+      );
 
       yield results;
     }
@@ -208,8 +212,9 @@ class MatrixServerEventSearchSession extends EventSearchSession {
 
   MatrixServerEventSearchSession(this.timeline);
 
-  NotifyingList<TimelineEvent<Client>> events =
-      NotifyingList.empty(growable: true);
+  NotifyingList<TimelineEvent<Client>> events = NotifyingList.empty(
+    growable: true,
+  );
 
   @override
   bool currentlySearching = false;
@@ -227,8 +232,10 @@ class MatrixServerEventSearchSession extends EventSearchSession {
   }
 
   @override
-  Stream<List<TimelineEvent<Client>>> startSearch(String searchTerm,
-      {String? nextBatch}) {
+  Stream<List<TimelineEvent<Client>>> startSearch(
+    String searchTerm, {
+    String? nextBatch,
+  }) {
     currentSearchTerm = searchTerm;
     var client = (timeline.client as MatrixClient).matrixClient;
 
@@ -244,12 +251,13 @@ class MatrixServerEventSearchSession extends EventSearchSession {
       searchTerm: parameters.words.join(" "),
       orderBy: matrix.SearchOrder.recent,
       filter: matrix.SearchFilter(
-          rooms: [timeline.room.identifier],
-          limit: 20,
-          senders: parameters.requiredSender != null
-              ? [parameters.requiredSender!]
-              : null,
-          containsUrl: parameters.requireUrl == true ? true : null),
+        rooms: [timeline.room.identifier],
+        limit: 20,
+        senders: parameters.requiredSender != null
+            ? [parameters.requiredSender!]
+            : null,
+        containsUrl: parameters.requireUrl == true ? true : null,
+      ),
       includeState: false,
     );
 
@@ -258,30 +266,40 @@ class MatrixServerEventSearchSession extends EventSearchSession {
     client
         .search(matrix.Categories(roomEvents: criteria), nextBatch: nextBatch)
         .then((result) {
-      currentlySearching = false;
+          currentlySearching = false;
 
-      var resultEvents = result.searchCategories.roomEvents?.results;
-      nextBatchToken = result.searchCategories.roomEvents?.nextBatch;
+          var resultEvents = result.searchCategories.roomEvents?.results;
+          nextBatchToken = result.searchCategories.roomEvents?.nextBatch;
 
-      events.clear();
+          events.clear();
 
-      if (resultEvents != null) {
-        events.addAll(resultEvents
-            .where((i) => i.result != null)
-            .sorted((a, b) =>
-                b.result!.originServerTs.compareTo(a.result!.originServerTs))
-            .map((i) => (timeline.room as MatrixRoom).convertEvent(matrix.Event(
-                content: i.result!.content,
-                type: i.result!.type,
-                eventId: i.result!.eventId,
-                senderId: i.result!.senderId,
-                originServerTs: i.result!.originServerTs,
-                room: timeline.matrixTimeline!.room))));
-      }
+          if (resultEvents != null) {
+            events.addAll(
+              resultEvents
+                  .where((i) => i.result != null)
+                  .sorted(
+                    (a, b) => b.result!.originServerTs.compareTo(
+                      a.result!.originServerTs,
+                    ),
+                  )
+                  .map(
+                    (i) => (timeline.room as MatrixRoom).convertEvent(
+                      matrix.Event(
+                        content: i.result!.content,
+                        type: i.result!.type,
+                        eventId: i.result!.eventId,
+                        senderId: i.result!.senderId,
+                        originServerTs: i.result!.originServerTs,
+                        room: timeline.matrixTimeline!.room,
+                      ),
+                    ),
+                  ),
+            );
+          }
 
-      events.update();
-      Log.i("Got events: ${resultEvents}");
-    });
+          events.update();
+          Log.i("Got events: ${resultEvents}");
+        });
 
     return events.onListUpdated.map((i) => events);
   }
@@ -312,7 +330,7 @@ class MatrixEventSearchComponent implements EventSearchComponent<MatrixClient> {
         MatrixSearchParameters.hasFileString,
         MatrixSearchParameters.hasImageString,
         MatrixSearchParameters.hasVideoString,
-        "from:@user:example.com"
+        "from:@user:example.com",
       ];
     } else {
       return ["from:@user:example.com"];

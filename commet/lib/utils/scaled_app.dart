@@ -2,6 +2,7 @@
 import 'dart:async' show scheduleMicrotask, Timer;
 import 'dart:collection' show Queue;
 import 'dart:ui' show PointerDataPacket;
+
 import 'package:flutter/rendering.dart' show RenderView, ViewConfiguration;
 import 'package:flutter/gestures.dart' show FlutterView, PointerEventConverter;
 import 'package:flutter/widgets.dart';
@@ -33,7 +34,7 @@ class ScaledWidgetsFlutterBinding extends WidgetsFlutterBinding {
   ScaleFactorCallback? _scaleFactor;
 
   ScaledWidgetsFlutterBinding._({ScaleFactorCallback? scaleFactor})
-      : _scaleFactor = scaleFactor;
+    : _scaleFactor = scaleFactor;
 
   ScaleFactorCallback get scaleFactor => _scaleFactor ?? (_) => 1.0;
 
@@ -112,23 +113,25 @@ class ScaledWidgetsFlutterBinding extends WidgetsFlutterBinding {
     // We convert pointer data to logical pixels so that e.g. the touch slop can be
     // defined in a device-independent manner.
     try {
-      _pendingPointerEvents.addAll(PointerEventConverter.expand(
-        packet.data,
-        (viewId) {
+      _pendingPointerEvents.addAll(
+        PointerEventConverter.expand(packet.data, (viewId) {
           return devicePixelRatioScaled;
-        },
-      ));
+        }),
+      );
       if (!locked) {
         _flushPointerEventQueue();
       }
     } catch (error, stack) {
-      FlutterError.reportError(FlutterErrorDetails(
-        exception: error,
-        stack: stack,
-        library: 'gestures library',
-        context:
-            ErrorDescription('while handling a scaled pointer data packet'),
-      ));
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'gestures library',
+          context: ErrorDescription(
+            'while handling a scaled pointer data packet',
+          ),
+        ),
+      );
     }
   }
 

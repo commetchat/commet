@@ -51,15 +51,16 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
   @override
   UserWidgetInfo info;
 
-  MatrixUserWidgetSubprocessRunner(
-      {required Process process,
-      required this.room,
-      required this.widgetId,
-      required BuildContext context,
-      required this.info,
-      this.hidden = false,
-      this.privileged = false,
-      required this.client}) {
+  MatrixUserWidgetSubprocessRunner({
+    required Process process,
+    required this.room,
+    required this.widgetId,
+    required BuildContext context,
+    required this.info,
+    this.hidden = false,
+    this.privileged = false,
+    required this.client,
+  }) {
     var tx = MatrixSubprocessWidgetTransceiver(process: process);
     this.process = process;
 
@@ -67,11 +68,19 @@ class MatrixUserWidgetSubprocessRunner implements MatrixWidgetRunner {
     eventHandler = MatrixWidgetMessageHandler(runner: this);
 
     capabilities = MatrixWidgetCapabilitiesManager(
-        runner: this, context: context, privileged: privileged);
+      runner: this,
+      context: context,
+      privileged: privileged,
+    );
 
     if (preferences.widgetDeveloperMode.value) {
-      process.stderr.map((i) => Utf8Decoder().convert(i)).listen((i) =>
-          i.split("\n").forEach((i) => logs.add(LogEntry(LogType.info, i))));
+      process.stderr
+          .map((i) => Utf8Decoder().convert(i))
+          .listen(
+            (i) => i
+                .split("\n")
+                .forEach((i) => logs.add(LogEntry(LogType.info, i))),
+          );
     }
 
     process.exitCode.then((i) {

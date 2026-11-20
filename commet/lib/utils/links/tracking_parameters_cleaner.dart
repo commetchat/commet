@@ -14,7 +14,9 @@ class UrlTrackingParametersCleaner {
 
     for (var key in providers.entries) {
       parameterRules[key.key] = UrlParameterRule.fromJson(
-          key.value as Map<String, dynamic>, key.key)!;
+        key.value as Map<String, dynamic>,
+        key.key,
+      )!;
     }
   }
 
@@ -132,8 +134,9 @@ class UrlParameterRule {
       host: result.host,
       port: result.port,
       path: result.path,
-      queryParameters:
-          result.queryParameters.isEmpty ? null : result.queryParameters,
+      queryParameters: result.queryParameters.isEmpty
+          ? null
+          : result.queryParameters,
       fragment: result.fragment.isEmpty ? null : result.fragment,
     );
   }

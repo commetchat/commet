@@ -31,6 +31,13 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+configurations.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("com.google.crypto.tink:tink"))
+                .using(module("com.google.crypto.tink:tink-android:1.12.0"))
+    }
+}
+
 android {
     compileSdkVersion flutter.compileSdkVersion
     namespace = "chat.commet.commetapp"

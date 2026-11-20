@@ -48,10 +48,7 @@ class Layout {
   }
 }
 
-enum LayoutType {
-  mobile,
-  desktop;
-}
+enum LayoutType { mobile, desktop }
 
 extension LayoutQueryData on MediaQueryData {
   LayoutType get layout {

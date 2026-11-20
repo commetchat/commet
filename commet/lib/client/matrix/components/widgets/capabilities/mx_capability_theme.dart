@@ -20,7 +20,9 @@ class MatrixCapabilityTheme implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc2873.client_theme";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name, (runner, type, key) => MatrixCapabilityTheme(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityTheme(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -46,10 +48,14 @@ class MatrixCapabilityTheme implements MatrixWidgetCapability {
   }
 
   void onThemeChanged(ThemeData event) {
-    runner.messageTransport.send(runner.eventHandler
-        .generateToWidgetEvent(action: "theme_change", data: {
-      "name": event.brightness == Brightness.light ? "light" : "dark",
-      "chat.commet.color_scheme": event.colorScheme.toJson(),
-    }));
+    runner.messageTransport.send(
+      runner.eventHandler.generateToWidgetEvent(
+        action: "theme_change",
+        data: {
+          "name": event.brightness == Brightness.light ? "light" : "dark",
+          "chat.commet.color_scheme": event.colorScheme.toJson(),
+        },
+      ),
+    );
   }
 }

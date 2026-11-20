@@ -24,14 +24,16 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   late String currentText = "";
 
   String typingUsers(int howMany, String user1, String user2, String user3) =>
-      Intl.plural(howMany,
-          one: "$user1 is typing...",
-          two: "$user1 and $user2 are typing...",
-          few: "$user1, $user2, and $user3 are typing...",
-          other: "Several people are typing...",
-          desc: "Text to display which users are currently typing",
-          name: "typingUsers",
-          args: [howMany, user1, user2, user3]);
+      Intl.plural(
+        howMany,
+        one: "$user1 is typing...",
+        two: "$user1 and $user2 are typing...",
+        few: "$user1, $user2, and $user3 are typing...",
+        other: "Several people are typing...",
+        desc: "Text to display which users are currently typing",
+        name: "typingUsers",
+        args: [howMany, user1, user2, user3],
+      );
 
   @override
   void initState() {
@@ -61,37 +63,47 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 23,
-        child: ClipRect(
-          child: AnimatedSlide(
-              duration: Durations.medium3,
-              curve: Curves.easeInOutExpo,
-              offset: typingMembers.isEmpty ? const Offset(0, 1) : Offset.zero,
-              child: Row(children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                  child: TypingIndicatorAnimation(
-                    playing: typingMembers.isNotEmpty,
-                  ),
+      height: 23,
+      child: ClipRect(
+        child: AnimatedSlide(
+          duration: Durations.medium3,
+          curve: Curves.easeInOutExpo,
+          offset: typingMembers.isEmpty ? const Offset(0, 1) : Offset.zero,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: TypingIndicatorAnimation(
+                  playing: typingMembers.isNotEmpty,
                 ),
-                tiamat.Text.labelLow(currentText)
-              ])),
-        ));
+              ),
+              tiamat.Text.labelLow(currentText),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   String getTypingText() {
     String user1 = typingMembers[0].displayName;
-    String user2 =
-        typingMembers.length >= 2 ? typingMembers[1].displayName : "";
-    String user3 =
-        typingMembers.length >= 3 ? typingMembers[2].displayName : "";
+    String user2 = typingMembers.length >= 2
+        ? typingMembers[1].displayName
+        : "";
+    String user3 = typingMembers.length >= 3
+        ? typingMembers[2].displayName
+        : "";
     return typingUsers(typingMembers.length, user1, user2, user3);
   }
 }
 
 class SingleTypingIndicatorBlob extends StatefulWidget {
-  const SingleTypingIndicatorBlob(
-      {this.color, this.border, super.key, this.playing = true});
+  const SingleTypingIndicatorBlob({
+    this.color,
+    this.border,
+    super.key,
+    this.playing = true,
+  });
   final Color? color;
   final BoxBorder? border;
   final bool playing;
@@ -103,7 +115,10 @@ class SingleTypingIndicatorBlob extends StatefulWidget {
 class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
     with TickerProviderStateMixin {
   late AnimationController controller = AnimationController(
-      duration: const Duration(milliseconds: 200), vsync: this, value: 1);
+    duration: const Duration(milliseconds: 200),
+    vsync: this,
+    value: 1,
+  );
 
   @override
   void initState() {
@@ -155,10 +170,12 @@ class SingleTypingIndicatorBlobState extends State<SingleTypingIndicatorBlob>
                   heightFactor: alpha,
                   child: Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: widget.border,
-                        color: widget.color ??
-                            Theme.of(context).colorScheme.secondary),
+                      borderRadius: BorderRadius.circular(8),
+                      border: widget.border,
+                      color:
+                          widget.color ??
+                          Theme.of(context).colorScheme.secondary,
+                    ),
                   ),
                 ),
               ),
@@ -180,11 +197,7 @@ class TypingIndicatorAnimation extends StatefulWidget {
 }
 
 class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
-  late List<GlobalKey> blobKeys = [
-    GlobalKey(),
-    GlobalKey(),
-    GlobalKey(),
-  ];
+  late List<GlobalKey> blobKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
 
   Timer? timer;
   int prevIndex = 0;
@@ -248,19 +261,12 @@ class _TypingIndicatorAnimationState extends State<TypingIndicatorAnimation> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      SingleTypingIndicatorBlob(
-        key: blobKeys[0],
-        playing: playing,
-      ),
-      SingleTypingIndicatorBlob(
-        key: blobKeys[1],
-        playing: playing,
-      ),
-      SingleTypingIndicatorBlob(
-        key: blobKeys[2],
-        playing: playing,
-      ),
-    ]);
+    return Row(
+      children: [
+        SingleTypingIndicatorBlob(key: blobKeys[0], playing: playing),
+        SingleTypingIndicatorBlob(key: blobKeys[1], playing: playing),
+        SingleTypingIndicatorBlob(key: blobKeys[2], playing: playing),
+      ],
+    );
   }
 }

@@ -12,8 +12,11 @@ import 'package:commet/ui/organisms/voip_room_view/voip_room_view.dart';
 import 'package:flutter/material.dart';
 
 class RoomPrimaryView extends StatelessWidget {
-  const RoomPrimaryView(this.room,
-      {super.key, this.bypassSpecialRoomTypes = false});
+  const RoomPrimaryView(
+    this.room, {
+    super.key,
+    this.bypassSpecialRoomTypes = false,
+  });
   final Room room;
   final bool bypassSpecialRoomTypes;
 
@@ -30,25 +33,16 @@ class RoomPrimaryView extends StatelessWidget {
         return ScaledSafeArea(
           bottom: true,
           top: false,
-          child: VoipRoomView(
-            voip,
-            key: key,
-          ),
+          child: VoipRoomView(voip, key: key),
         );
       }
 
       if (photos != null) {
-        return PhotoAlbumView(
-          photos,
-          key: key,
-        );
+        return PhotoAlbumView(photos, key: key);
       }
 
       if (calendar?.isCalendarRoom == true) {
-        return CalendarRoomView(
-          calendar!,
-          key: key,
-        );
+        return CalendarRoomView(calendar!, key: key);
       }
     }
 
@@ -60,9 +54,7 @@ class RoomPrimaryView extends StatelessWidget {
     return Column(
       children: [
         if (call != null) Flexible(child: CallWidget(call)),
-        Flexible(
-          child: Chat(room, key: key),
-        ),
+        Flexible(child: Chat(room, key: key)),
       ],
     );
   }

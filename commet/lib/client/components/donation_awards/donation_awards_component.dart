@@ -13,8 +13,10 @@ class SecretClientIdentifier {
   String encryptedHash;
   String clientSecret;
 
-  SecretClientIdentifier(
-      {required this.encryptedHash, required this.clientSecret});
+  SecretClientIdentifier({
+    required this.encryptedHash,
+    required this.clientSecret,
+  });
 }
 
 abstract class DonationAwardsComponent<T extends Client>
@@ -32,13 +34,20 @@ class DonationAward {
   DonationAward({required this.image, required this.title, required this.data});
 
   static DonationAward fromJsonMatrix(
-      Map<String, dynamic> data, MatrixClient client) {
+    Map<String, dynamic> data,
+    MatrixClient client,
+  ) {
     return DonationAward(
-        data: data,
-        image: MatrixMxcImage(
-            Uri.parse(data["signed"]["content"]["image"]), client.matrixClient,
-            doFullres: true, doThumbnail: false, autoLoadFullRes: true),
-        title: data["signed"]["content"]["body"]);
+      data: data,
+      image: MatrixMxcImage(
+        Uri.parse(data["signed"]["content"]["image"]),
+        client.matrixClient,
+        doFullres: true,
+        doThumbnail: false,
+        autoLoadFullRes: true,
+      ),
+      title: data["signed"]["content"]["body"],
+    );
   }
 }
 
@@ -48,14 +57,19 @@ class DonationAwardsClient {
 
   DonationAwardsClient(this.host, this.client);
 
-  Future<List<DonationAward>?> getAwards(SecretClientIdentifier identifier,
-      {DateTime? since}) async {
-    var path = host.replace(path: "/awards", queryParameters: {
-      if (since != null)
-        "since": (since.millisecondsSinceEpoch / 1000).toInt().toString(),
-      "client_reference_id": identifier.encryptedHash,
-      "secret": identifier.clientSecret,
-    });
+  Future<List<DonationAward>?> getAwards(
+    SecretClientIdentifier identifier, {
+    DateTime? since,
+  }) async {
+    var path = host.replace(
+      path: "/awards",
+      queryParameters: {
+        if (since != null)
+          "since": (since.millisecondsSinceEpoch / 1000).toInt().toString(),
+        "client_reference_id": identifier.encryptedHash,
+        "secret": identifier.clientSecret,
+      },
+    );
 
     Log.d("Fetching url: $path");
     var result = await http.get(path);
@@ -67,8 +81,9 @@ class DonationAwardsClient {
 
     try {
       var response = jsonDecode(result.body) as List<dynamic>;
-      var awards = response
-          .map((i) => DonationAward.fromJsonMatrix(i, client as MatrixClient));
+      var awards = response.map(
+        (i) => DonationAward.fromJsonMatrix(i, client as MatrixClient),
+      );
 
       Log.d(response);
 

@@ -40,8 +40,9 @@ class ImportantRoomsList extends StatelessWidget {
                       child: tiamat.Text.labelLow("Favorites"),
                     ),
                     Padding(
-                        padding: const EdgeInsetsGeometry.fromLTRB(3, 0, 0, 0),
-                        child: child)
+                      padding: const EdgeInsetsGeometry.fromLTRB(3, 0, 0, 0),
+                      child: child,
+                    ),
                   ],
                 );
               }
@@ -50,16 +51,19 @@ class ImportantRoomsList extends StatelessWidget {
             },
             itemBuilder: (context, value) {
               return Padding(
-                  padding: padding,
-                  child: RoomPanel(
-                    key: ValueKey("RoomFavoritesList-${value.localId}"),
-                    value,
-                    onTap: () {
-                      EventBus.doOpenRoom(value.identifier,
-                          clientId: value.client.identifier,
-                          openInSpace: false);
-                    },
-                  ));
+                padding: padding,
+                child: RoomPanel(
+                  key: ValueKey("RoomFavoritesList-${value.localId}"),
+                  value,
+                  onTap: () {
+                    EventBus.doOpenRoom(
+                      value.identifier,
+                      clientId: value.client.identifier,
+                      openInSpace: false,
+                    );
+                  },
+                ),
+              );
             },
           ),
           NotifyingListBuilder(
@@ -97,8 +101,9 @@ class ImportantRoomsList extends StatelessWidget {
                       ],
                     ),
                     Padding(
-                        padding: const EdgeInsetsGeometry.fromLTRB(3, 0, 0, 0),
-                        child: child)
+                      padding: const EdgeInsetsGeometry.fromLTRB(3, 0, 0, 0),
+                      child: child,
+                    ),
                   ],
                 );
               }

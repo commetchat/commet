@@ -47,13 +47,15 @@ class ProfileBadge {
   Uri? link;
   Map<String, dynamic> source;
 
-  ProfileBadge(this.image,
-      {required this.body,
-      required this.id,
-      required this.sender,
-      required this.source,
-      this.brightness,
-      this.link});
+  ProfileBadge(
+    this.image, {
+    required this.body,
+    required this.id,
+    required this.sender,
+    required this.source,
+    this.brightness,
+    this.link,
+  });
 
   @override
   bool operator ==(Object other) {
@@ -78,8 +80,11 @@ abstract class ProfileWithBio {
 
   String? get plaintextBio;
 
-  Widget buildBio(BuildContext context, ThemeData theme,
-      {String? overrideText});
+  Widget buildBio(
+    BuildContext context,
+    ThemeData theme, {
+    String? overrideText,
+  });
 }
 
 abstract class UserProfileComponent<T extends Client> implements Component<T> {

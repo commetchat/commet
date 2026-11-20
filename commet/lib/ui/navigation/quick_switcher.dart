@@ -93,8 +93,9 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
       for (var room in client.rooms) {
         if (dm?.isRoomDirectMessage(room) == true) {
           var partner = dm!.getDirectMessagePartnerId(room);
-          items.add(QuickSwitcherSearchItemRoom(room,
-              id: partner ?? room.identifier));
+          items.add(
+            QuickSwitcherSearchItemRoom(room, id: partner ?? room.identifier),
+          );
         } else {
           items.add(QuickSwitcherSearchItemRoom(room, id: room.identifier));
         }
@@ -135,7 +136,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                   ],
                 ),
               ),
-            )
+            ),
         ],
       ),
     );
@@ -152,63 +153,74 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
             child: Row(
               spacing: 8,
               children: [
-                for (var room in clientManager!
-                    .directMessages.directMessageRooms
-                    .sorted((a, b) =>
-                        b.lastEventTimestamp.compareTo(a.lastEventTimestamp)))
+                for (var room
+                    in clientManager!.directMessages.directMessageRooms.sorted(
+                      (a, b) =>
+                          b.lastEventTimestamp.compareTo(a.lastEventTimestamp),
+                    ))
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        EventBus.doOpenRoom(room.identifier,
-                            clientId: room.client.identifier);
+                        EventBus.doOpenRoom(
+                          room.identifier,
+                          clientId: room.client.identifier,
+                        );
 
                         Navigator.of(context).pop();
                       },
                       child: tiamat.Avatar(
-                          image: room.avatar,
-                          placeholderColor: room.defaultColor,
-                          placeholderText: room.displayName),
+                        image: room.avatar,
+                        placeholderColor: room.defaultColor,
+                        placeholderText: room.displayName,
+                      ),
                     ),
-                  )
+                  ),
               ],
             ),
           ),
         ),
         tiamat.Panel(
-            mode: TileType.surfaceContainerLow,
-            header: "Recent Activity",
-            child: Column(
-              spacing: 0,
-              children: [
-                for (var room in clientManager!.rooms
-                    .sorted((a, b) =>
-                        b.lastEventTimestamp.compareTo(a.lastEventTimestamp))
-                    .sublist(0, clientManager!.rooms.length.clamp(0, 4)))
-                  RoomPanelView(
-                    onTap: () {
-                      EventBus.doOpenRoom(room.identifier,
-                          clientId: room.client.identifier);
+          mode: TileType.surfaceContainerLow,
+          header: "Recent Activity",
+          child: Column(
+            spacing: 0,
+            children: [
+              for (var room
+                  in clientManager!.rooms
+                      .sorted(
+                        (a, b) => b.lastEventTimestamp.compareTo(
+                          a.lastEventTimestamp,
+                        ),
+                      )
+                      .sublist(0, clientManager!.rooms.length.clamp(0, 4)))
+                RoomPanelView(
+                  onTap: () {
+                    EventBus.doOpenRoom(
+                      room.identifier,
+                      clientId: room.client.identifier,
+                    );
 
-                      Navigator.of(context).pop();
-                    },
-                    displayName: room.displayName,
-                    color: room.defaultColor,
-                    avatar: room.avatar,
-                    recentEventSender: room.lastMessage != null
-                        ? room
+                    Navigator.of(context).pop();
+                  },
+                  displayName: room.displayName,
+                  color: room.defaultColor,
+                  avatar: room.avatar,
+                  recentEventSender: room.lastMessage != null
+                      ? room
                             .getMemberOrFallback(room.lastMessage!.senderId)
                             .displayName
-                        : null,
-                    recentEventSenderColor: room.lastMessage != null
-                        ? room
+                      : null,
+                  recentEventSenderColor: room.lastMessage != null
+                      ? room
                             .getMemberOrFallback(room.lastMessage!.senderId)
                             .defaultColor
-                        : null,
-                    body: room.lastMessage?.plainTextBody,
-                  )
-              ],
-            ))
+                      : null,
+                  body: room.lastMessage?.plainTextBody,
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -228,21 +240,27 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
       searchItems = items.where((i) => i.id.startsWith("@")).toList();
     }
 
-    var fuzzy = Fuzzy<QuickSwitcherSearchItem>(searchItems,
-        options: FuzzyOptions(keys: [
+    var fuzzy = Fuzzy<QuickSwitcherSearchItem>(
+      searchItems,
+      options: FuzzyOptions(
+        keys: [
           WeightedKey(
-              name: "searchEntry",
-              getter: (result) {
-                return result.searchEntry;
-              },
-              weight: 1),
+            name: "searchEntry",
+            getter: (result) {
+              return result.searchEntry;
+            },
+            weight: 1,
+          ),
           WeightedKey(
-              name: "id",
-              getter: (result) {
-                return result.id;
-              },
-              weight: 1)
-        ]));
+            name: "id",
+            getter: (result) {
+              return result.id;
+            },
+            weight: 1,
+          ),
+        ],
+      ),
+    );
 
     var results = fuzzy.search(searchText, 5).map((e) => e.item).toList();
     setState(() {

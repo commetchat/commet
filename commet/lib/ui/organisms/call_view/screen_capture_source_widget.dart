@@ -7,8 +7,12 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ScreenCaptureSourceWidget extends StatefulWidget {
-  const ScreenCaptureSourceWidget(this.source, this.onThumbnailChanged,
-      {this.onTap, super.key});
+  const ScreenCaptureSourceWidget(
+    this.source,
+    this.onThumbnailChanged, {
+    this.onTap,
+    super.key,
+  });
   final DesktopCapturerSource source;
   final Stream<DesktopCapturerSource> onThumbnailChanged;
   final Function()? onTap;
@@ -40,7 +44,7 @@ class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
             thumbnailData ??= source.thumbnail;
           });
         }
-      })
+      }),
     ];
   }
 
@@ -66,13 +70,14 @@ class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: buildImage()),
+                    borderRadius: BorderRadius.circular(8),
+                    child: buildImage(),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: tiamat.Text.labelLow(widget.source.name),
-                )
+                ),
               ],
             ),
           ),
@@ -88,9 +93,7 @@ class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
       return const SizedBox(
         width: 200,
         height: 200,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
   }

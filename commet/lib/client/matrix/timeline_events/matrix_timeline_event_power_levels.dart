@@ -9,11 +9,12 @@ class MatrixTimelineEventPowerLevels extends MatrixTimelineEvent
     implements TimelineEventGeneric {
   MatrixTimelineEventPowerLevels(super.event, {required super.client});
 
-  String messagePowerLevelsChanged(String user) =>
-      Intl.message("$user changed the room power levels",
-          desc: "Message to display when a user changes the room power levels",
-          args: [user],
-          name: "messagePowerLevelsChanged");
+  String messagePowerLevelsChanged(String user) => Intl.message(
+    "$user changed the room power levels",
+    desc: "Message to display when a user changes the room power levels",
+    args: [user],
+    name: "messagePowerLevelsChanged",
+  );
 
   @override
   String getBody({Timeline? timeline}) {

@@ -24,15 +24,9 @@ class WidgetDebugView extends StatelessWidget {
           automaticallyImplyLeading: false,
           bottom: TabBar(
             tabs: [
-              Tab(
-                text: "Messages",
-              ),
-              Tab(
-                text: "Capabilities",
-              ),
-              Tab(
-                text: "Logs",
-              ),
+              Tab(text: "Messages"),
+              Tab(text: "Capabilities"),
+              Tab(text: "Logs"),
             ],
           ),
         ),
@@ -40,7 +34,7 @@ class WidgetDebugView extends StatelessWidget {
           children: [
             WidgetMessageDebugView(runner),
             WidgetCapabilitiesDebugView(runner),
-            LogPage(runner.logs)
+            LogPage(runner.logs),
           ],
         ),
       ),
@@ -64,8 +58,9 @@ class _WidgetCapabilitiesDebugViewState
       list: widget.runner.capabilities.grantedCapabilityNames,
       itemBuilder: (context, value) {
         return Padding(
-            padding: EdgeInsetsGeometry.fromLTRB(0, 8, 0, 0),
-            child: tiamat.Text.labelLow(value));
+          padding: EdgeInsetsGeometry.fromLTRB(0, 8, 0, 0),
+          child: tiamat.Text.labelLow(value),
+        );
       },
     );
   }
@@ -100,48 +95,49 @@ class _WidgetMessageDebugViewState extends State<WidgetMessageDebugView> {
 
         var id = item.$2.tryGet<String>("requestId")!;
 
-        var emote =
-            emoji.characters.elementAt(id.hashCode % emoji.characters.length);
+        var emote = emoji.characters.elementAt(
+          id.hashCode % emoji.characters.length,
+        );
 
         return Container(
-            color: (isError
-                    ? m.Colors.red
-                    : item.$1 == WidgetMessageDirection.incoming
-                        ? m.Colors.blueAccent
-                        : m.Colors.greenAccent)
-                .withAlpha(20),
-            child: m.ExpansionTile(
-              title: Row(
-                spacing: 8,
-                children: [
-                  Icon(item.$1 == WidgetMessageDirection.incoming
-                      ? m.Icons.arrow_back
-                      : m.Icons.arrow_forward),
-                  tiamat.Text.tiny(emote),
-                  if (isResponse) Icon(m.Icons.reply),
-                  if (isError)
-                    Icon(
-                      m.Icons.error,
-                      color: m.Colors.redAccent,
-                    ),
-                  tiamat.Text(item.$2["action"]),
-                  if (type != null) tiamat.Text.labelLow(type)
-                ],
-              ),
+          color:
+              (isError
+                      ? m.Colors.red
+                      : item.$1 == WidgetMessageDirection.incoming
+                      ? m.Colors.blueAccent
+                      : m.Colors.greenAccent)
+                  .withAlpha(20),
+          child: m.ExpansionTile(
+            title: Row(
+              spacing: 8,
               children: [
-                Scrollbar(
-                  controller: controller,
-                  child: SingleChildScrollView(
-                    controller: controller,
-                    scrollDirection: Axis.horizontal,
-                    child: Codeblock(
-                      text: JsonEncoder.withIndent("  ").convert(item.$2),
-                      language: "json",
-                    ),
-                  ),
-                )
+                Icon(
+                  item.$1 == WidgetMessageDirection.incoming
+                      ? m.Icons.arrow_back
+                      : m.Icons.arrow_forward,
+                ),
+                tiamat.Text.tiny(emote),
+                if (isResponse) Icon(m.Icons.reply),
+                if (isError) Icon(m.Icons.error, color: m.Colors.redAccent),
+                tiamat.Text(item.$2["action"]),
+                if (type != null) tiamat.Text.labelLow(type),
               ],
-            ));
+            ),
+            children: [
+              Scrollbar(
+                controller: controller,
+                child: SingleChildScrollView(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  child: Codeblock(
+                    text: JsonEncoder.withIndent("  ").convert(item.$2),
+                    language: "json",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }

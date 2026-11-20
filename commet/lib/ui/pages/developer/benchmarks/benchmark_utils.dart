@@ -20,18 +20,17 @@ extension BenchmarkUtils on MatrixClient {
       'notification_count': 0,
       'highlight_count': 0,
       'prev_batch': 'fake_batch_id',
-      'summary': {
-        'm.joined_member_count': 100,
-        'm.invited_member_count': 0,
-      },
+      'summary': {'m.joined_member_count': 100, 'm.invited_member_count': 0},
     }, getMatrixClient());
 
-    mxRoom.setState(matrix.Event.fromJson({
-      'type': 'm.room.member',
-      'state_key': _userId,
-      'sender': _userId,
-      'content': {'display_name': 'Benchy', 'membership': 'join'}
-    }, mxRoom));
+    mxRoom.setState(
+      matrix.Event.fromJson({
+        'type': 'm.room.member',
+        'state_key': _userId,
+        'sender': _userId,
+        'content': {'display_name': 'Benchy', 'membership': 'join'},
+      }, mxRoom),
+    );
 
     var room = MatrixRoom(this, mxRoom, getMatrixClient());
     rooms.add(room);
@@ -42,18 +41,24 @@ extension BenchmarkUtils on MatrixClient {
 extension BenchmarkTimeline on MatrixRoom {
   MatrixTimeline getBenchmarkTimeline() {
     int count = 500;
-    var chunk = c.TimelineChunk(events: [
-      for (var i = 0; i < count; i++) createRandomEvent(i, count),
-      createTestEndEvent(count),
+    var chunk = c.TimelineChunk(
+      events: [
+        for (var i = 0; i < count; i++) createRandomEvent(i, count),
+        createTestEndEvent(count),
 
-      // create more events so it doent try to fetch more from server
-      for (var i = 0; i < 50; i++) createRandomEvent(count + 1 + i, count),
-    ]);
+        // create more events so it doent try to fetch more from server
+        for (var i = 0; i < 50; i++) createRandomEvent(count + 1 + i, count),
+      ],
+    );
 
     var mxTimeline = matrix.Timeline(chunk: chunk, room: matrixRoom);
 
-    return MatrixTimeline(client as MatrixClient, this, matrixRoom,
-        initialTimeline: mxTimeline);
+    return MatrixTimeline(
+      client as MatrixClient,
+      this,
+      matrixRoom,
+      initialTimeline: mxTimeline,
+    );
   }
 
   matrix.Event createTestEndEvent(int eventCount) {
@@ -65,7 +70,7 @@ extension BenchmarkTimeline on MatrixRoom {
       'room_id': matrixRoom.id,
       'origin_server_ts': DateTime.now()
           .subtract(Duration(days: eventCount))
-          .millisecondsSinceEpoch
+          .millisecondsSinceEpoch,
     }, matrixRoom);
 
     return event;
@@ -81,8 +86,9 @@ extension BenchmarkTimeline on MatrixRoom {
       'event_id': '\$$seed',
       'sender': _userId,
       'room_id': matrixRoom.id,
-      'origin_server_ts':
-          DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
+      'origin_server_ts': DateTime.now()
+          .subtract(Duration(days: seed))
+          .millisecondsSinceEpoch,
     };
 
     if (r.nextDouble() < 0.33 && canBeRelatedEvent) {
@@ -91,8 +97,8 @@ extension BenchmarkTimeline on MatrixRoom {
         'm.relates_to': {
           'event_id': relatedEventId,
           'rel_type': 'm.annotation',
-          'key': r.nextBool() ? 'String Reaction' : "❤️"
-        }
+          'key': r.nextBool() ? 'String Reaction' : "❤️",
+        },
       };
 
       return matrix.Event.fromJson(json, matrixRoom);
@@ -115,13 +121,14 @@ extension BenchmarkTimeline on MatrixRoom {
             if (isThreadReply) 'rel_type': 'm.thread',
             if (isThreadReply) 'is_falling_back': true,
             if (isThreadReply == false)
-              'm.in_reply_to': {'event_id': relatedEventId}
+              'm.in_reply_to': {'event_id': relatedEventId},
           },
       },
       'sender': _userId,
       'room_id': matrixRoom.id,
-      'origin_server_ts':
-          DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
+      'origin_server_ts': DateTime.now()
+          .subtract(Duration(days: seed))
+          .millisecondsSinceEpoch,
     }, matrixRoom);
 
     return event;

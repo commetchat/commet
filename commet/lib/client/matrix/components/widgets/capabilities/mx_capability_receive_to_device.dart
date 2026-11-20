@@ -16,18 +16,26 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
 
   StreamSubscription? sub;
 
-  MatrixCapabilityReceiveToDeviceEvent(
-      {required this.runner, required this.eventType, this.eventKey}) {
-    sub = runner.client.matrixClient.onToDeviceEvent.stream
-        .listen(onToDeviceMessage);
+  MatrixCapabilityReceiveToDeviceEvent({
+    required this.runner,
+    required this.eventType,
+    this.eventKey,
+  }) {
+    sub = runner.client.matrixClient.onToDeviceEvent.stream.listen(
+      onToDeviceMessage,
+    );
   }
 
   static String name = "org.matrix.msc3819.receive.to_device";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) => MatrixCapabilityReceiveToDeviceEvent(
-          runner: runner, eventType: type!, eventKey: key));
+    name,
+    (runner, type, key) => MatrixCapabilityReceiveToDeviceEvent(
+      runner: runner,
+      eventType: type!,
+      eventKey: key,
+    ),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -53,13 +61,17 @@ class MatrixCapabilityReceiveToDeviceEvent implements MatrixWidgetCapability {
 
     Log.i("Sending to device event to widget!");
 
-    runner.messageTransport.send(runner.eventHandler
-        .generateToWidgetEvent(action: "send_to_device", data: {
-      "type": event.type,
-      "sender": event.senderId,
-      "encrypted": event.encryptedContent != null,
-      "content": event.content
-    }));
+    runner.messageTransport.send(
+      runner.eventHandler.generateToWidgetEvent(
+        action: "send_to_device",
+        data: {
+          "type": event.type,
+          "sender": event.senderId,
+          "encrypted": event.encryptedContent != null,
+          "content": event.content,
+        },
+      ),
+    );
   }
 
   @override

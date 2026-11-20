@@ -20,8 +20,11 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
 
   StreamSubscription? sub;
 
-  MatrixCapabilityReceiveEvent(
-      {required this.runner, required this.eventType, this.eventKey}) {
+  MatrixCapabilityReceiveEvent({
+    required this.runner,
+    required this.eventType,
+    this.eventKey,
+  }) {
     sub = runner.client.matrixClient.onTimelineEvent.stream.listen(onEvent);
   }
 
@@ -33,29 +36,36 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
   static const String name = "org.matrix.msc2762.receive.event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) => MatrixCapabilityReceiveEvent(
-          runner: runner, eventType: type!, eventKey: key));
+    name,
+    (runner, type, key) => MatrixCapabilityReceiveEvent(
+      runner: runner,
+      eventType: type!,
+      eventKey: key,
+    ),
+  );
 
   @override
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
-    var timeline = (runner.room?.timeline ?? await runner.room!.getTimeline())
-        as MatrixTimeline;
+    var timeline =
+        (runner.room?.timeline ?? await runner.room!.getTimeline())
+            as MatrixTimeline;
 
     var events = timeline.matrixTimeline!.events;
 
     var filtered = events.where((i) => canGetEvent(i));
 
     var result = filtered
-        .map((i) => {
-              "type": i.type,
-              "sender": i.senderId,
-              "content": i.content,
-              "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-              if (i.unsigned != null) "unsigned": i.unsigned,
-              "event_id": i.eventId,
-              "room_id": i.roomId!,
-            })
+        .map(
+          (i) => {
+            "type": i.type,
+            "sender": i.senderId,
+            "content": i.content,
+            "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
+            if (i.unsigned != null) "unsigned": i.unsigned,
+            "event_id": i.eventId,
+            "room_id": i.roomId!,
+          },
+        )
         .toList();
 
     return message.createResponseObject(response: {"events": result});
@@ -98,15 +108,19 @@ class MatrixCapabilityReceiveEvent implements MatrixWidgetCapability {
 
     var i = event;
     runner.messageTransport.send(
-        runner.eventHandler.generateToWidgetEvent(action: "send_event", data: {
-      "type": i.type,
-      "sender": i.senderId,
-      "content": i.content,
-      "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-      if (i.unsigned != null) "unsigned": i.unsigned,
-      "event_id": i.eventId,
-      "room_id": i.roomId!,
-    }));
+      runner.eventHandler.generateToWidgetEvent(
+        action: "send_event",
+        data: {
+          "type": i.type,
+          "sender": i.senderId,
+          "content": i.content,
+          "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
+          if (i.unsigned != null) "unsigned": i.unsigned,
+          "event_id": i.eventId,
+          "room_id": i.roomId!,
+        },
+      ),
+    );
   }
 
   bool canGetEvent(Event i) {

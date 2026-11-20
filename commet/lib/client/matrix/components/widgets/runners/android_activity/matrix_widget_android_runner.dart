@@ -56,8 +56,10 @@ class MatrixWidgetAndroidRunner implements MatrixWidgetRunner {
     tx = MatrixAndroidIpcTransceiver(socket);
     messageTransport = MatrixWidgetTransport(tx);
     eventHandler = MatrixWidgetMessageHandler(runner: this);
-    capabilities =
-        MatrixWidgetCapabilitiesManager(runner: this, context: context);
+    capabilities = MatrixWidgetCapabilitiesManager(
+      runner: this,
+      context: context,
+    );
   }
 
   @override

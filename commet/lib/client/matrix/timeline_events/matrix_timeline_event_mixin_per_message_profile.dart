@@ -38,23 +38,28 @@ mixin MatrixTimelineEventPerMessageProfile on MatrixTimelineEvent
   }
 
   PerMessageProfile _buildProfile(MatrixPerMessageProfileData data) {
-    var avatarUrl =
-        data.avatarUrl != null ? Uri.tryParse(data.avatarUrl!) : null;
+    var avatarUrl = data.avatarUrl != null
+        ? Uri.tryParse(data.avatarUrl!)
+        : null;
 
     return PerMessageProfile(
-        id: data.id,
-        displayName: data.displayName,
-        avatar: avatarUrl != null
-            ? MatrixMxcImage(avatarUrl, client.getMatrixClient(),
-                doThumbnail: true,
-                autoLoadFullRes: false,
-                doFullres: false,
-                thumbnailHeight: 86)
-            : null,
-        clearAvatar: data.clearAvatar,
-        hasFallback: data.hasFallback,
-        pronouns: data.pronouns,
-        color: MatrixMember.hashColor("$senderId${data.id}"));
+      id: data.id,
+      displayName: data.displayName,
+      avatar: avatarUrl != null
+          ? MatrixMxcImage(
+              avatarUrl,
+              client.getMatrixClient(),
+              doThumbnail: true,
+              autoLoadFullRes: false,
+              doFullres: false,
+              thumbnailHeight: 86,
+            )
+          : null,
+      clearAvatar: data.clearAvatar,
+      hasFallback: data.hasFallback,
+      pronouns: data.pronouns,
+      color: MatrixMember.hashColor("$senderId${data.id}"),
+    );
   }
 
   String stripFallback(String body, {Timeline? timeline}) {

@@ -36,8 +36,10 @@ class _WidgetSessionsPanelState extends State<WidgetSessionsPanel> {
     Iterable<WidgetRunner> widgets = WidgetComponent.currentSessions;
 
     if (preferences.widgetDeveloperMode.value == false) {
-      widgets = WidgetComponent.currentSessions.where((i) =>
-          (i is MatrixUserWidgetSubprocessRunner && i.hidden) ? false : true);
+      widgets = WidgetComponent.currentSessions.where(
+        (i) =>
+            (i is MatrixUserWidgetSubprocessRunner && i.hidden) ? false : true,
+      );
     }
 
     var first = widgets.firstOrNull;
@@ -50,20 +52,21 @@ class _WidgetSessionsPanelState extends State<WidgetSessionsPanel> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       spacing: 4,
-      children: [
-        for (var entry in widgets) buildEntry(context, entry),
-      ],
+      children: [for (var entry in widgets) buildEntry(context, entry)],
     );
   }
 
   Widget buildEntry(
-      BuildContext context, WidgetRunner<dynamic, dynamic> entry) {
+    BuildContext context,
+    WidgetRunner<dynamic, dynamic> entry,
+  ) {
     return SizedBox(
       height: widget.height,
       child: Container(
         decoration: BoxDecoration(
-            color: ColorScheme.of(context).surfaceTint.withAlpha(10),
-            borderRadius: BorderRadius.circular(8)),
+          color: ColorScheme.of(context).surfaceTint.withAlpha(10),
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -71,18 +74,17 @@ class _WidgetSessionsPanelState extends State<WidgetSessionsPanel> {
             Row(
               children: [
                 SizedBox(
-                    height: widget.height,
-                    width: widget.height,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: entry.info.icon.build(context),
-                    )),
+                  height: widget.height,
+                  width: widget.height,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: entry.info.icon.build(context),
+                  ),
+                ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    tiamat.Text(entry.info.name),
-                  ],
+                  children: [tiamat.Text(entry.info.name)],
                 ),
               ],
             ),
@@ -99,10 +101,12 @@ class _WidgetSessionsPanelState extends State<WidgetSessionsPanel> {
                           context,
                           builder: (context) {
                             return SizedBox(
-                                width: 700,
-                                height: 700,
-                                child: WidgetDebugView(
-                                    entry as MatrixWidgetRunner));
+                              width: 700,
+                              height: 700,
+                              child: WidgetDebugView(
+                                entry as MatrixWidgetRunner,
+                              ),
+                            );
                           },
                         );
                       },

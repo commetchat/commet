@@ -19,8 +19,11 @@ void main() {
 
     await tester.login(app);
 
-    await tester.waitFor(() => app.clientManager.isLoggedIn(),
-        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await tester.waitFor(
+      () => app.clientManager.isLoggedIn(),
+      timeout: const Duration(seconds: 5),
+      skipPumpAndSettle: true,
+    );
     expect(app.clientManager.isLoggedIn(), equals(true));
 
     await app.clientManager.close();
@@ -28,8 +31,10 @@ void main() {
   });
 
   testWidgets('Test Matrix Login Invalid', (WidgetTester tester) async {
-    var hs =
-        const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+    var hs = const String.fromEnvironment(
+      'HOMESERVER',
+      defaultValue: "localhost",
+    );
     var username = "invalidUser";
     var password = "InvalidPassword!";
 
@@ -53,9 +58,10 @@ void main() {
 
     await tester.tap(button);
     await tester.waitFor(
-        () => find.text(T.current.messageLoginFailed).evaluate().isNotEmpty,
-        skipPumpAndSettle: false,
-        timeout: const Duration(seconds: 5));
+      () => find.text(T.current.messageLoginFailed).evaluate().isNotEmpty,
+      skipPumpAndSettle: false,
+      timeout: const Duration(seconds: 5),
+    );
     await tester.pumpFrames(app, const Duration(seconds: 1));
     expect(app.clientManager.isLoggedIn(), equals(false));
 

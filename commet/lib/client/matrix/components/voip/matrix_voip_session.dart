@@ -55,8 +55,8 @@ class MatrixVoipSession implements VoipSession {
 
     final dataComponent = client.getComponent<MatrixRTCDataChannelComponent>();
     if (dataComponent != null) {
-      session.pc?.onDataChannel =
-          (channel) => dataComponent.dataChannelOpenedCallback(this, channel);
+      session.pc?.onDataChannel = (channel) =>
+          dataComponent.dataChannelOpenedCallback(this, channel);
     }
   }
 
@@ -115,7 +115,7 @@ class MatrixVoipSession implements VoipSession {
       matrix.CallState.kConnected => VoipState.connected,
       matrix.CallState.kRinging => VoipState.incoming,
       matrix.CallState.kEnded => VoipState.ended,
-      _ => VoipState.unknown
+      _ => VoipState.unknown,
     };
   }
 
@@ -123,8 +123,10 @@ class MatrixVoipSession implements VoipSession {
   String get roomName => session.room.getLocalizedDisplayname();
 
   @override
-  Future<void> acceptCall(
-      {bool withMicrophone = false, bool withCamera = false}) async {
+  Future<void> acceptCall({
+    bool withMicrophone = false,
+    bool withCamera = false,
+  }) async {
     WebrtcDefaultDevices.selectOutputDevice();
 
     var defaultStream = await WebrtcDefaultDevices.getDefaultMicrophone();
@@ -132,15 +134,16 @@ class MatrixVoipSession implements VoipSession {
     if (defaultStream != null) {
       return session.answerWithStreams([
         matrix.WrappedMediaStream(
-            stream: defaultStream,
-            room: session.room,
-            participant: session.localParticipant!,
-            purpose: matrix.SDPStreamMetadataPurpose.Usermedia,
-            client: session.room.client,
-            audioMuted: false,
-            videoMuted: true,
-            isGroupCall: false,
-            voip: session.voip),
+          stream: defaultStream,
+          room: session.room,
+          participant: session.localParticipant!,
+          purpose: matrix.SDPStreamMetadataPurpose.Usermedia,
+          client: session.room.client,
+          audioMuted: false,
+          videoMuted: true,
+          isGroupCall: false,
+          voip: session.voip,
+        ),
       ]);
     } else {
       return session.answer();
@@ -190,7 +193,7 @@ class MatrixVoipSession implements VoipSession {
     if (source is WebrtcAndroidScreencaptureSource) {
       stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
-          'mandatory': {'frameRate': preferences.streamFramerate.value}
+          'mandatory': {'frameRate': preferences.streamFramerate.value},
         },
       });
     }
@@ -201,7 +204,7 @@ class MatrixVoipSession implements VoipSession {
           'width': 1920,
           'height': 1080,
           'deviceId': {'exact': source.source.id},
-          'mandatory': {'frameRate': preferences.streamFramerate.value}
+          'mandatory': {'frameRate': preferences.streamFramerate.value},
         },
         'audio': true,
       });
@@ -211,23 +214,27 @@ class MatrixVoipSession implements VoipSession {
       currentScreenshare = source;
       await stopScreenshare();
       session.addLocalStream(
-          stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+        stream,
+        matrix.SDPStreamMetadataPurpose.Screenshare,
+      );
     }
   }
 
   @override
   Future<void> stopScreenshare() async {
-    for (var element in session.getLocalStreams.where((element) =>
-        element.purpose == matrix.SDPStreamMetadataPurpose.Screenshare)) {
+    for (var element in session.getLocalStreams.where(
+      (element) =>
+          element.purpose == matrix.SDPStreamMetadataPurpose.Screenshare,
+    )) {
       await session.removeLocalStream(element);
     }
   }
 
   @override
   Future<void> setCamera(MediaDeviceInfo? device) async {
-    if (session.localUserMediaStream!.stream!
-            .getTracks()
-            .any((element) => element.kind == "video") ==
+    if (session.localUserMediaStream!.stream!.getTracks().any(
+          (element) => element.kind == "video",
+        ) ==
         false) {
       await session.insertVideoTrackToAudioOnlyStream();
     }
@@ -243,8 +250,10 @@ class MatrixVoipSession implements VoipSession {
   void initStreams() {
     List<MatrixVoipStream> result = List.empty(growable: true);
 
-    var s = List<matrix.WrappedMediaStream>.from(session.getLocalStreams,
-        growable: true);
+    var s = List<matrix.WrappedMediaStream>.from(
+      session.getLocalStreams,
+      growable: true,
+    );
     s.addAll(session.getRemoteStreams);
 
     for (var stream in s) {
@@ -252,8 +261,9 @@ class MatrixVoipSession implements VoipSession {
         continue;
       }
 
-      if (!result
-          .any((element) => element.stream.stream?.id == stream.stream?.id)) {
+      if (!result.any(
+        (element) => element.stream.stream?.id == stream.stream?.id,
+      )) {
         result.add(MatrixVoipStream(stream, this));
       }
     }
@@ -269,7 +279,7 @@ class MatrixVoipSession implements VoipSession {
 
     if (![
       matrix.SDPStreamMetadataPurpose.Screenshare,
-      matrix.SDPStreamMetadataPurpose.Usermedia
+      matrix.SDPStreamMetadataPurpose.Usermedia,
     ].contains(stream.purpose)) {
       return false;
     }

@@ -2,8 +2,11 @@ import 'package:matrix/matrix.dart';
 
 import 'package:universal_html/html.dart' as html;
 
-Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName,
-    {bool onDatabaseIsolate = true, bool readOnly = false}) async {
+Future<DatabaseApi> getMatrixDatabaseImplementation(
+  String clientName, {
+  bool onDatabaseIsolate = true,
+  bool readOnly = false,
+}) async {
   await html.window.navigator.storage?.persist();
   var db = await MatrixSdkDatabase.init(clientName);
   await db.open();
@@ -11,6 +14,7 @@ Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName,
 }
 
 Future<DatabaseApi?> getLegacyMatrixDatabaseImplementation(
-    String clientName) async {
+  String clientName,
+) async {
   return null;
 }

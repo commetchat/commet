@@ -36,9 +36,7 @@ class _EditableLabelState extends State<EditableLabel> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [nameEditor(), toggleNameEdit()],
-    );
+    return Row(children: [nameEditor(), toggleNameEdit()]);
   }
 
   void _confirmName() {
@@ -55,20 +53,18 @@ class _EditableLabelState extends State<EditableLabel> {
 
   Widget nameEditor() {
     return material.Material(
-        color: material.Colors.transparent,
-        child: editingName
-            ? SizedBox(
-                width: 200,
-                child: TextInput(
-                  maxLines: 1,
-                  controller: nameController,
-                  onSubmitted: (_) => _confirmName(),
-                ),
-              )
-            : tiamat.Text(
-                text,
-                type: widget.type,
-              ));
+      color: material.Colors.transparent,
+      child: editingName
+          ? SizedBox(
+              width: 200,
+              child: TextInput(
+                maxLines: 1,
+                controller: nameController,
+                onSubmitted: (_) => _confirmName(),
+              ),
+            )
+          : tiamat.Text(text, type: widget.type),
+    );
   }
 
   Widget toggleNameEdit() {

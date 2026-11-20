@@ -8,11 +8,12 @@ class MatrixTimelineEventEditCalendar extends MatrixTimelineEvent
     implements TimelineEventGeneric {
   MatrixTimelineEventEditCalendar(super.event, {required super.client});
 
-  String messagePlaceholderUserEditedCalendar(String user) =>
-      Intl.message("$user edited the calendar",
-          desc: "Message body for when a user edits the room calendar",
-          args: [user],
-          name: "messagePlaceholderUserEditedCalendar");
+  String messagePlaceholderUserEditedCalendar(String user) => Intl.message(
+    "$user edited the calendar",
+    desc: "Message body for when a user edits the room calendar",
+    args: [user],
+    name: "messagePlaceholderUserEditedCalendar",
+  );
 
   @override
   IconData get icon {

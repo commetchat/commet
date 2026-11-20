@@ -59,7 +59,8 @@ class MatrixRecentEmoticonComponent
 
     var comp = room?.getComponent<RoomEmoticonComponent>();
 
-    var availablePacks = comp?.availablePacks ??
+    var availablePacks =
+        comp?.availablePacks ??
         client.getComponent<EmoticonComponent>()?.availablePacks;
 
     if (availablePacks == null) return [];
@@ -93,10 +94,10 @@ class MatrixRecentEmoticonComponent
         .characters
         .map((i) => UnicodeEmoticon(i.toString()))
         .forEach((i) {
-      if (result.contains(i) == false) {
-        result.add(i);
-      }
-    });
+          if (result.contains(i) == false) {
+            result.add(i);
+          }
+        });
 
     return result;
   }
@@ -136,9 +137,10 @@ class MatrixRecentEmoticonComponent
     }
 
     return RecentEmoji(
-        key: key,
-        customPackId: customPackid,
-        customPackRoomId: customPackRoomId);
+      key: key,
+      customPackId: customPackid,
+      customPackRoomId: customPackRoomId,
+    );
   }
 
   @override
@@ -166,10 +168,12 @@ class MatrixRecentEmoticonComponent
       list = list.sublist(0, maxLen);
     }
 
-    var existing = list.firstWhereOrNull((i) =>
-        i.customPackId == emoji.customPackId &&
-        i.customPackRoomId == emoji.customPackRoomId &&
-        i.key == emoji.key);
+    var existing = list.firstWhereOrNull(
+      (i) =>
+          i.customPackId == emoji.customPackId &&
+          i.customPackRoomId == emoji.customPackRoomId &&
+          i.key == emoji.key,
+    );
 
     if (existing != null) {
       existing.count++;
@@ -182,17 +186,23 @@ class MatrixRecentEmoticonComponent
 
   Future<void> storeRecentReactions() async {
     var content = {
-      "recent_emoji": _reactionEmoji.map((i) => i.toJson()).toList()
+      "recent_emoji": _reactionEmoji.map((i) => i.toJson()).toList(),
     };
-    client.matrixClient
-        .setAccountData(client.matrixClient.userID!, reactionsKey, content);
+    client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      reactionsKey,
+      content,
+    );
   }
 
   Future<void> storeRecentlyTyped() async {
     var content = {"recent_emoji": _typedEmoji.map((i) => i.toJson()).toList()};
 
-    await client.matrixClient
-        .setAccountData(client.matrixClient.userID!, typedKey, content);
+    await client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      typedKey,
+      content,
+    );
   }
 
   List<RecentEmoji> toRecentsList(BasicEvent data) {
@@ -218,11 +228,12 @@ class MatrixRecentEmoticonComponent
 }
 
 class RecentEmoji {
-  RecentEmoji(
-      {required this.key,
-      this.customPackId,
-      this.customPackRoomId,
-      this.count = 1});
+  RecentEmoji({
+    required this.key,
+    this.customPackId,
+    this.customPackRoomId,
+    this.count = 1,
+  });
 
   String key;
   String? customPackId;
@@ -245,10 +256,11 @@ class RecentEmoji {
     var count = data["count"] as int? ?? 1;
     if (key == null) return null;
     return RecentEmoji(
-        key: data["key"],
-        customPackId: packId,
-        customPackRoomId: customPackRoomId,
-        count: count);
+      key: data["key"],
+      customPackId: packId,
+      customPackRoomId: customPackRoomId,
+      count: count,
+    );
   }
 
   @override

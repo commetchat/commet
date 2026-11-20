@@ -24,18 +24,16 @@ class _VoipTurnFallbackDialogState extends State<VoipTurnFallbackDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Markdown(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                data:
-                    "Your homeserver `(${widget.homeserver})` is not configured to route calls. Would you like to fall back to a seperate server `(${preferences.fallbackTurnServer.value})` to handle routing?"),
-            const SizedBox(
-              height: 20,
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              data:
+                  "Your homeserver `(${widget.homeserver})` is not configured to route calls. Would you like to fall back to a seperate server `(${preferences.fallbackTurnServer.value})` to handle routing?",
             ),
+            const SizedBox(height: 20),
             const tiamat.Text.labelLow(
-                "Without a server to route, calls cannot be connected. Your IP Address will be shared with the fallback server"),
-            const SizedBox(
-              height: 20,
+              "Without a server to route, calls cannot be connected. Your IP Address will be shared with the fallback server",
             ),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -44,16 +42,15 @@ class _VoipTurnFallbackDialogState extends State<VoipTurnFallbackDialog> {
                     onTap: () => Navigator.of(context).pop(true),
                   ),
                 ),
-                const SizedBox(
-                  width: 20,
-                ),
+                const SizedBox(width: 20),
                 Expanded(
                   child: tiamat.Button.secondary(
-                      text: "Cancel call",
-                      onTap: () => Navigator.of(context).pop(false)),
+                    text: "Cancel call",
+                    onTap: () => Navigator.of(context).pop(false),
+                  ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

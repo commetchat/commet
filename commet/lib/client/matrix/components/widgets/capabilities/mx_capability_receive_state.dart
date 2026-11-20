@@ -17,8 +17,11 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
   // If null, allow all keys
   String? eventKey;
 
-  MatrixCapabilityReceiveStateEvent(
-      {required this.runner, required this.eventType, this.eventKey}) {
+  MatrixCapabilityReceiveStateEvent({
+    required this.runner,
+    required this.eventType,
+    this.eventKey,
+  }) {
     sub = runner.client.matrixClient.onRoomState.stream.listen(onEvent);
 
     Log.i("Created Receive State Event Capability");
@@ -29,9 +32,13 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
   static String name = "org.matrix.msc2762.receive.state_event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) => MatrixCapabilityReceiveStateEvent(
-          runner: runner, eventType: type!, eventKey: key));
+    name,
+    (runner, type, key) => MatrixCapabilityReceiveStateEvent(
+      runner: runner,
+      eventType: type!,
+      eventKey: key,
+    ),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -53,7 +60,8 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
     if (type != eventType) return false;
 
     if (eventKey != null &&
-        message.data.tryGet<String>("state_key") != eventKey) return false;
+        message.data.tryGet<String>("state_key") != eventKey)
+      return false;
 
     if (message.data.containsKey("state_key") == false) return false;
 
@@ -64,14 +72,12 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
   Future<MatrixWidgetMessage> handleRequest(MatrixWidgetMessage message) async {
     var events = eventKey == null
         ? runner.room!.matrixRoom.states[eventType]?.entries
-            .map((i) => i.value)
-            .toList()
+              .map((i) => i.value)
+              .toList()
         : [runner.room!.matrixRoom.states[eventType]?[eventKey]];
 
     if (events == null || events.nonNulls.isEmpty == true) {
-      return message.createResponseObject(response: {
-        "events": [],
-      });
+      return message.createResponseObject(response: {"events": []});
     }
 
     var key = message.data.tryGet<String>("state_key");
@@ -81,12 +87,14 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
 
     var finalEvents = events.nonNulls;
 
-    return message
-        .createResponseObject(response: {"events": convertEvents(finalEvents)});
+    return message.createResponseObject(
+      response: {"events": convertEvents(finalEvents)},
+    );
   }
 
   List<Map<dynamic, dynamic>> convertEvents(
-      Iterable<StrippedStateEvent> events) {
+    Iterable<StrippedStateEvent> events,
+  ) {
     return events.map((i) {
       if (i is Event) {
         return {
@@ -97,7 +105,7 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
           "event_id": i.eventId,
           if (i.unsigned != null) "unsigned": i.unsigned,
           "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-          "room_id": runner.room!.identifier
+          "room_id": runner.room!.identifier,
         };
       } else if (i is User) {
         return {
@@ -105,7 +113,7 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
           "sender": i.senderId,
           "state_key": i.stateKey!,
           "type": i.type,
-          "room_id": runner.room!.identifier
+          "room_id": runner.room!.identifier,
         };
       } else {
         throw UnimplementedError();
@@ -127,15 +135,19 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
     Log.i("Received new state event, notifying widget");
 
     runner.messageTransport.send(
-        runner.eventHandler.generateToWidgetEvent(action: "send_event", data: {
-      "type": i.type,
-      "sender": i.senderId,
-      "content": i.content,
-      "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
-      if (i.unsigned != null) "unsigned": i.unsigned,
-      "event_id": i.eventId,
-      "room_id": i.roomId!,
-    }));
+      runner.eventHandler.generateToWidgetEvent(
+        action: "send_event",
+        data: {
+          "type": i.type,
+          "sender": i.senderId,
+          "content": i.content,
+          "origin_server_ts": i.originServerTs.millisecondsSinceEpoch,
+          if (i.unsigned != null) "unsigned": i.unsigned,
+          "event_id": i.eventId,
+          "room_id": i.roomId!,
+        },
+      ),
+    );
 
     updateState();
   }
@@ -149,19 +161,26 @@ class MatrixCapabilityReceiveStateEvent implements MatrixWidgetCapability {
     Log.i("Sending initial state: $eventType");
     var events = eventKey == null
         ? runner.room!.matrixRoom.states[eventType]?.entries
-            .map((i) => i.value)
-            .toList()
+              .map((i) => i.value)
+              .toList()
         : [runner.room!.matrixRoom.states[eventType]?[eventKey]];
 
     if (events == null || events.nonNulls.isEmpty == true) {
-      runner.messageTransport.send(runner.eventHandler
-          .generateToWidgetEvent(action: "update_state", data: {"state": []}));
+      runner.messageTransport.send(
+        runner.eventHandler.generateToWidgetEvent(
+          action: "update_state",
+          data: {"state": []},
+        ),
+      );
 
       return;
     }
 
-    runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+    runner.messageTransport.send(
+      runner.eventHandler.generateToWidgetEvent(
         action: "update_state",
-        data: {"state": convertEvents(events.nonNulls)}));
+        data: {"state": convertEvents(events.nonNulls)},
+      ),
+    );
   }
 }

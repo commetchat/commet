@@ -36,10 +36,10 @@ class RoomFieldType implements RoomField {
 
 class RoomFieldName implements RoomField {
   String get promptRoomName => Intl.message(
-        "Room Name",
-        name: "promptRoomName",
-        desc: "Prompt to enter a room name, placeholder text for text input",
-      );
+    "Room Name",
+    name: "promptRoomName",
+    desc: "Prompt to enter a room name, placeholder text for text input",
+  );
 
   @override
   Widget build(CreateRoomArgs args, Function() onArgsChanged) {
@@ -63,11 +63,10 @@ class RoomFieldName implements RoomField {
 
 class RoomFieldTopic implements RoomField {
   String get promptTopic => Intl.message(
-        "Topic (Optional)",
-        name: "promptTopic",
-        desc:
-            "Prompt to enter a topic for room or space, specifying that doing so is optional",
-      );
+    "Topic (Optional)",
+    name: "promptTopic",
+    desc: "Prompt to enter a topic for room or space, specifying that doing so is optional",
+  );
 
   @override
   Widget build(CreateRoomArgs args, Function() onArgsChanged) {
@@ -95,19 +94,21 @@ class RoomFieldEncryption implements RoomField {
   final bool defaultEnabled;
 
   String get promptEnableEncryption => Intl.message(
-        "Enable Encryption",
-        name: "promptEnableEncryption",
-        desc: "Short prompt to enable encryption for a room",
-      );
+    "Enable Encryption",
+    name: "promptEnableEncryption",
+    desc: "Short prompt to enable encryption for a room",
+  );
 
   String get encryptionCannotBeDisabledExplanation => Intl.message(
-        "If enabled, encryption cannot be disabled later",
-        name: "encryptionCannotBeDisabledExplanation",
-        desc: "Explains that encryption cannot be disabled once enabled",
-      );
+    "If enabled, encryption cannot be disabled later",
+    name: "encryptionCannotBeDisabledExplanation",
+    desc: "Explains that encryption cannot be disabled once enabled",
+  );
 
-  RoomFieldEncryption(
-      {required this.defaultEnabled, this.canEnableEncryption = true});
+  RoomFieldEncryption({
+    required this.defaultEnabled,
+    this.canEnableEncryption = true,
+  });
 
   @override
   Widget build(CreateRoomArgs args, Function() onArgsChanged) {
@@ -122,7 +123,7 @@ class RoomFieldEncryption implements RoomField {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 tiamat.Text.label(promptEnableEncryption),
-                tiamat.Text.labelLow(encryptionCannotBeDisabledExplanation)
+                tiamat.Text.labelLow(encryptionCannotBeDisabledExplanation),
               ],
             ),
             tiamat.Switch(
@@ -131,7 +132,7 @@ class RoomFieldEncryption implements RoomField {
                 args.enableE2EE = value;
                 onArgsChanged();
               },
-            )
+            ),
           ],
         ),
       ),
@@ -139,8 +140,9 @@ class RoomFieldEncryption implements RoomField {
 
     if (!canEnableEncryption) {
       result = tiamat.Tooltip(
-          child: result,
-          text: "Sorry, Encryption is not yet supported on this type of room");
+        child: result,
+        text: "Sorry, Encryption is not yet supported on this type of room",
+      );
     }
 
     return result;
@@ -164,40 +166,40 @@ class RoomFieldVisibility implements RoomField {
   RoomFieldVisibility({required this.client, this.currentSpace});
 
   static String get roomVisibilityPrivateExplanation => Intl.message(
-        "This room will only be accessible by invitation",
-        name: "roomVisibilityPrivateExplanation",
-        desc: "Explains what 'private' room visibility means",
-      );
+    "This room will only be accessible by invitation",
+    name: "roomVisibilityPrivateExplanation",
+    desc: "Explains what 'private' room visibility means",
+  );
 
   static String get roomVisibilityPublicExplanation => Intl.message(
-        "This room will be publically accessible by anyone on the internet",
-        name: "roomVisibilityPublicExplanation",
-        desc: "Explains what 'public' visibility means",
-      );
+    "This room will be publically accessible by anyone on the internet",
+    name: "roomVisibilityPublicExplanation",
+    desc: "Explains what 'public' visibility means",
+  );
 
   static String get labelVisibilityPrivate => Intl.message(
-        "Private",
-        name: "labelVisibilityPrivate",
-        desc: "Short label for room visibility private",
-      );
+    "Private",
+    name: "labelVisibilityPrivate",
+    desc: "Short label for room visibility private",
+  );
 
   static String get labelVisibilityPublic => Intl.message(
-        "Public",
-        name: "labelVisibilityPublic",
-        desc: "Short label for room visibility public",
-      );
+    "Public",
+    name: "labelVisibilityPublic",
+    desc: "Short label for room visibility public",
+  );
 
   static String get roomVisibilityRestrictedExplanation => Intl.message(
-        "This room will be available to anyone who is a member of it's parent spaces",
-        name: "roomVisibilityRestrictedExplanation",
-        desc: "Explains what 'restricted' visibility means",
-      );
+    "This room will be available to anyone who is a member of it's parent spaces",
+    name: "roomVisibilityRestrictedExplanation",
+    desc: "Explains what 'restricted' visibility means",
+  );
 
   static String get labelVisibilityRestricted => Intl.message(
-        "Restricted",
-        name: "labelVisibilityRestricted",
-        desc: "Short label for room visibility restricted",
-      );
+    "Restricted",
+    name: "labelVisibilityRestricted",
+    desc: "Short label for room visibility restricted",
+  );
 
   @override
   void setDefaults(CreateRoomArgs args) {
@@ -224,7 +226,7 @@ class RoomFieldVisibility implements RoomField {
           RoomVisibilityPrivate(),
           RoomVisibilityPublic(),
           if (currentSpace != null)
-            RoomVisibilityRestricted([currentSpace!.identifier])
+            RoomVisibilityRestricted([currentSpace!.identifier]),
         ],
         onItemSelected: (item) {
           args.visibility = item;
@@ -255,11 +257,12 @@ class RoomFieldVisibility implements RoomField {
         subtitle = roomVisibilityRestrictedExplanation;
 
         icon = Row(
-            spacing: 4,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              for (var i in restricted.spaces) buildSpaceIcon(client, i),
-            ]);
+          spacing: 4,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            for (var i in restricted.spaces) buildSpaceIcon(client, i),
+          ],
+        );
         break;
       case null:
         break;
@@ -287,10 +290,7 @@ class RoomFieldVisibility implements RoomField {
               ],
             ),
           ),
-          tiamat.Text.labelLow(
-            subtitle!,
-            overflow: TextOverflow.fade,
-          ),
+          tiamat.Text.labelLow(subtitle!, overflow: TextOverflow.fade),
         ],
       ),
     );
@@ -302,10 +302,11 @@ class RoomFieldVisibility implements RoomField {
     return tiamat.Tooltip(
       text: space?.displayName ?? i,
       child: tiamat.Avatar(
-          radius: 13,
-          image: space?.avatar,
-          placeholderText: space?.displayName ?? i,
-          placeholderColor: space?.color ?? MatrixPeer.hashColor(i)),
+        radius: 13,
+        image: space?.avatar,
+        placeholderText: space?.displayName ?? i,
+        placeholderColor: space?.color ?? MatrixPeer.hashColor(i),
+      ),
     );
   }
 }
@@ -324,10 +325,10 @@ class _RoomCreatorWidgetState extends State<RoomCreatorWidget> {
   bool valid = false;
 
   String get promptConfirmRoomCreation => Intl.message(
-        "Create Room!",
-        name: "promptConfirmRoomCreation",
-        desc: "Label for a button which confirms the creation of a room",
-      );
+    "Create Room!",
+    name: "promptConfirmRoomCreation",
+    desc: "Label for a button which confirms the creation of a room",
+  );
 
   @override
   void initState() {
@@ -356,7 +357,7 @@ class _RoomCreatorWidgetState extends State<RoomCreatorWidget> {
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );

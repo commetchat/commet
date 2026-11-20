@@ -46,45 +46,59 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       supportedActions?.contains("org.matrix.device_delete") == true &&
       accountManagementUri != null;
 
-  String get labelMatrixCrossSigning => Intl.message("Cross signing",
-      desc: "Title label for matrix cross signing",
-      name: "labelMatrixCrossSigning");
+  String get labelMatrixCrossSigning => Intl.message(
+    "Cross signing",
+    desc: "Title label for matrix cross signing",
+    name: "labelMatrixCrossSigning",
+  );
 
   String get labelMatrixCrossSigningAndBackup => Intl.message(
-      "Cross Signing & Backup",
-      desc: "Header label for matrix cross signing and message backup section",
-      name: "labelMatrixCrossSigningAndBackup");
+    "Cross Signing & Backup",
+    desc: "Header label for matrix cross signing and message backup section",
+    name: "labelMatrixCrossSigningAndBackup",
+  );
 
-  String get labelMatrixAccountSessions => Intl.message("Sessions",
-      desc: "Title label for account sessions",
-      name: "labelMatrixAccountSessions");
+  String get labelMatrixAccountSessions => Intl.message(
+    "Sessions",
+    desc: "Title label for account sessions",
+    name: "labelMatrixAccountSessions",
+  );
 
-  String get labelMatrixCrossSigningExplanation =>
-      Intl.message("Setup to verify and keep track of all your sessions",
-          desc: "Explains what matrix cross signing does",
-          name: "labelMatrixCrossSigningExplanation");
+  String get labelMatrixCrossSigningExplanation => Intl.message(
+    "Setup to verify and keep track of all your sessions",
+    desc: "Explains what matrix cross signing does",
+    name: "labelMatrixCrossSigningExplanation",
+  );
 
-  String get labelMatrixResetCrossSigningTitle =>
-      Intl.message("Reset cross signing",
-          desc: "Title for the popup dialog when resetting cross signing",
-          name: "labelMatrixResetCrossSigningTitle");
+  String get labelMatrixResetCrossSigningTitle => Intl.message(
+    "Reset cross signing",
+    desc: "Title for the popup dialog when resetting cross signing",
+    name: "labelMatrixResetCrossSigningTitle",
+  );
 
-  String get labelMatrixMessageBackup => Intl.message("Message backup",
-      desc: "TItle label for matrix message backup settings",
-      name: "labelMatrixMessageBackup");
+  String get labelMatrixMessageBackup => Intl.message(
+    "Message backup",
+    desc: "TItle label for matrix message backup settings",
+    name: "labelMatrixMessageBackup",
+  );
 
   String get labelMatrixMessageBackupExplanation => Intl.message(
-      "Maintains a backup of your message history, in case you lose all your sessions. Your messages will be encrypted before uploading",
-      desc: "Explains what matrix message backup does",
-      name: "labelMatrixMessageBackupExplanation");
+    "Maintains a backup of your message history, in case you lose all your sessions. Your messages will be encrypted before uploading",
+    desc: "Explains what matrix message backup does",
+    name: "labelMatrixMessageBackupExplanation",
+  );
 
-  String get promptSetupMatrixMessageBackup => Intl.message("Setup backup",
-      desc: "Text on the button to begin the setup process for message backup",
-      name: "promptSetupMatrixMessageBackup");
+  String get promptSetupMatrixMessageBackup => Intl.message(
+    "Setup backup",
+    desc: "Text on the button to begin the setup process for message backup",
+    name: "promptSetupMatrixMessageBackup",
+  );
 
-  String get labelRestoreMatrixBackupTitle => Intl.message("Restore backup",
-      desc: "Title of the popup dialog for restoring message backup",
-      name: "labelRestoreMatrixBackupTitle");
+  String get labelRestoreMatrixBackupTitle => Intl.message(
+    "Restore backup",
+    desc: "Title of the popup dialog for restoring message backup",
+    name: "labelRestoreMatrixBackupTitle",
+  );
 
   @override
   void initState() {
@@ -92,9 +106,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     checkState();
     getDevices();
 
-    widget.client.hasServerDisabledEncryption().then((v) => setState(() {
-          encryptionDisabled = v;
-        }));
+    widget.client.hasServerDisabledEncryption().then(
+      (v) => setState(() {
+        encryptionDisabled = v;
+      }),
+    );
 
     super.initState();
   }
@@ -113,12 +129,13 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
 
     if (supportsLegacyUIA == null) {
       try {
-        await widget.client.matrixClient
-            .request(RequestType.DELETE, "/client/v3/devices/_", data: {
-          "auth": {
-            "type": "m.login.dummy",
-          }
-        });
+        await widget.client.matrixClient.request(
+          RequestType.DELETE,
+          "/client/v3/devices/_",
+          data: {
+            "auth": {"type": "m.login.dummy"},
+          },
+        );
       } catch (e) {
         if (e case MatrixException mx) {
           if (mx.error == MatrixError.M_FORBIDDEN) {
@@ -133,16 +150,19 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     if (supportsLegacyUIA != true) {
       if (authMetadata == null) {
         try {
-          authMetadata = await widget.client.matrixClient
-              .request(RequestType.GET, "/client/v1/auth_metadata");
+          authMetadata = await widget.client.matrixClient.request(
+            RequestType.GET,
+            "/client/v1/auth_metadata",
+          );
         } catch (e, s) {
           Log.onError(e, s);
         }
       }
     }
 
-    gotDevices
-        ?.sort((a, b) => (b.lastSeenTs ?? 0).compareTo(a.lastSeenTs ?? 0));
+    gotDevices?.sort(
+      (a, b) => (b.lastSeenTs ?? 0).compareTo(a.lastSeenTs ?? 0),
+    );
 
     if (mounted)
       setState(() {
@@ -171,7 +191,8 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       child: devices == null
           ? SizedBox(
               height: 300,
-              child: Center(child: const CircularProgressIndicator()))
+              child: Center(child: const CircularProgressIndicator()),
+            )
           : Column(
               children: [
                 if (supportsLegacyUIA == true && inactiveDevices.isNotEmpty)
@@ -179,8 +200,9 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: ColorScheme.of(context).surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(8)),
+                        color: ColorScheme.of(context).surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -208,7 +230,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                                   removeInactiveDevices();
                                 },
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -228,8 +250,8 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                         removeSession: supportsLegacyUIA == true
                             ? () => removeDeviceUIA(device.deviceId)
                             : canRemoveDeviceOAuth
-                                ? () => removeDeviceOAuth(device.deviceId)
-                                : null,
+                            ? () => removeDeviceOAuth(device.deviceId)
+                            : null,
                       ),
                     );
                   },
@@ -249,17 +271,20 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   }
 
   void removeInactiveDevices() async {
-    var confirm = await AdaptiveDialog.confirmation(context,
-        dangerous: true,
-        prompt:
-            "Are you sure you want to log out of ${inactiveDevices.length} sessions?");
+    var confirm = await AdaptiveDialog.confirmation(
+      context,
+      dangerous: true,
+      prompt:
+          "Are you sure you want to log out of ${inactiveDevices.length} sessions?",
+    );
 
     if (confirm != true) return;
 
     await widget.client.matrixClient.uiaRequestBackground((auth) async {
       await widget.client.matrixClient.deleteDevices(
-          inactiveDevices.map((i) => i.deviceId).toList(),
-          auth: auth);
+        inactiveDevices.map((i) => i.deviceId).toList(),
+        auth: auth,
+      );
     });
 
     getDevices();
@@ -267,13 +292,16 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
 
   void removeDeviceOAuth(String deviceID) {
     LinkUtils.open(
-        accountManagementUri!.replace(queryParameters: {
+      accountManagementUri!.replace(
+        queryParameters: {
           "action": "org.matrix.device_delete",
-          "device_id": deviceID
-        }),
-        context: context,
-        filterTrackingParameters: false,
-        bypassConfirmation: false);
+          "device_id": deviceID,
+        },
+      ),
+      context: context,
+      filterTrackingParameters: false,
+      bypassConfirmation: false,
+    );
   }
 
   void onUpdated() {
@@ -284,51 +312,61 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
 
   Panel crossSigningPanel() {
     return Panel(
-        header: labelMatrixCrossSigningAndBackup,
-        mode: TileType.surfaceContainerLow,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-          child: Column(
-            spacing: 4,
-            children: [
-              if (encryptionDisabled)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: ColorScheme.of(context).surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: AlertView(Alert(AlertType.info,
-                          messageGetter: () =>
-                              "Your homeserver has force-disabled encryption",
-                          titleGetter: () => "Encryption Disabled")),
+      header: labelMatrixCrossSigningAndBackup,
+      mode: TileType.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        child: Column(
+          spacing: 4,
+          children: [
+            if (encryptionDisabled)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorScheme.of(context).surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AlertView(
+                      Alert(
+                        AlertType.info,
+                        messageGetter: () =>
+                            "Your homeserver has force-disabled encryption",
+                        titleGetter: () => "Encryption Disabled",
+                      ),
                     ),
                   ),
                 ),
-              if (!isVerified)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: ColorScheme.of(context).surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: AlertView(Alert(AlertType.warning,
-                          messageGetter: () =>
-                              "Your current session is not verified. You will not be able to participate in encrypted chats.",
-                          titleGetter: () => "Unverified")),
+              ),
+            if (!isVerified)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ColorScheme.of(context).surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AlertView(
+                      Alert(
+                        AlertType.warning,
+                        messageGetter: () => "Your current session is not verified. You will not be able to participate in encrypted chats.",
+                        titleGetter: () => "Unverified",
+                      ),
                     ),
                   ),
                 ),
-              crossSigning(),
-              const tiamat.Seperator(),
-              messageBackup()
-            ],
-          ),
-        ));
+              ),
+            crossSigning(),
+            const tiamat.Seperator(),
+            messageBackup(),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget crossSigning() {
@@ -341,34 +379,39 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.label(labelMatrixCrossSigning),
-              tiamat.Text.labelLow(labelMatrixCrossSigningExplanation)
+              tiamat.Text.labelLow(labelMatrixCrossSigningExplanation),
             ],
           ),
         ),
         Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-            child: crossSigningEnabled
-                ? tiamat.Button.danger(
-                    text: CommonStrings.promptReset,
-                    onTap: () => AdaptiveDialog.show(context,
-                        builder: (_) => MatrixCrossSigningPage(
-                              client: widget.client,
-                              mode: MatrixCrossSigningMode.resetCrossSigning,
-                              onComplete: checkState,
-                            ),
-                        dismissible: true,
-                        title: labelMatrixResetCrossSigningTitle),
-                  )
-                : tiamat.Button.secondary(
-                    text: CommonStrings.promptEnable,
-                    onTap: () => AdaptiveDialog.show(context,
-                        builder: (_) => MatrixCrossSigningPage(
-                              client: widget.client,
-                              onComplete: checkState,
-                            ),
-                        dismissible: true,
-                        title: labelMatrixCrossSigning),
-                  )),
+          padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+          child: crossSigningEnabled
+              ? tiamat.Button.danger(
+                  text: CommonStrings.promptReset,
+                  onTap: () => AdaptiveDialog.show(
+                    context,
+                    builder: (_) => MatrixCrossSigningPage(
+                      client: widget.client,
+                      mode: MatrixCrossSigningMode.resetCrossSigning,
+                      onComplete: checkState,
+                    ),
+                    dismissible: true,
+                    title: labelMatrixResetCrossSigningTitle,
+                  ),
+                )
+              : tiamat.Button.secondary(
+                  text: CommonStrings.promptEnable,
+                  onTap: () => AdaptiveDialog.show(
+                    context,
+                    builder: (_) => MatrixCrossSigningPage(
+                      client: widget.client,
+                      onComplete: checkState,
+                    ),
+                    dismissible: true,
+                    title: labelMatrixCrossSigning,
+                  ),
+                ),
+        ),
       ],
     );
   }
@@ -383,37 +426,42 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.label(labelMatrixMessageBackup),
-              tiamat.Text.labelLow(labelMatrixMessageBackupExplanation)
+              tiamat.Text.labelLow(labelMatrixMessageBackupExplanation),
             ],
           ),
         ),
         Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-            child: messageBackupEnabled == true
-                ? tiamat.Button.secondary(
-                    text: CommonStrings.promptRestore,
-                    onTap: () => AdaptiveDialog.show(context,
-                        builder: (_) => MatrixCrossSigningPage(
-                              client: widget.client,
-                              onComplete: checkState,
-                              mode: MatrixCrossSigningMode.restoreBackup,
-                            ),
-                        dismissible: true,
-                        title: labelRestoreMatrixBackupTitle),
-                  )
-                : messageBackupEnabled == false
-                    ? tiamat.Button.secondary(
-                        text: CommonStrings.promptEnable,
-                        onTap: () => AdaptiveDialog.show(context,
-                            builder: (_) => MatrixCrossSigningPage(
-                                  client: widget.client,
-                                  onComplete: checkState,
-                                  mode: MatrixCrossSigningMode.enableBackup,
-                                ),
-                            dismissible: true,
-                            title: promptSetupMatrixMessageBackup),
-                      )
-                    : const CircularProgressIndicator())
+          padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+          child: messageBackupEnabled == true
+              ? tiamat.Button.secondary(
+                  text: CommonStrings.promptRestore,
+                  onTap: () => AdaptiveDialog.show(
+                    context,
+                    builder: (_) => MatrixCrossSigningPage(
+                      client: widget.client,
+                      onComplete: checkState,
+                      mode: MatrixCrossSigningMode.restoreBackup,
+                    ),
+                    dismissible: true,
+                    title: labelRestoreMatrixBackupTitle,
+                  ),
+                )
+              : messageBackupEnabled == false
+              ? tiamat.Button.secondary(
+                  text: CommonStrings.promptEnable,
+                  onTap: () => AdaptiveDialog.show(
+                    context,
+                    builder: (_) => MatrixCrossSigningPage(
+                      client: widget.client,
+                      onComplete: checkState,
+                      mode: MatrixCrossSigningMode.enableBackup,
+                    ),
+                    dismissible: true,
+                    title: promptSetupMatrixMessageBackup,
+                  ),
+                )
+              : const CircularProgressIndicator(),
+        ),
       ],
     );
   }

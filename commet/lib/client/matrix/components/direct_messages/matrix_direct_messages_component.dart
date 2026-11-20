@@ -18,8 +18,9 @@ class MatrixDirectMessagesComponent
   INotifyingList<Room> directMessageRooms = NotifyingList.empty(growable: true);
 
   @override
-  INotifyingList<Room> highlightedRoomsList =
-      NotifyingList.empty(growable: true);
+  INotifyingList<Room> highlightedRoomsList = NotifyingList.empty(
+    growable: true,
+  );
 
   String currentRoomId = "";
 
@@ -29,8 +30,9 @@ class MatrixDirectMessagesComponent
 
   MatrixDirectMessagesComponent(this.client) {
     client.getMatrixClient().onSync.stream.listen(onMatrixSync);
-    EventBus.onSelectedRoomChanged.stream
-        .listen((value) => currentRoomId = value?.identifier ?? "");
+    EventBus.onSelectedRoomChanged.stream.listen(
+      (value) => currentRoomId = value?.identifier ?? "",
+    );
 
     directMessageRooms = NotifyingListFilter(
       client.rooms,
@@ -84,8 +86,9 @@ class MatrixDirectMessagesComponent
       _directMessagesChanged.add(null);
     }
 
-    if (event.rooms?.join?.entries
-            .any((e) => e.value.unreadNotifications != null) ==
+    if (event.rooms?.join?.entries.any(
+          (e) => e.value.unreadNotifications != null,
+        ) ==
         true) {
       _notificationsChanged.add(null);
     }

@@ -11,9 +11,7 @@ class MatrixPhoto implements Photo {
   Attachment? get attachment =>
       (event as MatrixTimelineEventMessage).attachments?.firstOrNull;
 
-  MatrixPhoto(
-    this.event,
-  );
+  MatrixPhoto(this.event);
 
   @override
   double? get height =>

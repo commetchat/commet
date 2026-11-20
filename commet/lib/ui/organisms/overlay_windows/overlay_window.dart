@@ -36,12 +36,15 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
     var size = MediaQuery.of(context).scale().size;
 
     var margin = 50.0;
-    var max = Offset(size.width - padding.right - margin,
-        size.height - padding.bottom - margin);
+    var max = Offset(
+      size.width - padding.right - margin,
+      size.height - padding.bottom - margin,
+    );
 
     _positionedOffset = Offset(
-        _positionedOffset.dx.clamp(-targetSize.width + margin, max.dx),
-        _positionedOffset.dy.clamp(-targetSize.height + margin, max.dy));
+      _positionedOffset.dx.clamp(-targetSize.width + margin, max.dx),
+      _positionedOffset.dy.clamp(-targetSize.height + margin, max.dy),
+    );
 
     return _positionedOffset;
   }
@@ -51,8 +54,10 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
       final padding = MediaQuery.of(context).padding;
       var size = MediaQuery.of(context).scale().size;
 
-      return Size(size.width - padding.left - padding.right,
-          size.height - padding.top - padding.bottom);
+      return Size(
+        size.width - padding.left - padding.right,
+        size.height - padding.top - padding.bottom,
+      );
     }
 
     return Size(300, 200);
@@ -95,7 +100,8 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
         newOffset = targetOffset;
       }
 
-      var sizeDiff = (newSize.width - targetSize.width).abs() +
+      var sizeDiff =
+          (newSize.width - targetSize.width).abs() +
           (newSize.height - targetSize.height).abs();
 
       if (sizeDiff < 1) {
@@ -132,9 +138,10 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withAlpha(120),
-                      offset: Offset(3, 3),
-                      blurRadius: 10)
+                    color: Colors.black.withAlpha(120),
+                    offset: Offset(3, 3),
+                    blurRadius: 10,
+                  ),
                 ],
                 borderRadius: BorderRadius.circular(8),
                 color: ColorScheme.of(context).surfaceContainer,
@@ -153,27 +160,29 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                               if (fullScreen ||
                                   ShowOnHover.useTouchControls == false)
                                 SizedBox(
-                                    height: 30,
-                                    width: 30,
-                                    child: tiamat.IconButton(
-                                      icon: fullScreen
-                                          ? Icons.minimize
-                                          : Icons.fullscreen,
-                                      onPressed: () {
-                                        setState(() {
-                                          fullScreen = !fullScreen;
-                                        });
-                                      },
-                                    )),
-                              SizedBox(
                                   height: 30,
                                   width: 30,
                                   child: tiamat.IconButton(
-                                    icon: Icons.close,
-                                    onPressed: widget.onClose,
-                                  )),
+                                    icon: fullScreen
+                                        ? Icons.minimize
+                                        : Icons.fullscreen,
+                                    onPressed: () {
+                                      setState(() {
+                                        fullScreen = !fullScreen;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: tiamat.IconButton(
+                                  icon: Icons.close,
+                                  onPressed: widget.onClose,
+                                ),
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -185,43 +194,46 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                           child: Stack(
                             children: [
                               Container(
-                                  color: ColorScheme.of(context)
-                                      .surfaceContainerLowest,
-                                  child: widget.window.widget),
+                                color: ColorScheme.of(context)
+                                    .surfaceContainerLowest,
+                                child: widget.window.widget,
+                              ),
                               if (!fullScreen)
                                 ShowOnHover(
-                                    background: Container(
-                                      color: Colors.transparent,
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                      ),
+                                  background: Container(
+                                    color: Colors.transparent,
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: double.infinity,
                                     ),
-                                    child: Container(
-                                      color: ColorScheme.of(context)
-                                          .surfaceContainerLow
-                                          .withAlpha(150),
-                                      child: Stack(
-                                        children: [
-                                          Center(
-                                              child: SizedBox(
-                                                  width: 50,
-                                                  height: 50,
-                                                  child: tiamat.IconButton(
-                                                    icon: Icons.fullscreen,
-                                                    size: 25,
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        fullScreen = true;
-                                                      });
-                                                    },
-                                                    iconColor:
-                                                        ColorScheme.of(context)
-                                                            .onSurface,
-                                                  ))),
-                                        ],
-                                      ),
-                                    )),
+                                  ),
+                                  child: Container(
+                                    color: ColorScheme.of(context)
+                                        .surfaceContainerLow
+                                        .withAlpha(150),
+                                    child: Stack(
+                                      children: [
+                                        Center(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 50,
+                                            child: tiamat.IconButton(
+                                              icon: Icons.fullscreen,
+                                              size: 25,
+                                              onPressed: () {
+                                                setState(() {
+                                                  fullScreen = true;
+                                                });
+                                              },
+                                              iconColor: ColorScheme.of(context)
+                                                  .onSurface,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -244,8 +256,9 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
                   });
                 },
                 child: buildWithWindowSize(
-                    Opacity(opacity: 0, child: Placeholder())),
-              )
+                  Opacity(opacity: 0, child: Placeholder()),
+                ),
+              ),
           ],
         ),
       ),
@@ -254,13 +267,15 @@ class _OverlayWindowState extends State<OverlayWindowWidget>
 
   Widget buildWithWindowSize(Widget child) {
     return ScaledSafeArea(
-        top: fullScreen,
-        bottom: fullScreen,
-        left: fullScreen,
-        right: fullScreen,
-        child: SizedBox(
-            width: _currentSize.width,
-            height: _currentSize.height,
-            child: child));
+      top: fullScreen,
+      bottom: fullScreen,
+      left: fullScreen,
+      right: fullScreen,
+      child: SizedBox(
+        width: _currentSize.width,
+        height: _currentSize.height,
+        child: child,
+      ),
+    );
   }
 }

@@ -67,9 +67,10 @@ class _ShowOnHoverState extends State<ShowOnHover> {
             },
           ),
           AnimatedOpacity(
-              duration: Duration(milliseconds: 100),
-              opacity: showing ? 1.0 : 0.0,
-              child: IgnorePointer(ignoring: !showing, child: widget.child)),
+            duration: Duration(milliseconds: 100),
+            opacity: showing ? 1.0 : 0.0,
+            child: IgnorePointer(ignoring: !showing, child: widget.child),
+          ),
         ],
       ),
     );

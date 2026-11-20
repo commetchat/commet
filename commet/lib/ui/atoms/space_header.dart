@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/components/space_banner/space_banner_component.dart';
 import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -7,8 +8,12 @@ import 'package:flutter/material.dart';
 import '../../client/client.dart';
 
 class SpaceHeader extends StatefulWidget {
-  const SpaceHeader(this.space,
-      {this.onTap, this.backgroundColor = Colors.transparent, super.key});
+  const SpaceHeader(
+    this.space, {
+    this.onTap,
+    this.backgroundColor = Colors.transparent,
+    super.key,
+  });
   final Space space;
   final Color backgroundColor;
   final void Function()? onTap;
@@ -49,10 +54,13 @@ class _SpaceHeaderState extends State<SpaceHeader> {
 
     return ClipRRect(
       borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
+        bottomLeft: Radius.circular(8),
+        bottomRight: Radius.circular(8),
+      ),
       child: ConstrainedBox(
         constraints: BoxConstraints.expand(
-            height: 100 + MediaQuery.of(context).padding.top),
+          height: 100 + MediaQuery.of(context).padding.top,
+        ),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -73,35 +81,40 @@ class _SpaceHeaderState extends State<SpaceHeader> {
                 onTap: widget.onTap,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                      gradient: widget.space.avatar != null
-                          ? LinearGradient(
-                              begin: AlignmentGeometry.bottomCenter,
-                              end: AlignmentGeometry.topCenter,
-                              colors: [colorScheme.primary, Colors.transparent],
-                            )
-                          : null),
+                    gradient: widget.space.avatar != null
+                        ? LinearGradient(
+                            begin: AlignmentGeometry.bottomCenter,
+                            end: AlignmentGeometry.topCenter,
+                            colors: [colorScheme.primary, Colors.transparent],
+                          )
+                        : null,
+                  ),
                   child: Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 2, 0, 2),
-                      child: Text(widget.space.displayName,
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  color: colorScheme.onPrimary,
-                                  shadows: widget.space.avatar != null
-                                      ? [
-                                          const BoxShadow(
-                                              blurRadius: 2,
-                                              spreadRadius: 10,
-                                              color: Colors.black,
-                                              offset: Offset(2, 2))
-                                        ]
-                                      : null)),
+                      child: Text(
+                        widget.space.displayName,
+                        style: Theme.of(context).textTheme.titleMedium!
+                            .copyWith(
+                              color: colorScheme.onPrimary,
+                              shadows: widget.space.avatar != null
+                                  ? [
+                                      const BoxShadow(
+                                        blurRadius: 2,
+                                        spreadRadius: 10,
+                                        color: Colors.black,
+                                        offset: Offset(2, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

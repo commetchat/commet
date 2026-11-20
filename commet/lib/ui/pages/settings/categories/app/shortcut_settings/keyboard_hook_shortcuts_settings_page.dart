@@ -16,24 +16,25 @@ class KeyboardHookShortcutsSettingsPage extends StatefulWidget {
       _KeyboardHookShortcutsSettingsPageState();
 
   static String get labelConfigureKeyboardShortcuts => Intl.message(
-      "Configure Shortcuts",
-      name: "labelConfigureKeyboardShortcuts",
-      desc:
-          "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc");
+    "Configure Shortcuts",
+    name: "labelConfigureKeyboardShortcuts",
+    desc: "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
+  );
 }
 
 class _KeyboardHookShortcutsSettingsPageState
     extends State<KeyboardHookShortcutsSettingsPage> {
   String get promptShortcutsPressAKeyCombination => Intl.message(
-      "Press a key combination",
-      name: "promptShortcutsPressAKeyCombination",
-      desc:
-          "Prompt the user to input a key combination, which is recorded and used to activate a shortcut");
+    "Press a key combination",
+    name: "promptShortcutsPressAKeyCombination",
+    desc: "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
+  );
 
-  String get promptShortcutsClearKeyboardShortcut =>
-      Intl.message("Clear Shortcut",
-          name: "promptShortcutsClearKeyboardShortcut",
-          desc: "Prompt the user to clear a key combination shortcut");
+  String get promptShortcutsClearKeyboardShortcut => Intl.message(
+    "Clear Shortcut",
+    name: "promptShortcutsClearKeyboardShortcut",
+    desc: "Prompt the user to clear a key combination shortcut",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -51,56 +52,64 @@ class _KeyboardHookShortcutsSettingsPageState
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: () async {
-                  var key = await AdaptiveDialog.show<HotKey>(context,
-                      dismissible: false, builder: (context) {
-                    HotKey? hotkey = shortcut.value.hotkey;
+                  var key = await AdaptiveDialog.show<HotKey>(
+                    context,
+                    dismissible: false,
+                    builder: (context) {
+                      HotKey? hotkey = shortcut.value.hotkey;
 
-                    return Column(
-                      spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        tiamat.Text.largeTitle(
-                            promptShortcutsPressAKeyCombination),
-                        SizedBox(
-                          height: 50,
-                          child: Center(
-                            child: HotKeyRecorder(
+                      return Column(
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          tiamat.Text.largeTitle(
+                            promptShortcutsPressAKeyCombination,
+                          ),
+                          SizedBox(
+                            height: 50,
+                            child: Center(
+                              child: HotKeyRecorder(
                                 initalHotKey: hotkey,
                                 onHotKeyRecorded: (k) {
                                   hotkey = k;
-                                }),
+                                },
+                              ),
+                            ),
                           ),
-                        ),
-                        tiamat.Button(
-                          text: CommonStrings.promptSubmit,
-                          onTap: () => Navigator.of(context).pop(hotkey),
-                        ),
-                        tiamat.Button.secondary(
-                          text: promptShortcutsClearKeyboardShortcut,
-                          onTap: () => Navigator.of(context).pop(null),
-                        )
-                      ],
-                    );
-                  });
+                          tiamat.Button(
+                            text: CommonStrings.promptSubmit,
+                            onTap: () => Navigator.of(context).pop(hotkey),
+                          ),
+                          tiamat.Button.secondary(
+                            text: promptShortcutsClearKeyboardShortcut,
+                            onTap: () => Navigator.of(context).pop(null),
+                          ),
+                        ],
+                      );
+                    },
+                  );
 
                   if (PlatformUtils.isLinux) {
                     if (key?.modifiers?.contains(HotKeyModifier.shift) ==
                         true) {
-                      await AdaptiveDialog.show(context,
-                          title: "Warning",
-                          builder: (_) => SizedBox(
-                                width: 500,
-                                child: Column(
-                                  children: [
-                                    tiamat.Text.label(
-                                        "Hotkeys using 'Shift' as a modifier may be unreliable on Linux, consider using a different key combination"),
-                                    tiamat.Button.secondary(
-                                      text: "Okay!",
-                                      onTap: () => Navigator.of(context).pop(),
-                                    )
-                                  ],
-                                ),
-                              ));
+                      await AdaptiveDialog.show(
+                        context,
+                        title: "Warning",
+                        builder: (_) => SizedBox(
+                          width: 500,
+                          child: Column(
+                            children: [
+                              tiamat.Text.label(
+                                "Hotkeys using 'Shift' as a modifier may be unreliable on Linux, consider using a different key combination",
+                              ),
+                              tiamat.Button.secondary(
+                                text: "Okay!",
+                                onTap: () => Navigator.of(context).pop(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     }
                   }
 
@@ -120,12 +129,12 @@ class _KeyboardHookShortcutsSettingsPageState
                     children: [
                       tiamat.Text(shortcut.value.getDisplayName()),
                       if (shortcut.value.hotkey != null)
-                        HotKeyVirtualView(hotKey: shortcut.value.hotkey!)
+                        HotKeyVirtualView(hotKey: shortcut.value.hotkey!),
                     ],
                   ),
                 ),
               ),
-            )
+            ),
         ],
       ),
     );

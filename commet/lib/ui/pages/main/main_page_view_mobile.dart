@@ -41,9 +41,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   bool shouldMainIgnoreInput = false;
   double height = -1;
 
-  String get directMessagesListHeaderMobile => Intl.message("Direct Messages",
-      desc: "The header for the direct messages list on desktop",
-      name: "directMessagesListHeaderMobile");
+  String get directMessagesListHeaderMobile => Intl.message(
+    "Direct Messages",
+    desc: "The header for the direct messages list on desktop",
+    name: "directMessagesListHeaderMobile",
+  );
 
   GlobalKey mainPanelKey = GlobalKey();
 
@@ -91,44 +93,44 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: canPop(),
-        onPopInvokedWithResult: (didPop, result) {
-          var event = ScopePopped();
-          event.currentMobileSide = panelsKey.currentState?.currentSide;
+      canPop: canPop(),
+      onPopInvokedWithResult: (didPop, result) {
+        var event = ScopePopped();
+        event.currentMobileSide = panelsKey.currentState?.currentSide;
 
-          EventBus.onPopInvoked.add(event);
+        EventBus.onPopInvoked.add(event);
 
-          if (event.handled) {
-            return;
-          }
+        if (event.handled) {
+          return;
+        }
 
-          if (widget.state.currentView == MainPageSubView.home &&
-              widget.state.currentRoom != null) {
-            if (widget.state.currentRoom != null) {
-              var dm = widget.state.currentRoom!.client
-                  .getComponent<DirectMessagesComponent>();
-              if (dm?.isRoomDirectMessage(widget.state.currentRoom!) == true) {
-                panelsKey.currentState?.reveal(RevealSide.left);
-                return;
-              }
-            }
-
-            widget.state.selectHome();
-
-            return;
-          }
-
-          switch (panelsKey.currentState?.currentSide) {
-            case RevealSide.right:
-              panelsKey.currentState?.reveal(RevealSide.main);
-            case RevealSide.main:
+        if (widget.state.currentView == MainPageSubView.home &&
+            widget.state.currentRoom != null) {
+          if (widget.state.currentRoom != null) {
+            var dm = widget.state.currentRoom!.client
+                .getComponent<DirectMessagesComponent>();
+            if (dm?.isRoomDirectMessage(widget.state.currentRoom!) == true) {
               panelsKey.currentState?.reveal(RevealSide.left);
-            default:
-              break;
+              return;
+            }
           }
-        },
-        child: Foundation(
-            child: Stack(
+
+          widget.state.selectHome();
+
+          return;
+        }
+
+        switch (panelsKey.currentState?.currentSide) {
+          case RevealSide.right:
+            panelsKey.currentState?.reveal(RevealSide.main);
+          case RevealSide.main:
+            panelsKey.currentState?.reveal(RevealSide.left);
+          default:
+            break;
+        }
+      },
+      child: Foundation(
+        child: Stack(
           children: [
             OverlappingPanels(
               key: panelsKey,
@@ -143,15 +145,18 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               },
               left: navigation(context),
               main: Foundation(
-                  child: IgnorePointer(
-                ignoring: shouldMainIgnoreInput,
-                child: Container(key: mainPanelKey, child: mainPanel()),
-              )),
+                child: IgnorePointer(
+                  ignoring: shouldMainIgnoreInput,
+                  child: Container(key: mainPanelKey, child: mainPanel()),
+                ),
+              ),
               right: rightPanel(context),
             ),
             const OverlayWindowsSurface(),
           ],
-        )));
+        ),
+      ),
+    );
   }
 
   Widget? rightPanel(BuildContext context) {
@@ -164,18 +169,21 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           children: [
             Tile.low(
               child: ScaledSafeArea(
-                  child: Container(),
-                  bottom: false,
-                  top: true,
-                  left: false,
-                  right: false),
+                child: Container(),
+                bottom: false,
+                top: true,
+                left: false,
+                right: false,
+              ),
             ),
             Expanded(
               child: RoomSidePanel(
-                  key: ValueKey(
-                      "room-side-panel-${widget.state.currentRoom!.localId}"),
-                  state: widget.state),
-            )
+                key: ValueKey(
+                  "room-side-panel-${widget.state.currentRoom!.localId}",
+                ),
+                state: widget.state,
+              ),
+            ),
           ],
         ),
       );
@@ -230,20 +238,22 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                   directMessagesView(),
                 if (widget.state.currentView == MainPageSubView.rooms)
                   Flexible(
-                      child: Tile.surfaceContainer(
-                          caulkClipTopLeft: true,
-                          caulkClipBottomLeft: true,
-                          caulkPadRight: true,
-                          caulkClipTopRight: true,
-                          caulkClipBottomRight: true,
-                          child: SingleRoomsList(
-                            state: widget.state,
-                            onSelectRoom: (r) => selectRoom(r),
-                          ))),
+                    child: Tile.surfaceContainer(
+                      caulkClipTopLeft: true,
+                      caulkClipBottomLeft: true,
+                      caulkPadRight: true,
+                      caulkClipTopRight: true,
+                      caulkClipBottomRight: true,
+                      child: SingleRoomsList(
+                        state: widget.state,
+                        onSelectRoom: (r) => selectRoom(r),
+                      ),
+                    ),
+                  ),
                 if (widget.state.currentView == MainPageSubView.space &&
                     widget.state.currentSpace != null)
                   spaceRoomSelector(newContext),
-                const BackgroundTaskViewContainer()
+                const BackgroundTaskViewContainer(),
               ],
             ),
           ),
@@ -255,11 +265,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             child: ScaledSafeArea(
               bottom: true,
               top: false,
-              child: CurrentSessionPanel(
-                currentUser: widget.state.currentUser,
-              ),
+              child: CurrentSessionPanel(currentUser: widget.state.currentUser),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -273,7 +281,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           child: SingleChildScrollView(
             child: SpaceSummary(
               key: ValueKey(
-                  "space-summary-key-${widget.state.currentSpace!.localId}"),
+                "space-summary-key-${widget.state.currentSpace!.localId}",
+              ),
               space: widget.state.currentSpace!,
               onRoomTap: (room) {
                 widget.state.selectRoom(room);
@@ -309,7 +318,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                     height: 50,
                     child: RoomHeader(
                       widget.state.currentRoom!,
-                      onTap: widget.state.currentRoom?.permissions
+                      onTap:
+                          widget
+                                  .state
+                                  .currentRoom
+                                  ?.permissions
                                   .canEditAnything ==
                               true
                           ? () => widget.state.navigateRoomSettings()
@@ -346,13 +359,14 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
     return Material(
       child: Tile(
-          child: HomeScreen(
-        clientManager: widget.state.clientManager,
-        filterClient: widget.state.filterClient,
-        onBurgerMenuTap: () {
-          panelsKey.currentState?.reveal(RevealSide.left);
-        },
-      )),
+        child: HomeScreen(
+          clientManager: widget.state.clientManager,
+          filterClient: widget.state.filterClient,
+          onBurgerMenuTap: () {
+            panelsKey.currentState?.reveal(RevealSide.left);
+          },
+        ),
+      ),
     );
   }
 
@@ -371,7 +385,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             child: RoomMembersListWidget(
               widget.state.currentRoom!,
               key: ValueKey(
-                  "room-participant-list-key-${widget.state.currentRoom!.localId}"),
+                "room-participant-list-key-${widget.state.currentRoom!.localId}",
+              ),
             ),
           ),
         ),
@@ -399,9 +414,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               children: [
                 Flexible(
                   child: ImportantRoomsList(
-                      state: widget.state,
-                      directMessagesListHeaderDesktop:
-                          directMessagesListHeaderMobile),
+                    state: widget.state,
+                    directMessagesListHeaderDesktop:
+                        directMessagesListHeaderMobile,
+                  ),
                 ),
               ],
             ),
@@ -423,22 +439,28 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           children: [
             SpaceHeader(
               widget.state.currentSpace!,
-              backgroundColor:
-                  material.Theme.of(context).colorScheme.surfaceContainerLow,
+              backgroundColor: material.Theme.of(context)
+                  .colorScheme
+                  .surfaceContainerLow,
               onTap: clearSelectedRoom,
             ),
             Expanded(
-                child: SingleChildScrollView(
-              child: SpaceViewer(
-                widget.state.currentSpace!,
-                key: ValueKey(
-                    "space-view-key-${widget.state.currentSpace!.localId}"),
-                onRoomSelected: (room, {bypassSpecialRoomType = false}) async {
-                  selectRoom(room,
-                      bypassSpecialRoomType: bypassSpecialRoomType);
-                },
+              child: SingleChildScrollView(
+                child: SpaceViewer(
+                  widget.state.currentSpace!,
+                  key: ValueKey(
+                    "space-view-key-${widget.state.currentSpace!.localId}",
+                  ),
+                  onRoomSelected:
+                      (room, {bypassSpecialRoomType = false}) async {
+                        selectRoom(
+                          room,
+                          bypassSpecialRoomType: bypassSpecialRoomType,
+                        );
+                      },
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),

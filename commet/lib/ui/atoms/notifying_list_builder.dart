@@ -5,20 +5,25 @@ import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 
 class NotifyingListBuilder<T> extends StatefulWidget {
-  const NotifyingListBuilder(
-      {required this.list,
-      this.builder,
-      required this.itemBuilder,
-      this.shrinkWrap = false,
-      this.implicitlyAnimated = true,
-      this.sortFunction,
-      this.physics,
-      this.onSortStream,
-      super.key});
+  const NotifyingListBuilder({
+    required this.list,
+    this.builder,
+    required this.itemBuilder,
+    this.shrinkWrap = false,
+    this.implicitlyAnimated = true,
+    this.sortFunction,
+    this.physics,
+    this.onSortStream,
+    super.key,
+  });
 
   final INotifyingList<T> list;
-  final Widget Function(BuildContext context,
-      {required List<T> list, required Widget child})? builder;
+  final Widget Function(
+    BuildContext context, {
+    required List<T> list,
+    required Widget child,
+  })?
+  builder;
   final Widget Function(BuildContext context, T value) itemBuilder;
   final Stream? onSortStream;
   final bool shrinkWrap;
@@ -82,7 +87,8 @@ class _NotifyingListBuilderState<T> extends State<NotifyingListBuilder<T>> {
             physics: widget.physics,
             padding: EdgeInsets.zero,
             initialAnimation: false,
-            itemBuilder: widget.itemBuilder)
+            itemBuilder: widget.itemBuilder,
+          )
         : ListView.builder(
             shrinkWrap: widget.shrinkWrap,
             itemCount: items.length,

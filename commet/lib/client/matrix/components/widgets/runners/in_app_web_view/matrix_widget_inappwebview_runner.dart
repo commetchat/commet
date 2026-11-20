@@ -48,22 +48,25 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
   @override
   Stream<void> get onClosed => _onClosed.stream;
 
-  MatrixUserWidgetInAppWebviewRunner(
-      {required InAppWebViewController webViewController,
-      required this.room,
-      required this.widgetId,
-      required this.info,
-      required this.onExitController,
-      required BuildContext context,
-      required this.client}) {
+  MatrixUserWidgetInAppWebviewRunner({
+    required InAppWebViewController webViewController,
+    required this.room,
+    required this.widgetId,
+    required this.info,
+    required this.onExitController,
+    required BuildContext context,
+    required this.client,
+  }) {
     var tx = MatrixInAppWebViewWidgetTransceiver(webViewController);
 
     this.controller = webViewController;
 
     messageTransport = MatrixWidgetTransport(tx);
     eventHandler = MatrixWidgetMessageHandler(runner: this);
-    capabilities =
-        MatrixWidgetCapabilitiesManager(runner: this, context: context);
+    capabilities = MatrixWidgetCapabilitiesManager(
+      runner: this,
+      context: context,
+    );
   }
 
   @override
@@ -78,15 +81,16 @@ class MatrixUserWidgetInAppWebviewRunner implements MatrixWidgetRunner {
 }
 
 class MatrixWidgetInappwebviewRunnerWidget extends StatefulWidget {
-  const MatrixWidgetInappwebviewRunnerWidget(
-      {required this.widgetId,
-      required this.initialPageData,
-      required this.room,
-      required this.component,
-      required this.info,
-      required this.onExitController,
-      this.server,
-      super.key});
+  const MatrixWidgetInappwebviewRunnerWidget({
+    required this.widgetId,
+    required this.initialPageData,
+    required this.room,
+    required this.component,
+    required this.info,
+    required this.onExitController,
+    this.server,
+    super.key,
+  });
   final String initialPageData;
   final String widgetId;
   final MatrixRoom room;
@@ -112,12 +116,14 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
         initialUrlRequest: widget.server == null
             ? null
             : URLRequest(
-                url: WebUri("http://localhost:${widget.server!.port}")),
+                url: WebUri("http://localhost:${widget.server!.port}"),
+              ),
         initialData: widget.server != null
             ? null
             : InAppWebViewInitialData(
                 data: widget.initialPageData,
-                baseUrl: WebUri("http://localhost/widget")),
+                baseUrl: WebUri("http://localhost/widget"),
+              ),
         onConsoleMessage: (controller, consoleMessage) {
           Log.i("InAppWebView] $consoleMessage");
 
@@ -129,13 +135,14 @@ class _MatrixWidgetInappwebviewRunnerWidgetState
           Log.i("On web view created");
 
           runner = MatrixUserWidgetInAppWebviewRunner(
-              webViewController: controller,
-              info: widget.info,
-              room: widget.room,
-              context: context,
-              widgetId: widget.widgetId,
-              onExitController: widget.onExitController,
-              client: widget.room.client as MatrixClient);
+            webViewController: controller,
+            info: widget.info,
+            room: widget.room,
+            context: context,
+            widgetId: widget.widgetId,
+            onExitController: widget.onExitController,
+            client: widget.room.client as MatrixClient,
+          );
 
           widget.component!.registerRunner(runner!);
         },

@@ -6,11 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixWidgetPermissionsView extends StatefulWidget {
-  const MatrixWidgetPermissionsView(
-      {required this.runner,
-      required this.groupedPermissions,
-      required this.ungrouped,
-      super.key});
+  const MatrixWidgetPermissionsView({
+    required this.runner,
+    required this.groupedPermissions,
+    required this.ungrouped,
+    super.key,
+  });
 
   final List<MatrixWidgetPermissionGroup> groupedPermissions;
   final List<MatrixWidgetCapabilityString> ungrouped;
@@ -54,7 +55,8 @@ class _MatrixWidgetPermissionsViewState
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: tiamat.Text.label(
-                    "'${widget.runner.info.name}' would like permission to do the following actions on your behalf:"),
+                  "'${widget.runner.info.name}' would like permission to do the following actions on your behalf:",
+                ),
               ),
               buildGroups(),
               ListView.builder(
@@ -66,9 +68,7 @@ class _MatrixWidgetPermissionsViewState
                   return buildItem(item);
                 },
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -82,7 +82,7 @@ class _MatrixWidgetPermissionsViewState
                           rememberChoice = value;
                         });
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -90,17 +90,21 @@ class _MatrixWidgetPermissionsViewState
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: tiamat.Text.labelLow(
-                      "Some permissions will not be granted, the widget may not function as intended"),
+                    "Some permissions will not be granted, the widget may not function as intended",
+                  ),
                 ),
               tiamat.Button(
                 text: "Submit",
                 onTap: () {
-                  Navigator.of(context).pop(DialogResult(
+                  Navigator.of(context).pop(
+                    DialogResult(
                       enabledPermissions.entries
                           .where((i) => i.value == true)
                           .map((i) => i.key)
                           .toList(),
-                      remember: rememberChoice));
+                      remember: rememberChoice,
+                    ),
+                  );
                 },
               ),
             ],
@@ -133,74 +137,72 @@ class _MatrixWidgetPermissionsViewState
         : Theme.of(context).colorScheme.surface;
 
     return ExpansionTile(
-        title: Row(
-          children: [
-            Flexible(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Checkbox(
-                    value: group.permissions
-                        .any((i) => enabledPermissions[i.raw] == true),
-                    onChanged: (value) {
-                      setState(() {
-                        for (var entry in group.permissions) {
-                          enabledPermissions[entry.raw] = value == true;
-                        }
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                              child: Icon(
-                                group.icon,
-                                size: 20,
-                              ),
-                            ),
-                            tiamat.Text.labelEmphasised(group.name),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                              child: tiamat.Text.labelLow(
-                                  "(${group.permissions.length})"),
-                            )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                          child: tiamat.Text.labelLow(group.description),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: buildSeverityIcon(group),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: bg,
-        collapsedBackgroundColor: bg,
+      title: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-            child: Column(
-              children: group.permissions.map((i) => buildItem(i)).toList(),
+          Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Checkbox(
+                  value: group.permissions.any(
+                    (i) => enabledPermissions[i.raw] == true,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      for (var entry in group.permissions) {
+                        enabledPermissions[entry.raw] = value == true;
+                      }
+                    });
+                  },
+                ),
+                SizedBox(width: 8),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                            child: Icon(group.icon, size: 20),
+                          ),
+                          tiamat.Text.labelEmphasised(group.name),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                            child: tiamat.Text.labelLow(
+                              "(${group.permissions.length})",
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                        child: tiamat.Text.labelLow(group.description),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  child: buildSeverityIcon(group),
+                ),
+              ],
             ),
-          )
-        ]);
+          ),
+        ],
+      ),
+      backgroundColor: bg,
+      collapsedBackgroundColor: bg,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+          child: Column(
+            children: group.permissions.map((i) => buildItem(i)).toList(),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget buildSeverityIcon(MatrixWidgetPermissionGroup group) {
@@ -215,10 +217,7 @@ class _MatrixWidgetPermissionsViewState
       WidgetPermissionSeverity.critical => Icons.warning_rounded,
     };
 
-    return Icon(
-      icon,
-      color: color,
-    );
+    return Icon(icon, color: color);
   }
 
   Color severityColor(MatrixWidgetPermissionGroup group) {

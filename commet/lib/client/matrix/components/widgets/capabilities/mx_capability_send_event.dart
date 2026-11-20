@@ -11,15 +11,22 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
   String eventType;
   String? eventKey;
 
-  MatrixCapabilitySendEvent(
-      {required this.runner, required this.eventType, this.eventKey});
+  MatrixCapabilitySendEvent({
+    required this.runner,
+    required this.eventType,
+    this.eventKey,
+  });
 
   static const String name = "org.matrix.msc2762.send.event";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name,
-      (runner, type, key) => MatrixCapabilitySendEvent(
-          runner: runner, eventType: type!, eventKey: key));
+    name,
+    (runner, type, key) => MatrixCapabilitySendEvent(
+      runner: runner,
+      eventType: type!,
+      eventKey: key,
+    ),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -61,10 +68,9 @@ class MatrixCapabilitySendEvent implements MatrixWidgetCapability {
 
     var id = await runner.room!.matrixRoom.sendEvent(content, type: eventType);
 
-    return message.createResponseObject(response: {
-      "room_id": runner.room!.identifier,
-      "event_id": id!,
-    });
+    return message.createResponseObject(
+      response: {"room_id": runner.room!.identifier, "event_id": id!},
+    );
   }
 
   @override

@@ -9,18 +9,18 @@ class MatrixTimelineEventPinnedMessages extends MatrixTimelineEvent
   MatrixTimelineEventPinnedMessages(super.event, {required super.client});
 
   String messageUserPinnedEvent(String user) => Intl.message(
-      "$user pinned a message!",
-      desc:
-          "Message body for when a user adds an event to the room's pinned messages",
-      args: [user],
-      name: "messageUserPinnedEvent");
+    "$user pinned a message!",
+    desc: "Message body for when a user adds an event to the room's pinned messages",
+    args: [user],
+    name: "messageUserPinnedEvent",
+  );
 
   String messageUserUnpinnedEvent(String user) => Intl.message(
-      "$user unpinned a message",
-      desc:
-          "Message body for when a user removes an event from the room's pinned messages",
-      args: [user],
-      name: "messageUserUnpinnedEvent");
+    "$user unpinned a message",
+    desc: "Message body for when a user removes an event from the room's pinned messages",
+    args: [user],
+    name: "messageUserUnpinnedEvent",
+  );
 
   bool isNewEventPinned() {
     if (event.prevContent?.containsKey('pinned') == true) {

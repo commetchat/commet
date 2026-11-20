@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
+
 import '../extensions/common_flows.dart';
 import '../generated/l10n.dart';
 
@@ -47,8 +48,10 @@ void main() {
 
     expect(space.displayName, equals(newName));
 
-    expect(find.widgetWithText(SpaceHeader, newName).evaluate().isNotEmpty,
-        isTrue);
+    expect(
+      find.widgetWithText(SpaceHeader, newName).evaluate().isNotEmpty,
+      isTrue,
+    );
   });
 }
 
@@ -63,7 +66,11 @@ Future<void> _openSpaceSettings(WidgetTester tester) async {
 }
 
 Future<void> _openSpaceAppearanceSettings(WidgetTester tester) async {
-  await tester.tap(find.widgetWithText(
-      tiamat.TextButton, T.current.labelSpaceAppearanceSettings));
+  await tester.tap(
+    find.widgetWithText(
+      tiamat.TextButton,
+      T.current.labelSpaceAppearanceSettings,
+    ),
+  );
   await tester.pumpAndSettle();
 }

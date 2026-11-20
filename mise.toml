@@ -1,0 +1,44 @@
+[tools]
+flutter = "3.47.9"
+rust = "1.91"
+
+
+[bootstrap.packages]
+"apt:cmake" = "latest"
+"apt:clang" = "latest"
+"apt:ninja-build" = "latest"
+"apt:pkg-config" = "latest"
+"apt:libgtk-3-dev" = "latest"
+"apt:libstdc++-12-dev" = "latest"
+"apt:libasound2-dev" = "latest"
+"apt:libavcodec-dev" = "latest"
+"apt:libavdevice-dev" = "latest"
+"apt:libmpv-dev" = "latest"
+"apt:mpv" = "latest"
+"apt:ffmpeg" = "latest"
+"apt:webkit2gtk-4.1" = "latest"
+"apt:keybinder-3.0" = "latest"
+"apt:lld" = "latest"
+"apt:llvm" = "latest"
+
+
+[env]
+CXXFLAGS = "-Wno-error=uninitialized"
+CFLAGS = "-Wno-error=uninitialized"
+
+PROJECT_ROOT = "{{config_root}}"
+PROJECT_NAME = "{{ config_root | basename }}"
+
+PURPLE='\[\e[35m\]'
+YELLOW='\[\e[93m\]'
+GREEN='\[\e[92m\]'
+WHITE='\[\e[97m\]'
+BLUE='\[\e[94m\]'
+RESET='\[\e[0m\]'
+BOLD='\[\e[1m\]'
+UNDERLINE='\[\e[4m\]'
+REGULAR='\[\e[22m\]'
+ITALIC='\[\e[3m\]'
+ITALIC_OFF='\[\e[23m\]'
+
+PS1='${YELLOW}[$(git branch --show-current 2>/dev/null)] ${GREEN}\u@\h${WHITE}:${BLUE}${ITALIC}$PROJECT_NAME${ITALIC_OFF}/$(realpath --relative-to="$PROJECT_ROOT" "$PWD")${WHITE}\$ ${RESET}'

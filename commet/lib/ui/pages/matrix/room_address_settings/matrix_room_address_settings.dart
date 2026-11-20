@@ -42,15 +42,23 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
       newAliases.addAll(List<String>.from(result['aliases'] as Iterable));
     } catch (_) {}
 
-    var altAliases = widget.matrixRoom.states["m.room.canonical_alias"]?[""]
-        ?.content["alt_aliases"] as Iterable?;
+    var altAliases =
+        widget
+                .matrixRoom
+                .states["m.room.canonical_alias"]?[""]
+                ?.content["alt_aliases"]
+            as Iterable?;
 
     if (altAliases != null) {
-      newAliases.addAll(List<String>.from(altAliases)
-          .where((element) => newAliases.contains(element) == false));
+      newAliases.addAll(
+        List<String>.from(altAliases)
+            .where((element) => newAliases.contains(element) == false),
+      );
 
-      newPublishedAliases.addAll(List<String>.from(altAliases)
-          .where((element) => newPublishedAliases.contains(element) == false));
+      newPublishedAliases.addAll(
+        List<String>.from(altAliases)
+            .where((element) => newPublishedAliases.contains(element) == false),
+      );
     }
 
     if (widget.matrixRoom.canonicalAlias != "" &&
@@ -94,8 +102,9 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
       setMainAlias: setMainAlias,
       publishAlias: publishAlias,
       unpublishAlias: unpublishAlias,
-      canChangeMainAlias:
-          widget.matrixRoom.canChangeStateEvent("m.room.canonical_alias"),
+      canChangeMainAlias: widget.matrixRoom.canChangeStateEvent(
+        "m.room.canonical_alias",
+      ),
     );
   }
 
@@ -107,8 +116,10 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
   Future<String?> createAlias(String alias) async {
     var fullAlias = "#$alias:$userHomeserverPart";
     try {
-      await widget.matrixRoom.client
-          .setRoomAlias(fullAlias, widget.matrixRoom.id);
+      await widget.matrixRoom.client.setRoomAlias(
+        fullAlias,
+        widget.matrixRoom.id,
+      );
 
       setState(() {
         aliases?.add(fullAlias);
@@ -146,8 +157,12 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
   void updatePublishedAliases() {
     var result = List<String>.empty(growable: true);
 
-    var altAliases = widget.matrixRoom.states["m.room.canonical_alias"]?[""]
-        ?.content["alt_aliases"] as Iterable?;
+    var altAliases =
+        widget
+                .matrixRoom
+                .states["m.room.canonical_alias"]?[""]
+                ?.content["alt_aliases"]
+            as Iterable?;
 
     if (altAliases != null) {
       result.addAll(List<String>.from(altAliases));
@@ -176,7 +191,11 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
     }
 
     await widget.matrixRoom.client.setRoomStateWithKey(
-        widget.matrixRoom.id, EventTypes.RoomCanonicalAlias, "", state);
+      widget.matrixRoom.id,
+      EventTypes.RoomCanonicalAlias,
+      "",
+      state,
+    );
 
     setState(() {
       publishedAliases?.add(newPublishedAlias);
@@ -207,7 +226,11 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
     }
 
     await widget.matrixRoom.client.setRoomStateWithKey(
-        widget.matrixRoom.id, EventTypes.RoomCanonicalAlias, "", state);
+      widget.matrixRoom.id,
+      EventTypes.RoomCanonicalAlias,
+      "",
+      state,
+    );
 
     setState(() {
       publishedAliases?.remove(alias);
@@ -223,7 +246,11 @@ class _MatrixRoomAddressSettingsState extends State<MatrixRoomAddressSettings> {
     state["alias"] = newMainAlias;
 
     await widget.matrixRoom.client.setRoomStateWithKey(
-        widget.matrixRoom.id, EventTypes.RoomCanonicalAlias, "", state);
+      widget.matrixRoom.id,
+      EventTypes.RoomCanonicalAlias,
+      "",
+      state,
+    );
 
     onMainAliasChanged.add(newMainAlias);
   }

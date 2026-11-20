@@ -21,7 +21,7 @@ class RoomGetter {
   final IconData icon;
   final Widget Function(BuildContext context) descriptionBuilder;
   final Widget Function(BuildContext context, {Function(SpaceChild)? onPicked})
-      formBuilder;
+  formBuilder;
 
   final Future<SpaceChild> Function(CreateRoomArgs args)? create;
   final bool hero;
@@ -39,8 +39,12 @@ class RoomGetter {
 enum _RoomSourceOptions { create, existing, join }
 
 class GetOrCreateRoom extends StatefulWidget {
-  const GetOrCreateRoom(
-      {super.key, required this.creators, this.existing, this.join});
+  const GetOrCreateRoom({
+    super.key,
+    required this.creators,
+    this.existing,
+    this.join,
+  });
 
   final List<RoomGetter> creators;
   final RoomGetter? existing;
@@ -62,9 +66,7 @@ class GetOrCreateRoom extends StatefulWidget {
     bool Function(SpaceChild child)? existingRoomsRemoveWhere,
   }) async {
     if (client == null) {
-      client = await AdaptiveDialog.pickClient(
-        context,
-      );
+      client = await AdaptiveDialog.pickClient(context);
     }
 
     if (client == null) {
@@ -83,7 +85,9 @@ class GetOrCreateRoom extends StatefulWidget {
               RoomFieldTopic(),
               RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(
-                  canEnableEncryption: true, defaultEnabled: true),
+                canEnableEncryption: true,
+                defaultEnabled: true,
+              ),
             ],
           ),
           create: (args) async {
@@ -101,7 +105,9 @@ class GetOrCreateRoom extends StatefulWidget {
               RoomFieldTopic(),
               RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(
-                  canEnableEncryption: false, defaultEnabled: false),
+                canEnableEncryption: false,
+                defaultEnabled: false,
+              ),
               RoomFieldType(RoomType.voipRoom),
             ],
           ),
@@ -197,32 +203,34 @@ class GetOrCreateRoom extends StatefulWidget {
       if (initialRoomAddress != null) {
         source = _RoomSourceOptions.join;
       } else {
-        source = await AdaptiveDialog.pickOne(context,
-            items: [
-              _RoomSourceOptions.create,
-              if (existing != null) _RoomSourceOptions.existing,
-              if (join != null) _RoomSourceOptions.join,
-            ],
-            itemBuilder: (context, item, callback) => SizedBox(
-                  height: 50,
-                  child: switch (item) {
-                    _RoomSourceOptions.create => tiamat.TextButton(
-                        RoomCreationStrings.labelCreateRoom,
-                        icon: Icons.add,
-                        onTap: callback,
-                      ),
-                    _RoomSourceOptions.existing => tiamat.TextButton(
-                        RoomCreationStrings.labelPickExistingRoom,
-                        icon: Icons.tag,
-                        onTap: callback,
-                      ),
-                    _RoomSourceOptions.join => tiamat.TextButton(
-                        RoomCreationStrings.labelJoinRoom,
-                        icon: Icons.alternate_email,
-                        onTap: callback,
-                      ),
-                  },
-                ));
+        source = await AdaptiveDialog.pickOne(
+          context,
+          items: [
+            _RoomSourceOptions.create,
+            if (existing != null) _RoomSourceOptions.existing,
+            if (join != null) _RoomSourceOptions.join,
+          ],
+          itemBuilder: (context, item, callback) => SizedBox(
+            height: 50,
+            child: switch (item) {
+              _RoomSourceOptions.create => tiamat.TextButton(
+                RoomCreationStrings.labelCreateRoom,
+                icon: Icons.add,
+                onTap: callback,
+              ),
+              _RoomSourceOptions.existing => tiamat.TextButton(
+                RoomCreationStrings.labelPickExistingRoom,
+                icon: Icons.tag,
+                onTap: callback,
+              ),
+              _RoomSourceOptions.join => tiamat.TextButton(
+                RoomCreationStrings.labelJoinRoom,
+                icon: Icons.alternate_email,
+                onTap: callback,
+              ),
+            },
+          ),
+        );
       }
 
       if (source == _RoomSourceOptions.create) {
@@ -230,9 +238,7 @@ class GetOrCreateRoom extends StatefulWidget {
           context,
           scrollable: false,
           builder: (context) {
-            return GetOrCreateRoom(
-              creators: creators,
-            );
+            return GetOrCreateRoom(creators: creators);
           },
         );
       }
@@ -242,8 +248,10 @@ class GetOrCreateRoom extends StatefulWidget {
           context,
           scrollable: false,
           builder: (context) {
-            return join!.formBuilder(context,
-                onPicked: (i) => Navigator.of(context).pop(i));
+            return join!.formBuilder(
+              context,
+              onPicked: (i) => Navigator.of(context).pop(i),
+            );
           },
         );
       }
@@ -254,9 +262,12 @@ class GetOrCreateRoom extends StatefulWidget {
           scrollable: false,
           builder: (context) {
             return SizedBox(
-                height: 500,
-                child: existing!.formBuilder(context,
-                    onPicked: (i) => Navigator.of(context).pop(i)));
+              height: 500,
+              child: existing!.formBuilder(
+                context,
+                onPicked: (i) => Navigator.of(context).pop(i),
+              ),
+            );
           },
         );
       }
@@ -309,23 +320,30 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
                 return SizedBox(
                   height: 500,
                   child: buildListViewEntry(
-                      widget.creators.first, context, constraints.maxWidth),
+                    widget.creators.first,
+                    context,
+                    constraints.maxWidth,
+                  ),
                 );
 
               return Container(
                 child: ClipRRect(
                   borderRadius: BorderRadiusGeometry.circular(8),
                   child: SizedBox(
-                      height: 500,
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          for (var entry in widget.creators)
-                            buildListViewEntry(
-                                entry, context, constraints.maxWidth - 150)
-                        ],
-                      )),
+                    height: 500,
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        for (var entry in widget.creators)
+                          buildListViewEntry(
+                            entry,
+                            context,
+                            constraints.maxWidth - 150,
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               );
             },
@@ -360,80 +378,88 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
                           if (widget.join != null) createEntry(widget.join!),
                           if (widget.creators.isNotEmpty)
                             tiamat.Text.labelLow("Create Room:"),
-                          for (var entry in widget.creators) createEntry(entry)
+                          for (var entry in widget.creators) createEntry(entry),
                         ],
                       ),
                     ),
                   ),
                   if (selected != null)
                     Flexible(
-                        child: Container(
-                      decoration: BoxDecoration(
-                        color: ColorScheme.of(context).surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              selected!.label,
-                              style: TextTheme.of(context).headlineSmall,
-                            ),
-                            if (!selected!.hero)
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  child: Padding(
-                                    padding:
-                                        EdgeInsetsGeometry.fromLTRB(0, 0, 0, 0),
-                                    child:
-                                        selected!.descriptionBuilder(context),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: ColorScheme.of(context).surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                selected!.label,
+                                style: TextTheme.of(context).headlineSmall,
+                              ),
+                              if (!selected!.hero)
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    child: Padding(
+                                      padding: EdgeInsetsGeometry.fromLTRB(
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ),
+                                      child: selected!.descriptionBuilder(
+                                        context,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            if (selected!.hero)
-                              Expanded(
+                              if (selected!.hero)
+                                Expanded(
                                   child: selected!.formBuilder(
-                                context,
-                                onPicked: onExistingRoomPicked,
-                              )),
-                            if (!selected!.hero)
-                              Align(
-                                alignment: AlignmentGeometry.bottomRight,
-                                child: tiamat.Button(
-                                  text: CommonStrings.promptNext,
-                                  onTap: () {
-                                    onNextButtonPressed(selected!);
-                                  },
+                                    context,
+                                    onPicked: onExistingRoomPicked,
+                                  ),
                                 ),
-                              )
-                          ],
+                              if (!selected!.hero)
+                                Align(
+                                  alignment: AlignmentGeometry.bottomRight,
+                                  child: tiamat.Button(
+                                    text: CommonStrings.promptNext,
+                                    onTap: () {
+                                      onNextButtonPressed(selected!);
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                    ))
+                    ),
                 ],
               ),
             ),
           ),
-          if (loading)
-            Center(
-              child: CircularProgressIndicator(),
-            )
+          if (loading) Center(child: CircularProgressIndicator()),
         ],
       ),
     );
   }
 
   Widget buildListViewEntry(
-      RoomGetter entry, BuildContext context, double width) {
+    RoomGetter entry,
+    BuildContext context,
+    double width,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
       child: Container(
         decoration: BoxDecoration(
-            color: ColorScheme.of(context).surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(8)),
+          color: ColorScheme.of(context).surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: SizedBox(
           height: 100,
           child: Padding(
@@ -442,24 +468,15 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  entry.label,
-                  style: TextTheme.of(context).headlineSmall,
-                ),
+                Text(entry.label, style: TextTheme.of(context).headlineSmall),
                 Expanded(
                   child: ShaderMask(
                     shaderCallback: (bounds) {
                       return const LinearGradient(
                         end: Alignment(0, 0.7),
                         begin: Alignment(0, 1),
-                        colors: [
-                          Colors.purple,
-                          Colors.transparent,
-                        ],
-                        stops: [
-                          0.0,
-                          1.0,
-                        ],
+                        colors: [Colors.purple, Colors.transparent],
+                        stops: [0.0, 1.0],
                       ).createShader(bounds);
                     },
                     blendMode: BlendMode.dstOut,
@@ -482,7 +499,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
                       onTap: () => onNextButtonPressed(entry),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

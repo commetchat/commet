@@ -108,8 +108,10 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       if (relations.containsKey("m.thread")) {
         var info = relations["m.thread"] as Map<String, dynamic>;
         if (info.containsKey("latest_event") == true) {
-          var matrixEvent =
-              matrix.Event.fromJson(info["latest_event"], tl.room);
+          var matrixEvent = matrix.Event.fromJson(
+            info["latest_event"],
+            tl.room,
+          );
 
           tl.addAggregatedEvent(matrixEvent);
 
@@ -118,8 +120,10 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       }
     }
 
-    var events =
-        event.event.aggregatedEvents(tl, matrix.RelationshipTypes.thread);
+    var events = event.event.aggregatedEvents(
+      tl,
+      matrix.RelationshipTypes.thread,
+    );
 
     var firstEvent = events.firstOrNull;
     if (firstEvent == null) {
@@ -129,9 +133,10 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  Future<Timeline?> getThreadTimeline(
-      {required Timeline roomTimeline,
-      required String threadRootEventId}) async {
+  Future<Timeline?> getThreadTimeline({
+    required Timeline roomTimeline,
+    required String threadRootEventId,
+  }) async {
     if (roomTimeline is! MatrixTimeline) {
       return null;
     }
@@ -140,11 +145,12 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
     var room = (roomTimeline.room as MatrixRoom);
 
     var timeline = MatrixThreadTimeline(
-        client: client,
-        room: room,
-        threadRootId: threadRootEventId,
-        mainRoomTimeline: roomTimeline,
-        component: this);
+      client: client,
+      room: room,
+      threadRootId: threadRootEventId,
+      mainRoomTimeline: roomTimeline,
+      component: this,
+    );
 
     await timeline.loadMoreHistory();
 
@@ -152,31 +158,34 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(
-      {required String threadRootEventId,
-      required Room room,
-      String? message,
-      TimelineEvent? inReplyTo,
-      TimelineEvent? replaceEvent,
-      List<ProcessedAttachment>? processedAttachments}) async {
+  Future<TimelineEvent?> sendMessage({
+    required String threadRootEventId,
+    required Room room,
+    String? message,
+    TimelineEvent? inReplyTo,
+    TimelineEvent? replaceEvent,
+    List<ProcessedAttachment>? processedAttachments,
+  }) async {
     if (room is! MatrixRoom) {
       return null;
     }
 
     var newMessage = await room.sendMessage(
-        message: message,
-        inReplyTo: inReplyTo,
-        replaceEvent: replaceEvent,
-        processedAttachments: processedAttachments,
-        threadRootEventId: threadRootEventId) as MatrixTimelineEvent?;
+      message: message,
+      inReplyTo: inReplyTo,
+      replaceEvent: replaceEvent,
+      processedAttachments: processedAttachments,
+      threadRootEventId: threadRootEventId,
+    ) as MatrixTimelineEvent?;
 
     if (room.timeline != null) {
-      var index = room.timeline!.events
-          .indexWhere((element) => element.eventId == threadRootEventId);
+      var index = room.timeline!.events.indexWhere(
+        (element) => element.eventId == threadRootEventId,
+      );
 
-      (room.timeline as MatrixTimeline)
-          .matrixTimeline!
-          .addAggregatedEvent(newMessage!.event);
+      (room.timeline as MatrixTimeline).matrixTimeline!.addAggregatedEvent(
+        newMessage!.event,
+      );
 
       if (index != -1) {
         room.timeline!.notifyChanged(index);

@@ -3,6 +3,7 @@ import 'package:commet/client/components/push_notification/android/android_notif
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
+import 'package:commet/client/components/push_notification/modifiers/censor_content_from_blocked_users.dart';
 import 'package:commet/client/components/push_notification/modifiers/linux_notification_formatting.dart';
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/modifiers/suppress_active_room.dart';
@@ -21,8 +22,9 @@ class NotificationManager {
 
   static Notifier? get notifier => _notifier;
 
-  static final List<NotificationModifier> _modifiers =
-      List.empty(growable: true);
+  static final List<NotificationModifier> _modifiers = List.empty(
+    growable: true,
+  );
 
   static Future<void>? notifierLoading;
 
@@ -41,6 +43,7 @@ class NotificationManager {
     _notifier ??= _getNotifier(isBackgroundService: isBackgroundService);
 
     _modifiers.clear();
+    addModifier(NotificationModifierCensorBlockedUsers());
     addModifier(NotificationModifierSuppressActiveRoom());
     if (BuildConfig.ANDROID) {
       addModifier(NotificationModifierSuppressOtherActiveDevice());
@@ -91,9 +94,11 @@ class NotificationManager {
     await notifier?.clearNotifications(room);
   }
 
-  static Future<void> notify(NotificationContent notification,
-      {bool forceShow = false,
-      Function(String reason)? onNotificationRejected}) async {
+  static Future<void> notify(
+    NotificationContent notification, {
+    bool forceShow = false,
+    Function(String reason)? onNotificationRejected,
+  }) async {
     if (_notifier == null) {
       Log.e("Failed to show notification, notifier has not been initialzied");
       onNotificationRejected?.call("Notifier has not been initialized");
@@ -113,13 +118,16 @@ class NotificationManager {
         if (modifier is NotificationModifierSuppressOtherActiveDevice) continue;
       }
 
-      content = await modifier.process(content!,
-          onNotificationRejected: onNotificationRejected);
+      content = await modifier.process(
+        content!,
+        onNotificationRejected: onNotificationRejected,
+      );
       if (content == null) {
         Log.d("Modifier returned null notification, returning");
 
         onNotificationRejected?.call(
-            "Notification modifier '${modifier}' rejected the notification");
+          "Notification modifier '${modifier}' rejected the notification",
+        );
         return;
       }
     }

@@ -13,8 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventViewPoll extends StatefulWidget {
-  const TimelineEventViewPoll(
-      {required this.initialIndex, required this.timeline, super.key});
+  const TimelineEventViewPoll({
+    required this.initialIndex,
+    required this.timeline,
+    super.key,
+  });
 
   final int initialIndex;
   final Timeline timeline;
@@ -64,7 +67,8 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
       showSender: true,
       formattedContent: ConstrainedBox(
         constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).desktop ? 500 : double.infinity),
+          maxWidth: MediaQuery.of(context).desktop ? 500 : double.infinity,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,12 +86,13 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
                   children: [
                     if (!showResults)
                       tiamat.Text.labelLow(
-                          "Results will be visible once the poll has ended"),
-                    if (isFinished) tiamat.Text.labelLow("This poll has ended")
+                        "Results will be visible once the poll has ended",
+                      ),
+                    if (isFinished) tiamat.Text.labelLow("This poll has ended"),
                   ],
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -150,9 +155,10 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
                             itemBuilder: (context, index) {
                               final id = responses!.elementAt(index);
                               return UserPanel(
-                                  userId: id,
-                                  contextRoom: widget.timeline.room,
-                                  client: widget.timeline.client);
+                                userId: id,
+                                contextRoom: widget.timeline.room,
+                                client: widget.timeline.client,
+                              );
                             },
                           ),
                         ),
@@ -168,10 +174,13 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
 
                 if (maxSelections > 1) {
                   selectedAnswer = allowedAnswers
-                      .where((i) =>
-                          pollResponses[i.id]?.contains(
-                              widget.timeline.client.self!.identifier) ==
-                          true)
+                      .where(
+                        (i) =>
+                            pollResponses[i.id]?.contains(
+                              widget.timeline.client.self!.identifier,
+                            ) ==
+                            true,
+                      )
                       .toList(growable: true);
 
                   if (isOurResponse) {
@@ -193,13 +202,15 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
               },
         child: Container(
           decoration: BoxDecoration(
-              border: BoxBorder.all(
-                  color: isOurResponse
-                      ? ColorScheme.of(context).onSurface.withAlpha(150)
-                      : Colors.transparent,
-                  strokeAlign: BorderSide.strokeAlignInside,
-                  width: 1.5),
-              borderRadius: BorderRadius.circular(8)),
+            border: BoxBorder.all(
+              color: isOurResponse
+                  ? ColorScheme.of(context).onSurface.withAlpha(150)
+                  : Colors.transparent,
+              strokeAlign: BorderSide.strokeAlignInside,
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -209,9 +220,7 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
                   spacing: 8,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    tiamat.Text(
-                      answer.answer,
-                    ),
+                    tiamat.Text(answer.answer),
                     if (showResults)
                       Row(
                         spacing: 8,
@@ -219,15 +228,14 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
                           SizedBox(
                             width: 50,
                             child: ReadIndicator(
-                                spacing: 10,
-                                room: widget.timeline.room,
-                                users: responses ?? {}),
+                              spacing: 10,
+                              room: widget.timeline.room,
+                              users: responses ?? {},
+                            ),
                           ),
-                          tiamat.Text(
-                            (responses?.length ?? 0).toString(),
-                          )
+                          tiamat.Text((responses?.length ?? 0).toString()),
                         ],
-                      )
+                      ),
                   ],
                 ),
                 if (showResults)

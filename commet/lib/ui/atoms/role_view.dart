@@ -24,20 +24,13 @@ class RoleView extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (icon != null)
-                  Icon(
-                    icon!,
-                    color: fg,
-                  ),
+                if (icon != null) Icon(icon!, color: fg),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: tiamat.Text.labelEmphasised(name),
                 ),
                 if (powerLevel != null)
-                  tiamat.Text.tiny(
-                    '${powerLevel!}',
-                    color: fg,
-                  )
+                  tiamat.Text.tiny('${powerLevel!}', color: fg),
               ],
             ),
           ),

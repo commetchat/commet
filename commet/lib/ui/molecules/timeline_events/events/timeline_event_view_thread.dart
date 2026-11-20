@@ -8,11 +8,12 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventViewThread extends StatefulWidget {
-  const TimelineEventViewThread(
-      {super.key,
-      required this.initialIndex,
-      required this.timeline,
-      required this.component});
+  const TimelineEventViewThread({
+    super.key,
+    required this.initialIndex,
+    required this.timeline,
+    required this.component,
+  });
 
   final int initialIndex;
   final Timeline timeline;
@@ -40,8 +41,10 @@ class _TimelineEventViewThreadState extends State<TimelineEventViewThread> {
   void getStateFromIndex(int index) {
     var event = widget.timeline.events[index];
     threadEventId = event.eventId;
-    var threadEvent =
-        widget.component.getFirstReplyToThread(event, widget.timeline);
+    var threadEvent = widget.component.getFirstReplyToThread(
+      event,
+      widget.timeline,
+    );
     if (threadEvent == null) {
       return;
     }
@@ -85,7 +88,7 @@ class _TimelineEventViewThreadState extends State<TimelineEventViewThread> {
       onTap: () => EventBus.openThread.add((
         widget.timeline.client.identifier,
         widget.timeline.room.identifier,
-        threadEventId
+        threadEventId,
       )),
     );
   }

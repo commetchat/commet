@@ -36,11 +36,11 @@ abstract class MatrixTimelineEvent implements TimelineEvent {
 
   @override
   TimelineEventStatus get status => switch (event.status) {
-        matrix.EventStatus.error => TimelineEventStatus.error,
-        matrix.EventStatus.sending => TimelineEventStatus.sending,
-        matrix.EventStatus.sent => TimelineEventStatus.sent,
-        matrix.EventStatus.synced => TimelineEventStatus.synced,
-      };
+    matrix.EventStatus.error => TimelineEventStatus.error,
+    matrix.EventStatus.sending => TimelineEventStatus.sending,
+    matrix.EventStatus.sent => TimelineEventStatus.sent,
+    matrix.EventStatus.synced => TimelineEventStatus.synced,
+  };
 
   @override
   String get plainTextBody => event.plaintextBody;

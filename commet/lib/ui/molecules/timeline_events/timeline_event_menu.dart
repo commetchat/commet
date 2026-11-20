@@ -22,6 +22,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/notification_debugger.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_event_view_single.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -49,61 +50,58 @@ class TimelineEventMenu {
   final bool isThreadTimeline;
 
   String get promptPinMessage => Intl.message(
-        "Pin Message",
-        desc: "Label for the menu option to pin a message",
-        name: "promptPinMessage",
-      );
+    "Pin Message",
+    desc: "Label for the menu option to pin a message",
+    name: "promptPinMessage",
+  );
 
   String get promptUnpinMessage => Intl.message(
-        "Unpin Message",
-        desc: "Label for the menu option to unpin a message",
-        name: "promptUnpinMessage",
-      );
+    "Unpin Message",
+    desc: "Label for the menu option to unpin a message",
+    name: "promptUnpinMessage",
+  );
 
   String get promptReplyInThread => Intl.message(
-        "Reply In Thread",
-        desc: "Label for the menu option to reply to a message inside a thread",
-        name: "promptReplyInThread",
-      );
+    "Reply In Thread",
+    desc: "Label for the menu option to reply to a message inside a thread",
+    name: "promptReplyInThread",
+  );
 
   String get promptShowSource => Intl.message(
-        "Show Source",
-        desc: "Label for the menu option to view the JSON source of an event",
-        name: "promptShowSource",
-      );
+    "Show Source",
+    desc: "Label for the menu option to view the JSON source of an event",
+    name: "promptShowSource",
+  );
 
   String get promptReplayMessageEffect => Intl.message(
-        "Replay Effect",
-        desc:
-            "If a message was sent with an effect, this prompts to replay the effect",
-        name: "promptReplayMessageEffect",
-      );
+    "Replay Effect",
+    desc: "If a message was sent with an effect, this prompts to replay the effect",
+    name: "promptReplayMessageEffect",
+  );
 
   String get promptCancelEventSend => Intl.message(
-        "Cancel",
-        desc:
-            "When a message failed to send, this prompts to cancel sending the event",
-        name: "promptCancelEventSend",
-      );
+    "Cancel",
+    desc: "When a message failed to send, this prompts to cancel sending the event",
+    name: "promptCancelEventSend",
+  );
 
   String get promptRetryEventSend => Intl.message(
-        "Retry",
-        desc:
-            "When a message failed to send, this prompts to retry sending the event",
-        name: "promptRetryEventSend",
-      );
+    "Retry",
+    desc: "When a message failed to send, this prompts to retry sending the event",
+    name: "promptRetryEventSend",
+  );
 
   String get promptEndPoll => Intl.message(
-        "End Poll",
-        desc: "Prompt the user to end a poll",
-        name: "promptEndPoll",
-      );
+    "End Poll",
+    desc: "Prompt the user to end a poll",
+    name: "promptEndPoll",
+  );
 
   String get promptFavoriteGif => Intl.message(
-        "Favorite GIF",
-        desc: "Prompt the user to mark a gif as a favorite",
-        name: "promptFavoriteGif",
-      );
+    "Favorite GIF",
+    desc: "Prompt the user to mark a gif as a favorite",
+    name: "promptFavoriteGif",
+  );
 
   TimelineEventMenu({
     required this.timeline,
@@ -132,6 +130,8 @@ class TimelineEventMenu {
     bool canFavoriteGif = false;
     bool canUnfavoriteGif = false;
 
+    bool isBlocked = timeline.client.isUserBlocked(event.senderId);
+
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
     var pins = timeline.room.getComponent<PinnedMessagesComponent>();
@@ -142,15 +142,18 @@ class TimelineEventMenu {
     List<Uri>? links;
 
     if (event.status == TimelineEventStatus.synced) {
-      canEditEvent = event is TimelineEventMessage &&
+      canEditEvent =
+          event is TimelineEventMessage &&
           timeline.room.permissions.canUserEditMessages &&
           event.senderId == timeline.room.client.self!.identifier &&
           setEditingEvent != null;
 
-      canDeleteEvent = timeline.canDeleteEvent(event) &&
+      canDeleteEvent =
+          timeline.canDeleteEvent(event) &&
           event.status == TimelineEventStatus.synced;
 
-      canReply = event is TimelineEventMessage ||
+      canReply =
+          event is TimelineEventMessage ||
           event is TimelineEventSticker ||
           event is TimelineEventEmote;
 
@@ -173,7 +176,7 @@ class TimelineEventMenu {
 
       canAddReaction =
           (event is TimelineEventMessage || event is TimelineEventSticker) &&
-              emoticons != null;
+          emoticons != null;
 
       canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
 
@@ -184,7 +187,8 @@ class TimelineEventMenu {
         canEndPoll = true;
       }
 
-      canEditPinState = pins?.canPinMessages == true &&
+      canEditPinState =
+          pins?.canPinMessages == true &&
           (event is TimelineEventMessage ||
               event is TimelineEventSticker ||
               event is TimelineEventEmote);
@@ -197,8 +201,8 @@ class TimelineEventMenu {
       hasEffect = effects?.hasEffect(event) == true;
     }
 
-    var reactions =
-        timeline.room.client.getComponent<RecentEmoticonComponent>();
+    var reactions = timeline.room.client
+        .getComponent<RecentEmoticonComponent>();
     if (reactions != null && canAddReaction) {
       recentReactions = reactions.getRecentReactionEmoticon(timeline.room);
     } else {
@@ -214,35 +218,58 @@ class TimelineEventMenu {
 
       if (recent != null && recent.isNotEmpty) {
         availableEmoji.insert(
-            0,
-            DynamicEmoticonPack(
-                identifier: "dynamic_pack_frequently_used_reactions",
-                displayName: "Frequently Used",
-                icon: Icons.schedule,
-                emoticons: recent,
-                usage: EmoticonUsage.all));
+          0,
+          DynamicEmoticonPack(
+            identifier: "dynamic_pack_frequently_used_reactions",
+            displayName: "Frequently Used",
+            icon: Icons.schedule,
+            emoticons: recent,
+            usage: EmoticonUsage.all,
+          ),
+        );
       }
 
       addReactionAction = TimelineEventMenuEntry(
         name: CommonStrings.promptAddReaction,
         icon: Icons.add_reaction,
         secondaryMenuBuilder: (context, dismissSecondaryMenu) {
-          return EmojiPicker(availableEmoji,
-              searchDelegate: (search) => AutofillUtils.searchEmoticon(search,
-                      client: timeline.client, room: timeline.room, limit: 50)
-                  .whereType<AutofillSearchResultEmoticon>()
-                  .toList(),
-              preferredTooltipDirection: AxisDirection.left,
-              onEmoticonPressed: (emote) async {
-                timeline.room.addReaction(event, emote);
-                await Future.delayed(const Duration(milliseconds: 100));
-                dismissSecondaryMenu();
-              });
+          return EmojiPicker(
+            availableEmoji,
+            searchDelegate: (search) => AutofillUtils.searchEmoticon(
+              search,
+              client: timeline.client,
+              room: timeline.room,
+              limit: 50,
+            ).whereType<AutofillSearchResultEmoticon>().toList(),
+            preferredTooltipDirection: AxisDirection.left,
+            onEmoticonPressed: (emote) async {
+              timeline.room.addReaction(event, emote);
+              await Future.delayed(const Duration(milliseconds: 100));
+              dismissSecondaryMenu();
+            },
+          );
         },
       );
     }
 
     primaryActions = [
+      if (isBlocked)
+        TimelineEventMenuEntry(
+          name: "Show Message",
+          icon: Icons.message,
+          action: (context) {
+            AdaptiveDialog.show(
+              context,
+              builder: (context) {
+                return TimelineEventViewSingle(
+                  room: timeline.room,
+                  event: event,
+                  ignoreBlockStatus: true,
+                );
+              },
+            );
+          },
+        ),
       if (MediaQuery.of(context).mobile) ...[
         if (canFavoriteGif)
           TimelineEventMenuEntry(
@@ -268,10 +295,13 @@ class TimelineEventMenu {
           name: promptEndPoll,
           icon: Icons.poll,
           action: (context) async {
-            if (await AdaptiveDialog.confirmation(context,
-                    title: promptEndPoll,
-                    prompt: "Are you sure you want to end the poll?") ==
-                true) polls?.endPoll(timeline.room, event);
+            if (await AdaptiveDialog.confirmation(
+                  context,
+                  title: promptEndPoll,
+                  prompt: "Are you sure you want to end the poll?",
+                ) ==
+                true)
+              polls?.endPoll(timeline.room, event);
 
             onActionFinished?.call();
           },
@@ -337,16 +367,17 @@ class TimelineEventMenu {
         ),
       if (canSaveAttachment)
         TimelineEventMenuEntry(
-            name: CommonStrings.promptDownload,
-            icon: Icons.download,
-            action: (BuildContext context) {
-              var attachment =
-                  (event as TimelineEventMessage).attachments?.firstOrNull;
-              if (attachment != null) {
-                DownloadUtils.downloadAttachment(attachment);
-              }
-              onActionFinished?.call();
-            }),
+          name: CommonStrings.promptDownload,
+          icon: Icons.download,
+          action: (BuildContext context) {
+            var attachment =
+                (event as TimelineEventMessage).attachments?.firstOrNull;
+            if (attachment != null) {
+              DownloadUtils.downloadAttachment(attachment);
+            }
+            onActionFinished?.call();
+          },
+        ),
       if (canDeleteEvent)
         TimelineEventMenuEntry(
           name: CommonStrings.promptDelete,
@@ -401,50 +432,49 @@ class TimelineEventMenu {
         ),
       if (canCopy)
         TimelineEventMenuEntry(
-            name: CommonStrings.promptCopy,
-            icon: Icons.copy,
-            action: (context) {
-              Clipboard.setData(ClipboardData(
+          name: CommonStrings.promptCopy,
+          icon: Icons.copy,
+          action: (context) {
+            Clipboard.setData(
+              ClipboardData(
                 text: (event as TimelineEventMessage).plainTextBody,
-              ));
-            }),
+              ),
+            );
+          },
+        ),
       if (links?.isNotEmpty == true)
         TimelineEventMenuEntry(
-            name: "Copy Link",
-            icon: Icons.link,
-            action: (context) async {
-              if (links!.length > 1) {
-                var selected = await AdaptiveDialog.pickOne(
-                  context,
-                  items: links,
-                  itemBuilder: (context, item, callback) => SizedBox(
-                    height: 50,
-                    child: tiamat.TextButton(
-                      item.toString(),
-                      icon: Icons.link,
-                      onTap: () {
-                        callback();
+          name: "Copy Link",
+          icon: Icons.link,
+          action: (context) async {
+            if (links!.length > 1) {
+              var selected = await AdaptiveDialog.pickOne(
+                context,
+                items: links,
+                itemBuilder: (context, item, callback) => SizedBox(
+                  height: 50,
+                  child: tiamat.TextButton(
+                    item.toString(),
+                    icon: Icons.link,
+                    onTap: () {
+                      callback();
 
-                        if (MediaQuery.of(context).layout ==
-                            LayoutType.mobile) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    ),
+                      if (MediaQuery.of(context).layout == LayoutType.mobile) {
+                        Navigator.of(context).pop();
+                      }
+                    },
                   ),
-                );
+                ),
+              );
 
-                if (selected != null) {
-                  Clipboard.setData(ClipboardData(
-                    text: selected.toString(),
-                  ));
-                }
-              } else {
-                Clipboard.setData(ClipboardData(
-                  text: links.first.toString(),
-                ));
+              if (selected != null) {
+                Clipboard.setData(ClipboardData(text: selected.toString()));
               }
-            }),
+            } else {
+              Clipboard.setData(ClipboardData(text: links.first.toString()));
+            }
+          },
+        ),
       TimelineEventMenuEntry(
         name: promptShowSource,
         icon: Icons.code,
@@ -459,7 +489,10 @@ class TimelineEventMenu {
                 width: 1000,
                 child: SelectionArea(
                   child: ExpandableCodeBlock(
-                      expanded: true, text: event.source, language: "json"),
+                    expanded: true,
+                    text: event.source,
+                    language: "json",
+                  ),
                 ),
               );
             },
@@ -490,12 +523,14 @@ class TimelineEventMenu {
           name: "Diagnose Notification",
           icon: Icons.notification_important,
           action: (BuildContext context) async {
-            AdaptiveDialog.show(context,
-                builder: (context) => NotificationDebugger(
-                      event: event,
-                      client: timeline.client,
-                      room: timeline.room,
-                    ));
+            AdaptiveDialog.show(
+              context,
+              builder: (context) => NotificationDebugger(
+                event: event,
+                client: timeline.client,
+                room: timeline.room,
+              ),
+            );
           },
         ),
     ];
@@ -508,7 +543,7 @@ class TimelineEventMenuEntry {
   final IconData icon;
 
   final Widget Function(BuildContext context, Function() dismissMenu)?
-      secondaryMenuBuilder;
+  secondaryMenuBuilder;
 
   TimelineEventMenuEntry({
     required this.name,

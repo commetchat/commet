@@ -26,8 +26,12 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixHtmlParser {
-  static Widget parse(String text, MatrixClient client, Room? room,
-      {bool mentionsRoom = true}) {
+  static Widget parse(
+    String text,
+    MatrixClient client,
+    Room? room, {
+    bool mentionsRoom = true,
+  }) {
     return MatrixHtmlState(
       text,
       client,
@@ -39,8 +43,13 @@ class MatrixHtmlParser {
 }
 
 class MatrixHtmlState extends StatefulWidget {
-  const MatrixHtmlState(this.text, this.client, this.room,
-      {this.mentionsRoom = true, super.key});
+  const MatrixHtmlState(
+    this.text,
+    this.client,
+    this.room, {
+    this.mentionsRoom = true,
+    super.key,
+  });
   final String text;
   final MatrixClient client;
   final Room? room;
@@ -110,16 +119,21 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
 
   @override
   Widget build(BuildContext context) {
-    final SpoilerHtmlExtension spoiler =
-        SpoilerHtmlExtension(hideSpoiler, onTap);
+    final SpoilerHtmlExtension spoiler = SpoilerHtmlExtension(
+      hideSpoiler,
+      onTap,
+    );
 
     var document = html_parser.parse(widget.text);
     bool big = shouldDoBigEmoji(document);
 
     var theme = TextTheme.of(context);
     // Making a new one of these for every message we pass might make a lot of garbage
-    var extension =
-        MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
+    var extension = MatrixEmoticonHtmlExtension(
+      widget.client,
+      widget.room,
+      big,
+    );
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
     var linkify = LinkifyHtmlExtension(widget.client, widget.room, openLink);
 
@@ -150,13 +164,12 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         "code": Style(backgroundColor: Colors.black.withAlpha(40)),
         "blockquote": Style(
           border: Border(
-              left: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
-            width: 2,
-          )),
-          padding: HtmlPaddings(
-            left: HtmlPadding(4),
+            left: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2,
+            ),
           ),
+          padding: HtmlPaddings(left: HtmlPadding(4)),
           margin: Margins(
             bottom: Margin(8),
             left: Margin(8),
@@ -180,18 +193,9 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
           padding: HtmlPaddings.all(0),
           color: Theme.of(context).colorScheme.onSurface,
         ),
-        "ul": Style(
-          margin: Margins.all(2),
-          padding: HtmlPaddings.all(2),
-        ),
-        "li": Style(
-          margin: Margins.all(0),
-          padding: HtmlPaddings.all(0),
-        ),
-        "p": Style(
-          margin: Margins.all(0),
-          padding: HtmlPaddings.all(0),
-        )
+        "ul": Style(margin: Margins.all(2), padding: HtmlPaddings.all(2)),
+        "li": Style(margin: Margins.all(0), padding: HtmlPaddings.all(0)),
+        "p": Style(margin: Margins.all(0), padding: HtmlPaddings.all(0)),
       },
       onLinkTap: (url, attributes, element) {
         LinkUtils.open(Uri.parse(url!), context: context);
@@ -209,10 +213,12 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   }
 
   openLink(Uri uri) {
-    LinkUtils.open(uri,
-        clientId: widget.client.identifier,
-        context: context,
-        contextRoomId: widget.room?.identifier);
+    LinkUtils.open(
+      uri,
+      clientId: widget.client.identifier,
+      context: context,
+      contextRoomId: widget.room?.identifier,
+    );
   }
 }
 
@@ -254,15 +260,13 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
 
       for (var char in context.node.text!.characters) {
         if (char.trim() == "") {
-          spans.add(TextSpan(
-            text: char,
-          ));
+          spans.add(TextSpan(text: char));
         } else {
-          spans.add(WidgetSpan(
-              child: EmojiWidget(
-            UnicodeEmoticon(char),
-            height: emojiSize,
-          )));
+          spans.add(
+            WidgetSpan(
+              child: EmojiWidget(UnicodeEmoticon(char), height: emojiSize),
+            ),
+          );
         }
       }
 
@@ -287,34 +291,42 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
 
     if (room?.shouldPreviewMedia == false) {
       return WidgetSpan(
-          alignment: PlaceholderAlignment.middle,
-          child: Tooltip(
-              padding: const EdgeInsets.all(0),
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
+        alignment: PlaceholderAlignment.middle,
+        child: Tooltip(
+          padding: const EdgeInsets.all(0),
+          decoration: const BoxDecoration(color: Colors.transparent),
+          richMessage: WidgetSpan(
+            child: EmojiWidget(
+              MatrixEmoticon(
+                uri,
+                client.matrixClient,
+                shortcode: context.attributes["alt"] ?? "",
+                packUsage: EmoticonUsage.all,
+                usage: EmoticonUsage.emoji,
               ),
-              richMessage: WidgetSpan(
-                  child: EmojiWidget(
-                MatrixEmoticon(uri, client.matrixClient,
-                    shortcode: context.attributes["alt"] ?? "",
-                    packUsage: EmoticonUsage.all,
-                    usage: EmoticonUsage.emoji),
-                height: 48,
-              )),
-              child: tiamat.Text.labelLow(context.attributes["alt"] ?? "")));
+              height: 48,
+            ),
+          ),
+          child: tiamat.Text.labelLow(context.attributes["alt"] ?? ""),
+        ),
+      );
     }
 
     return WidgetSpan(
-        child: Tooltip(
-      message: context.attributes["alt"] ?? "",
-      child: EmojiWidget(
-        MatrixEmoticon(uri, client.matrixClient,
+      child: Tooltip(
+        message: context.attributes["alt"] ?? "",
+        child: EmojiWidget(
+          MatrixEmoticon(
+            uri,
+            client.matrixClient,
             shortcode: context.attributes["alt"] ?? "",
             packUsage: EmoticonUsage.all,
-            usage: EmoticonUsage.emoji),
-        height: size,
+            usage: EmoticonUsage.emoji,
+          ),
+          height: size,
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -353,10 +365,8 @@ class CodeBlockHtmlExtension extends HtmlExtension {
     var langauge = element?.className.replaceAll('language-', '');
     var code = element!.text;
     return WidgetSpan(
-        child: ExpandableCodeBlock(
-      text: code,
-      language: langauge,
-    ));
+      child: ExpandableCodeBlock(text: code, language: langauge),
+    );
   }
 
   static const Set<String> tags = {"pre"};
@@ -368,20 +378,24 @@ class CodeBlockHtmlExtension extends HtmlExtension {
 class LineBreakHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
-    var result =
-        context.parser.buildFromExtension(context, extensionsToIgnore: {this});
+    var result = context.parser.buildFromExtension(
+      context,
+      extensionsToIgnore: {this},
+    );
 
     if (context.node is! dom.Element) {
       return result;
     }
 
-    return TextSpan(children: [
-      if (context.element?.previousElementSibling != null)
-        const TextSpan(text: "\n"),
-      result,
-      if (context.element?.nextElementSibling != null)
-        const TextSpan(text: "\n"),
-    ]);
+    return TextSpan(
+      children: [
+        if (context.element?.previousElementSibling != null)
+          const TextSpan(text: "\n"),
+        result,
+        if (context.element?.nextElementSibling != null)
+          const TextSpan(text: "\n"),
+      ],
+    );
   }
 
   static const Set<String> tags = {"p"};
@@ -393,17 +407,20 @@ class LineBreakHtmlExtension extends HtmlExtension {
 class CodeHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
-    var color = Theme.of(context.buildContext!)
+    var color =
+        Theme.of(context.buildContext!)
             .extension<ExtraColors>()
             ?.codeHighlight ??
         Theme.of(context.buildContext!).primaryColor;
 
     return TextSpan(
-        text: context.node.text,
-        style: TextStyle(
-            fontFamily: "Code",
-            color: color,
-            fontFeatures: const [FontFeature.disable("calt")]));
+      text: context.node.text,
+      style: TextStyle(
+        fontFamily: "Code",
+        color: color,
+        fontFeatures: const [FontFeature.disable("calt")],
+      ),
+    );
   }
 
   static const Set<String> tags = {"code"};
@@ -425,7 +442,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
       late Uri href;
       try {
         href = Uri.parse(uri);
-      } catch (e, _) {
+      } catch (e) {
         href = Uri();
       }
 
@@ -463,19 +480,24 @@ class LinkifyHtmlExtension extends HtmlExtension {
               placeholderColor:
                   mentionedRoom?.defaultColor ?? MatrixPeer.hashColor(mxid),
               avatar: mentionedRoom?.avatar,
-              onTap: () => LinkUtils.open(href,
-                  clientId: client.identifier, contextRoomId: room?.identifier),
+              onTap: () => LinkUtils.open(
+                href,
+                clientId: client.identifier,
+                contextRoomId: room?.identifier,
+              ),
             );
           }
 
           if (overrideWidget != null) {
             return WidgetSpan(
-                child: Transform.translate(
-                    offset: Offset(0, 2),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                      child: overrideWidget,
-                    )));
+              child: Transform.translate(
+                offset: Offset(0, 2),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                  child: overrideWidget,
+                ),
+              ),
+            );
           }
         }
       }
@@ -484,19 +506,25 @@ class LinkifyHtmlExtension extends HtmlExtension {
 
       try {
         destination = Uri.parse(context.node.attributes["href"]!);
-      } catch (e, _) {
+      } catch (e) {
         destination = Uri();
       }
 
-      return LinkSpan.create(context.node.text!,
-          clientId: client.identifier,
-          context: context.buildContext!,
-          destination: destination);
+      return LinkSpan.create(
+        context.node.text!,
+        clientId: client.identifier,
+        context: context.buildContext!,
+        destination: destination,
+      );
     }
 
     return TextSpan(
-        children: TextUtils.linkifyString(context.node.text!,
-            clientId: client.identifier, context: context.buildContext!));
+      children: TextUtils.linkifyString(
+        context.node.text!,
+        clientId: client.identifier,
+        context: context.buildContext!,
+      ),
+    );
   }
 
   @override
@@ -527,11 +555,13 @@ class SpoilerHtmlExtension extends HtmlExtension {
     var recogniser = TapGestureRecognizer();
     recogniser.onTap = onTap;
     return TextSpan(
-        text: context.node.text,
-        recognizer: recogniser,
-        style: TextStyle(
-            color: color,
-            backgroundColor: hide == true ? color : color.withAlpha(20)));
+      text: context.node.text,
+      recognizer: recogniser,
+      style: TextStyle(
+        color: color,
+        backgroundColor: hide == true ? color : color.withAlpha(20),
+      ),
+    );
   }
 
   @override
@@ -554,7 +584,10 @@ class ColorHtmlExtension extends HtmlExtension {
     if (str != null) {
       color = ColorUtils.fromHexCode(str);
     }
-    return TextSpan(text: context.node.text, style: TextStyle(color: color));
+    return TextSpan(
+      text: context.node.text,
+      style: TextStyle(color: color),
+    );
   }
 
   @override
@@ -574,23 +607,27 @@ class RoomMentionsHtmlExtension extends HtmlExtension {
   InlineSpan build(ExtensionContext context) {
     var data = (context.node as dom.Text).data;
     return TextSpan(
-        children: TextUtils.formatMatches(
-      MatrixRoom.roomMentionRegex.allMatches(data),
-      data,
-      builder: (matchedText, theme) {
-        return WidgetSpan(
+      children: TextUtils.formatMatches(
+        MatrixRoom.roomMentionRegex.allMatches(data),
+        data,
+        builder: (matchedText, theme) {
+          return WidgetSpan(
             child: Transform.translate(
-                offset: Offset(0, 2),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                  child: MentionWidget(
-                      displayName: matchedText,
-                      showAvatar: false,
-                      placeholderColor:
-                          ColorScheme.of(context.buildContext!).primary),
-                )));
-      },
-    ));
+              offset: Offset(0, 2),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                child: MentionWidget(
+                  displayName: matchedText,
+                  showAvatar: false,
+                  placeholderColor: ColorScheme.of(context.buildContext!)
+                      .primary,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -611,8 +648,11 @@ class MatrixImageExtension extends HtmlExtension {
 
   final MatrixClient client;
   final Room? room;
-  const MatrixImageExtension(this.client, this.room,
-      {this.defaultDimension = 64});
+  const MatrixImageExtension(
+    this.client,
+    this.room, {
+    this.defaultDimension = 64,
+  });
 
   @override
   Set<String> get supportedTags => {'img'};
@@ -626,10 +666,12 @@ class MatrixImageExtension extends HtmlExtension {
     }
 
     if (mxcUrl.scheme != 'mxc' || room?.shouldPreviewMedia == false) {
-      return LinkSpan.create(mxcUrl.toString(),
-          clientId: client.identifier,
-          destination: mxcUrl,
-          context: context.buildContext!);
+      return LinkSpan.create(
+        mxcUrl.toString(),
+        clientId: client.identifier,
+        destination: mxcUrl,
+        context: context.buildContext!,
+      );
     }
 
     final width = double.tryParse(context.attributes['width'] ?? '');
@@ -637,14 +679,10 @@ class MatrixImageExtension extends HtmlExtension {
 
     return WidgetSpan(
       child: SizedBox(
-          width: width ?? height ?? defaultDimension,
-          height: height ?? width ?? defaultDimension,
-          child: Image(
-            image: MatrixMxcImage(
-              mxcUrl,
-              client.matrixClient,
-            ),
-          )),
+        width: width ?? height ?? defaultDimension,
+        height: height ?? width ?? defaultDimension,
+        child: Image(image: MatrixMxcImage(mxcUrl, client.matrixClient)),
+      ),
     );
   }
 }

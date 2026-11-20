@@ -6,11 +6,16 @@ import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventViewSingle extends StatelessWidget {
-  const TimelineEventViewSingle(
-      {required this.room, required this.event, super.key});
+  const TimelineEventViewSingle({
+    required this.room,
+    required this.event,
+    this.ignoreBlockStatus = false,
+    super.key,
+  });
 
   final TimelineEvent event;
   final Room room;
+  final bool ignoreBlockStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,7 @@ class TimelineEventViewSingle extends StatelessWidget {
         initialIndex: 0,
         detailed: true,
         initialEvent: event,
+        ignoreBlockStatus: ignoreBlockStatus,
         previewMedia: room.shouldPreviewMedia,
       );
     if (type == TimelineEventWidgetDisplayType.generic)

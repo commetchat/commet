@@ -12,18 +12,27 @@ extension MatrixExtensions on Client {
   }
 
   Future<FileResponse> getContentThumbnailFromUri(
-      Uri uri, int width, int height) {
+    Uri uri,
+    int width,
+    int height,
+  ) {
     return getContentThumbnail(
-        uri.authority, uri.pathSegments.first, width, height);
+      uri.authority,
+      uri.pathSegments.first,
+      width,
+      height,
+    );
   }
 
-  Future<RoomPreview?> getRoomPreview(String roomId,
-      {List<String>? via}) async {
-    var result = await request(RequestType.GET,
-        "/client/unstable/im.nheko.summary/rooms/${Uri.encodeComponent(roomId)}/summary",
-        query: {
-          if (via != null) "via": via.join(","),
-        });
+  Future<RoomPreview?> getRoomPreview(
+    String roomId, {
+    List<String>? via,
+  }) async {
+    var result = await request(
+      RequestType.GET,
+      "/client/unstable/im.nheko.summary/rooms/${Uri.encodeComponent(roomId)}/summary",
+      query: {if (via != null) "via": via.join(",")},
+    );
 
     var name = result["name"] as String?;
     var id = result["room_id"] as String?;
@@ -37,7 +46,7 @@ extension MatrixExtensions on Client {
       "chat.commet.calendar" => commet.RoomType.calendar,
       "chat.commet.photo_album" => commet.RoomType.photoAlbum,
       "org.matrix.msc3417.call" => commet.RoomType.voipRoom,
-      _ => commet.RoomType.defaultRoom
+      _ => commet.RoomType.defaultRoom,
     };
 
     var visibility = switch (joinRule) {
@@ -56,13 +65,15 @@ extension MatrixExtensions on Client {
         image = MatrixMxcImage(mxc, autoLoadFullRes: false, this);
       }
 
-      return GenericRoomPreview(id,
-          displayName: name,
-          type: type,
-          avatar: image,
-          numMembers: numMembers,
-          visibility: visibility,
-          topic: topic);
+      return GenericRoomPreview(
+        id,
+        displayName: name,
+        type: type,
+        avatar: image,
+        numMembers: numMembers,
+        visibility: visibility,
+        topic: topic,
+      );
     }
 
     return null;
@@ -70,10 +81,13 @@ extension MatrixExtensions on Client {
 
   Future<void> addEmoticonRoomPack(String roomId, String packKey) async {
     var state = BasicEvent(
-        type: MatrixEmoticonComponent.globalEmoteRoomsStateKey, content: {});
+      type: MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+      content: {},
+    );
 
-    if (accountData
-        .containsKey(MatrixEmoticonComponent.globalEmoteRoomsStateKey)) {
+    if (accountData.containsKey(
+      MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+    )) {
       state = accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey]!;
     }
 
@@ -89,16 +103,22 @@ extension MatrixExtensions on Client {
     var roomPacks = rooms[roomId] as Map;
     roomPacks[packKey] = {};
 
-    await setAccountData(userID!,
-        MatrixEmoticonComponent.globalEmoteRoomsStateKey, state.content);
+    await setAccountData(
+      userID!,
+      MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+      state.content,
+    );
   }
 
   Future<void> removeEmoticonRoomPack(String roomId, String packKey) async {
     var state = BasicEvent(
-        type: MatrixEmoticonComponent.globalEmoteRoomsStateKey, content: {});
+      type: MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+      content: {},
+    );
 
-    if (accountData
-        .containsKey(MatrixEmoticonComponent.globalEmoteRoomsStateKey)) {
+    if (accountData.containsKey(
+      MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+    )) {
       state = accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey]!;
     }
 
@@ -114,13 +134,17 @@ extension MatrixExtensions on Client {
     var roomPacks = rooms[roomId] as Map;
     roomPacks.remove(packKey);
 
-    await setAccountData(userID!,
-        MatrixEmoticonComponent.globalEmoteRoomsStateKey, state.content);
+    await setAccountData(
+      userID!,
+      MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+      state.content,
+    );
   }
 
   bool isEmoticonPackGloballyAvailable(String roomId, String packKey) {
-    if (!accountData
-        .containsKey(MatrixEmoticonComponent.globalEmoteRoomsStateKey)) {
+    if (!accountData.containsKey(
+      MatrixEmoticonComponent.globalEmoteRoomsStateKey,
+    )) {
       return false;
     }
 

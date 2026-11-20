@@ -35,8 +35,10 @@ class PickerUtils {
     return null;
   }
 
-  static Future<Uint8List?> pickImageAndCrop(BuildContext context,
-      {double? aspectRatio}) async {
+  static Future<Uint8List?> pickImageAndCrop(
+    BuildContext context, {
+    double? aspectRatio,
+  }) async {
     var image = await pickImage();
     if (image == null) return null;
 
@@ -52,21 +54,28 @@ class PickerUtils {
     var uiImage = await ImageUtils.imageProviderToImage(imageProvider);
     var ratio = uiImage.width.toDouble() / uiImage.height.toDouble();
 
-    var result = await tiamat.PopupDialog.show<Uint8List>(context,
-        content: ImageCropView(
-          bytes,
-          controller,
-          ratio,
-          onImageSubmitted: (data) => Navigator.of(context).pop(data),
-        ));
+    var result = await tiamat.PopupDialog.show<Uint8List>(
+      context,
+      content: ImageCropView(
+        bytes,
+        controller,
+        ratio,
+        onImageSubmitted: (data) => Navigator.of(context).pop(data),
+      ),
+    );
 
     return result;
   }
 }
 
 class ImageCropView extends StatelessWidget {
-  const ImageCropView(this.imageBytes, this.controller, this.imageAspectRatio,
-      {this.onImageSubmitted, super.key});
+  const ImageCropView(
+    this.imageBytes,
+    this.controller,
+    this.imageAspectRatio, {
+    this.onImageSubmitted,
+    super.key,
+  });
 
   final CropController controller;
   final Uint8List imageBytes;
@@ -77,9 +86,11 @@ class ImageCropView extends StatelessWidget {
 
   final double width = 1000;
 
-  String get useWithoutCroppingPrompt => Intl.message("Use Without Cropping",
-      name: "useWithoutCroppingPrompt",
-      desc: "Button text for using an image without cropping it");
+  String get useWithoutCroppingPrompt => Intl.message(
+    "Use Without Cropping",
+    name: "useWithoutCroppingPrompt",
+    desc: "Button text for using an image without cropping it",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -118,18 +129,17 @@ class ImageCropView extends StatelessWidget {
           child: SizedBox(
             width: 1000,
             child: AspectRatio(
-                aspectRatio: imageAspectRatio,
-                child: Container(
-                  child: CropImage(
-                    image: Image.memory(imageBytes),
-                    controller: controller,
-                  ),
-                )),
+              aspectRatio: imageAspectRatio,
+              child: Container(
+                child: CropImage(
+                  image: Image.memory(imageBytes),
+                  controller: controller,
+                ),
+              ),
+            ),
           ),
         ),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20),
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -139,36 +149,39 @@ class ImageCropView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: tiamat.IconButton(
-                        icon: Icons.rotate_90_degrees_ccw,
-                        onPressed: () => controller.rotateLeft(),
-                        size: 30,
-                      )),
+                    height: 50,
+                    width: 50,
+                    child: tiamat.IconButton(
+                      icon: Icons.rotate_90_degrees_ccw,
+                      onPressed: () => controller.rotateLeft(),
+                      size: 30,
+                    ),
+                  ),
                   SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: tiamat.IconButton(
-                        icon: Icons.rotate_90_degrees_cw,
-                        size: 30,
-                        onPressed: () => controller.rotateRight(),
-                      ))
+                    height: 50,
+                    width: 50,
+                    child: tiamat.IconButton(
+                      icon: Icons.rotate_90_degrees_cw,
+                      size: 30,
+                      onPressed: () => controller.rotateRight(),
+                    ),
+                  ),
                 ],
               ),
             ),
             if (MediaQuery.of(context).desktop)
               Row(
-                  spacing: 8,
-                  mainAxisSize: MainAxisSize.max,
-                  children: buttons),
+                spacing: 8,
+                mainAxisSize: MainAxisSize.max,
+                children: buttons,
+              ),
             if (MediaQuery.of(context).mobile)
               Column(
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: buttons,
-              )
+              ),
           ],
         ),
       ],

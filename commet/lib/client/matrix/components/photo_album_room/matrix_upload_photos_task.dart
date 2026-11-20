@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -21,8 +22,12 @@ class MatrixUploadPhotosTask implements BackgroundTaskWithIntegerProgress {
   StreamController<int> progressStream = StreamController.broadcast();
   StreamController controller = StreamController.broadcast();
 
-  MatrixUploadPhotosTask(this.files, this.room,
-      {this.extractMetadata = true, this.sendOriginal = false}) {
+  MatrixUploadPhotosTask(
+    this.files,
+    this.room, {
+    this.extractMetadata = true,
+    this.sendOriginal = false,
+  }) {
     total = files.length;
   }
 
@@ -109,10 +114,13 @@ class MatrixUploadPhotosTask implements BackgroundTaskWithIntegerProgress {
       }
 
       var processed = await room.processAttachment(
-          PendingFileAttachment(name: name, data: imageData));
+        PendingFileAttachment(name: name, data: imageData),
+      );
 
       await room.sendMessage(
-          processedAttachments: [processed!], fileExtraContent: extraInfo);
+        processedAttachments: [processed!],
+        fileExtraContent: extraInfo,
+      );
       current += 1;
       progressStream.add(current);
     }

@@ -4,13 +4,15 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventViewSticker extends StatefulWidget {
-  const TimelineEventViewSticker(this.image,
-      {this.previewMedia = false,
-      this.stickerName,
-      this.isGif = false,
-      this.isFavoriteGif = false,
-      this.markAsFavorite,
-      super.key});
+  const TimelineEventViewSticker(
+    this.image, {
+    this.previewMedia = false,
+    this.stickerName,
+    this.isGif = false,
+    this.isFavoriteGif = false,
+    this.markAsFavorite,
+    super.key,
+  });
   final bool previewMedia;
   final String? stickerName;
   final ImageProvider image;
@@ -29,11 +31,10 @@ class _TimelineEventViewStickerState extends State<TimelineEventViewSticker> {
   bool isFavorite = false;
 
   static String get promptShowSticker => Intl.message(
-        "Show sticker",
-        name: "promptShowSticker",
-        desc:
-            "Prompt to display a sticker, shown when media previews are disabled",
-      );
+    "Show sticker",
+    name: "promptShowSticker",
+    desc: "Prompt to display a sticker, shown when media previews are disabled",
+  );
 
   @override
   void initState() {
@@ -75,8 +76,8 @@ class _TimelineEventViewStickerState extends State<TimelineEventViewSticker> {
                     GestureDetector(
                       onTap: widget.previewMedia == false
                           ? () => setState(() {
-                                showSticker = !showSticker;
-                              })
+                              showSticker = !showSticker;
+                            })
                           : null,
                       child: Image(
                         image: widget.image,
@@ -88,24 +89,24 @@ class _TimelineEventViewStickerState extends State<TimelineEventViewSticker> {
                       Padding(
                         padding: const EdgeInsets.all(2.0),
                         child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: tiamat.CircleButton(
-                              icon: isFavorite
-                                  ? Icons.star_rounded
-                                  : Icons.star_outline_rounded,
-                              radius: 20,
-                              color: ColorScheme.of(context)
-                                  .surfaceContainer
-                                  .withAlpha(80),
-                              iconColor: isFavorite
-                                  ? ColorScheme.of(context).primary
-                                  : ColorScheme.of(context).onSurface,
-                              onPressed: () {
-                                widget.markAsFavorite?.call(!isFavorite);
-                              },
-                            )),
-                      )
+                          width: 30,
+                          height: 30,
+                          child: tiamat.CircleButton(
+                            icon: isFavorite
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            radius: 20,
+                            color: ColorScheme.of(context).surfaceContainer
+                                .withAlpha(80),
+                            iconColor: isFavorite
+                                ? ColorScheme.of(context).primary
+                                : ColorScheme.of(context).onSurface,
+                            onPressed: () {
+                              widget.markAsFavorite?.call(!isFavorite);
+                            },
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               )
@@ -118,17 +119,18 @@ class _TimelineEventViewStickerState extends State<TimelineEventViewSticker> {
                       showSticker = !showSticker;
                     }),
                     child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          tiamat.Text.label(promptShowSticker),
-                          if (widget.stickerName != null)
-                            tiamat.Text.labelLow(widget.stickerName!)
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            tiamat.Text.label(promptShowSticker),
+                            if (widget.stickerName != null)
+                              tiamat.Text.labelLow(widget.stickerName!),
+                          ],
+                        ),
                       ),
-                    )),
+                    ),
                   ),
                 ),
               ),

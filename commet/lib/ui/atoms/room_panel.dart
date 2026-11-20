@@ -12,8 +12,12 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class RoomPanel extends StatefulWidget {
-  const RoomPanel(this.room,
-      {this.onTap, super.key, this.shouldShowAvatarForRoom});
+  const RoomPanel(
+    this.room, {
+    this.onTap,
+    super.key,
+    this.shouldShowAvatarForRoom,
+  });
 
   final Room room;
   final Function()? onTap;
@@ -41,18 +45,20 @@ class _RoomPanelState extends State<RoomPanel> {
     var typing = widget.room.getComponent<TypingIndicatorComponent>();
 
     if (typing != null) {
-      subs.add(typing.onTypingUsersUpdated.listen((_) {
-        setState(() {
-          typingUsers = typing.typingUsers;
-        });
-      }));
+      subs.add(
+        typing.onTypingUsersUpdated.listen((_) {
+          setState(() {
+            typingUsers = typing.typingUsers;
+          });
+        }),
+      );
 
       typingUsers = typing.typingUsers;
     }
 
     if (directMessagePartner != null) {
-      final presenceComponent =
-          widget.room.client.getComponent<UserPresenceComponent>();
+      final presenceComponent = widget.room.client
+          .getComponent<UserPresenceComponent>();
 
       if (presenceComponent == null) {
         return;
@@ -60,13 +66,17 @@ class _RoomPanelState extends State<RoomPanel> {
 
       presenceComponent
           .getUserPresence(directMessagePartner!)
-          .then((s) => setState(() {
-                presence = s;
-              }));
+          .then(
+            (s) => setState(() {
+              presence = s;
+            }),
+          );
 
-      subs.add(presenceComponent.onPresenceChanged
-          .where((tuple) => tuple.$1 == directMessagePartner)
-          .listen(userPresenceChanged));
+      subs.add(
+        presenceComponent.onPresenceChanged
+            .where((tuple) => tuple.$1 == directMessagePartner)
+            .listen(userPresenceChanged),
+      );
     }
 
     super.initState();
@@ -103,10 +113,13 @@ class _RoomPanelState extends State<RoomPanel> {
       child: RoomPanelView(
         displayName: widget.room.displayName,
         avatar: widget.room.avatar,
-        onTap: widget.onTap ??
+        onTap:
+            widget.onTap ??
             () {
-              EventBus.doOpenRoom(widget.room.identifier,
-                  clientId: widget.room.client.identifier);
+              EventBus.doOpenRoom(
+                widget.room.identifier,
+                clientId: widget.room.client.identifier,
+              );
             },
         color: widget.room.defaultColor,
         showUserAvatar: widget.shouldShowAvatarForRoom == null

@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class AdaptiveContextMenu extends StatelessWidget {
-  const AdaptiveContextMenu(
-      {required this.items,
-      this.modal = false,
-      required this.child,
-      super.key});
+  const AdaptiveContextMenu({
+    required this.items,
+    this.modal = false,
+    required this.child,
+    super.key,
+  });
   final List<tiamat.ContextMenuItem> items;
   final Widget child;
   final bool modal;
@@ -20,54 +21,51 @@ class AdaptiveContextMenu extends StatelessWidget {
     }
 
     if (MediaQuery.of(context).desktop) {
-      return tiamat.ContextMenu(
-        child: child,
-        items: items,
-        modal: modal,
-      );
+      return tiamat.ContextMenu(child: child, items: items, modal: modal);
     } else {
       var callback = () => showModalBottomSheet(
-          isDismissible: true,
-          showDragHandle: true,
-          context: context,
-          builder: (modalContext) => SingleChildScrollView(
-                child: ScaledSafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      spacing: 4,
-                      mainAxisSize: MainAxisSize.min,
-                      children: items.map((item) {
-                        if (item.customBuilder != null) {
-                          return item.customBuilder!.call(
-                            context,
-                            () {
-                              Navigator.of(modalContext).pop();
-                              item.onPressed?.call();
-                            },
-                            closeMenu: () {
-                              Navigator.of(modalContext).pop();
-                            },
-                          );
-                        }
+        isDismissible: true,
+        showDragHandle: true,
+        context: context,
+        builder: (modalContext) => SingleChildScrollView(
+          child: ScaledSafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                spacing: 4,
+                mainAxisSize: MainAxisSize.min,
+                children: items.map((item) {
+                  if (item.customBuilder != null) {
+                    return item.customBuilder!.call(
+                      context,
+                      () {
+                        Navigator.of(modalContext).pop();
+                        item.onPressed?.call();
+                      },
+                      closeMenu: () {
+                        Navigator.of(modalContext).pop();
+                      },
+                    );
+                  }
 
-                        return SizedBox(
-                          height: 50,
-                          child: tiamat.TextButton(
-                            item.text,
-                            textColor: Theme.of(context).colorScheme.onSurface,
-                            icon: item.icon,
-                            onTap: () {
-                              Navigator.of(modalContext).pop();
-                              item.onPressed?.call();
-                            },
-                          ),
-                        );
-                      }).toList(),
+                  return SizedBox(
+                    height: 50,
+                    child: tiamat.TextButton(
+                      item.text,
+                      textColor: Theme.of(context).colorScheme.onSurface,
+                      icon: item.icon,
+                      onTap: () {
+                        Navigator.of(modalContext).pop();
+                        item.onPressed?.call();
+                      },
                     ),
-                  ),
-                ),
-              ));
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+      );
 
       return InkWell(
         child: child,

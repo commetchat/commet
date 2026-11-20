@@ -144,8 +144,8 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
               "sender": client.userID!,
               "state_key": state_key,
               "event_id": eventId,
-            }
-          ]
+            },
+          ],
         },
       };
 
@@ -205,8 +205,10 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
         .toList();
 
     var readableEvents = events
-        .where((i) =>
-            i.eventId.startsWith("\$") && canWidgetReceiveEventType(i.type))
+        .where(
+          (i) =>
+              i.eventId.startsWith("\$") && canWidgetReceiveEventType(i.type),
+        )
         .toList();
 
     if (readableStateEvents.isNotEmpty) {
@@ -262,8 +264,9 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
       },
     };
 
-    if (grantedCapabilities
-        .contains(MatrixCapability.receiveEvent(event.type))) {
+    if (grantedCapabilities.contains(
+      MatrixCapability.receiveEvent(event.type),
+    )) {
       Function(Map<String, dynamic>)? callback =
           actionListeners[ToWidgetAction.sendEvent];
 
@@ -287,7 +290,8 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
   Stream<void> get onReady => _onReady.stream;
 
   Future<Map<String, dynamic>> handleReadRelations(
-      Map<String, dynamic> data) async {
+    Map<String, dynamic> data,
+  ) async {
     print("Handling read relations");
 
     var eventId = data["event_id"];
@@ -301,25 +305,35 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
     if (room.encrypted) {
       var related = await client.getRelatingEventsWithRelType(
-          room.id, eventId, relType,
-          from: from, limit: limit);
+        room.id,
+        eventId,
+        relType,
+        from: from,
+        limit: limit,
+      );
       nextBatch = related.nextBatch;
 
-      var decrypted = await Future.wait<matrix.Event?>(
-          [for (var event in related.chunk) tryDecryptEvent(event)]);
+      var decrypted = await Future.wait<matrix.Event?>([
+        for (var event in related.chunk) tryDecryptEvent(event),
+      ]);
 
       if (eventType != null) decrypted.removeWhere((i) => i?.type != eventType);
 
       return {
         "chunk": decrypted.nonNulls.map((i) => i.toJson()).toList(),
-        if (nextBatch != null) "next_batch": nextBatch
+        if (nextBatch != null) "next_batch": nextBatch,
       };
     }
 
     if (relType != null && eventType != null) {
       var relatedEvents = await client.getRelatingEventsWithRelTypeAndEventType(
-          room.id, eventId, relType, eventType,
-          from: from, limit: limit);
+        room.id,
+        eventId,
+        relType,
+        eventType,
+        from: from,
+        limit: limit,
+      );
 
       chunk = relatedEvents.chunk;
       nextBatch = relatedEvents.nextBatch;
@@ -329,15 +343,16 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
     return {
       "chunk": chunk.map((i) => i.toJson()).toList(),
-      if (nextBatch != null) "next_batch": nextBatch
+      if (nextBatch != null) "next_batch": nextBatch,
     };
   }
 
   Future<matrix.Event?> tryDecryptEvent(matrix.MatrixEvent event) async {
     try {
-      return client.encryption!
-          .decryptRoomEvent(matrix.Event.fromMatrixEvent(event, room));
-    } catch (e, _) {
+      return await client.encryption!.decryptRoomEvent(
+        matrix.Event.fromMatrixEvent(event, room),
+      );
+    } catch (e) {
       return null;
     }
   }

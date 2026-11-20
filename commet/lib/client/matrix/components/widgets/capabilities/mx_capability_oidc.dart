@@ -15,7 +15,9 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
   static const String name = "m.oidc";
 
   static MatrixWidgetCapabilityConstructorEntry entry = MapEntry(
-      name, (runner, type, key) => MatrixCapabilityOIDC(runner: runner));
+    name,
+    (runner, type, key) => MatrixCapabilityOIDC(runner: runner),
+  );
 
   static String getNameForType(String eventType, String? key) =>
       key == null ? "$name:$eventType" : "$name:$eventType#$key";
@@ -49,10 +51,14 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
       "chat.commet.internal.get_openid_auto_accept";
   Future<void> promptUserConfirmation(String requestId) async {
     var capabilities = await preferences.getAcceptedWidgetCapabilities(
-        runner.client.identifier, runner.info.namespace);
+      runner.client.identifier,
+      runner.info.namespace,
+    );
 
     var rejected = await preferences.getRejectedWidgetCapabilities(
-        runner.client.identifier, runner.info.namespace);
+      runner.client.identifier,
+      runner.info.namespace,
+    );
 
     bool? result;
 
@@ -60,37 +66,45 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
       result = true;
 
       Log.i(
-          "Widget OIDC previous permission prompt was accepted, accepting by default");
+        "Widget OIDC previous permission prompt was accepted, accepting by default",
+      );
     }
 
     if (rejected.contains(autoAcceptConfirmationKey)) {
       result = false;
       Log.i(
-          "Widget OIDC previous permission prompt was rejected, rejecting by default");
+        "Widget OIDC previous permission prompt was rejected, rejecting by default",
+      );
     }
 
     if (result == null) {
       if (currentConfirmationRequest == null) {
         currentConfirmationRequest = currentConfirmationRequest =
-            AdaptiveDialog.confirmationWithOptions(navigator.currentContext!,
-                showRememberChoice: true,
-                defaultRememberSetting: true,
-                title: "Allow ${runner.info.name} to verify your user id");
+            AdaptiveDialog.confirmationWithOptions(
+              navigator.currentContext!,
+              showRememberChoice: true,
+              defaultRememberSetting: true,
+              title: "Allow ${runner.info.name} to verify your user id",
+            );
       }
 
       var promptResult = await currentConfirmationRequest!;
 
       if (promptResult?.remember == true) {
         if (promptResult?.value == true) {
-          preferences.allowWidgetCapabilityPermissions(runner.client.identifier,
-              runner.info.namespace, [autoAcceptConfirmationKey]);
+          preferences.allowWidgetCapabilityPermissions(
+            runner.client.identifier,
+            runner.info.namespace,
+            [autoAcceptConfirmationKey],
+          );
         }
 
         if (promptResult?.value == false) {
           preferences.rejectWidgetCapabilityPermissions(
-              runner.client.identifier,
-              runner.info.namespace,
-              [autoAcceptConfirmationKey]);
+            runner.client.identifier,
+            runner.info.namespace,
+            [autoAcceptConfirmationKey],
+          );
         }
       }
 
@@ -103,25 +117,34 @@ class MatrixCapabilityOIDC implements MatrixWidgetCapability {
     if (result == true) {
       var room = runner.room!;
 
-      final token = await room.matrixRoom.client
-          .requestOpenIdToken(room.matrixRoom.client.userID!, {});
+      final token = await room.matrixRoom.client.requestOpenIdToken(
+        room.matrixRoom.client.userID!,
+        {},
+      );
 
-      runner.messageTransport.send(runner.eventHandler
-          .generateToWidgetEvent(action: "openid_credentials", data: {
-        "state": "allowed",
-        "original_request_id": requestId,
-        "access_token": token.accessToken,
-        "token_type": token.tokenType,
-        "matrix_server_name": token.matrixServerName,
-        "expires_in": token.expiresIn,
-      }));
+      runner.messageTransport.send(
+        runner.eventHandler.generateToWidgetEvent(
+          action: "openid_credentials",
+          data: {
+            "state": "allowed",
+            "original_request_id": requestId,
+            "access_token": token.accessToken,
+            "token_type": token.tokenType,
+            "matrix_server_name": token.matrixServerName,
+            "expires_in": token.expiresIn,
+          },
+        ),
+      );
 
       return;
     }
 
-    runner.messageTransport.send(runner.eventHandler.generateToWidgetEvent(
+    runner.messageTransport.send(
+      runner.eventHandler.generateToWidgetEvent(
         action: "openid_credentials",
-        data: {"state": "blocked", "original_request_id": requestId}));
+        data: {"state": "blocked", "original_request_id": requestId},
+      ),
+    );
   }
 
   @override

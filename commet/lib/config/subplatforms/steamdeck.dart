@@ -8,7 +8,8 @@ class SteamdeckSubplatform implements Subplatform {
   @override
   Future<void> init() async {
     Log.i(
-        "Initializing steamdeck subplatform: ${_isSteamDeck} is gamemode: ${_isGameMode}");
+      "Initializing steamdeck subplatform: ${_isSteamDeck} is gamemode: ${_isGameMode}",
+    );
 
     if (!_isSteamFrame) {
       if (_isGameMode) {
@@ -61,7 +62,8 @@ class SteamdeckSubplatform implements Subplatform {
         _isSteamDeck && steamProceses.any((i) => i.args.contains("-gamepadui"));
 
     Log.i(
-        "Is running on steamdeck: ${_isSteamDeck} is gamemode: ${_isGameMode}");
+      "Is running on steamdeck: ${_isSteamDeck} is gamemode: ${_isGameMode}",
+    );
 
     return _isSteamDeck || _isSteamFrame;
   }

@@ -7,6 +7,7 @@ import 'package:commet/main.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../extensions/common_flows.dart';
+
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../generated/l10n.dart';
@@ -27,13 +28,16 @@ void main() {
 
     var client = app.clientManager.clients.first;
 
-    expect(client.spaces.any((element) => element.displayName == spaceName),
-        isTrue);
     expect(
-        client.spaces
-            .firstWhere((element) => element.displayName == spaceName)
-            .visibility,
-        equals(RoomVisibility.invite));
+      client.spaces.any((element) => element.displayName == spaceName),
+      isTrue,
+    );
+    expect(
+      client.spaces
+          .firstWhere((element) => element.displayName == spaceName)
+          .visibility,
+      equals(RoomVisibility.invite),
+    );
 
     await app.clientManager.close();
     await tester.clean();
@@ -52,13 +56,16 @@ void main() {
 
     var client = app.clientManager.clients.first;
 
-    expect(client.spaces.any((element) => element.displayName == spaceName),
-        isTrue);
     expect(
-        client.spaces
-            .firstWhere((element) => element.displayName == spaceName)
-            .visibility,
-        equals(RoomVisibility.public));
+      client.spaces.any((element) => element.displayName == spaceName),
+      isTrue,
+    );
+    expect(
+      client.spaces
+          .firstWhere((element) => element.displayName == spaceName)
+          .visibility,
+      equals(RoomVisibility.public),
+    );
 
     await app.clientManager.close();
     await tester.clean();
@@ -66,20 +73,20 @@ void main() {
 }
 
 Future<void> _confirmCreateSpace(WidgetTester tester) async {
-  await tester.tap(find
-      .widgetWithText(tiamat.Button, T.current.promptConfirmSpaceCreation)
-      .first);
+  await tester.tap(
+    find
+        .widgetWithText(tiamat.Button, T.current.promptConfirmSpaceCreation)
+        .first,
+  );
 
   await tester.pumpAndSettle();
 }
 
 Future<void> _setSpaceName(WidgetTester tester, String spaceName) async {
   await tester.enterText(
-      find.widgetWithText(
-        tiamat.TextInput,
-        T.current.promptSpaceName,
-      ),
-      spaceName);
+    find.widgetWithText(tiamat.TextInput, T.current.promptSpaceName),
+    spaceName,
+  );
 }
 
 Future<void> _setPrivate(WidgetTester tester) async {
@@ -87,9 +94,14 @@ Future<void> _setPrivate(WidgetTester tester) async {
 
   await tester.pumpAndSettle();
 
-  await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.spaceVisibilityPrivateExplanation)
-      .last);
+  await tester.tap(
+    find
+        .widgetWithText(
+          tiamat.Text,
+          T.current.spaceVisibilityPrivateExplanation,
+        )
+        .last,
+  );
 
   await tester.pumpAndSettle();
 }
@@ -99,9 +111,11 @@ Future<void> _setPublic(WidgetTester tester) async {
 
   await tester.pumpAndSettle();
 
-  await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.spaceVisibilityPublicExplanation)
-      .last);
+  await tester.tap(
+    find
+        .widgetWithText(tiamat.Text, T.current.spaceVisibilityPublicExplanation)
+        .last,
+  );
 
   await tester.pumpAndSettle();
 }
@@ -114,16 +128,18 @@ Future<void> _openMenu(WidgetTester tester, App app) async {
   await tester.pumpAndSettle();
 
   await tester.dragUntilVisible(
-      find.widgetWithIcon(tiamat.ImageButton, Icons.add),
-      find.byType(SpaceSelector),
-      const Offset(0, 50));
+    find.widgetWithIcon(tiamat.ImageButton, Icons.add),
+    find.byType(SpaceSelector),
+    const Offset(0, 50),
+  );
 
   await tester.tap(find.widgetWithIcon(tiamat.ImageButton, Icons.add));
 
   await tester.pumpAndSettle();
 
-  await tester
-      .tap(find.widgetWithText(InkWell, T.current.promptCreateNewSpace));
+  await tester.tap(
+    find.widgetWithText(InkWell, T.current.promptCreateNewSpace),
+  );
 
   await tester.pumpAndSettle();
 }

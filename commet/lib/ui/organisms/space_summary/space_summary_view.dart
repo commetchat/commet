@@ -24,26 +24,27 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceSummaryView extends StatefulWidget {
-  const SpaceSummaryView(
-      {super.key,
-      required this.space,
-      required this.displayName,
-      this.topic,
-      this.joinRoom,
-      this.avatar,
-      this.onSpaceUpdated,
-      this.banner,
-      this.visibility,
-      this.spaceColor,
-      this.showSpaceSettingsButton = false,
-      this.onInviteButtonTap,
-      this.openSpaceSettings,
-      this.onAddRoomButtonTap,
-      this.onRoomTap,
-      this.canAddRoom = false,
-      this.onSpaceTap,
-      this.colorScheme,
-      this.onRoomSettingsButtonTap});
+  const SpaceSummaryView({
+    super.key,
+    required this.space,
+    required this.displayName,
+    this.topic,
+    this.joinRoom,
+    this.avatar,
+    this.onSpaceUpdated,
+    this.banner,
+    this.visibility,
+    this.spaceColor,
+    this.showSpaceSettingsButton = false,
+    this.onInviteButtonTap,
+    this.openSpaceSettings,
+    this.onAddRoomButtonTap,
+    this.onRoomTap,
+    this.canAddRoom = false,
+    this.onSpaceTap,
+    this.colorScheme,
+    this.onRoomSettingsButtonTap,
+  });
 
   final Space space;
   final String displayName;
@@ -68,47 +69,64 @@ class SpaceSummaryView extends StatefulWidget {
 }
 
 class SpaceSummaryViewState extends State<SpaceSummaryView> {
-  static ValueKey spaceSettingsButtonKey =
-      const ValueKey("SPACE_SUMMARY_SPACE_SETTINGS_BUTTON");
+  static ValueKey spaceSettingsButtonKey = const ValueKey(
+    "SPACE_SUMMARY_SPACE_SETTINGS_BUTTON",
+  );
 
-  String get tooltipSpaceSettings => Intl.message("Space settings",
-      desc: "Tooltip for the button that opens space settings",
-      name: "tooltipSpaceSettings");
+  String get tooltipSpaceSettings => Intl.message(
+    "Space settings",
+    desc: "Tooltip for the button that opens space settings",
+    name: "tooltipSpaceSettings",
+  );
 
-  String get tooltipAddRoom => Intl.message("Add room",
-      desc: "Tooltip for the button that adds a new room to a space",
-      name: "tooltipAddRoom");
+  String get tooltipAddRoom => Intl.message(
+    "Add room",
+    desc: "Tooltip for the button that adds a new room to a space",
+    name: "tooltipAddRoom",
+  );
 
-  String get labelSpaceRoomsList => Intl.message("Rooms",
-      desc: "Header label for the list of rooms in a space",
-      name: "labelSpaceRoomsList");
+  String get labelSpaceRoomsList => Intl.message(
+    "Rooms",
+    desc: "Header label for the list of rooms in a space",
+    name: "labelSpaceRoomsList",
+  );
 
-  String get labelSpaceSubspacesList => Intl.message("Spaces",
-      desc: "Header label for the list of child spaces in a space",
-      name: "labelSpaceSubspacesList");
+  String get labelSpaceSubspacesList => Intl.message(
+    "Spaces",
+    desc: "Header label for the list of child spaces in a space",
+    name: "labelSpaceSubspacesList",
+  );
 
-  String get labelSpaceAvailableRoomsList => Intl.message("Available rooms",
-      desc:
-          "Header label for the list of rooms in a space, which the user has not yet joined but are available",
-      name: "labelSpaceAvailableRoomsList");
+  String get labelSpaceAvailableRoomsList => Intl.message(
+    "Available rooms",
+    desc: "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+    name: "labelSpaceAvailableRoomsList",
+  );
 
-  String get labelSpaceVisibilityPublic => Intl.message("Public space",
-      desc: "Label to display that the space is publically available",
-      name: "labelSpaceVisibilityPublic");
+  String get labelSpaceVisibilityPublic => Intl.message(
+    "Public space",
+    desc: "Label to display that the space is publically available",
+    name: "labelSpaceVisibilityPublic",
+  );
 
-  String get labelSpaceVisibilityPrivate => Intl.message("Private space",
-      desc: "Label to display that the space is private",
-      name: "labelSpaceVisibilityPrivate");
+  String get labelSpaceVisibilityPrivate => Intl.message(
+    "Private space",
+    desc: "Label to display that the space is private",
+    name: "labelSpaceVisibilityPrivate",
+  );
 
-  String get labelSpaceVisibilityRestricted => Intl.message("Restricted space",
-      desc: "Label to display that the space is restricted",
-      name: "labelSpaceVisibilityRestricted");
+  String get labelSpaceVisibilityRestricted => Intl.message(
+    "Restricted space",
+    desc: "Label to display that the space is restricted",
+    name: "labelSpaceVisibilityRestricted",
+  );
 
-  String labelSpaceGettingText(spaceName) =>
-      Intl.message("Welcome to \n\n # $spaceName",
-          args: [spaceName],
-          desc: "Greeting to the space, supports markdown formatting",
-          name: "labelSpaceGettingText");
+  String labelSpaceGettingText(spaceName) => Intl.message(
+    "Welcome to \n\n # $spaceName",
+    args: [spaceName],
+    desc: "Greeting to the space, supports markdown formatting",
+    name: "labelSpaceGettingText",
+  );
 
   late List<RoomPreview> previews;
 
@@ -138,12 +156,15 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     }
 
     subs = [
-      widget.space.onChildRoomPreviewAdded
-          .listen((_) => onPreviewListChanged()),
-      widget.space.onChildRoomPreviewsUpdated
-          .listen((_) => onPreviewListChanged()),
-      widget.space.onChildRoomPreviewRemoved
-          .listen((_) => onPreviewListChanged()),
+      widget.space.onChildRoomPreviewAdded.listen(
+        (_) => onPreviewListChanged(),
+      ),
+      widget.space.onChildRoomPreviewsUpdated.listen(
+        (_) => onPreviewListChanged(),
+      ),
+      widget.space.onChildRoomPreviewRemoved.listen(
+        (_) => onPreviewListChanged(),
+      ),
       widget.space.onRoomAdded.listen((_) => onRoomListChanged()),
       widget.space.onRoomRemoved.listen((_) => onRoomListChanged()),
       widget.space.onChildSpaceAdded.listen((_) => onSpaceListChanged()),
@@ -181,8 +202,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   @override
   Widget build(BuildContext context) {
-    var baseTextTheme = TextTheme.of(context)
-        .bodySmall
+    var baseTextTheme = TextTheme.of(context).bodySmall
         ?.copyWith(color: Theme.of(context).colorScheme.secondary);
 
     return Column(
@@ -211,46 +231,52 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                         MarkdownBody(
                           data: labelSpaceGettingText(widget.displayName),
                           styleSheet: MarkdownStyleSheet(
-                              h1Padding: EdgeInsets.zero,
-                              pPadding: EdgeInsets.zero),
+                            h1Padding: EdgeInsets.zero,
+                            pPadding: EdgeInsets.zero,
+                          ),
                         ),
                         if (widget.topic != null)
                           MarkdownBody(
-                              data: widget.topic!,
-                              imageBuilder: (uri, title, alt) {
-                                if (uri.scheme == "mxc" &&
-                                    widget.space.client is MatrixClient) {
-                                  return SizedBox(
-                                    height: 50,
-                                    child: Image(
-                                        image: MatrixMxcImage(
-                                            uri,
-                                            doFullres: true,
-                                            doThumbnail: false,
-                                            autoLoadFullRes: true,
-                                            (widget.space.client
-                                                    as MatrixClient)
-                                                .matrixClient)),
-                                  );
-                                }
+                            data: widget.topic!,
+                            imageBuilder: (uri, title, alt) {
+                              if (uri.scheme == "mxc" &&
+                                  widget.space.client is MatrixClient) {
+                                return SizedBox(
+                                  height: 50,
+                                  child: Image(
+                                    image: MatrixMxcImage(
+                                      uri,
+                                      doFullres: true,
+                                      doThumbnail: false,
+                                      autoLoadFullRes: true,
+                                      (widget.space.client as MatrixClient)
+                                          .matrixClient,
+                                    ),
+                                  ),
+                                );
+                              }
 
-                                return Container();
-                              },
-                              onTapLink: (text, href, title) {
-                                if (href != null) {
-                                  LinkUtils.open(Uri.parse(href),
-                                      context: context);
-                                }
-                              },
-                              styleSheet: MarkdownStyleSheet.fromTheme(
-                                      Theme.of(context))
-                                  .copyWith(
-                                a: baseTextTheme?.copyWith(
-                                    color: Theme.of(context)
-                                        .extension<ExtraColors>()
-                                        ?.linkColor),
-                                p: baseTextTheme,
-                              )),
+                              return Container();
+                            },
+                            onTapLink: (text, href, title) {
+                              if (href != null) {
+                                LinkUtils.open(
+                                  Uri.parse(href),
+                                  context: context,
+                                );
+                              }
+                            },
+                            styleSheet:
+                                MarkdownStyleSheet.fromTheme(Theme.of(context))
+                                    .copyWith(
+                                      a: baseTextTheme?.copyWith(
+                                        color: Theme.of(context)
+                                            .extension<ExtraColors>()
+                                            ?.linkColor,
+                                      ),
+                                      p: baseTextTheme,
+                                    ),
+                          ),
                         spaceVisibility(),
                       ],
                     ),
@@ -266,7 +292,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                           buildSettingsButton(),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
               if (children.isNotEmpty ||
@@ -322,48 +348,52 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               ? EdgeInsetsGeometry.only(left: 8, right: 8)
               : EdgeInsetsGeometry.zero,
           child: DecoratedBox(
-              decoration: BoxDecoration(
-                  image: widget.banner != null
-                      ? DecorationImage(
-                          image: widget.banner!, fit: BoxFit.cover)
-                      : null,
-                  color: widget.banner == null ? colorScheme.secondary : null,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15))),
-              child: ScaledSafeArea(
-                bottom: false,
-                left: false,
-                right: false,
-                top: true,
-                child: SizedBox(
-                  height: 250,
-                  // child: widget.banner != null
-                  //     ? Image(
-                  //         image: widget.banner!,
-                  //         fit: BoxFit.cover,
-                  //       )
-                  //     : null,
-                  width: double.infinity,
-                ),
-              )),
+            decoration: BoxDecoration(
+              image: widget.banner != null
+                  ? DecorationImage(image: widget.banner!, fit: BoxFit.cover)
+                  : null,
+              color: widget.banner == null ? colorScheme.secondary : null,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15),
+              ),
+            ),
+            child: ScaledSafeArea(
+              bottom: false,
+              left: false,
+              right: false,
+              top: true,
+              child: SizedBox(
+                height: 250,
+                // child: widget.banner != null
+                //     ? Image(
+                //         image: widget.banner!,
+                //         fit: BoxFit.cover,
+                //       )
+                //     : null,
+                width: double.infinity,
+              ),
+            ),
+          ),
         ),
         Align(
           alignment: AlignmentGeometry.center,
           child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 150, 0, 0),
-              child: ScaledSafeArea(
-                child: Avatar.extraLarge(
-                  border: BoxBorder.all(
-                      color: Theme.of(context).colorScheme.surface,
-                      width: 10,
-                      style: BorderStyle.solid,
-                      strokeAlign: 0.5),
-                  image: widget.avatar,
-                  placeholderText: widget.displayName,
-                  placeholderColor: widget.spaceColor,
+            padding: const EdgeInsets.fromLTRB(0, 150, 0, 0),
+            child: ScaledSafeArea(
+              child: Avatar.extraLarge(
+                border: BoxBorder.all(
+                  color: Theme.of(context).colorScheme.surface,
+                  width: 10,
+                  style: BorderStyle.solid,
+                  strokeAlign: 0.5,
                 ),
-              )),
+                image: widget.avatar,
+                placeholderText: widget.displayName,
+                placeholderColor: widget.spaceColor,
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -371,33 +401,36 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget buildPreviewList() {
     return Panel(
-        header: labelSpaceAvailableRoomsList,
-        mode: TileType.surfaceContainer,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ImplicitlyAnimatedList(
-                padding: EdgeInsets.all(0),
-                key: ValueKey(
-                    "animated-list-child-previews-${widget.space.identifier}"),
-                initialAnimation: false,
-                physics: NeverScrollableScrollPhysics(),
-                itemData: previews,
-                shrinkWrap: true,
-                itemBuilder: (context, preview) {
-                  return RoomPanelView(
-                    displayName: preview.displayName,
-                    avatar: preview.avatar,
-                    primaryButtonLabel: CommonStrings.promptJoin,
-                    body: preview.topic,
-                    color: preview.color,
-                    onPrimaryButtonPressed: () async {
-                      await widget.joinRoom?.call(preview);
-                    },
-                  );
-                }),
-          ],
-        ));
+      header: labelSpaceAvailableRoomsList,
+      mode: TileType.surfaceContainer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ImplicitlyAnimatedList(
+            padding: EdgeInsets.all(0),
+            key: ValueKey(
+              "animated-list-child-previews-${widget.space.identifier}",
+            ),
+            initialAnimation: false,
+            physics: NeverScrollableScrollPhysics(),
+            itemData: previews,
+            shrinkWrap: true,
+            itemBuilder: (context, preview) {
+              return RoomPanelView(
+                displayName: preview.displayName,
+                avatar: preview.avatar,
+                primaryButtonLabel: CommonStrings.promptJoin,
+                body: preview.topic,
+                color: preview.color,
+                onPrimaryButtonPressed: () async {
+                  await widget.joinRoom?.call(preview);
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget spaceVisibility() {
@@ -414,7 +447,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: tiamat.Text.label(text),
-        )
+        ),
       ],
     );
   }
@@ -435,22 +468,24 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             var pad = EdgeInsets.fromLTRB(0, 0, showHandles ? 50 : 0, 0);
             if (MediaQuery.of(context).mobile) {
               return ReorderableDelayedDragStartListener(
-                  key: key,
-                  enabled: canChangeOrder,
-                  index: index,
-                  child: Padding(
-                    padding: pad,
-                    child: buildItem(item, widget.space),
-                  ));
+                key: key,
+                enabled: canChangeOrder,
+                index: index,
+                child: Padding(
+                  padding: pad,
+                  child: buildItem(item, widget.space),
+                ),
+              );
             } else {
               return ReorderableDragStartListener(
-                  key: key,
-                  enabled: canChangeOrder && orderChanged,
-                  index: index,
-                  child: Padding(
-                    padding: pad,
-                    child: buildItem(item, widget.space),
-                  ));
+                key: key,
+                enabled: canChangeOrder && orderChanged,
+                index: index,
+                child: Padding(
+                  padding: pad,
+                  child: buildItem(item, widget.space),
+                ),
+              );
             }
           },
           onReorderStart: (index) => HapticFeedback.mediumImpact(),
@@ -458,13 +493,11 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             return AnimatedBuilder(
               animation: animation,
               builder: (BuildContext context, Widget? child) {
-                final double animValue =
-                    Curves.easeOut.transform(animation.value);
-                final double scale = lerpDouble(1, 1.03, animValue)!;
-                return Transform.scale(
-                  scale: scale,
-                  child: child,
+                final double animValue = Curves.easeOut.transform(
+                  animation.value,
                 );
+                final double scale = lerpDouble(1, 1.03, animValue)!;
+                return Transform.scale(scale: scale, child: child);
               },
               child: child,
             );
@@ -506,17 +539,21 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                       orderChangeLoading = true;
                     });
 
-                    widget.space.setChildrenOrder(children,
-                        onProgressChanged: (v) {
-                      setState(() {
-                        orderChangedProgress = v;
-                      });
-                    }).then((_) {
-                      setState(() {
-                        orderChanged = false;
-                        orderChangeLoading = false;
-                      });
-                    });
+                    widget.space
+                        .setChildrenOrder(
+                          children,
+                          onProgressChanged: (v) {
+                            setState(() {
+                              orderChangedProgress = v;
+                            });
+                          },
+                        )
+                        .then((_) {
+                          setState(() {
+                            orderChanged = false;
+                            orderChangeLoading = false;
+                          });
+                        });
                   },
                   child: orderChangeLoading
                       ? SizedBox(
@@ -524,11 +561,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                           height: 20,
                           child: CircularProgressIndicator(
                             color: Theme.of(context).colorScheme.onSurface,
-                            value: orderChangedProgress != null &&
+                            value:
+                                orderChangedProgress != null &&
                                     orderChangedProgress! > 0.1
                                 ? orderChangedProgress
                                 : null,
-                          ))
+                          ),
+                        )
                       : Icon(Icons.save),
                 ),
               ],
@@ -546,13 +585,17 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 onPressed: () => widget.onAddRoomButtonTap?.call(),
               ),
             ),
-          )
+          ),
       ],
     );
   }
 
-  Widget buildItem(SpaceChild<dynamic> item, Space parent,
-      {int depth = 0, int maxDepth = 5}) {
+  Widget buildItem(
+    SpaceChild<dynamic> item,
+    Space parent, {
+    int depth = 0,
+    int maxDepth = 5,
+  }) {
     Widget? result;
 
     if (item case SpaceChildRoom _) {
@@ -563,27 +606,37 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Theme.of(context).colorScheme.surfaceContainer),
-          child: tiamat.TextButtonExpander(item.child.displayName,
-              textPadding: EdgeInsetsGeometry.all(20),
-              icon: Icons.star, onNameTapped: () {
-            widget.onSpaceTap?.call(item.child);
-          },
-              avatar: item.child.avatar,
-              avatarPlaceholderColor: item.child.color,
-              avatarPlaceholderText: item.child.displayName,
-              avatarRadius: 24,
-              childrenPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
-              initiallyExpanded: false,
-              iconColor: Theme.of(context).colorScheme.secondary,
-              textColor: Theme.of(context).colorScheme.secondary,
-              children: depth >= maxDepth
-                  ? []
-                  : item.child.children
-                      .map((i) => buildItem(i, item.child,
-                          depth: depth + 1, maxDepth: maxDepth))
-                      .toList()),
+            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).colorScheme.surfaceContainer,
+          ),
+          child: tiamat.TextButtonExpander(
+            item.child.displayName,
+            textPadding: EdgeInsetsGeometry.all(20),
+            icon: Icons.star,
+            onNameTapped: () {
+              widget.onSpaceTap?.call(item.child);
+            },
+            avatar: item.child.avatar,
+            avatarPlaceholderColor: item.child.color,
+            avatarPlaceholderText: item.child.displayName,
+            avatarRadius: 24,
+            childrenPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+            initiallyExpanded: false,
+            iconColor: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.secondary,
+            children: depth >= maxDepth
+                ? []
+                : item.child.children
+                      .map(
+                        (i) => buildItem(
+                          i,
+                          item.child,
+                          depth: depth + 1,
+                          maxDepth: maxDepth,
+                        ),
+                      )
+                      .toList(),
+          ),
         ),
       );
     } else {

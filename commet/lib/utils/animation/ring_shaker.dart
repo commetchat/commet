@@ -34,10 +34,7 @@ class _RingShakerAnimationState extends State<RingShakerAnimation>
         var amp = sin(controller.value * 50);
         amp = amp * pow(1 - controller.value, 2);
         amp *= 0.15;
-        return Transform.rotate(
-          angle: amp,
-          child: child,
-        );
+        return Transform.rotate(angle: amp, child: child);
       },
       child: widget.child,
     );

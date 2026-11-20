@@ -24,7 +24,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   MatrixRoom room;
 
   MatrixRoomEmoticonComponent(MatrixClient client, this.room)
-      : super(client, MatrixEmoticonRoomStateManager(room.matrixRoom));
+    : super(client, MatrixEmoticonRoomStateManager(room.matrixRoom));
 
   @override
   List<EmoticonPack> get availableEmoji =>
@@ -51,8 +51,9 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   List<EmoticonPack> get availablePacks {
     List<EmoticonPack> packs = List.from(ownedPacks, growable: true);
 
-    for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
+    for (var space in room.client.spaces.where(
+      (element) => element.containsRoom(room.identifier),
+    )) {
       var component = space.getComponent<SpaceEmoticonComponent>();
       if (component == null) continue;
       packs.addAll(component.ownedPacks);
@@ -63,17 +64,21 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     if (component == null) return packs;
 
     packs.addAll(
-        component.globalPacks().where((element) => !packs.contains(element)));
+      component.globalPacks().where((element) => !packs.contains(element)),
+    );
 
     packs.addAll(
-        component.ownedPacks.where((element) => !packs.contains(element)));
+      component.ownedPacks.where((element) => !packs.contains(element)),
+    );
 
     return packs;
   }
 
   @override
   Future<TimelineEvent?> sendSticker(
-      Emoticon sticker, TimelineEvent? inReplyTo) async {
+    Emoticon sticker,
+    TimelineEvent? inReplyTo,
+  ) async {
     if (sticker is! MatrixEmoticon) return null;
 
     var image = await ImageUtils.imageProviderToImage(sticker.image);
@@ -90,8 +95,10 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
     // Sometimes MatrixMxcImage doesnt have mimetype loaded, so we need to look it up manually
     if (mimeType == null) {
-      var provider =
-          MxcFileProvider(client.getMatrixClient(), sticker.emojiUrl);
+      var provider = MxcFileProvider(
+        client.getMatrixClient(),
+        sticker.emojiUrl,
+      );
       var data = await provider.getFileData();
       mimeType = Mime.lookupType("", data: data);
     }
@@ -112,20 +119,24 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
       "info": {
         "w": image.width,
         "h": image.height,
-        if (mimeType != null) "mimetype": mimeType
-      }
+        if (mimeType != null) "mimetype": mimeType,
+      },
     };
 
-    var id = await room.matrixRoom.sendEvent(content,
-        type: preferences.stickerCompatibilityMode.value
-            ? matrix.EventTypes.Message
-            : matrix.EventTypes.Sticker,
-        inReplyTo: replyingTo);
+    var id = await room.matrixRoom.sendEvent(
+      content,
+      type: preferences.stickerCompatibilityMode.value
+          ? matrix.EventTypes.Message
+          : matrix.EventTypes.Sticker,
+      inReplyTo: replyingTo,
+    );
 
     if (id != null) {
       var event = await room.matrixRoom.getEventById(id);
-      return room.convertEvent(event!,
-          timeline: (room.timeline as MatrixTimeline?)?.matrixTimeline);
+      return room.convertEvent(
+        event!,
+        timeline: (room.timeline as MatrixTimeline?)?.matrixTimeline,
+      );
     }
 
     return null;
@@ -134,8 +145,9 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   List<EmoticonPack> _getAvailablePacks({bool includeUnicode = false}) {
     var result = List<EmoticonPack>.of(ownedPacks);
 
-    for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
+    for (var space in room.client.spaces.where(
+      (element) => element.containsRoom(room.identifier),
+    )) {
       var component = space.getComponent<MatrixSpaceEmoticonComponent>();
       if (component != null) {
         result.addAll(component.ownedPacks.where((e) => !result.contains(e)));
@@ -152,8 +164,9 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     }
 
     if (globalComponent != null) {
-      result
-          .addAll(globalComponent.ownedPacks.where((e) => !result.contains(e)));
+      result.addAll(
+        globalComponent.ownedPacks.where((e) => !result.contains(e)),
+      );
     }
 
     if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
@@ -163,21 +176,28 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
   @override
   bool isGloballyAvailable(String packId) {
-    return room.matrixRoom.client
-        .isEmoticonPackGloballyAvailable(room.matrixRoom.id, packId);
+    return room.matrixRoom.client.isEmoticonPackGloballyAvailable(
+      room.matrixRoom.id,
+      packId,
+    );
   }
 
   Future<void> markAsGlobal(bool isGlobal, String packKey) async {
     if (isGlobal)
-      return room.matrixRoom.client
-          .addEmoticonRoomPack(room.matrixRoom.id, packKey);
+      return room.matrixRoom.client.addEmoticonRoomPack(
+        room.matrixRoom.id,
+        packKey,
+      );
 
-    return room.matrixRoom.client
-        .removeEmoticonRoomPack(room.matrixRoom.id, packKey);
+    return room.matrixRoom.client.removeEmoticonRoomPack(
+      room.matrixRoom.id,
+      packKey,
+    );
   }
 
   Map<String, Map<String, String>> getEmotePacksFlat(
-      matrix.ImagePackUsage emoticon) {
+    matrix.ImagePackUsage emoticon,
+  ) {
     var packs = availablePacks;
 
     var result = <String, Map<String, String>>{};
@@ -186,8 +206,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
       var key = "${pack.displayName}-${pack.hashCode}";
       result[key] = <String, String>{};
       for (var emote in pack.emotes) {
-        result[key]![emote.shortcode!] =
-            (emote as MatrixEmoticon).emojiUrl.toString();
+        result[key]![emote.shortcode!] = (emote as MatrixEmoticon).emojiUrl
+            .toString();
       }
     }
 

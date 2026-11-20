@@ -41,7 +41,7 @@ class EmoticonPicker extends StatefulWidget {
   final void Function(Emoticon emoticon)? onStickerPressed;
 
   final List<AutofillSearchResultEmoticon> Function(String text)?
-      searchDelegate;
+  searchDelegate;
   final Future<void> Function(GifSearchResult emoticon)? onGifPressed;
   final Future<void> Function(FavoriteGif gif)? onFavoritePicked;
   final Axis packListAxis;
@@ -54,17 +54,23 @@ class _EmoticonPickerState extends State<EmoticonPicker>
     with TickerProviderStateMixin {
   late TabController controller;
   PageStorageBucket bucket = PageStorageBucket();
-  String get labelEmojiPickerEmojiTab => Intl.message("Emoji",
-      desc: "Label for the emoji tab in emoji picker",
-      name: "labelEmojiPickerEmojiTab");
+  String get labelEmojiPickerEmojiTab => Intl.message(
+    "Emoji",
+    desc: "Label for the emoji tab in emoji picker",
+    name: "labelEmojiPickerEmojiTab",
+  );
 
-  String get labelEmojiPickerStickerTab => Intl.message("Sticker",
-      desc: "Label for the sticker tab in the emoji picker",
-      name: "labelEmojiPickerStickerTab");
+  String get labelEmojiPickerStickerTab => Intl.message(
+    "Sticker",
+    desc: "Label for the sticker tab in the emoji picker",
+    name: "labelEmojiPickerStickerTab",
+  );
 
-  String get labelEmojiPickerGifTab => Intl.message("Gif",
-      desc: "Label for the gif search tab in the emoji picker",
-      name: "labelEmojiPickerGifTab");
+  String get labelEmojiPickerGifTab => Intl.message(
+    "Gif",
+    desc: "Label for the gif search tab in the emoji picker",
+    name: "labelEmojiPickerGifTab",
+  );
 
   List<FavoriteGif> favorites = [];
   StreamSubscription? sub;
@@ -109,68 +115,70 @@ class _EmoticonPickerState extends State<EmoticonPicker>
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
-              child: TabBarView(controller: controller, children: [
-                Tab(
-                  child: EmojiPicker(
-                    widget.emoji,
-                    focus: widget.emojiSearchFocus,
-                    searchDelegate: (value) => widget.searchDelegate!
-                        .call(value)
-                        .where((i) => i.emoticon.isEmoji)
-                        .toList(),
-                    onlyEmoji: true,
-                    onEmoticonPressed: (emoticon) =>
-                        widget.onEmojiPressed?.call(emoticon),
-                  ),
-                ),
-                if (widget.stickers.isNotEmpty)
+              child: TabBarView(
+                controller: controller,
+                children: [
                   Tab(
                     child: EmojiPicker(
-                      widget.stickers,
-                      focus: widget.stickerSearchFocus,
+                      widget.emoji,
+                      focus: widget.emojiSearchFocus,
                       searchDelegate: (value) => widget.searchDelegate!
                           .call(value)
-                          .where((i) => i.emoticon.isSticker)
+                          .where((i) => i.emoticon.isEmoji)
                           .toList(),
-                      onlyStickers: true,
-                      size: BuildConfig.MOBILE ? 125 : 125,
+                      onlyEmoji: true,
                       onEmoticonPressed: (emoticon) =>
-                          widget.onStickerPressed?.call(emoticon),
+                          widget.onEmojiPressed?.call(emoticon),
                     ),
                   ),
-                if (widget.allowGifSearch && widget.gifComponent != null)
-                  Tab(
-                    child: GifPicker(
-                      focus: widget.gifSearchFocus,
-                      favorites: widget.gifComponent?.favorites ?? [],
-                      search: widget.gifComponent!.search,
-                      placeholderText: widget.gifComponent!.searchPlaceholder,
-                      favoritePicked: widget.onFavoritePicked,
-                      gifPicked: widget.onGifPressed,
-                      onUnfavoriteGif: (gif) async {
-                        widget.gifComponent?.removeFavorite(gif);
-                      },
+                  if (widget.stickers.isNotEmpty)
+                    Tab(
+                      child: EmojiPicker(
+                        widget.stickers,
+                        focus: widget.stickerSearchFocus,
+                        searchDelegate: (value) => widget.searchDelegate!
+                            .call(value)
+                            .where((i) => i.emoticon.isSticker)
+                            .toList(),
+                        onlyStickers: true,
+                        size: BuildConfig.MOBILE ? 125 : 125,
+                        onEmoticonPressed: (emoticon) =>
+                            widget.onStickerPressed?.call(emoticon),
+                      ),
                     ),
-                  )
-              ]),
+                  if (widget.allowGifSearch && widget.gifComponent != null)
+                    Tab(
+                      child: GifPicker(
+                        focus: widget.gifSearchFocus,
+                        favorites: widget.gifComponent?.favorites ?? [],
+                        search: widget.gifComponent!.search,
+                        placeholderText: widget.gifComponent!.searchPlaceholder,
+                        favoritePicked: widget.onFavoritePicked,
+                        gifPicked: widget.onGifPressed,
+                        onUnfavoriteGif: (gif) async {
+                          widget.gifComponent?.removeFavorite(gif);
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
             if (controller.length > 1)
               tiamat.Tile.low(
                 child: SizedBox(
                   height: 40,
                   child: TabBar(
-                      controller: controller,
-                      dividerColor: Colors.transparent,
-                      dividerHeight: 0,
-                      tabs: [
-                        Tab(
-                          text: labelEmojiPickerEmojiTab,
-                        ),
-                        if (widget.stickers.isNotEmpty)
-                          Tab(text: labelEmojiPickerStickerTab),
-                        if (widget.allowGifSearch)
-                          Tab(text: labelEmojiPickerGifTab)
-                      ]),
+                    controller: controller,
+                    dividerColor: Colors.transparent,
+                    dividerHeight: 0,
+                    tabs: [
+                      Tab(text: labelEmojiPickerEmojiTab),
+                      if (widget.stickers.isNotEmpty)
+                        Tab(text: labelEmojiPickerStickerTab),
+                      if (widget.allowGifSearch)
+                        Tab(text: labelEmojiPickerGifTab),
+                    ],
+                  ),
                 ),
               ),
           ],

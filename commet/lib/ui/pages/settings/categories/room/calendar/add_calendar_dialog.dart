@@ -62,11 +62,13 @@ class _AddRemoteCalendarDialogState extends State<AddRemoteCalendarDialog> {
                 decoration: InputDecoration(labelText: "Calendar Url"),
               ),
               TextFormField(
-                  onChanged: (value) => setState(() {
-                        eventName = value;
-                      }),
-                  decoration: InputDecoration(
-                      labelText: "Event Name Override (Optional)")),
+                onChanged: (value) => setState(() {
+                  eventName = value;
+                }),
+                decoration: InputDecoration(
+                  labelText: "Event Name Override (Optional)",
+                ),
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -80,11 +82,13 @@ class _AddRemoteCalendarDialogState extends State<AddRemoteCalendarDialog> {
                     showSelectedIcon: false,
                     segments: [
                       ButtonSegment(
-                          value: CalendarSyncType.events,
-                          label: Text("Events")),
+                        value: CalendarSyncType.events,
+                        label: Text("Events"),
+                      ),
                       ButtonSegment(
-                          value: CalendarSyncType.unavailability,
-                          label: Text("Unavailability")),
+                        value: CalendarSyncType.unavailability,
+                        label: Text("Unavailability"),
+                      ),
                     ],
                     expandedInsets: EdgeInsets.all(0),
                     selected: {eventType},
@@ -96,10 +100,10 @@ class _AddRemoteCalendarDialogState extends State<AddRemoteCalendarDialog> {
               ),
               if (events != null && events!.isNotEmpty)
                 Center(
-                    child:
-                        tiamat.Text.labelLow("Found ${events!.length} events")),
+                  child: tiamat.Text.labelLow("Found ${events!.length} events"),
+                ),
               if (loading) Center(child: CircularProgressIndicator()),
-              if (error != null) tiamat.Text.error(error!)
+              if (error != null) tiamat.Text.error(error!),
             ],
           ),
           tiamat.Button(
@@ -109,13 +113,18 @@ class _AddRemoteCalendarDialogState extends State<AddRemoteCalendarDialog> {
                 loading = true;
               });
 
-              await widget.component.addSyncedCalendar(SyncedCalendar(
-                  url, CalendarSource.ical, eventType,
-                  overrideEventName: eventName.isNotEmpty ? eventName : null));
+              await widget.component.addSyncedCalendar(
+                SyncedCalendar(
+                  url,
+                  CalendarSource.ical,
+                  eventType,
+                  overrideEventName: eventName.isNotEmpty ? eventName : null,
+                ),
+              );
 
               Navigator.of(context).pop();
             },
-          )
+          ),
         ],
       ),
     );

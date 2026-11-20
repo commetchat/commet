@@ -10,37 +10,45 @@ import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LinkUtils {
-  static Future<void> open(Uri uri,
-      {String? clientId,
-      String? contextRoomId,
-      BuildContext? context,
-      bool bypassConfirmation = false,
-      bool filterTrackingParameters = true}) async {
+  static Future<void> open(
+    Uri uri, {
+    String? clientId,
+    String? contextRoomId,
+    BuildContext? context,
+    bool bypassConfirmation = false,
+    bool filterTrackingParameters = true,
+  }) async {
     if (context != null) {
       ErrorUtils.tryRun(context, () async {
-        await _open(uri,
-            clientId: clientId,
-            context: context,
-            contextRoomId: contextRoomId,
-            bypassConfirmation: bypassConfirmation,
-            filterTrackingParameters: filterTrackingParameters);
-      });
-    } else {
-      await _open(uri,
+        await _open(
+          uri,
           clientId: clientId,
           context: context,
           contextRoomId: contextRoomId,
           bypassConfirmation: bypassConfirmation,
-          filterTrackingParameters: filterTrackingParameters);
+          filterTrackingParameters: filterTrackingParameters,
+        );
+      });
+    } else {
+      await _open(
+        uri,
+        clientId: clientId,
+        context: context,
+        contextRoomId: contextRoomId,
+        bypassConfirmation: bypassConfirmation,
+        filterTrackingParameters: filterTrackingParameters,
+      );
     }
   }
 
-  static Future<void> _open(Uri uri,
-      {String? clientId,
-      String? contextRoomId,
-      BuildContext? context,
-      bool bypassConfirmation = false,
-      bool filterTrackingParameters = true}) async {
+  static Future<void> _open(
+    Uri uri, {
+    String? clientId,
+    String? contextRoomId,
+    BuildContext? context,
+    bool bypassConfirmation = false,
+    bool filterTrackingParameters = true,
+  }) async {
     if (uri.host == "matrix.to") {
       var result = MatrixClient.parseMatrixLink(uri);
 
@@ -49,8 +57,11 @@ class LinkUtils {
           case MatrixLinkType.room:
             return EventBus.doOpenRoom(result.$3, clientId: clientId);
           case MatrixLinkType.user:
-            return EventBus.openUserProfile
-                .add((result.$2, clientId, contextRoomId));
+            return EventBus.openUserProfile.add((
+              result.$2,
+              clientId,
+              contextRoomId,
+            ));
           case MatrixLinkType.roomAlias:
             return EventBus.doOpenRoom(result.$3, clientId: clientId);
         }
@@ -69,9 +80,11 @@ class LinkUtils {
       if (handler != null) {
         for (var executor in handler.executors) {
           if (await executor.canHandleLink(uri)) {
-            var confirm = await AdaptiveDialog.confirmation(context,
-                prompt: executor.getDescription(uri),
-                title: "Open in ${handler.appName}?");
+            var confirm = await AdaptiveDialog.confirmation(
+              context,
+              prompt: executor.getDescription(uri),
+              title: "Open in ${handler.appName}?",
+            );
 
             if (confirm == true) {
               executor.execute(openUrl);
@@ -94,12 +107,14 @@ class LinkUtils {
     if (cleanedUrl.toString() != uri.toString()) {
       if (context != null) {
         if (!bypassConfirmation) {
-          var confirm = await AdaptiveDialog.confirmation(context,
-              title: "Open Link",
-              confirmationText: "Open",
-              cancelText: "Open Original Link",
-              prompt:
-                  "This link contained trackers, which have been removed. Open `$cleanedUrl` in your browser?");
+          var confirm = await AdaptiveDialog.confirmation(
+            context,
+            title: "Open Link",
+            confirmationText: "Open",
+            cancelText: "Open Original Link",
+            prompt:
+                "This link contained trackers, which have been removed. Open `$cleanedUrl` in your browser?",
+          );
 
           if (confirm == null) return;
 
@@ -113,11 +128,13 @@ class LinkUtils {
     } else {
       if (!bypassConfirmation) {
         if (context != null) {
-          if (await AdaptiveDialog.confirmation(context,
-                  title: "Open Link",
-                  confirmationText: "Open",
-                  cancelText: "Cancel",
-                  prompt: "Open `$uri` in your web browser?") !=
+          if (await AdaptiveDialog.confirmation(
+                context,
+                title: "Open Link",
+                confirmationText: "Open",
+                cancelText: "Cancel",
+                prompt: "Open `$uri` in your web browser?",
+              ) !=
               true) {
             return;
           }

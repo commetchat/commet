@@ -36,17 +36,14 @@ class _SecuritySettingsTabState extends State<SecuritySettingsTab> {
               });
             },
           ),
-        pickSecurityPage(selectedClient)
+        pickSecurityPage(selectedClient),
       ],
     );
   }
 
   Widget pickSecurityPage(Client client) {
     if (client is MatrixClient) {
-      return MatrixSecurityTab(
-        client,
-        key: client.key,
-      );
+      return MatrixSecurityTab(client, key: client.key);
     }
 
     return const Placeholder();

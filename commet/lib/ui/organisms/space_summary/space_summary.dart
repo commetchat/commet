@@ -13,15 +13,17 @@ import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/ui/pages/settings/space_settings_page.dart';
 import 'package:flutter/material.dart';
+
 import '../../navigation/navigation_utils.dart';
 
 class SpaceSummary extends StatefulWidget {
-  const SpaceSummary(
-      {super.key,
-      required this.space,
-      this.onRoomTap,
-      this.onSpaceTap,
-      this.onLeaveRoom});
+  const SpaceSummary({
+    super.key,
+    required this.space,
+    this.onRoomTap,
+    this.onSpaceTap,
+    this.onLeaveRoom,
+  });
   final Space space;
   final Function(Room room)? onRoomTap;
   final Function(Space space)? onSpaceTap;
@@ -69,8 +71,9 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       banner: banner?.banner,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
-      onInviteButtonTap:
-          widget.space.permissions.canInviteUser ? onInviteTap : null,
+      onInviteButtonTap: widget.space.permissions.canInviteUser
+          ? onInviteTap
+          : null,
       spaceColor: widget.space.color,
       onRoomTap: widget.onRoomTap,
       showSpaceSettingsButton: widget.space.permissions.canEditAnything,
@@ -92,11 +95,13 @@ class _SpaceSummaryState extends State<SpaceSummary> {
 
   void openRoomSettings(Room room) {
     NavigationUtils.navigateTo(
-        context,
-        RoomSettingsPage(
-            room: room,
-            contextSpace: widget.space,
-            onLeaveRoom: widget.onLeaveRoom));
+      context,
+      RoomSettingsPage(
+        room: room,
+        contextSpace: widget.space,
+        onLeaveRoom: widget.onLeaveRoom,
+      ),
+    );
   }
 
   void onAddRoomButtonTap() async {
@@ -131,12 +136,16 @@ class _SpaceSummaryState extends State<SpaceSummary> {
   onInviteTap() {
     final invitation = widget.space.client.getComponent<InvitationComponent>();
     if (invitation != null) {
-      AdaptiveDialog.show(context,
-          builder: (context) => SendInvitationWidget(
-              widget.space.client, invitation,
-              roomId: widget.space.identifier,
-              displayName: widget.space.displayName),
-          title: "Invite");
+      AdaptiveDialog.show(
+        context,
+        builder: (context) => SendInvitationWidget(
+          widget.space.client,
+          invitation,
+          roomId: widget.space.identifier,
+          displayName: widget.space.displayName,
+        ),
+        title: "Invite",
+      );
     }
   }
 

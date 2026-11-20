@@ -15,20 +15,21 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomAppearanceSettingsView extends StatefulWidget {
-  const RoomAppearanceSettingsView(
-      {required this.avatar,
-      required this.displayName,
-      required this.identifier,
-      required this.color,
-      required this.client,
-      this.onImagePicked,
-      this.onNameChanged,
-      this.topic,
-      this.setTopic,
-      this.canEditName = false,
-      this.canEditTopic = false,
-      this.canEditAvatar = false,
-      super.key});
+  const RoomAppearanceSettingsView({
+    required this.avatar,
+    required this.displayName,
+    required this.identifier,
+    required this.color,
+    required this.client,
+    this.onImagePicked,
+    this.onNameChanged,
+    this.topic,
+    this.setTopic,
+    this.canEditName = false,
+    this.canEditTopic = false,
+    this.canEditAvatar = false,
+    super.key,
+  });
   final ImageProvider? avatar;
   final Client client;
   final String displayName;
@@ -99,40 +100,44 @@ class _RoomAppearanceSettingsViewState
             clipBehavior: Clip.antiAlias,
             color: ColorScheme.of(context).surfaceContainer,
             child: InkWell(
-                onTap: widget.canEditTopic ? editTopic : null,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: MarkdownBody(
-                      imageBuilder: (uri, title, alt) {
-                        if (uri.scheme == "mxc" &&
-                            widget.client is MatrixClient) {
-                          return SizedBox(
-                            height: 50,
-                            child: Image(
-                                image: MatrixMxcImage(
-                                    doFullres: true,
-                                    doThumbnail: false,
-                                    autoLoadFullRes: true,
-                                    uri,
-                                    (widget.client as MatrixClient)
-                                        .matrixClient)),
-                          );
-                        }
+              onTap: widget.canEditTopic ? editTopic : null,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: MarkdownBody(
+                  imageBuilder: (uri, title, alt) {
+                    if (uri.scheme == "mxc" && widget.client is MatrixClient) {
+                      return SizedBox(
+                        height: 50,
+                        child: Image(
+                          image: MatrixMxcImage(
+                            doFullres: true,
+                            doThumbnail: false,
+                            autoLoadFullRes: true,
+                            uri,
+                            (widget.client as MatrixClient).matrixClient,
+                          ),
+                        ),
+                      );
+                    }
 
-                        return Container();
-                      },
-                      styleSheet: MarkdownStyleSheet(
-                          a: TextTheme.of(context).bodyMedium?.copyWith(
-                              color: Theme.of(context)
-                                  .extension<ExtraColors>()
-                                  ?.linkColor)),
-                      onTapLink: (text, href, title) {
-                        if (href != null) {
-                          LinkUtils.open(Uri.parse(href), context: context);
-                        }
-                      },
-                      data: topic?.isNotEmpty == true ? topic! : "Set a topic"),
-                )),
+                    return Container();
+                  },
+                  styleSheet: MarkdownStyleSheet(
+                    a: TextTheme.of(context).bodyMedium?.copyWith(
+                      color: Theme.of(context)
+                          .extension<ExtraColors>()
+                          ?.linkColor,
+                    ),
+                  ),
+                  onTapLink: (text, href, title) {
+                    if (href != null) {
+                      LinkUtils.open(Uri.parse(href), context: context);
+                    }
+                  },
+                  data: topic?.isNotEmpty == true ? topic! : "Set a topic",
+                ),
+              ),
+            ),
           ),
       ],
     );
@@ -157,8 +162,12 @@ class _RoomAppearanceSettingsViewState
   }
 
   void editTopic() async {
-    var newTopic = await AdaptiveDialog.textPrompt(context,
-        multiline: true, title: "Set Topic", initialText: topic);
+    var newTopic = await AdaptiveDialog.textPrompt(
+      context,
+      multiline: true,
+      title: "Set Topic",
+      initialText: topic,
+    );
 
     if (newTopic != null) {
       ErrorUtils.tryRun(context, () async {

@@ -12,8 +12,11 @@ import 'package:flutter/widgets.dart';
 import '../../../../../molecules/account_selector.dart';
 
 class AccountEmojiTab extends StatefulWidget {
-  const AccountEmojiTab(
-      {required this.clientManager, this.selectedClientIndex = 0, super.key});
+  const AccountEmojiTab({
+    required this.clientManager,
+    this.selectedClientIndex = 0,
+    super.key,
+  });
   final ClientManager clientManager;
   final int selectedClientIndex;
   @override
@@ -45,10 +48,8 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
               });
             },
           ),
-        const SizedBox(
-          height: 10,
-        ),
-        buildEmojiView(context)
+        const SizedBox(height: 10),
+        buildEmojiView(context),
       ],
     );
   }
@@ -62,13 +63,8 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
       // I dont love using a key here, is there a better way to do this? i dont know
       key: ValueKey("account_emoji_editor_key_${selectedClient!.identifier}"),
       children: [
-        RoomEmojiPackSettingsView(
-          component: component!,
-          editable: true,
-        ),
-        const SizedBox(
-          height: 5,
-        ),
+        RoomEmojiPackSettingsView(component: component!, editable: true),
+        const SizedBox(height: 5),
         if (component!.globalPacks().isNotEmpty) AccountEmojiView(component!),
       ],
     );

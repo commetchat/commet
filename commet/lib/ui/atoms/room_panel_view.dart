@@ -12,30 +12,31 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomPanelView extends StatefulWidget {
-  const RoomPanelView(
-      {required this.displayName,
-      this.avatar,
-      this.onPrimaryButtonPressed,
-      this.primaryButtonLabel,
-      this.onSecondaryButtonPressed,
-      this.secondaryButtonLabel,
-      this.userColor,
-      this.onTap,
-      this.color,
-      this.body,
-      this.recentEventSender,
-      this.recentEventSenderColor,
-      this.userAvatar,
-      this.loading = false,
-      this.directMessagePartner,
-      this.random = 1,
-      this.userDisplayName,
-      this.userPresence,
-      this.showUserAvatar = false,
-      this.notificationCount = 0,
-      this.highlightNotificationCount = 0,
-      this.typingMembers,
-      super.key});
+  const RoomPanelView({
+    required this.displayName,
+    this.avatar,
+    this.onPrimaryButtonPressed,
+    this.primaryButtonLabel,
+    this.onSecondaryButtonPressed,
+    this.secondaryButtonLabel,
+    this.userColor,
+    this.onTap,
+    this.color,
+    this.body,
+    this.recentEventSender,
+    this.recentEventSenderColor,
+    this.userAvatar,
+    this.loading = false,
+    this.directMessagePartner,
+    this.random = 1,
+    this.userDisplayName,
+    this.userPresence,
+    this.showUserAvatar = false,
+    this.notificationCount = 0,
+    this.highlightNotificationCount = 0,
+    this.typingMembers,
+    super.key,
+  });
   final ImageProvider? avatar;
   final ImageProvider? userAvatar;
   final Color? userColor;
@@ -111,8 +112,9 @@ class _RoomPanelViewState extends State<RoomPanelView> {
           child: InkWell(
             onTap: widget.onTap,
             child: Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(15)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: Column(
@@ -162,8 +164,12 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                               ),
                               Flexible(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(4, 0, 8, 0),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    4,
+                                    0,
+                                    8,
+                                    0,
+                                  ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
@@ -175,14 +181,19 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                                           isLoading: shimmer,
                                           child: Padding(
                                             padding: const EdgeInsets.fromLTRB(
-                                                0, 4, 0, 0),
+                                              0,
+                                              4,
+                                              0,
+                                              0,
+                                            ),
                                             child: Container(
                                               height: 16,
                                               width: (widget.random * 80) + 20,
                                               decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                  color: shimmerColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                color: shimmerColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -191,14 +202,19 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                                           isLoading: shimmer,
                                           child: Padding(
                                             padding: const EdgeInsets.fromLTRB(
-                                                0, 4, 0, 0),
+                                              0,
+                                              4,
+                                              0,
+                                              0,
+                                            ),
                                             child: Container(
                                               height: 12,
                                               width: (widget.random * 200) + 20,
                                               decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                  color: shimmerColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                color: shimmerColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -210,7 +226,9 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                                         ),
                                       if (widget.body != null)
                                         SizedBox(
-                                            height: 16, child: recentEvent()),
+                                          height: 16,
+                                          child: recentEvent(),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -228,7 +246,8 @@ class _RoomPanelViewState extends State<RoomPanelView> {
                           Padding(
                             padding: const EdgeInsets.all(4.0),
                             child: NotificationBadge(
-                                widget.highlightNotificationCount),
+                              widget.highlightNotificationCount,
+                            ),
                           ),
                         if (showAnyButton) actionButtons(),
                       ],
@@ -243,11 +262,7 @@ class _RoomPanelViewState extends State<RoomPanelView> {
     );
   }
 
-  late List<GlobalKey> blobKeys = [
-    GlobalKey(),
-    GlobalKey(),
-    GlobalKey(),
-  ];
+  late List<GlobalKey> blobKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
 
   Timer? timer;
 
@@ -288,8 +303,9 @@ class _RoomPanelViewState extends State<RoomPanelView> {
       backgroundColor = Colors.transparent;
     }
 
-    var duration =
-        expanded ? Duration(seconds: 1) : Duration(milliseconds: 300);
+    var duration = expanded
+        ? Duration(seconds: 1)
+        : Duration(milliseconds: 300);
     var curve = expanded ? Curves.elasticOut : Curves.easeInOutCubic;
 
     var offset = expanded ? 7.0 : 0.0;
@@ -299,41 +315,46 @@ class _RoomPanelViewState extends State<RoomPanelView> {
       curve: curve,
       width: (expanded ? 23 : 10) + rightPad,
       decoration: BoxDecoration(
-          color: backgroundColor, borderRadius: BorderRadius.circular(5)),
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(5),
+      ),
       height: 12,
       child: Stack(
         alignment: AlignmentGeometry.center,
         children: [
           AnimatedPositioned(
-              duration: duration,
-              right: rightPad,
-              curve: curve,
-              child: SingleTypingIndicatorBlob(
-                key: blobKeys[0],
-                border: border,
-                color: color,
-                playing: expanded,
-              )),
+            duration: duration,
+            right: rightPad,
+            curve: curve,
+            child: SingleTypingIndicatorBlob(
+              key: blobKeys[0],
+              border: border,
+              color: color,
+              playing: expanded,
+            ),
+          ),
           AnimatedPositioned(
-              duration: duration,
-              right: rightPad + offset,
-              curve: curve,
-              child: SingleTypingIndicatorBlob(
-                key: blobKeys[1],
-                border: border,
-                color: color,
-                playing: expanded,
-              )),
+            duration: duration,
+            right: rightPad + offset,
+            curve: curve,
+            child: SingleTypingIndicatorBlob(
+              key: blobKeys[1],
+              border: border,
+              color: color,
+              playing: expanded,
+            ),
+          ),
           AnimatedPositioned(
-              duration: duration,
-              right: rightPad + (offset * 2),
-              curve: curve,
-              child: SingleTypingIndicatorBlob(
-                key: blobKeys[2],
-                border: border,
-                color: color,
-                playing: expanded,
-              )),
+            duration: duration,
+            right: rightPad + (offset * 2),
+            curve: curve,
+            child: SingleTypingIndicatorBlob(
+              key: blobKeys[2],
+              border: border,
+              color: color,
+              playing: expanded,
+            ),
+          ),
         ],
       ),
     );
@@ -344,29 +365,28 @@ class _RoomPanelViewState extends State<RoomPanelView> {
         ? tiamat.Text.adjustColor(context, widget.recentEventSenderColor!)
         : null;
 
-    var style = TextTheme.of(context)
-        .labelMedium
+    var style = TextTheme.of(context).labelMedium
         ?.copyWith(fontSize: 12, letterSpacing: 0);
     return SizedBox(
       child: RichText(
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(children: [
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        text: TextSpan(
+          children: [
             if (widget.recentEventSender != null)
               TextSpan(
                 text: widget.recentEventSender! + ":",
                 style: style?.copyWith(color: color),
               ),
             if (widget.recentEventSender != null)
-              WidgetSpan(
-                  child: SizedBox(
-                width: 4,
-              )),
+              WidgetSpan(child: SizedBox(width: 4)),
             TextSpan(
-                text: widget.body,
-                style:
-                    style?.copyWith(color: ColorScheme.of(context).secondary))
-          ])),
+              text: widget.body,
+              style: style?.copyWith(color: ColorScheme.of(context).secondary),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

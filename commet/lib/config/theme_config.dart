@@ -50,8 +50,10 @@ class ThemeConfig {
     final inputStream = InputFileStream(file.path);
 
     var dir = await getCustomThemesDir();
-    var destination =
-        (path.join(dir.path, path.basenameWithoutExtension(file.path)));
+    var destination = (path.join(
+      dir.path,
+      path.basenameWithoutExtension(file.path),
+    ));
 
     final archive = ZipDecoder().decodeBuffer(inputStream);
 
@@ -63,8 +65,9 @@ class ThemeConfig {
 
     for (var file in archive.files) {
       if (file.isFile) {
-        final outputStream =
-            OutputFileStream(path.join(destination, file.name));
+        final outputStream = OutputFileStream(
+          path.join(destination, file.name),
+        );
 
         file.writeContent(outputStream);
         outputStream.close();

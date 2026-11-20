@@ -2,16 +2,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:flutter/material.dart';
 
-enum UserPresenceStatus {
-  offline,
-  unknown,
-  online,
-  unavailable,
-}
+enum UserPresenceStatus { offline, unknown, online, unavailable }
 
-enum PresenceMessageType {
-  userCustom,
-}
+enum PresenceMessageType { userCustom }
 
 class UserPresenceMessage {
   PresenceMessageType messageType;
@@ -49,6 +42,9 @@ abstract class UserPresenceComponent<T extends Client> implements Component<T> {
 
   Future<UserPresence> getUserPresence(String userId);
 
-  Future<void> setStatus(UserPresenceStatus status,
-      {String? message, bool clearMessage = false});
+  Future<void> setStatus(
+    UserPresenceStatus status, {
+    String? message,
+    bool clearMessage = false,
+  });
 }

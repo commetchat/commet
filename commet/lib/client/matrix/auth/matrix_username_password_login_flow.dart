@@ -7,10 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 String get messageUserDeactivated => Intl.message(
-    "Your account has been deactivated",
-    name: "messageUserDeactivated",
-    desc:
-        "An error message displayed when the user attempts to log into an account that has been disabled");
+  "Your account has been deactivated",
+  name: "messageUserDeactivated",
+  desc: "An error message displayed when the user attempts to log into an account that has been disabled",
+);
 
 class MatrixPasswordLoginFlow implements PasswordLoginFlow {
   @override
@@ -37,10 +37,12 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
     LoginResult result = LoginResultError("An unknown error occurred");
 
     try {
-      var response = await mx.login(matrix.LoginType.mLoginPassword,
-          initialDeviceDisplayName: BuildConfig.appName,
-          password: password,
-          identifier: matrix.AuthenticationUserIdentifier(user: username!));
+      var response = await mx.login(
+        matrix.LoginType.mLoginPassword,
+        initialDeviceDisplayName: BuildConfig.appName,
+        password: password,
+        identifier: matrix.AuthenticationUserIdentifier(user: username!),
+      );
 
       if (response.accessToken.isNotEmpty) {
         result = LoginResultSuccess();

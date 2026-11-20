@@ -23,8 +23,10 @@ class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
   void initState() {
     MatrixClient.create("benchmark").then((client) {
       client.mockComponents();
-      client.self = MatrixProfile(client,
-          matrix.Profile(userId: '@benchy:matrix.org', displayName: 'benchy'));
+      client.self = MatrixProfile(
+        client,
+        matrix.Profile(userId: '@benchy:matrix.org', displayName: 'benchy'),
+      );
 
       var room = client.createRoomWithData();
       timeline = room.getBenchmarkTimeline();

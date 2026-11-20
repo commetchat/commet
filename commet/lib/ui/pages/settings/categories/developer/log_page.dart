@@ -101,10 +101,15 @@ class _LogPageState extends State<LogPage> {
       child: InkWell(
         child: DecoratedBox(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5), color: background),
+            borderRadius: BorderRadius.circular(5),
+            color: background,
+          ),
           child: InkWell(
-            onTap: () => AdaptiveDialog.show(context,
-                builder: (context) => logDetail(entry), title: entry.type.name),
+            onTap: () => AdaptiveDialog.show(
+              context,
+              builder: (context) => logDetail(entry),
+              title: entry.type.name,
+            ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
               child: Column(
@@ -119,21 +124,19 @@ class _LogPageState extends State<LogPage> {
                         ),
                       Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: Icon(
-                          icon,
-                          size: 15,
-                          color: color,
-                        ),
+                        child: Icon(icon, size: 15, color: color),
                       ),
                       tiamat.Text.labelLow(entry.type.name),
                       const SizedBox(width: 10, child: tiamat.Seperator()),
                       tiamat.Text.labelLow(
-                          DateFormat(DateFormat.HOUR_MINUTE_SECOND)
-                              .format(entry.time.toLocal())),
+                        DateFormat(DateFormat.HOUR_MINUTE_SECOND)
+                            .format(entry.time.toLocal()),
+                      ),
                     ],
                   ),
                   Text.rich(
-                      TextSpan(children: buildAnsiStyledTest(entry.content)))
+                    TextSpan(children: buildAnsiStyledTest(entry.content)),
+                  ),
                 ],
               ),
             ),
@@ -157,10 +160,15 @@ class _LogPageState extends State<LogPage> {
           spans.add(TextSpan(text: sub, style: style));
           style = entry.value;
           style = style.copyWith(
-              color: style.color != null
-                  ? tiamat.Text.adjustColor(context, style.color!,
-                      maxLightnessOnLight: 0.5, saturationMultiplier: 0.7)
-                  : null);
+            color: style.color != null
+                ? tiamat.Text.adjustColor(
+                    context,
+                    style.color!,
+                    maxLightnessOnLight: 0.5,
+                    saturationMultiplier: 0.7,
+                  )
+                : null,
+          );
           break;
         }
       }

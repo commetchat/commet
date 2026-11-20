@@ -33,10 +33,11 @@ class _BackgroundTaskViewState extends State<BackgroundTaskView> {
       padding: const EdgeInsets.all(4.0),
       child: DecoratedBox(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(blurRadius: 4, color: Theme.of(context).shadowColor)
-            ]),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(blurRadius: 4, color: Theme.of(context).shadowColor),
+          ],
+        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Container(
@@ -46,10 +47,12 @@ class _BackgroundTaskViewState extends State<BackgroundTaskView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: widget.manager.tasks
-                  .map((e) => _SingleBackgroundTaskView(
-                        e,
-                        key: ValueKey("task-display${e.hashCode}"),
-                      ))
+                  .map(
+                    (e) => _SingleBackgroundTaskView(
+                      e,
+                      key: ValueKey("task-display${e.hashCode}"),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -111,8 +114,9 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap:
-            widget.task.canCallAction ? () => widget.task.action?.call() : null,
+        onTap: widget.task.canCallAction
+            ? () => widget.task.action?.call()
+            : null,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -122,26 +126,27 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                 child: SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: status == BackgroundTaskStatus.completed
-                        ? const Icon(
-                            Icons.check,
-                            color: Colors.greenAccent,
-                            size: 10,
-                          )
-                        : status == BackgroundTaskStatus.failed
-                            ? Icon(
-                                Icons.error,
-                                color: Theme.of(context).colorScheme.error,
-                                size: 10,
-                              )
-                            : CircularProgressIndicator(
-                                strokeWidth: 2,
-                                value: progress,
-                              )),
+                  width: 10,
+                  height: 10,
+                  child: status == BackgroundTaskStatus.completed
+                      ? const Icon(
+                          Icons.check,
+                          color: Colors.greenAccent,
+                          size: 10,
+                        )
+                      : status == BackgroundTaskStatus.failed
+                      ? Icon(
+                          Icons.error,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 10,
+                        )
+                      : CircularProgressIndicator(
+                          strokeWidth: 2,
+                          value: progress,
+                        ),
+                ),
               ),
-              tiamat.Text.tiny(widget.task.label)
+              tiamat.Text.tiny(widget.task.label),
             ],
           ),
         ),

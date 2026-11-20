@@ -10,20 +10,22 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixRoomAddressSettingsView extends StatefulWidget {
-  const MatrixRoomAddressSettingsView(this.knownAliases,
-      {this.mainAlias,
-      this.userHomeserver,
-      required this.mainAliasChangedStream,
-      required this.isAliasAvailable,
-      required this.canChangeMainAlias,
-      required this.canAddLocalAlias,
-      required this.createAlias,
-      required this.deleteAlias,
-      required this.setMainAlias,
-      required this.publishAlias,
-      required this.unpublishAlias,
-      required this.publishedAliases,
-      super.key});
+  const MatrixRoomAddressSettingsView(
+    this.knownAliases, {
+    this.mainAlias,
+    this.userHomeserver,
+    required this.mainAliasChangedStream,
+    required this.isAliasAvailable,
+    required this.canChangeMainAlias,
+    required this.canAddLocalAlias,
+    required this.createAlias,
+    required this.deleteAlias,
+    required this.setMainAlias,
+    required this.publishAlias,
+    required this.unpublishAlias,
+    required this.publishedAliases,
+    super.key,
+  });
   final List<String> knownAliases;
   final List<String> publishedAliases;
   final String? mainAlias;
@@ -97,7 +99,8 @@ class _MatrixRoomAddressSettingsViewState
               height: 50,
               child: Center(
                 child: tiamat.Text.labelLow(
-                    "This room does not currently have any local Addresses"),
+                  "This room does not currently have any local Addresses",
+                ),
               ),
             ),
           ImplicitlyAnimatedList(
@@ -114,25 +117,26 @@ class _MatrixRoomAddressSettingsViewState
                       IgnorePointer(
                         ignoring: isEditable(data) == false,
                         child: SizedBox(
-                            width: boxSize,
-                            height: boxSize,
-                            child: tiamat.Tooltip(
-                              text: isPublished(data)
-                                  ? "Unpublish Address"
-                                  : "Publish Address",
-                              child: tiamat.IconToggle(
-                                icon: Icons.public,
-                                size: iconSize,
-                                state: isPublished(data),
-                                onPressed: (newState) {
-                                  if (newState) {
-                                    widget.publishAlias(data);
-                                  } else {
-                                    widget.unpublishAlias(data);
-                                  }
-                                },
-                              ),
-                            )),
+                          width: boxSize,
+                          height: boxSize,
+                          child: tiamat.Tooltip(
+                            text: isPublished(data)
+                                ? "Unpublish Address"
+                                : "Publish Address",
+                            child: tiamat.IconToggle(
+                              icon: Icons.public,
+                              size: iconSize,
+                              state: isPublished(data),
+                              onPressed: (newState) {
+                                if (newState) {
+                                  widget.publishAlias(data);
+                                } else {
+                                  widget.unpublishAlias(data);
+                                }
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                       Flexible(
                         child: Padding(
@@ -182,9 +186,9 @@ class _MatrixRoomAddressSettingsViewState
                     onPressed: showAddAliasDialog,
                   ),
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -195,8 +199,11 @@ class _MatrixRoomAddressSettingsViewState
       context,
       title: "Add Local Address",
       builder: (context) {
-        return MatrixRoomAddLocalAliasView(widget.userHomeserver!,
-            widget.isAliasAvailable, widget.createAlias);
+        return MatrixRoomAddLocalAliasView(
+          widget.userHomeserver!,
+          widget.isAliasAvailable,
+          widget.createAlias,
+        );
       },
     );
   }
@@ -212,9 +219,11 @@ class _MatrixRoomAddressSettingsViewState
             items: widget.knownAliases,
             value: widget.mainAlias,
             itemHeight: 60,
-            hint: tiamat.Text.labelLow(widget.canChangeMainAlias
-                ? "Select a main room address"
-                : "This room does not have a set main alias"),
+            hint: tiamat.Text.labelLow(
+              widget.canChangeMainAlias
+                  ? "Select a main room address"
+                  : "This room does not have a set main alias",
+            ),
             onItemSelected: (item) => widget.setMainAlias(item!),
             itemBuilder: (item) {
               return Row(
@@ -236,8 +245,10 @@ class _MatrixRoomAddressSettingsViewState
   }
 
   Future<void> deleteAlias(String item) async {
-    var confirmation = await AdaptiveDialog.confirmation(context,
-        prompt: "Are you sure you want to delete the address '$item'");
+    var confirmation = await AdaptiveDialog.confirmation(
+      context,
+      prompt: "Are you sure you want to delete the address '$item'",
+    );
 
     if (confirmation != true) {
       return;

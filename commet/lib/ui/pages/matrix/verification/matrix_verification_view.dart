@@ -10,17 +10,18 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
 class MatrixVerificationPageView extends StatelessWidget {
-  const MatrixVerificationPageView(
-      {required this.state,
-      required this.sasTypes,
-      required this.sasNumbers,
-      required this.sasEmoji,
-      required this.userID,
-      super.key,
-      this.onVerificationRequestAccepted,
-      this.onVerificationRequestRejected,
-      this.onSasAccepted,
-      this.onSasRejected});
+  const MatrixVerificationPageView({
+    required this.state,
+    required this.sasTypes,
+    required this.sasNumbers,
+    required this.sasEmoji,
+    required this.userID,
+    super.key,
+    this.onVerificationRequestAccepted,
+    this.onVerificationRequestRejected,
+    this.onSasAccepted,
+    this.onSasRejected,
+  });
 
   final Function? onVerificationRequestAccepted;
   final Function? onVerificationRequestRejected;
@@ -34,37 +35,42 @@ class MatrixVerificationPageView extends StatelessWidget {
   final KeyVerificationState state;
 
   String get messageWaitingOtherDeviceToAccept => Intl.message(
-      "Waiting for the other device to accept the request",
-      name: "messageWaitingOtherDeviceToAccept",
-      desc:
-          "Message to show while waiting for another device to accept a matrix session verification request");
+    "Waiting for the other device to accept the request",
+    name: "messageWaitingOtherDeviceToAccept",
+    desc: "Message to show while waiting for another device to accept a matrix session verification request",
+  );
 
-  String messageMatrixSessionVerificationRequest(String username) => Intl.message(
-      "**$username** has requested to verify your session",
-      desc:
-          "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
-      args: [username],
-      name: "messageMatrixSessionVerificationRequest");
+  String messageMatrixSessionVerificationRequest(String username) =>
+      Intl.message(
+        "**$username** has requested to verify your session",
+        desc: "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        args: [username],
+        name: "messageMatrixSessionVerificationRequest",
+      );
 
   String get messageSasEmojiVerificationPrompt => Intl.message(
-      "Check that the emoji are the same, and in the same order as on the other device",
-      name: "messageSasEmojiVerificationPrompt",
-      desc:
-          "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order");
+    "Check that the emoji are the same, and in the same order as on the other device",
+    name: "messageSasEmojiVerificationPrompt",
+    desc: "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+  );
 
-  String get promptConfirmEmojiMatches => Intl.message("They match!",
-      name: "promptConfirmEmojiMatches",
-      desc: "Button text to confirm that the emoji matches");
+  String get promptConfirmEmojiMatches => Intl.message(
+    "They match!",
+    name: "promptConfirmEmojiMatches",
+    desc: "Button text to confirm that the emoji matches",
+  );
 
-  String get promptEmojiDoNotMatch => Intl.message("They don't match",
-      name: "promptEmojiDoNotMatch",
-      desc: "Button text to confirm that the emoji do NOT match");
+  String get promptEmojiDoNotMatch => Intl.message(
+    "They don't match",
+    name: "promptEmojiDoNotMatch",
+    desc: "Button text to confirm that the emoji do NOT match",
+  );
 
   String get messageVerificationComplete => Intl.message(
-      "Verification Complete!",
-      name: "messageVerificationComplete",
-      desc:
-          "Message to show when verification was completed successfully, and the session has been verified");
+    "Verification Complete!",
+    name: "messageVerificationComplete",
+    desc: "Message to show when verification was completed successfully, and the session has been verified",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +89,7 @@ class MatrixVerificationPageView extends StatelessWidget {
         return Column(
           children: [
             tiamat.Text.label(messageWaitingOtherDeviceToAccept),
-            loading(context)
+            loading(context),
           ],
         );
       case KeyVerificationState.waitingSas:
@@ -98,8 +104,10 @@ class MatrixVerificationPageView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-            child: Markdown(
-                data: messageMatrixSessionVerificationRequest(userID))),
+          child: Markdown(
+            data: messageMatrixSessionVerificationRequest(userID),
+          ),
+        ),
         Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,8 +116,9 @@ class MatrixVerificationPageView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Button.success(
-                  text: CommonStrings.promptAccept,
-                  onTap: onVerificationRequestAccepted?.call),
+                text: CommonStrings.promptAccept,
+                onTap: onVerificationRequestAccepted?.call,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -117,7 +126,7 @@ class MatrixVerificationPageView extends StatelessWidget {
                 text: CommonStrings.promptReject,
                 onTap: onVerificationRequestRejected?.call,
               ),
-            )
+            ),
           ],
         ),
       ],
@@ -144,23 +153,22 @@ class MatrixVerificationPageView extends StatelessWidget {
               alignment: WrapAlignment.center,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: sasEmoji
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.all(1.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            EmojiWidget(
-                              UnicodeEmoticon(e.emoji),
-                              height: 30,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: tiamat.Text.tiny(e.name),
-                            )
-                          ],
-                        ),
-                      ))
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          EmojiWidget(UnicodeEmoticon(e.emoji), height: 30),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: tiamat.Text.tiny(e.name),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -174,8 +182,9 @@ class MatrixVerificationPageView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Button.success(
-                      text: promptConfirmEmojiMatches,
-                      onTap: onSasAccepted?.call),
+                    text: promptConfirmEmojiMatches,
+                    onTap: onSasAccepted?.call,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -183,10 +192,10 @@ class MatrixVerificationPageView extends StatelessWidget {
                     text: promptEmojiDoNotMatch,
                     onTap: onSasRejected?.call,
                   ),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       );
     }
@@ -195,21 +204,24 @@ class MatrixVerificationPageView extends StatelessWidget {
 
   Widget done(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Expanded(
-              child: Center(
-                  child: Icon(
-            Icons.verified_user_rounded,
-            color: Colors.green,
-            size: 100,
-          ))),
-          Button.success(
-            text: messageVerificationComplete,
-            onTap: () => Navigator.pop(context),
-          )
-        ]);
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Expanded(
+          child: Center(
+            child: Icon(
+              Icons.verified_user_rounded,
+              color: Colors.green,
+              size: 100,
+            ),
+          ),
+        ),
+        Button.success(
+          text: messageVerificationComplete,
+          onTap: () => Navigator.pop(context),
+        ),
+      ],
+    );
   }
 
   Widget loading(BuildContext context) {

@@ -11,8 +11,12 @@ import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomEventSearchWidget extends StatefulWidget {
-  const RoomEventSearchWidget(
-      {required this.room, this.close, this.onEventClicked, super.key});
+  const RoomEventSearchWidget({
+    required this.room,
+    this.close,
+    this.onEventClicked,
+    super.key,
+  });
   final Room room;
   final void Function()? close;
   final void Function(String eventId)? onEventClicked;
@@ -61,11 +65,10 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
                     style: Theme.of(context).textTheme.bodyMedium!,
                     controller: controller,
                     decoration: InputDecoration(
-                        hintText: CommonStrings.promptSearch,
-                        prefix: const SizedBox(
-                          width: 10,
-                        ),
-                        contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 0)),
+                      hintText: CommonStrings.promptSearch,
+                      prefix: const SizedBox(width: 10),
+                      contentPadding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    ),
                   ),
                 ),
               ),
@@ -76,7 +79,7 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
                   size: 20,
                   onPressed: widget.close,
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -93,20 +96,21 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Material(
-                          color: color,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () =>
-                                widget.onEventClicked?.call(data.eventId),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: TimelineEventViewSingle(
-                                room: widget.room,
-                                event: data,
-                                key: ValueKey("search-result_${data.eventId}"),
-                              ),
+                        color: color,
+                        borderRadius: BorderRadius.circular(8),
+                        child: InkWell(
+                          onTap: () =>
+                              widget.onEventClicked?.call(data.eventId),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: TimelineEventViewSingle(
+                              room: widget.room,
+                              event: data,
+                              key: ValueKey("search-result_${data.eventId}"),
                             ),
-                          )),
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -117,7 +121,8 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
             searchSession != null &&
             loading == false)
           Flexible(
-              child: Center(child: tiamat.Text.labelLow("No results found"))),
+            child: Center(child: tiamat.Text.labelLow("No results found")),
+          ),
         if (loading ||
             (currentResults?.isNotEmpty == true &&
                 searchSession?.canContinueSearch == true))
@@ -126,35 +131,34 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
             child: loading
                 ? Center(
                     child: const SizedBox(
-                        width: 15,
-                        height: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        )))
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
                 : currentResults?.isNotEmpty == true
-                    ? Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-                        child: tiamat.TextButton(
-                          "Next",
-                          icon: Icons.search,
-                          highlighted: true,
-                          highlightColor:
-                              ColorScheme.of(context).surfaceContainerLow,
-                          onTap: () {
-                            var stream = searchSession?.continueSearch();
+                ? Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                    child: tiamat.TextButton(
+                      "Next",
+                      icon: Icons.search,
+                      highlighted: true,
+                      highlightColor: ColorScheme.of(context)
+                          .surfaceContainerLow,
+                      onTap: () {
+                        var stream = searchSession?.continueSearch();
 
-                            currentSubscription?.cancel();
-                            currentSubscription =
-                                stream!.listen(onResultsChanged);
+                        currentSubscription?.cancel();
+                        currentSubscription = stream!.listen(onResultsChanged);
 
-                            setState(() {
-                              loading = true;
-                            });
-                          },
-                        ),
-                      )
-                    : Container(),
-          )
+                        setState(() {
+                          loading = true;
+                        });
+                      },
+                    ),
+                  )
+                : Container(),
+          ),
       ],
     );
   }

@@ -81,7 +81,8 @@ class DownloadFileTask implements BackgroundTaskWithOptionalProgress {
 
   Future<bool> _doDownload() async {
     sub = file.onProgressChanged?.listen((downloadProgress) {
-      final amount = downloadProgress.downloaded.toDouble() /
+      final amount =
+          downloadProgress.downloaded.toDouble() /
           downloadProgress.total.toDouble();
       progress = amount;
 
@@ -92,9 +93,10 @@ class DownloadFileTask implements BackgroundTaskWithOptionalProgress {
       final bytes = await file.getFileData();
       if (bytes != null) {
         destinationPath = await FilePicker.platform.saveFile(
-            fileName: filename,
-            initialDirectory: preferences.lastDownloadLocation.value,
-            bytes: bytes);
+          fileName: filename,
+          initialDirectory: preferences.lastDownloadLocation.value,
+          bytes: bytes,
+        );
 
         return destinationPath != null;
       } else {
@@ -103,8 +105,9 @@ class DownloadFileTask implements BackgroundTaskWithOptionalProgress {
     }
 
     destinationPath = await FilePicker.platform.saveFile(
-        fileName: filename,
-        initialDirectory: preferences.lastDownloadLocation.value);
+      fileName: filename,
+      initialDirectory: preferences.lastDownloadLocation.value,
+    );
 
     if (destinationPath != null) {
       await file.save(destinationPath!);

@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class FloatingTile extends StatefulWidget {
-  const FloatingTile(
-      {super.key,
-      required this.child,
-      this.initialPosition = Alignment.topRight});
+  const FloatingTile({
+    super.key,
+    required this.child,
+    this.initialPosition = Alignment.topRight,
+  });
   final Alignment initialPosition;
   final Widget child;
 
@@ -56,12 +57,13 @@ class _FloatingTileState extends State<FloatingTile> {
 }
 
 class TileOverlay extends StatefulWidget {
-  const TileOverlay(
-      {super.key,
-      required this.child,
-      this.initialPosition = Alignment.topRight,
-      this.initialLayoutSize = Rect.zero,
-      this.safeAreaPadding = EdgeInsets.zero});
+  const TileOverlay({
+    super.key,
+    required this.child,
+    this.initialPosition = Alignment.topRight,
+    this.initialLayoutSize = Rect.zero,
+    this.safeAreaPadding = EdgeInsets.zero,
+  });
   final Rect initialLayoutSize;
   final EdgeInsets safeAreaPadding;
   final Alignment initialPosition;
@@ -89,7 +91,9 @@ class _TileOverlayState extends State<TileOverlay> {
         break;
       case Alignment.bottomRight:
         offset = Offset(
-            widget.initialLayoutSize.width, widget.initialLayoutSize.height);
+          widget.initialLayoutSize.width,
+          widget.initialLayoutSize.height,
+        );
         break;
       case Alignment.topLeft:
         offset = Offset.zero;
@@ -97,7 +101,11 @@ class _TileOverlayState extends State<TileOverlay> {
     }
 
     offset = getNearestPoint(
-        offset, Offset.zero, widget.initialLayoutSize, widget.safeAreaPadding);
+      offset,
+      Offset.zero,
+      widget.initialLayoutSize,
+      widget.safeAreaPadding,
+    );
 
     SchedulerBinding.instance.addPostFrameCallback(postFrameCallback);
   }
@@ -107,26 +115,32 @@ class _TileOverlayState extends State<TileOverlay> {
   }
 
   Offset getNearestPoint(
-      Offset currentPos, Offset size, Rect bounds, EdgeInsets safeAreaPadding) {
+    Offset currentPos,
+    Offset size,
+    Rect bounds,
+    EdgeInsets safeAreaPadding,
+  ) {
     var p = 10.0;
 
     var b = Rect.fromLTRB(
-        bounds.left / preferences.appScale.value,
-        bounds.top / preferences.appScale.value,
-        bounds.right / preferences.appScale.value,
-        bounds.bottom / preferences.appScale.value);
+      bounds.left / preferences.appScale.value,
+      bounds.top / preferences.appScale.value,
+      bounds.right / preferences.appScale.value,
+      bounds.bottom / preferences.appScale.value,
+    );
 
     var rect = Rect.fromLTRB(
-        b.left + p + safeAreaPadding.left,
-        b.top + p + safeAreaPadding.top,
-        b.right - p - size.dx - safeAreaPadding.right,
-        b.bottom - p - size.dy - safeAreaPadding.bottom);
+      b.left + p + safeAreaPadding.left,
+      b.top + p + safeAreaPadding.top,
+      b.right - p - size.dx - safeAreaPadding.right,
+      b.bottom - p - size.dy - safeAreaPadding.bottom,
+    );
 
     var points = [
       Offset(rect.left, rect.top),
       Offset(rect.right, rect.top),
       Offset(rect.left, rect.bottom),
-      Offset(rect.right, rect.bottom)
+      Offset(rect.right, rect.bottom),
     ];
 
     var minDistance = 9999999999.0;
@@ -152,10 +166,11 @@ class _TileOverlayState extends State<TileOverlay> {
     }
 
     var point = getNearestPoint(
-        currentPoint,
-        Offset(childSize.width, childSize.height),
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        widget.safeAreaPadding);
+      currentPoint,
+      Offset(childSize.width, childSize.height),
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      widget.safeAreaPadding,
+    );
 
     if ((point - offset).distance > 1) {
       setState(() {
@@ -172,24 +187,26 @@ class _TileOverlayState extends State<TileOverlay> {
         return false;
       },
       child: AnimatedPositioned(
-          left: offset.dx,
-          top: offset.dy,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
-          child: GestureDetector(
-              onPanUpdate: (details) {
-                setState(() {
-                  offset = details.globalPosition - startPosition;
-                });
-              },
-              onPanStart: (details) {
-                startPosition = details.localPosition;
-              },
-              onPanEnd: (details) {
-                var pos = offset + details.velocity.pixelsPerSecond;
-                updatePoint(pos);
-              },
-              child: Container(key: childKey, child: widget.child))),
+        left: offset.dx,
+        top: offset.dy,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        child: GestureDetector(
+          onPanUpdate: (details) {
+            setState(() {
+              offset = details.globalPosition - startPosition;
+            });
+          },
+          onPanStart: (details) {
+            startPosition = details.localPosition;
+          },
+          onPanEnd: (details) {
+            var pos = offset + details.velocity.pixelsPerSecond;
+            updatePoint(pos);
+          },
+          child: Container(key: childKey, child: widget.child),
+        ),
+      ),
     );
   }
 }
