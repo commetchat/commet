@@ -13,21 +13,11 @@ Future<int> run(String command, List<String> args) async {
 }
 
 Future<int> getDependencies() async {
-  return await run("flutter", [
-    "pub",
-    "get",
-  ]);
+  return await run("flutter", ["pub", "get"]);
 }
 
 Future<int> intlUtilsGenerate() async {
-  return await run(
-    "flutter",
-    [
-      "pub",
-      "run",
-      "intl_utils:generate",
-    ],
-  );
+  return await run("flutter", ["pub", "run", "intl_utils:generate"]);
 }
 
 Future<List<File>> generateFileLists() async {
@@ -92,7 +82,7 @@ Future<int> generateFromArb(List<File> files) async {
     files[0].absolute.path,
     "--translations-list-file",
     files[1].absolute.path,
-    "--output-dir=lib/generated/l10n"
+    "--output-dir=lib/generated/l10n",
   ]);
 }
 

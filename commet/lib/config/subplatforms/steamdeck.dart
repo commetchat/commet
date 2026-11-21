@@ -36,8 +36,8 @@ class SteamdeckSubplatform implements Subplatform {
   String get name => _isSteamFrame
       ? "steamframe"
       : _isGameMode
-          ? "steamdeck_gamemode"
-          : "steamdeck_desktop";
+      ? "steamdeck_gamemode"
+      : "steamdeck_desktop";
 
   static bool _isSteamDeck = false;
 
