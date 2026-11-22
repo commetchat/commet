@@ -52,13 +52,15 @@ class _DoublePreferenceSliderState extends State<DoublePreferenceSlider> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: widget.outline ? BoxDecoration(
-        color: ColorScheme.of(context).surfaceContainer.withAlpha(100),
-        border: BoxBorder.all(
-          color: ColorScheme.of(context).secondary.withAlpha(20),
-        ),
-        borderRadius: BorderRadius.circular(8),
-      ) : null,
+      decoration: widget.outline
+          ? BoxDecoration(
+              color: ColorScheme.of(context).surfaceContainer.withAlpha(100),
+              border: BoxBorder.all(
+                color: ColorScheme.of(context).secondary.withAlpha(20),
+              ),
+              borderRadius: BorderRadius.circular(8),
+            )
+          : null,
       child: Padding(
         padding: EdgeInsets.fromLTRB(8, widget.paddingY, 8, widget.paddingY),
         child: Column(
@@ -96,18 +98,20 @@ class _DoublePreferenceSliderState extends State<DoublePreferenceSlider> {
                     },
                   ),
                 ),
-                if(widget.showResetButton)
+                if (widget.showResetButton)
                   SizedBox(
                     width: 30,
                     height: 30,
-                    child: tiamat.IconButton(icon: Icons.refresh,
-                    onPressed: () {
-                      setState(() {
-                        value = widget.preference.defaultValue;
-                      });
-                      widget.preference.set(widget.preference.defaultValue);
-                      widget.onChanged?.call(widget.preference.value);
-                    },),
+                    child: tiamat.IconButton(
+                      icon: Icons.refresh,
+                      onPressed: () {
+                        setState(() {
+                          value = widget.preference.defaultValue;
+                        });
+                        widget.preference.set(widget.preference.defaultValue);
+                        widget.onChanged?.call(widget.preference.value);
+                      },
+                    ),
                   ),
                 if (widget.requiresConfirmationButton)
                   tiamat.Button.secondary(
