@@ -6,9 +6,11 @@ import 'package:commet/client/matrix/components/widgets/matrix_widget_component.
 import 'package:commet/client/matrix/components/widgets/runners/subprocess/matrix_widget_desktop_runner.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/image_or_icon.dart';
+import 'package:commet/utils/system_processes_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix_api_lite.dart';
 
@@ -22,9 +24,18 @@ class VoipOverlay {
 
     var component = client.getComponent<WidgetComponent>();
 
-    var exe = Platform.resolvedExecutable;
+    Process? process;
 
-    var process = await Process.start(exe, ['--overlay']);
+    if (BuildConfig.IS_FLATPAK) {
+      process = await SystemProcessesUtils.spawnSubprocess("flatpak", [
+        "run",
+        "chat.commet.commetapp",
+        "--overlay",
+      ]);
+    } else {
+      var exe = Platform.resolvedExecutable;
+      process = await Process.start(exe, ['--overlay']);
+    }
 
     var runner = MatrixUserWidgetSubprocessRunner(
       process: process,

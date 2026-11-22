@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/subplatforms/subplatforms.dart';
@@ -8,6 +10,7 @@ import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:commet/utils/links/link_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -196,6 +199,8 @@ class _AppInfoState extends State<_AppInfo> {
                         tiamat.Text.labelLow(getEncryptionInfo()),
                       if (preferences.developerMode.value)
                         tiamat.Text.labelLow(commandLineArgs.join(" ")),
+                      if (!kIsWeb && preferences.developerMode.value)
+                        tiamat.Text.labelLow(Platform.resolvedExecutable),
                     ],
                   ),
                   Padding(
