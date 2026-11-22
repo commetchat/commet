@@ -466,6 +466,16 @@ class Preferences {
     defaultValue: true,
   );
 
+  DoublePreference voipOverlayXOffset = DoublePreference(
+    "voip_overlay_offset_x",
+    defaultValue: 0.0,
+  );
+
+  DoublePreference voipOverlayYOffset = DoublePreference(
+    "voip_overlay_offset_y",
+    defaultValue: 0.0,
+  );
+
   BoolPreference urlPreviewInE2EEChat = BoolPreference(
     "use_url_preview_in_e2ee_chat",
     defaultValue: false,

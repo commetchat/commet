@@ -182,17 +182,45 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
         tiamat.Panel(
           mode: tiamat.TileType.surfaceContainerLow,
           header: headerVoipSettingsOverlay,
-          child: BooleanPreferenceToggle(
-            preference: preferences.useVoipOverlay,
-            title: "Enable Overlay",
-            description: "When in a call, add an overlay on your screen to show the call participants",
-            onChanged: (p0) {
-              if (p0 == false) {
-                clientManager?.callManager.removeOverlay();
-              } else {
-                clientManager?.callManager.enableOverlayForExistingSessions();
-              }
-            },
+          child: Column(
+            spacing: 8,
+            children: [
+              BooleanPreferenceToggle(
+                preference: preferences.useVoipOverlay,
+                title: "Enable Overlay",
+                description: "When in a call, add an overlay on your screen to show the call participants",
+                onChanged: (p0) {
+                  if (p0 == false) {
+                    clientManager?.callManager.removeOverlay();
+                  } else {
+                    clientManager?.callManager
+                        .enableOverlayForExistingSessions();
+                  }
+                },
+              ),
+              Column(
+                children: [
+                  DoublePreferenceSlider(
+                    preference: preferences.voipOverlayXOffset,
+                    min: -1000,
+                    max: 1000,
+                    title: "X Position",
+                    outline: false,
+                    showResetButton: true,
+                    paddingY: 0,
+                  ),
+                  DoublePreferenceSlider(
+                    preference: preferences.voipOverlayYOffset,
+                    min: -1000,
+                    max: 1000,
+                    title: "Y Position",
+                    outline: false,
+                    showResetButton: true,
+                    paddingY: 0,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
         tiamat.Panel(
