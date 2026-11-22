@@ -19,3 +19,11 @@ pub extern "C" fn commet_overlay() {
         overlay::run_overlay(false);
     }
 }
+
+#[no_mangle]
+pub extern "C" fn commet_overlay_debug() {
+    #[cfg(any(target_os = "windows", target_os = "linux"))]
+    {
+        overlay::run_overlay(true);
+    }
+}

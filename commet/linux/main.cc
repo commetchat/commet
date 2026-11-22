@@ -2,6 +2,7 @@
 #include "shortcuts.h"
 #include "widget_runner.h"
 #include "overlay_runner.h"
+#include "overlay_runner_debug.h"
 
 int main(int argc, char **argv)
 {
@@ -25,6 +26,13 @@ int main(int argc, char **argv)
   if(is_overlay != 0) 
   {
     return is_overlay;
+  }
+
+  // flutter run -d linux --dart-entrypoint-args --overlay_debug
+  int is_overlay_debug = overlay_runner_debug(argc, argv);
+  if(is_overlay_debug != 0) 
+  {
+    return is_overlay_debug;
   }
 
   if (is_shortcut == 0)
