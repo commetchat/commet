@@ -4,6 +4,7 @@ import 'package:commet/client/components/read_receipts/read_receipt_component.da
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_create_room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_activity.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
@@ -15,6 +16,7 @@ import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_activity.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_message.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_poll.dart';
@@ -78,6 +80,7 @@ enum TimelineEventWidgetDisplayType {
   emote,
   roomCreate,
   poll,
+  activity,
   hidden,
 }
 
@@ -229,6 +232,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (event is TimelineEventGeneric) {
       return TimelineEventWidgetDisplayType.generic;
+    }
+
+    if (event is TimelineEventActivity) {
+      return TimelineEventWidgetDisplayType.activity;
     }
 
     if (polls?.isPollEvent(event) == true) {
@@ -664,6 +671,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (_widgetType == TimelineEventWidgetDisplayType.poll) {
       return TimelineEventViewPoll(
+        initialIndex: widget.initialIndex,
+        timeline: widget.timeline,
+        key: eventKey,
+      );
+    }
+
+    if (_widgetType == TimelineEventWidgetDisplayType.activity) {
+      return TimelineEventViewActivity(
         initialIndex: widget.initialIndex,
         timeline: widget.timeline,
         key: eventKey,

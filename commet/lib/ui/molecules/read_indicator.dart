@@ -7,6 +7,7 @@ class ReadIndicator extends StatelessWidget {
   const ReadIndicator({
     required this.room,
     required this.users,
+    this.userOutlineColor,
     this.spacing = 6,
     this.onTap,
     super.key,
@@ -15,6 +16,7 @@ class ReadIndicator extends StatelessWidget {
   final Function()? onTap;
   final Iterable<String> users;
   final double spacing;
+  final Color? userOutlineColor;
 
   static const int maxItems = 4;
 
@@ -50,7 +52,8 @@ class ReadIndicator extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(index.toDouble() * spacing, 0, 0, 0),
         child: tiamat.Avatar(
           border: BoxBorder.all(
-            color: ColorScheme.of(context).surfaceContainerLow,
+            color:
+                userOutlineColor ?? ColorScheme.of(context).surfaceContainerLow,
             width: 2,
             strokeAlign: 0.5,
           ),

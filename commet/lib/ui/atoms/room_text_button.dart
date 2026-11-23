@@ -89,7 +89,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   late List<StreamSubscription> subs;
   CalendarRoom? calendarRoom;
   ActivitiesComponent? activities;
-  List<RoomActivitySession>? activitySessions;
+  List<RoomRealTimeActivitySession>? activitySessions;
   List<MatrixCalendarEventState>? calendarEvents;
 
   @override
@@ -106,7 +106,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     ];
 
     if (activities != null) {
-      activitySessions = activities?.getSessions();
+      activitySessions = activities?.getRealTimeSessions();
       sortActivities();
     }
 
@@ -131,7 +131,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
   void onSessionsChanged(void event) {
     setState(() {
-      activitySessions = activities?.getSessions();
+      activitySessions = activities?.getRealTimeSessions();
       sortActivities();
     });
   }
@@ -253,7 +253,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   }
 
   Widget buildActivities(Widget child, BuildContext context) {
-    Iterable<RoomActivitySession> sessions = activitySessions!;
+    Iterable<RoomRealTimeActivitySession> sessions = activitySessions!;
 
     if (activitySessions!.any((i) => i.thirdparty == false)) {
       sessions = activitySessions!.where((i) => i.thirdparty == false);
@@ -275,7 +275,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  Widget buildActivity(RoomActivitySession activity) {
+  Widget buildActivity(RoomRealTimeActivitySession activity) {
     return AdaptiveContextMenu(
       items: [
         tiamat.ContextMenuItem(
@@ -294,7 +294,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: activity.associatedWidget == null
+            onTap: activity.associatedActivityInfo == null
                 ? null
                 : () => onWidgetTapped(activity),
             child: Column(
@@ -306,10 +306,13 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                     child: Row(
                       spacing: 8,
                       children: [
-                        SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: activity.icon.build(context),
+                        ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(4),
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: activity.icon.build(context),
+                          ),
                         ),
                         tiamat.Text.labelLow(activity.name),
                       ],
@@ -388,7 +391,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: i.associatedWidget == null
+                            onTap: i.associatedActivityInfo == null
                                 ? null
                                 : () => onWidgetTapped(i),
                             child: SizedBox(
@@ -428,27 +431,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     );
   }
 
-  Future<void> onWidgetTapped(RoomActivitySession activity) async {
-    bool isInActivity = WidgetComponent.currentSessions.any(
-      (element) =>
-          element.info.type == activity.application &&
-          widget.room == element.room,
-    );
-
-    if (isInActivity == false) {
-      var confirm = await AdaptiveDialog.confirmation(
-        context,
-        prompt: "Open **${activity.associatedWidget!.name}**?",
-      );
-      if (confirm == true) {
-        WidgetComponent.runWidget(
-          widget.room,
-          context,
-          activity.associatedWidget!,
-        );
-      }
-    } else {
-      Log.i("Already has a widget in for this session");
-    }
+  Future<void> onWidgetTapped(RoomRealTimeActivitySession activity) async {
+    activities!.openActivity(activity.associatedActivityInfo!, context);
   }
 }

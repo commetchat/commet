@@ -6,11 +6,11 @@ class ImageOrIcon {
 
   ImageOrIcon({this.image, required this.icon});
 
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, {Color? iconColor}) {
     if (image != null) {
       return Image(image: image!);
     }
 
-    return Icon(icon);
+    return Icon(icon, color: iconColor);
   }
 }

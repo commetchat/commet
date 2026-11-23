@@ -25,6 +25,7 @@ import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_role.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_activity.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_add_reaction.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_call.dart';
@@ -670,6 +671,12 @@ class MatrixRoom extends Room {
           client: c,
         ),
         "chat.commet.calendar_events" => MatrixTimelineEventEditCalendar(
+          event,
+          client: c,
+        ),
+        "chat.commet.webxdc-adapter.session_start" =>
+          MatrixTimelineEventActivity(event, client: c),
+        "chat.commet.webxdc-adapter.update" => MatrixTimelineEventActivity(
           event,
           client: c,
         ),

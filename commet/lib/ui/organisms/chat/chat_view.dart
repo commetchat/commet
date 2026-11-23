@@ -1,10 +1,12 @@
 import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget.dart';
 import 'package:commet/ui/molecules/typing_indicators_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
@@ -13,6 +15,8 @@ import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});
@@ -53,7 +57,7 @@ class ChatView extends StatelessWidget {
         Expanded(
           child: Stack(
             fit: StackFit.expand,
-            children: [timeline(), const ParticlePlayer()],
+            children: [timeline(context), const ParticlePlayer()],
           ),
         ),
         input(context),
@@ -61,23 +65,104 @@ class ChatView extends StatelessWidget {
     );
   }
 
-  Widget timeline() {
+  Widget timeline(BuildContext context) {
     return state.timeline == null
         ? const Center(child: CircularProgressIndicator())
-        : RoomTimelineWidget(
-            key: ValueKey("${state.room.identifier}-timeline"),
-            timeline: state.timeline!,
-            setReplyingEvent: (event) => state.setInteractingEvent(
-              event,
-              type: EventInteractionType.reply,
-            ),
-            setEditingEvent: (event) => state.setInteractingEvent(
-              event,
-              type: EventInteractionType.edit,
-            ),
-            isThreadTimeline: state.isThread,
-            clearNotifications: clearNotifications,
+        : Column(
+            children: [
+              if (state.currentActivities.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: state.currentActivities
+                      .map((i) => buildCurrentActivity(i, context))
+                      .toList(),
+                ),
+              Expanded(
+                child: RoomTimelineWidget(
+                  key: ValueKey("${state.room.identifier}-timeline"),
+                  timeline: state.timeline!,
+                  setReplyingEvent: (event) => state.setInteractingEvent(
+                    event,
+                    type: EventInteractionType.reply,
+                  ),
+                  setEditingEvent: (event) => state.setInteractingEvent(
+                    event,
+                    type: EventInteractionType.edit,
+                  ),
+                  isThreadTimeline: state.isThread,
+                  clearNotifications: clearNotifications,
+                ),
+              ),
+            ],
           );
+  }
+
+  Widget buildCurrentActivity(
+    RoomRealTimeActivitySession i,
+    BuildContext context,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 2, 4, 0),
+      child: Material(
+        color: ColorScheme.of(context).tertiaryContainer,
+        borderRadius: BorderRadius.circular(4),
+        child: InkWell(
+          onTap: () {
+            state.activities!.openActivity(i.associatedActivityInfo!, context);
+          },
+          child: Container(
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
+                child: Row(
+                  spacing: 8,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      spacing: 8,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(4),
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: i.icon.build(
+                              context,
+                              iconColor: ColorScheme.of(context)
+                                  .onTertiaryContainer,
+                            ),
+                          ),
+                        ),
+                        tiamat.Text.labelLow(
+                          i.name,
+                          color: ColorScheme.of(context).onTertiaryContainer,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        ReadIndicator(
+                          room: state.room,
+                          users: i.participants,
+                          spacing: 12,
+                          userOutlineColor: ColorScheme.of(context)
+                              .tertiaryContainer,
+                        ),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: ColorScheme.of(context).onTertiaryContainer,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void handleMarkAsRead(TimelineEvent event) async {

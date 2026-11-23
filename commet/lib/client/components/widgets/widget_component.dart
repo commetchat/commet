@@ -158,5 +158,6 @@ abstract class WidgetComponent<T extends Client> implements Component<T> {
     Room room,
     BuildContext context, {
     WidgetHostType? type,
+    Map<String, String>? additionalAvailableArgs,
   });
 }

@@ -204,6 +204,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
     Room room,
     BuildContext context, {
     WidgetHostType? type,
+    Map<String, String>? additionalAvailableArgs,
   }) async {
     ErrorUtils.tryRun(context, () async {
       var info = widget as MatrixUserWidgetInfo;
@@ -223,6 +224,7 @@ class MatrixWidgetComponent implements WidgetComponent<MatrixClient> {
         "\$chat.commet.color_scheme": Uri.encodeComponent(colorScheme),
         "\$org.matrix.msc2873.client_theme":
             Theme.of(context).brightness == Brightness.light ? "light" : "dark",
+        if (additionalAvailableArgs != null) ...additionalAvailableArgs,
       };
 
       Log.i("Replacements: ${jsonEncode(replacements)}");

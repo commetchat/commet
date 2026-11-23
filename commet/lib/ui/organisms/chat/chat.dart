@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
+import 'package:commet/client/components/activities/activities_component.dart';
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
@@ -74,13 +75,15 @@ class ChatState extends State<Chat> {
   StreamController<void> onFocusMessageInput = StreamController();
   StreamController<String> setMessageInputText = StreamController();
 
-  StreamSubscription? onLinkedSubscription;
-  StreamSubscription? onFileDroppedSubscription;
+  List<StreamSubscription> subs = List.empty();
 
   GifComponent? gifs;
   RoomEmoticonComponent? emoticons;
   ReadReceiptComponent? receipts;
   TypingIndicatorComponent? typingIndicators;
+  ActivitiesComponent? activities;
+
+  List<RoomRealTimeActivitySession> currentActivities = [];
 
   Debouncer typingStatusDebouncer = Debouncer(
     delay: const Duration(seconds: 5),
@@ -99,17 +102,21 @@ class ChatState extends State<Chat> {
       "Initializing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}",
     );
 
-    onFileDroppedSubscription = EventBus.onFileDropped.stream.listen(
-      onFileDropped,
-    );
-
     gifs = room.client.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
     threadsComponent = room.client.getComponent<ThreadsComponent>();
     receipts = room.getComponent<ReadReceiptComponent>();
     typingIndicators = room.getComponent<TypingIndicatorComponent>();
+    activities = room.getComponent<ActivitiesComponent>();
 
-    onLinkedSubscription = CustomURI.onLinked.listen(onLinked);
+    subs = [
+      EventBus.onFileDropped.stream.listen(onFileDropped),
+      CustomURI.onLinked.listen(onLinked),
+      if (activities != null)
+        activities!.onSessionsChanged.listen((_) => getCurrentActivities()),
+    ];
+
+    getCurrentActivities();
 
     if (widget.threadId != null && threadsComponent != null) {
       loadThreadTimeline();
@@ -157,8 +164,10 @@ class ChatState extends State<Chat> {
       "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}",
     );
 
-    onLinkedSubscription?.cancel();
-    onFileDroppedSubscription?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
+
     super.dispose();
   }
 
@@ -493,6 +502,14 @@ class ChatState extends State<Chat> {
         },
         title: 'Add "${widgetUri.widgetName ?? "Custom"}"?',
       );
+    }
+  }
+
+  void getCurrentActivities() {
+    if (activities != null) {
+      setState(() {
+        currentActivities = activities!.getRealTimeSessions();
+      });
     }
   }
 }
