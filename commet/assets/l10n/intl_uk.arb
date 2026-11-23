@@ -2143,7 +2143,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamFramerateDescription": "Бажана кількість кадрів на секунду для показу екрана. Вище значення робить рухи плавнішими, але може погіршити чіткість зображення.",
+    "labelVoipStreamFramerateDescription": "Бажана частота кадрів на секунду під час спільного використання екрана. Більша частота забезпечує плавніший рух, але може знизити чіткість зображення.",
     "@labelVoipStreamFramerateDescription": {
         "type": "text",
         "placeholders": {}
