@@ -290,6 +290,11 @@ class MatrixActivitiesComponent
           (i) => i.type == "chat.commet.webxdc-adapter",
         ) as MatrixUserWidgetInfo;
 
+        var event = await (room.matrixRoom.getEventById(activity.sessionId));
+
+        var applicationKey = event!.content.tryGet<String>("application_key");
+        var isSender = event.senderId == room.client.self!.identifier;
+
         var info = MatrixUserWidgetInfo(
           id: xdcWidget.id,
           name: activity.displayName,
@@ -306,6 +311,11 @@ class MatrixActivitiesComponent
           context,
           additionalAvailableArgs: {
             "\$chat.commet.webxdc-adapter.session_id": activity.sessionId,
+            if (applicationKey != null)
+              "\$chat.commet.webxdc-adapter.application_key": applicationKey,
+            "\$chat.commet.webxdc-adapter.is_sender": isSender
+                ? "true"
+                : "false",
           },
         );
 
